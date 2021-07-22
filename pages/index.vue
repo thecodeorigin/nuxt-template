@@ -10,7 +10,6 @@
       >
         {{ $t('changeLocale') }}
       </el-button>
-
       <el-button
         v-else
         key="vi-button"
@@ -30,11 +29,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api';
+import { defineComponent } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   name: 'IndexPage',
-});
+})
 </script>
 
 <style lang="scss" module>
