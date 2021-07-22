@@ -1,0 +1,44 @@
+@import './colors';
+@import './effects';
+@import './fonts';
+@import './mixins';
+@import './transitions';
+@import './variables';
+
+@import '~element-ui/packages/theme-chalk/src/index';
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  --color-white: #{$--color-white};
+  --color-black: #{$--color-black};
+  --color-blue: #{$--color-blue};
+  --color-indigo: #{$--color-indigo};
+  --color-purple: #{$--color-purple};
+  --color-pink: #{$--color-pink};
+  --color-red: #{$--color-red};
+  --color-orange: #{$--color-orange};
+  --color-yellow: #{$--color-yellow};
+  --color-green: #{$--color-green};
+  --color-teal: #{$--color-teal};
+  --color-cyan: #{$--color-cyan};
+  --color-light: #{$--color-light};
+  --color-dark: #{$--color-dark};
+  --color-primary: #{$--color-primary};
+  --color-secondary: #{$--color-secondary};
+  --color-success: #{$--color-success};
+  --color-danger: #{$--color-danger};
+  --color-warning: #{$--color-warning};
+  --color-info: #{$--color-info};
+  --color-gray: #{$--color-gray};
+  @each $colorname, $palette in $palettes {
+    @each $key, $value in $palette {
+      $keyname: '--color-' + $colorname + '-' + $key;
+
+      #{$keyname}: #{$value};
+    }
+  }
+}

@@ -1,0 +1,122 @@
+$--color-white: #fff;
+$--color-black: #000;
+$--color-blue: #409eff;
+$--color-indigo: #6610f2;
+$--color-purple: #6f42c1;
+$--color-pink: #e83e8c;
+$--color-red: #f56c6c;
+$--color-orange: #e6a23c;
+$--color-yellow: #ffc107;
+$--color-green: #67c23a;
+$--color-teal: #20c997;
+$--color-cyan: #69c7e4;
+$--color-light: #f8f9fa;
+$--color-dark: #343a40;
+
+$--color-primary: #409eff;
+$--color-secondary: #909399;
+$--color-success: #67c23a;
+$--color-danger: #f56c6c;
+$--color-warning: #e6a23c;
+$--color-info: #909399;
+$--color-gray: #6c757d;
+
+/* AUTO-GENERATED COLOR PALLETE - DO NOT TOUCH! */
+$palettes: (
+  primary: (
+    100: mix($--color-white, $--color-primary, 90%),
+    200: mix($--color-white, $--color-primary, 60%),
+    300: mix($--color-white, $--color-primary, 40%),
+    400: mix($--color-white, $--color-primary, 20%),
+    500: $--color-primary,
+    600: mix($--color-black, $--color-primary, 20%),
+    700: mix($--color-black, $--color-primary, 40%),
+    800: mix($--color-black, $--color-primary, 50%),
+    900: mix($--color-black, $--color-primary, 90%),
+  ),
+  secondary: (
+    100: mix($--color-white, $--color-secondary, 90%),
+    200: mix($--color-white, $--color-secondary, 60%),
+    300: mix($--color-white, $--color-secondary, 40%),
+    400: mix($--color-white, $--color-secondary, 20%),
+    500: $--color-secondary,
+    600: mix($--color-black, $--color-secondary, 20%),
+    700: mix($--color-black, $--color-secondary, 40%),
+    800: mix($--color-black, $--color-secondary, 50%),
+    900: mix($--color-black, $--color-secondary, 90%),
+  ),
+  success: (
+    100: mix($--color-white, $--color-success, 90%),
+    200: mix($--color-white, $--color-success, 60%),
+    300: mix($--color-white, $--color-success, 40%),
+    400: mix($--color-white, $--color-success, 20%),
+    500: $--color-success,
+    600: mix($--color-black, $--color-success, 20%),
+    700: mix($--color-black, $--color-success, 40%),
+    800: mix($--color-black, $--color-success, 50%),
+    900: mix($--color-black, $--color-success, 90%),
+  ),
+  danger: (
+    100: mix($--color-white, $--color-danger, 90%),
+    200: mix($--color-white, $--color-danger, 60%),
+    300: mix($--color-white, $--color-danger, 40%),
+    400: mix($--color-white, $--color-danger, 20%),
+    500: $--color-danger,
+    600: mix($--color-black, $--color-danger, 20%),
+    700: mix($--color-black, $--color-danger, 40%),
+    800: mix($--color-black, $--color-danger, 50%),
+    900: mix($--color-black, $--color-danger, 90%),
+  ),
+  warning: (
+    100: mix($--color-white, $--color-warning, 90%),
+    200: mix($--color-white, $--color-warning, 60%),
+    300: mix($--color-white, $--color-warning, 40%),
+    400: mix($--color-white, $--color-warning, 20%),
+    500: $--color-warning,
+    600: mix($--color-black, $--color-warning, 20%),
+    700: mix($--color-black, $--color-warning, 40%),
+    800: mix($--color-black, $--color-warning, 50%),
+    900: mix($--color-black, $--color-warning, 90%),
+  ),
+  info: (
+    100: mix($--color-white, $--color-info, 90%),
+    200: mix($--color-white, $--color-info, 60%),
+    300: mix($--color-white, $--color-info, 40%),
+    400: mix($--color-white, $--color-info, 20%),
+    500: $--color-info,
+    600: mix($--color-black, $--color-info, 20%),
+    700: mix($--color-black, $--color-info, 40%),
+    800: mix($--color-black, $--color-info, 50%),
+    900: mix($--color-black, $--color-info, 90%),
+  ),
+  gray: (
+    100: mix($--color-white, $--color-gray, 90%),
+    200: mix($--color-white, $--color-gray, 60%),
+    300: mix($--color-white, $--color-gray, 40%),
+    400: mix($--color-white, $--color-gray, 20%),
+    500: $--color-gray,
+    600: mix($--color-black, $--color-gray, 20%),
+    700: mix($--color-black, $--color-gray, 40%),
+    800: mix($--color-black, $--color-gray, 50%),
+    900: mix($--color-black, $--color-gray, 90%),
+  ),
+  dark: (
+    100: mix($--color-white, $--color-dark, 90%),
+    200: mix($--color-white, $--color-dark, 60%),
+    300: mix($--color-white, $--color-dark, 40%),
+    400: mix($--color-white, $--color-dark, 20%),
+    500: $--color-dark,
+    600: mix($--color-black, $--color-dark, 20%),
+    700: mix($--color-black, $--color-dark, 40%),
+    800: mix($--color-black, $--color-dark, 50%),
+    900: mix($--color-black, $--color-dark, 90%),
+  ),
+);
+
+@function color($color: primary, $scale: 500) {
+  @if ($scale == null) {
+    @return $color;
+  } @else {
+    @return map-get(map-get($palettes, $color), $scale);
+  }
+}

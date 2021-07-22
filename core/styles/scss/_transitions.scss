@@ -1,0 +1,56 @@
+// Trasition phase:
+// https://vuejs.org/v2/guide/transitions.html#Transition-Classes
+
+/***  SCAFFOLD  ***/
+// .v-enter {}
+// .v-enter-active {}
+// .v-enter-to {}
+// .v-leave {}
+// .v-leave-active {}
+// .v-leave-to {}
+
+/***  FADE  ***/
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: opacity 0.2s ease-out;
+}
+
+.fade-enter-to {
+  opacity: 1;
+}
+
+.fade-leave {
+  opacity: 1;
+}
+
+.fade-leave-active {
+  transition: opacity 0.2s ease-out;
+}
+
+.fade-leave-to {
+  opacity: 0;
+}
+
+/***  SLIDE-FADE  ***/
+.slide-fade-enter {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+.slide-fade-enter-to {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.slide-fade-leave-to {
+  transform: translateX(-10px);
+  opacity: 0;
+}

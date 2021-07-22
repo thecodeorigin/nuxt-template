@@ -1,11 +1,105 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "target": "esnext",
+    "module": "es2015",
     "paths": {
-      "~/*": ["./*"],
       "@/*": ["./*"],
+      "@": [
+        "./index.js",
+        "./index.json",
+        "./index.vue",
+        "./index.scss",
+        "./index.css"
+      ],
+      "~/*": ["./*"],
+      "~": [
+        "./index.js",
+        "./index.json",
+        "./index.vue",
+        "./index.scss",
+        "./index.css"
+      ],
+      "@@/*": ["./*"],
+      "@@": [
+        "./index.js",
+        "./index.json",
+        "./index.vue",
+        "./index.scss",
+        "./index.css"
+      ],
       "~~/*": ["./*"],
-      "@@/*": ["./*"]
+      "~~": [
+        "./index.js",
+        "./index.json",
+        "./index.vue",
+        "./index.scss",
+        "./index.css"
+      ],
+      "@core/*": ["./core/*"],
+      "@core": [
+        "./core/index.js",
+        "./core/index.json",
+        "./core/index.vue",
+        "./core/index.scss",
+        "./core/index.css"
+      ],
+      "@services/*": ["./services/*"],
+      "@services": [
+        "./services/index.js",
+        "./services/index.json",
+        "./services/index.vue",
+        "./services/index.scss",
+        "./services/index.css"
+      ],
+      "@components/*": ["./components/*"],
+      "@components": [
+        "./components/index.js",
+        "./components/index.json",
+        "./components/index.vue",
+        "./components/index.scss",
+        "./components/index.css"
+      ],
+      "@constants/*": ["./constants/*"],
+      "@constants": [
+        "./constants/index.js",
+        "./constants/index.json",
+        "./constants/index.vue",
+        "./constants/index.scss",
+        "./constants/index.css"
+      ],
+      "@store/*": ["./store/*"],
+      "@store": [
+        "./store/index.js",
+        "./store/index.json",
+        "./store/index.vue",
+        "./store/index.scss",
+        "./store/index.css"
+      ],
+      "@apis/*": ["./core/apis/*"],
+      "@apis": [
+        "./core/apis/index.js",
+        "./core/apis/index.json",
+        "./core/apis/index.vue",
+        "./core/apis/index.scss",
+        "./core/apis/index.css"
+      ],
+      "@mixins/*": ["./core/mixins/*"],
+      "@mixins": [
+        "./core/mixins/index.js",
+        "./core/mixins/index.json",
+        "./core/mixins/index.vue",
+        "./core/mixins/index.scss",
+        "./core/mixins/index.css"
+      ],
+      "@utils/*": ["./core/utils/*"],
+      "@utils": [
+        "./core/utils/index.js",
+        "./core/utils/index.json",
+        "./core/utils/index.vue",
+        "./core/utils/index.scss",
+        "./core/utils/index.css"
+      ]
     }
   },
   "exclude": ["node_modules", ".nuxt", "dist"]
