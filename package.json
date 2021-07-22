@@ -14,14 +14,24 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/composition-api": "^0.24.6",
     "@nuxtjs/pwa": "^3.3.5",
+    "@nuxtjs/style-resources": "^1.2.0",
     "core-js": "^3.15.1",
-    "nuxt": "^2.15.7"
+    "element-ui": "^2.15.3",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "nuxt": "^2.15.7",
+    "nuxt-i18n": "^6.27.2",
+    "qs": "^6.10.1",
+    "slug": "^5.1.0",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/eslint-config": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/stylelint-module": "^4.0.0",
@@ -29,11 +39,15 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-vue": "^7.12.1",
+    "fibers": "^5.0.0",
     "husky": "^6.0.0",
     "nuxt-windicss": "^1.1.1",
     "prettier": "^2.3.2",
+    "sass": "~1.32.12",
+    "sass-loader": "10.1.1",
     "stylelint": "^13.13.1",
     "stylelint-config-prettier": "^8.0.2",
-    "stylelint-config-standard": "^22.0.0"
+    "stylelint-config-standard": "^22.0.0",
+    "stylelint-scss": "^3.19.0"
   }
 }
