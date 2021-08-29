@@ -1,5 +1,11 @@
+const cookieparser = process.server ? require('cookieparser') : undefined;
+
 export default {
-  nuxtServerInit: ({ commit }) => {
+  nuxtServerInit({ commit }, { req }) {
+    const cookie = cookieparser.parse(req.headers.cookie);
+
+    commit('SET_LOCALE', cookie.lang);
+
     commit('auth/SET_AUTH', {
       user: {
         email: 'contact@thecodeorigin.com',

@@ -1,3 +1,3 @@
 export default (val) => {
-  return val.toUpperCase()
-}
+  return val.toUpperCase();
+};

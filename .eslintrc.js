@@ -25,6 +25,7 @@ module.exports = {
       { blankLine: 'always', prev: '*', next: 'return' },
       { blankLine: 'always', prev: '*', next: 'export' },
     ],
+    'semi': ['error', 'always'],
     'vue/component-definition-name-casing': 'error',
     'vue/array-bracket-spacing': 'error',
     'vue/arrow-spacing': 'error',
@@ -98,4 +99,4 @@ module.exports = {
     'vue/component-name-in-template-casing': ['error', 'PascalCase'],
     'vue/dot-location': ['error', 'property'],
   }
-}
+};

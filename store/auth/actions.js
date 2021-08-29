@@ -1,24 +1,27 @@
+import Cookies from 'js-cookie';
 import { useAuthService } from '@/services/auth';
 
 export default {
-  register: async(context, { form }) => {
-    const authService = useAuthService(context);
+  async register(context, { form }) {
+    const authService = useAuthService(this);
 
     const { data } = await authService.register(form);
     context.commit('SET_AUTH', data);
+    Cookies.set('auth', data);
 
     return data;
   },
-  login: async(context, { form }) => {
-    const authService = useAuthService(context);
+  async login(context, { form }) {
+    const authService = useAuthService(this);
 
     const { data } = await authService.login(form);
     context.commit('SET_AUTH', data);
+    Cookies.set('auth', data);
 
     return data;
   },
-  getAuth: async(context) => {
-    const authService = useAuthService(context);
+  async getAuth() {
+    const authService = useAuthService(this);
 
     const { data } = await authService.getAuth();
 

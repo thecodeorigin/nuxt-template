@@ -1,18 +1,17 @@
-// Pass context from Vue component or Vuex
-// const context = useContext();
-// const { getProjects } = useProjectService(context);
-export const useProjectService = ({ $clientApi, $authApi }) => {
-  const endpoint = '/projects';
+import { useContext } from '@nuxtjs/composition-api';
 
-  const getProjects = () => $clientApi.$get(endpoint);
+export const useProjectService = (context) => {
+  const { $axios } = context || useContext();
 
-  const getProject = (slug) => $clientApi.$get(`${endpoint}/${slug}`);
+  const getProjects = () => $axios.$get('/projects');
 
-  const createProject = (form) => $authApi.$post(endpoint, form);
+  const getProject = (slug) => $axios.$get(`/projects/${slug}`);
 
-  const updateProject = (slug, form) => $authApi.$patch(`${endpoint}/${slug}`, form);
+  const createProject = (form) => $axios.$post('/projects', form);
 
-  const deleteProject = (slug) => $authApi.$delete(`${endpoint}/${slug}`);
+  const updateProject = (slug, form) => $axios.$patch(`/projects/${slug}`, form);
+
+  const deleteProject = (slug) => $axios.$delete(`/projects/${slug}`);
 
   return {
     getProjects,

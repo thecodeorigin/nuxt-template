@@ -8,7 +8,7 @@
         type="primary"
         @click="$i18n.setLocale('vi')"
       >
-        {{ $t('changeLocale') }}
+        {{ $t('Change language') }}
       </el-button>
       <el-button
         v-else
@@ -17,23 +17,29 @@
         type="danger"
         @click="$i18n.setLocale('en')"
       >
-        {{ $t('changeLocale') }}
+        {{ $t('Change language') }}
       </el-button>
     </transition>
     <div>
-      <span class="text-primary-300"> {{ $t('hello') }}</span>
-      <span class="text-warning-700">{{ $t('hello') }}</span>
+      <span class="text-primary-300"> {{ $t('Hello world!') }}</span>
+      <span class="text-warning-700">{{ $t('Hello world!') }}</span>
     </div>
     <ExampleBase />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api';
 
 export default defineComponent({
   name: 'IndexPage',
-})
+
+  head() {
+    return {
+      title: this.$t('Home page'),
+    };
+  },
+});
 </script>
 
 <style lang="scss" module>
@@ -43,10 +49,8 @@ export default defineComponent({
 </style>
 
 <i18n lang="yaml">
-en:
-  hello: hello world!
-  changeLocale: Change language
 vi:
-  hello: Xin chào thế giới!
-  changeLocale: Đổi ngôn ngữ
+  Home page: Trang chủ
+  Hello world!: Xin chào thế giới!
+  Change language: Đổi ngôn ngữ
 </i18n>

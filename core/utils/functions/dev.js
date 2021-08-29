@@ -6,9 +6,9 @@ export const dev = {
    */
   error: (...args) => {
     if (process.env.NODE_ENV !== 'production') {
-      console.error(...args)
+      console.error(...args);
     } else {
-      console.error('Something is wrong')
+      console.error('Something is wrong');
     }
   },
   /**
@@ -17,9 +17,9 @@ export const dev = {
    */
   log: (...args) => {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(...args)
+      console.log(...args);
     } else {
-      console.log('Something is wrong')
+      console.log('Something is wrong');
     }
   },
   /**
@@ -28,11 +28,11 @@ export const dev = {
    */
   warn: (...args) => {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn(...args)
+      console.warn(...args);
     } else {
-      console.warn('Something is wrong')
+      console.warn('Something is wrong');
     }
   },
-}
+};
 
-export default dev
+export default dev;

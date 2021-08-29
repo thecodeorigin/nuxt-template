@@ -53,11 +53,11 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '@/core/plugins/v-sanitize' },
     { src: '@/core/plugins/element-ui' },
     { src: '@/core/plugins/moment' },
+    { src: '@/core/plugins/axios' },
     { src: '@/core/plugins/i18n' },
-    { src: '@/core/apis/client' },
-    { src: '@/core/apis/auth' },
     { src: '@/core/utils' },
   ],
 
@@ -179,4 +179,4 @@ export default {
       Object.assign(config.resolve.alias, require('./aliases.config').webpack);
     },
   }
-}
+};

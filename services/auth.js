@@ -1,13 +1,14 @@
-// Pass context from Vuex
-// const { register } = useAuthService(context);
-export const useAuthService = ({ $clientApi, $authApi }) => {
-  const endpoint = '/auth';
+import { useContext } from '@nuxtjs/composition-api';
 
-  const register = (form) => $clientApi.$post(`${endpoint}/register`, form);
+// You must pass "this" like useAuthService(this) in Vuex to get the $axios instance
+export const useAuthService = (context) => {
+  const { $axios } = context || useContext();
 
-  const login = (form) => $authApi.$post(`${endpoint}/login`, form);
+  const register = (form) => $axios.$post('/auth/register', form);
 
-  const getAuth = () => $authApi.$get(`${endpoint}/me`);
+  const login = (form) => $axios.$post('/auth/login', form);
+
+  const getAuth = () => $axios.$get('/auth/me');
 
   return {
     register,
