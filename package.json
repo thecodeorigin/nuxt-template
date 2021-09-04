@@ -3,11 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development yarn start",
-    "dev:debug": "cross-env NODE_ENV=development yarn start-debug",
+    "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nodemon server/index.js",
-    "start:debug": "nodemon --inspect ./server.js",
+    "start": "nuxt start",
     "analyze": "nuxt build --analyze",
     "generate": "nuxt generate",
     "prepare": "husky install",

@@ -1,29 +1,19 @@
 /* eslint-disable no-console */
-const express = require('express');
-const nuxt = require('./nuxt');
-// const { router } = require('./routes/router');
-const { CONFIG } = require('./config');
-const { getApiRoutes } = require('./routes/router');
+import Express from 'express';
+import { CONFIG } from './config';
+import { router } from './routes/index';
 
-const app = express();
+const app = Express();
 
-app.use(express.json({ limit: '5mb' }));
+app.use(Express.json({ limit: '5mb' }));
 
-async function start() {
-  try {
-    app.use('/api/v1', getApiRoutes());
+const routes = Express.Router();
 
-    await nuxt(app);
+router.forEach(route => {
+  routes[route.method](route.path, route.handlers);
+});
 
-    // Start express server
-    app.listen(CONFIG.PORT, CONFIG.HOST, () => {
-      console.log(`Nuxt Render Server started at http://${CONFIG.HOST}:${CONFIG.PORT} \n`);
-    });
-  } catch (error) {
-    // Do something when server fails to start
-    console.error(error);
-  }
-}
+app.use(routes);
 
 process.on('SIGINT', function () {
   console.log('\nGracefully shutting down from SIGINT (Ctrl-C)');
@@ -31,4 +21,13 @@ process.on('SIGINT', function () {
   process.exit(1);
 });
 
-start();
+// Export express app
+export default app;
+
+// Start standalone server if directly running
+if (require.main === module) {
+  // Start express server
+  app.listen(CONFIG.PORT, CONFIG.HOST, () => {
+    console.log(`Server started at http://${CONFIG.HOST}:${CONFIG.PORT} \n`);
+  });
+}

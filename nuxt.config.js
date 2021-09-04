@@ -109,7 +109,7 @@ export default {
     defaultLocale: 'vi',
     strategy: 'no_prefix',
     vueI18n: {
-      fallbackLocale: 'en',
+      fallbackLocale: 'vi',
       silentFallbackWarn: true,
       messages: {
         en: readYamlFile('./locales/en.yaml'),
@@ -188,5 +188,13 @@ export default {
 
   router: {
     middleware: ['ssr-cookie']
-  }
+  },
+
+  /*
+  ** Server Middleware
+  */
+  serverMiddleware: {
+    '/api/v1': '~/server'
+  },
+
 };

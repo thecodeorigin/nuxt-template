@@ -1,36 +1,37 @@
-const axios = require('axios');
-const qs = require('qs');
+import axios from 'axios';
+import qs from 'qs';
+import { BASE_FORWARD_API } from '../constants/index';
 
-module.exports = {
-  forward: (url) => {
-    return async (req, res, next) => {
-      try {
-        const params = req.params;
-        const query = req.query;
+export const forward = (url) => {
+  return async (req, res, next) => {
+    try {
+      const params = req.params;
+      const query = req.query;
 
-        // Replace params in url
-        Object.keys(params).forEach(key => {
-          url = url.replace(new RegExp(`[${key}]`), params[key]);
-        });
+      url = url || BASE_FORWARD_API + req.url;
 
-        // See https://github.com/axios/axios#request-config
-        const response = await axios.request({
-          url: url + '?' + qs.stringify(query),
-          method: req.method,
-          data: req.body,
-          headers: {
-            cookie: req.headers.cookie
-          }
-        });
+      // Replace params in url
+      Object.keys(params).forEach(key => {
+        url = url.replace(new RegExp(`[${key}]`), params[key]);
+      });
 
-        return res.json({
-          status: response.status,
-          statusText: response.statusText,
-          data: response.data
-        });
-      } catch (error) {
-        return next(error);
-      }
-    };
-  }
+      // See https://github.com/axios/axios#request-config
+      const response = await axios.request({
+        url: url + '?' + qs.stringify(query),
+        method: req.method,
+        data: req.body,
+        headers: {
+          cookie: req.headers.cookie
+        }
+      });
+
+      return res.json({
+        status: response.status,
+        statusText: response.statusText,
+        data: response.data
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
 };

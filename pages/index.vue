@@ -25,46 +25,14 @@
       <span class="text-warning-700">{{ $t('Hello world!') }}</span>
     </div>
     <ExampleBase />
-    <div v-for="project in projects" :key="project.id">
-      {{ project.title }}
-    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { useProjectService } from '@/services/project';
-import {
-  defineComponent,
-  onBeforeMount,
-  ref,
-  useContext,
-  useFetch,
-} from '@nuxtjs/composition-api';
+import { defineComponent } from '@nuxtjs/composition-api';
 
 export default defineComponent({
   name: 'IndexPage',
-
-  setup() {
-    const { $axios } = useContext();
-    const projects = ref([]);
-
-    const projectService = useProjectService({ $axios });
-
-    const { fetch: fetchProjects } = useFetch(async () => {
-      try {
-        const res = await projectService.getProjects();
-        projects.value = res.data.items;
-      } catch (err) {}
-    });
-
-    onBeforeMount(() => {
-      fetchProjects();
-    });
-
-    return {
-      projects,
-    };
-  },
 
   head() {
     return {
