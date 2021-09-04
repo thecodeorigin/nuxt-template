@@ -121,7 +121,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_URL || 'http://localhost:5000',
+    // baseURL: process.env.API_URL || 'http://localhost:5000',
     retry: { retries: 3 },
   },
   
@@ -164,6 +164,12 @@ export default {
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ],
+    babel: {
+      plugins: [
+        '@babel/plugin-proposal-optional-chaining',
+        '@babel/plugin-proposal-nullish-coalescing-operator'
+      ]
+    },
     loaders: {
       cssModules: {
         modules: {
@@ -178,5 +184,9 @@ export default {
       // Set up all the aliases we use in our app.
       Object.assign(config.resolve.alias, require('./aliases.config').webpack);
     },
+  },
+
+  router: {
+    middleware: ['ssr-cookie']
   }
 };

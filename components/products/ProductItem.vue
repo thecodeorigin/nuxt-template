@@ -1,5 +1,3 @@
 <template>
-  <div>
-    A product item sample
-  </div>
+  <div> A product item sample </div>
 </template>
