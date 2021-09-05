@@ -23,6 +23,6 @@ export default ({ $axios, store, error: nuxtError }) => {
   });
 
   $axios.onRequestError((_err) => {});
-  $axios.onResponseError((_err) => {});
 
+  $axios.onResponseError((_err) => {});
 };

@@ -24,7 +24,7 @@ const options = {
     ),
     filename: path.join(
       __dirname,
-      `../../logs/${currentYear}/${currentMonth}/${date}.log`
+      `../../logs/server/${currentYear}/${currentMonth}/${date}.log`
     ),
     handleExceptions: true,
     maxsize: 5242880, // 5MB
@@ -68,4 +68,4 @@ const logger = winston.createLogger({
   silent: false,
 });
 
-export default logger;
+export { logger };

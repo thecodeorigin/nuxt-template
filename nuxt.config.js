@@ -109,7 +109,10 @@ export default {
     defaultLocale: 'vi',
     strategy: 'no_prefix',
     vueI18n: {
-      fallbackLocale: 'vi',
+      fallbackLocale: {
+        vi:      ['en'],
+        default: ['en']
+      },
       silentFallbackWarn: true,
       messages: {
         en: readYamlFile('./locales/en.yaml'),
@@ -193,8 +196,8 @@ export default {
   /*
   ** Server Middleware
   */
-  serverMiddleware: {
-    '/api/v1': '~/server'
-  },
+  serverMiddleware: [
+    { path: '/api/v1', handler: '~/server' },
+  ],
 
 };

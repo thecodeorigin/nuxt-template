@@ -1,6 +1,9 @@
+import chalk from 'chalk';
 import axios from 'axios';
 import qs from 'qs';
 import { BASE_FORWARD_API } from '../constants/index';
+import { CONFIG } from '../config';
+import { logger } from './logger';
 
 export const forward = (url) => {
   return async (req, res, next) => {
@@ -31,6 +34,16 @@ export const forward = (url) => {
         data: response.data
       });
     } catch (error) {
+      if (CONFIG.IS_DEV) {
+        logger.debug(
+          `${chalk.bold.blue(url)}: ${chalk.red(error)}`
+          );
+      } else {
+        logger.info(
+          `${chalk.bold.blue(url)}: ${chalk.red(error)}`
+        );
+      }
+
       return next(error);
     }
   };
