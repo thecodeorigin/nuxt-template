@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ $t('This is the product page!') }}
+    {{ $t('This is the projects page!') }}
   </div>
 </template>
 
@@ -8,11 +8,11 @@
 import { defineComponent } from '@nuxtjs/composition-api';
 
 export default defineComponent({
-  name: 'ProductPage',
+  name: 'ProjectPage',
 
   head() {
     return {
-      title: this.$t('Product page'),
+      title: this.$t('Project page'),
     };
   },
 });
@@ -20,6 +20,6 @@ export default defineComponent({
 
 <i18n lang="yaml">
 vi:
-  Product page: Trang sản phẩm
-  This is the product page!: Đây là trang product!
+  Project page: Trang sản phẩm
+  This is the projects page!: Đây là trang dự án!
 </i18n>

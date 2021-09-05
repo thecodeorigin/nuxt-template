@@ -1,13 +1,13 @@
 import dev from '@/core/utils/functions/dev';
 
 export default ({ $axios, store, error: nuxtError }) => {
-  const authToken = store.getters['auth/token'];
-
   $axios.onRequest((config) => {
+    const authToken = store.getters['auth/token'];
+
     if (authToken) {
       config.headers.Authorization = 'Bearer ' + authToken;
     }
-    dev.log((authToken && '[Authenticated]') + 'API executed');
+    dev.log((authToken ? '[Authenticated] ': '') + 'API executed');
   });
 
   $axios.onResponse((_response) => {});
@@ -23,6 +23,6 @@ export default ({ $axios, store, error: nuxtError }) => {
   });
 
   $axios.onRequestError((_err) => {});
-  $axios.onResponseError((_err) => {});
 
+  $axios.onResponseError((_err) => {});
 };

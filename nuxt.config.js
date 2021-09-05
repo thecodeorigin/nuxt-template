@@ -109,7 +109,10 @@ export default {
     defaultLocale: 'vi',
     strategy: 'no_prefix',
     vueI18n: {
-      fallbackLocale: 'en',
+      fallbackLocale: {
+        vi:      ['en'],
+        default: ['en']
+      },
       silentFallbackWarn: true,
       messages: {
         en: readYamlFile('./locales/en.yaml'),
@@ -121,7 +124,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_URL || 'http://localhost:5000',
+    // baseURL: process.env.API_URL || 'http://localhost:5000',
     retry: { retries: 3 },
   },
   
@@ -164,6 +167,12 @@ export default {
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ],
+    babel: {
+      plugins: [
+        '@babel/plugin-proposal-optional-chaining',
+        '@babel/plugin-proposal-nullish-coalescing-operator'
+      ]
+    },
     loaders: {
       cssModules: {
         modules: {
@@ -178,5 +187,17 @@ export default {
       // Set up all the aliases we use in our app.
       Object.assign(config.resolve.alias, require('./aliases.config').webpack);
     },
-  }
+  },
+
+  router: {
+    middleware: ['ssr-cookie']
+  },
+
+  /*
+  ** Server Middleware
+  */
+  serverMiddleware: [
+    { path: '/api/v1', handler: '~/server' },
+  ],
+
 };

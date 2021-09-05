@@ -5,6 +5,7 @@ export default defineConfig({
   // Preflight is enabled on-demanded.
   // https://windicss.org/integrations/nuxt.html#preflight-style-resetting
   preflight: true,
+  important: true,
   theme: {
     colors,
   },

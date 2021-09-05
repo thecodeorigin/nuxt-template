@@ -35,7 +35,13 @@
 </template>
 
 <script>
-import { computed, defineComponent, reactive, toRefs, useContext } from '@nuxtjs/composition-api';
+import {
+  computed,
+  defineComponent,
+  reactive,
+  toRefs,
+  useContext,
+} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   name: 'MySidebar',
@@ -55,7 +61,7 @@ export default defineComponent({
         },
         {
           icon: 'icon-archive',
-          route: { name: 'products' },
+          route: { name: 'projects' },
         },
       ],
     });
@@ -72,7 +78,12 @@ export default defineComponent({
 
 <style lang="scss" module>
 .sidebarWrapper {
-  @include flexBox($align: center, $direction: column, $justify: space-between, $gap: 1rem);
+  @include flexBox(
+    $align: center,
+    $direction: column,
+    $justify: space-between,
+    $gap: 1rem
+  );
 
   background-color: $--color-white;
   width: 70px;
@@ -89,11 +100,6 @@ export default defineComponent({
 .sidebarAvatar {
   border-radius: 9999px;
   border: 4px solid color(gray, 100);
-  transition-duration: $duration-base;
-
-  :hover {
-    border: 4px solid color(primary, 700);
-  }
 }
 
 .sidebarItem {
@@ -122,5 +128,4 @@ export default defineComponent({
     @include active();
   }
 }
-
 </style>
