@@ -1,0 +1,25 @@
+{
+  "i18n translate": {
+    "scope": "vue-html",
+    "prefix": ["t()", "$t()", "$i18n.$t()"],
+    "body": ["$$t('${1}')"],
+    "description": "Function of i18n to enable localization on a string"
+  },
+  "i18n translate full API": {
+    "scope": "vue-html",
+    "prefix": ["$i18n.$t()"],
+    "body": ["$$t('${1}')"],
+    "description": "Function of i18n to enable localization on a string"
+  },
+  "i18n translate composition": {
+    "prefix": "i18n.t()",
+    "body": ["i18n.t('${1}')"],
+    "description": "Function of i18n to enable localization on a string in composition API"
+  },
+  "i18n template": {
+    "scope": "vue",
+    "prefix": "i18n template",
+    "body": ["<i18n lang=\"yaml\">\r", "vi:\r", "  ${1}\r", "</i18n>\r", ""],
+    "description": "Template syntax for i18n in component"
+  }
+}
