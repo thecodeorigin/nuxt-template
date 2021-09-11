@@ -12,24 +12,8 @@
         "./index.scss",
         "./index.css"
       ],
-      "~/*": ["./*"],
-      "~": [
-        "./index.js",
-        "./index.json",
-        "./index.vue",
-        "./index.scss",
-        "./index.css"
-      ],
       "@@/*": ["./*"],
       "@@": [
-        "./index.js",
-        "./index.json",
-        "./index.vue",
-        "./index.scss",
-        "./index.css"
-      ],
-      "~~/*": ["./*"],
-      "~~": [
         "./index.js",
         "./index.json",
         "./index.vue",
@@ -91,6 +75,14 @@
         "./core/mixins/index.vue",
         "./core/mixins/index.scss",
         "./core/mixins/index.css"
+      ],
+      "@use/*": ["./core/use/*"],
+      "@use": [
+        "./core/use/index.js",
+        "./core/use/index.json",
+        "./core/use/index.vue",
+        "./core/use/index.scss",
+        "./core/use/index.css"
       ],
       "@utils/*": ["./core/utils/*"],
       "@utils": [

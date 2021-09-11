@@ -8,7 +8,7 @@
     "start": "nuxt start",
     "analyze": "nuxt build --analyze",
     "generate": "nuxt generate",
-    "prepare": "husky install",
+    "prepare": "node _start.js && husky install",
     "lint:js": "eslint --ext \".js,.vue\" --fix --ignore-path .gitignore .",
     "lint:style": "stylelint \"**/*.{vue,css}\" --fix --ignore-path .gitignore",
     "lint:all": "yarn lint:js && yarn lint:style"

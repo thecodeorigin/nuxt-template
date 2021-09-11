@@ -64,8 +64,8 @@ export default {
   // Auto import components: https://go.nuxtjs.dev/config-components
   // components: true,
   components: [
-    // '~/components/',
-    { path: '~/components/base/' },
+    // '@/components/',
+    { path: '@/components/base/' },
   ],
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
@@ -129,9 +129,10 @@ export default {
   },
   
   watch: [
+    'locales',
+    'app.html',
     '*.config.js',
     '*.config.ts',
-    'app.html',
     '.env',
     '.nuxtignore',
   ],
@@ -197,7 +198,7 @@ export default {
   ** Server Middleware
   */
   serverMiddleware: [
-    { path: '/api/v1', handler: '~/server' },
+    { path: '/api/v1', handler: '@/server' },
   ],
 
 };

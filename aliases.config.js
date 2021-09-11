@@ -6,9 +6,7 @@ const prettier = require('prettier');
 
 const aliases = {
   '@': '.',
-  '~': '.',
   '@@': '.',
-  '~~': '.',
   '@core': './core',
   '@services': './services',
   '@components': './components',
@@ -16,6 +14,7 @@ const aliases = {
   '@store': './store',
   '@apis': './core/apis',
   '@mixins': './core/mixins',
+  '@use': './core/use',
   '@utils': './core/utils',
 };
 

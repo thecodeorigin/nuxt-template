@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 import Express from 'express';
+import chalk from 'chalk';
 import { CONFIG } from './config';
 import { router } from './routes/index';
+import { logger } from './utils/logger';
 
 const app = Express();
 
@@ -9,8 +11,14 @@ app.use(Express.json({ limit: '5mb' }));
 
 const routes = Express.Router();
 
+logger.debug(
+  `${chalk.red(`(!)`)} Make change to API Routes at: ${chalk.yellow('@/server/routes/**')}\n`
+);
 router.forEach(route => {
   routes[route.method](route.path, route.handlers);
+  logger.debug(
+    `${chalk.green(`✓ API Routes ready:`)} ${chalk.yellow(`[${route.method}] ${route.path}`)}`
+  );
 });
 
 app.use(routes);
