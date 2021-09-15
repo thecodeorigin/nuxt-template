@@ -10,7 +10,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from '@nuxtjs/composition-api';
 import MyNavbar from '@/components/layout/MyNavbar/MyNavbar.vue';
 import MySidebar from '@/components/layout/MySidebar/MySidebar.vue';

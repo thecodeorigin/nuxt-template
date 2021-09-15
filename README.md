@@ -22,7 +22,26 @@ $ yarn generate
 
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
-## Special Directories
+## Snippets
+
+Checkout .vscode for code snippets
+
+The project is setup with some simple i18n snippets:
+
+```javascript
+$t('');
+$i18n.$t('');
+i18n.t('');
+```
+
+```yaml
+<i18n lang="yaml">
+fr:
+  Your code: Votre code
+</i18n>
+```
+
+## Directories
 
 You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
 
