@@ -21,7 +21,7 @@ export default {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -46,10 +46,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [
-    '@/core/styles/css/all.css',
-    '@/core/styles/scss/all.scss',
-  ],
+  css: ['@/core/styles/css/all.css', '@/core/styles/scss/all.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
@@ -80,10 +77,7 @@ export default {
     '@nuxtjs/dotenv',
     // https://www.npmjs.com/package/@nuxtjs/style-resources
     '@nuxtjs/style-resources',
-    [
-      '@nuxtjs/eslint-module',
-      { fix: true },
-    ],
+    ['@nuxtjs/eslint-module', { fix: true }],
   ],
 
   styleResources: {
@@ -110,10 +104,10 @@ export default {
     strategy: 'no_prefix',
     vueI18n: {
       fallbackLocale: {
-        vi:      ['en'],
-        default: ['en']
+        vi: ['en'],
+        default: ['en'],
       },
-      silentFallbackWarn: true,
+      silentTranslationWarn: true,
       messages: {
         en: readYamlFile('./locales/en.yaml'),
         vi: readYamlFile('./locales/vi.yaml'),
@@ -127,7 +121,7 @@ export default {
     // baseURL: process.env.API_URL || 'http://localhost:5000',
     retry: { retries: 3 },
   },
-  
+
   watch: [
     'locales',
     'app.html',
@@ -146,8 +140,8 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en'
-    }
+      lang: 'en',
+    },
   },
 
   terser: {
@@ -158,9 +152,7 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: [
-      /^element-ui/,
-    ],
+    transpile: [/^element-ui/],
     extractCSS: {
       ignoreOrder: true,
     },
@@ -171,13 +163,16 @@ export default {
     babel: {
       plugins: [
         '@babel/plugin-proposal-optional-chaining',
-        '@babel/plugin-proposal-nullish-coalescing-operator'
-      ]
+        '@babel/plugin-proposal-nullish-coalescing-operator',
+      ],
     },
     loaders: {
       cssModules: {
         modules: {
-          localIdentName: process.env.NODE_ENV === 'development' ? '[local]_[hash:base64:5]' : '[hash:base64:8]',
+          localIdentName:
+            process.env.NODE_ENV === 'development'
+              ? '[local]_[hash:base64:5]'
+              : '[hash:base64:8]',
         },
       },
     },
@@ -191,14 +186,11 @@ export default {
   },
 
   router: {
-    middleware: ['ssr-cookie']
+    middleware: ['ssr-cookie'],
   },
 
   /*
-  ** Server Middleware
-  */
-  serverMiddleware: [
-    { path: '/api/v1', handler: '@/server' },
-  ],
-
+   ** Server Middleware
+   */
+  serverMiddleware: [{ path: '/api/v1', handler: '@/server' }],
 };

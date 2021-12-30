@@ -22,7 +22,11 @@ export default defineComponent({
     store.registerModule('project', projectStore);
 
     onMounted(() => {
-      store.dispatch('project/getMany');
+      try {
+        store.dispatch('project/getMany');
+      } catch (e) {
+        console.error(e);
+      }
     });
 
     onUnmounted(() => store.unregisterModule('project'));

@@ -1,41 +1,61 @@
-/* eslint-disable no-console */
-import Express from 'express';
+import express from 'express';
 import chalk from 'chalk';
-import { CONFIG } from './config';
-import { router } from './routes/index';
+
+import axios from 'axios';
 import { logger } from './utils/logger';
 
-const app = Express();
+const app = express();
+app.use(express.json());
 
-app.use(Express.json({ limit: '5mb' }));
-
-const routes = Express.Router();
-
-logger.debug(
-  `${chalk.red(`(!)`)} Make change to API Routes at: ${chalk.yellow('@/server/routes/**')}\n`
-);
-router.forEach(route => {
-  routes[route.method](route.path, route.handlers);
-  logger.debug(
-    `${chalk.green(`✓ API Routes ready:`)} ${chalk.yellow(`[${route.method}] ${route.path}`)}`
-  );
+const http = axios.create({
+  baseURL: process.env.SERVER_API_URL,
+  // timeout: 10000,
 });
 
-app.use(routes);
+app.all('*', async (req, res) => {
+  const url = req.url;
+  const method = req.method;
+  const body = req.body;
+  const headers = {};
 
-process.on('SIGINT', function () {
-  console.log('\nGracefully shutting down from SIGINT (Ctrl-C)');
-  // some other closing procedures go here
-  process.exit(1);
+  if (req.headers.authorization) {
+    headers.authorization = req.headers.authorization;
+  } else if (req.headers.authorization) {
+    headers.Authorization = req.headers.Authorization;
+  }
+
+  try {
+    const response = await http.request({
+      url,
+      method,
+      headers,
+      data: body,
+    });
+
+    logger.debug(
+      `${chalk.bold.blue(process.env.SERVER_API_URL + url)}: ${chalk.green(
+        response.status
+      )}`
+    );
+
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    logger.debug(
+      `${chalk.bold.red(process.env.SERVER_API_URL + url)}: ${chalk.bold.red(
+        err.response?.status || 500
+      )} ${err.message}\nHeaders: ${chalk.yellow(
+        JSON.stringify(Object.keys(headers).filter((k) => k))
+      )}\nBody: ${chalk.yellow(
+        JSON.stringify(Object.keys(body || {}).filter((k) => k))
+      )}`
+    );
+
+    res.status(err.response?.status || 500).json({
+      status: err.response?.status,
+      statusText: err.response?.statusText,
+      error: err.response?.data,
+    });
+  }
 });
 
-// Export express app
-export default app;
-
-// Start standalone server if directly running
-if (require.main === module) {
-  // Start express server
-  app.listen(CONFIG.PORT, CONFIG.HOST, () => {
-    console.log(`Server started at http://${CONFIG.HOST}:${CONFIG.PORT} \n`);
-  });
-}
+module.exports = app;
