@@ -28,23 +28,19 @@ export const forward = (url) => {
         }
       });
 
-      return res.json({
-        status: response.status,
-        statusText: response.statusText,
-        data: response.data
-      });
+      return res.status(response.status).json(response.data);
     } catch (error) {
       if (CONFIG.IS_DEV) {
         logger.debug(
           `${chalk.bold.blue(url)}: ${chalk.red(error)}`
-          );
+        );
       } else {
         logger.info(
           `${chalk.bold.blue(url)}: ${chalk.red(error)}`
         );
       }
 
-      return next(error);
+      return res.status(error?.response?.status || 500).json(error?.response?.data);
     }
   };
 };
