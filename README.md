@@ -246,9 +246,9 @@ This directory contains your application views and routes. Nuxt will read all th
 
 More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
 
-### `server/routes`
+### `server/*`
 
-This directory contains files to declare API routes so you can call your Backend API from the Frontend server and hide your actual API endpoint
+API Routes using Nuxt `serverMiddleware` so you can protect your original API
 
 This using Nuxt.js server middleware and added in `nuxt.config.js`:
 
