@@ -10,9 +10,9 @@ export default {
       if (/^([a-zA-Z0-9[\].?])*$/g.test(evalString)) {
         // eslint-disable-next-line no-eval
         return eval('this.' + evalString);
-      } else {
-        return null;
       }
+
+      return null;
     },
   },
 };
