@@ -2,8 +2,6 @@ import fs from 'fs';
 import YAML from 'yaml';
 import webpack from 'webpack';
 
-require('dotenv').config();
-
 function readYamlFile(filePath) {
   const file = fs.readFileSync(filePath, 'utf8');
 
@@ -73,8 +71,6 @@ export default {
     '@nuxtjs/stylelint-module',
     // https://windicss.org/guide/
     'nuxt-windicss',
-    // https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv',
     // https://www.npmjs.com/package/@nuxtjs/style-resources
     '@nuxtjs/style-resources',
     ['@nuxtjs/eslint-module', { fix: true }],
