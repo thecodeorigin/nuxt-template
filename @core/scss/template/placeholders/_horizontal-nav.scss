@@ -1,0 +1,37 @@
+@use "@core/scss/base/mixins";
+
+// Add border radius to top level nav item
+%horizontal-nav-top-level-item {
+  border-radius: 0.625rem !important;
+}
+
+// Horizontal nav item styles (including nested)
+%horizontal-nav-item {
+  padding-block: 0.5rem;
+}
+
+// Horizontal nav item title
+%horizontal-nav-item-title {
+  margin-inline-end: 0.5rem;
+}
+
+// Popper content styles
+%horizontal-nav-popper-content {
+  padding-block: 0.5rem;
+
+  @include mixins.elevation(8);
+}
+
+// Styles for third level item icon/ (e.g. Reduce the icon's size of nested group's nav links (Top level group > Sub group > [Nav links]))
+%third-level-nav-item-icon {
+  color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity));
+  margin-inline: 0 0.5rem;
+}
+
+// Active styles for sub nav link
+%horizontal-nav-sub-nav-link-active {
+  background: rgba(var(--v-theme-primary), 0.16);
+  color: rgb(var(--v-theme-primary));
+
+  i { color: rgb(var(--v-theme-primary)) !important; }
+}

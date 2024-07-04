@@ -1,0 +1,115 @@
+@use "@core/scss/base/mixins";
+@use "@configured-variables" as variables;
+
+// 👉 VPagination
+.v-pagination {
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+
+  .v-pagination__list {
+    .v-pagination__item,
+    .v-pagination__next,
+    .v-pagination__last,
+    .v-pagination__first,
+    .v-pagination__prev {
+      .v-btn {
+        font-weight: 400;
+
+        &--size-default {
+          --v-btn-size: 13px;
+        }
+
+        &--size-large {
+          --v-btn-size: 15px;
+        }
+
+        &--variant-tonal {
+          --v-activated-opacity: 0.08;
+
+          &:hover {
+            .v-btn__overlay {
+              --v-hover-opacity: 0.16;
+            }
+          }
+        }
+
+        @each $color-name in variables.$theme-colors-name {
+          &--variant-tonal.text-#{$color-name} {
+            .v-btn__underlay {
+              background: rgb(var(--v-theme-on-surface));
+            }
+
+            .v-btn__content {
+              color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+            }
+
+            &:hover {
+              .v-btn__content {
+                color: rgb(var(--v-theme-#{$color-name}));
+              }
+            }
+          }
+        }
+
+        &--variant-outlined {
+          &:hover {
+            .v-btn__overlay {
+              --v-hover-opacity: 0.06;
+            }
+          }
+        }
+      }
+    }
+
+    .v-pagination__item--is-active {
+      .v-btn.v-btn--variant-tonal {
+        .v-btn__overlay {
+          --v-hover-opacity: 0.16;
+
+          background: rgb(var(--v-theme-primary));
+          opacity: var(--v-hover-opacity);
+        }
+
+        color: rgb(var(--v-theme-primary));
+
+        .v-btn__underlay {
+          opacity: 0;
+        }
+
+        &:hover {
+          .v-btn__overlay {
+            --v-hover-opacity: 0.24;
+          }
+        }
+      }
+
+      @each $color-name in variables.$theme-colors-name {
+        .v-btn.v-btn--variant-tonal.text-#{$color-name} {
+          @include mixins.elevation(2);
+
+          .v-btn__overlay {
+            background: rgb(var(--v-theme-#{$color-name}));
+            opacity: 1;
+          }
+
+          .v-btn__content {
+            z-index: 1;
+            color: #fff;
+          }
+        }
+      }
+
+      .v-btn.v-btn--variant-outlined {
+        border-color: rgb(var(--v-theme-primary));
+        color: rgb(var(--v-theme-primary));
+
+        /* stylelint-disable-next-line no-descending-specificity */
+        .v-btn__overlay {
+          --v-hover-opacity: 0.16;
+
+          background: rgb(var(--v-theme-primary));
+          opacity: var(--v-hover-opacity);
+        }
+      }
+    }
+  }
+}

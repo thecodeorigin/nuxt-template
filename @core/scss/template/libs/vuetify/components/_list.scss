@@ -1,0 +1,23 @@
+// 👉 VList
+.v-list {
+  .v-list-item {
+    &.v-list-item--active:not(.v-list-group__header) {
+      .v-list-item__content,
+      .v-list-item__prepend {
+        * {
+          color: rgb(var(--v-theme-primary));
+        }
+      }
+
+      .v-list-item__overlay {
+        background: rgb(var(--v-theme-primary));
+      }
+    }
+
+    .v-icon:not(.v-btn .v-icon,.v-radio .v-icon,.v-checkbox .v-icon) {
+      block-size: 22px;
+      font-size: 22px;
+      inline-size: 22px;
+    }
+  }
+}

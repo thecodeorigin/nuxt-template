@@ -1,0 +1,38 @@
+@use "sass:map";
+@use "@core/scss/base/mixins";
+@use "@configured-variables" as variables;
+
+$header: ".layout-navbar";
+
+@if variables.$layout-vertical-nav-navbar-is-contained {
+  $header: ".layout-navbar .navbar-content-container";
+}
+
+.skin--bordered {
+  .flatpickr-calendar {
+    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    box-shadow: none;
+  }
+
+  // select remove box shadow
+  .v-select__content,
+  .v-combobox__content,
+  .v-autocomplete__content {
+    box-shadow: none;
+  }
+
+  // snackbar
+  .v-snackbar--variant-elevated {
+    box-shadow: none;
+  }
+
+  // Calendar
+  .fc .fc-popover {
+    box-shadow: none;
+  }
+
+  // Tour
+  .shepherd-element {
+    box-shadow: none;
+  }
+}

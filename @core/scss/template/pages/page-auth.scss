@@ -1,0 +1,62 @@
+.layout-blank {
+  .auth-wrapper {
+    min-block-size: calc(var(--vh, 1vh) * 100);
+  }
+
+  .auth-card {
+    z-index: 1 !important;
+  }
+
+  @media (min-width: 1264px), (max-width: 959px) and (min-width: 450px) {
+    .v-otp-input .v-otp-input__content {
+      gap: 1.25rem;
+    }
+  }
+}
+
+@media (min-width: 960px) {
+  .skin--bordered {
+    .auth-card-v2 {
+      border-inline-start: 1px solid rgba(var(--v-border-color), var(--v-border-opacity)) !important;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .auth-footer-mask {
+    inset-block-end: 10% !important;
+  }
+}
+
+.auth-logo {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 2.5rem;
+  inset-inline-start: 2.5rem;
+}
+
+.auth-wrapper .auth-illustration {
+  z-index: 1;
+  max-inline-size: 48rem;
+}
+
+.auth-wrapper .auth-footer-mask {
+  position: absolute;
+  inline-size: 100%;
+  inset-block-end: 5%;
+}
+
+// App logo and App title
+.app-logo {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+
+  .app-logo-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.27px;
+    line-height: 1.5rem;
+    text-transform: capitalize;
+  }
+}

@@ -1,0 +1,19 @@
+@use "@core/scss/base/placeholders" as *;
+@use "@core/scss/template/placeholders" as *;
+@use "@core/scss/base/mixins";
+
+.layout-wrapper.layout-nav-type-horizontal {
+  // 👉 App footer
+  .layout-footer {
+    @at-root {
+      .layout-footer-sticky#{&} {
+        box-shadow: 0 -4px 8px -4px rgba(var(--v-shadow-key-umbra-color), 42%);
+      }
+    }
+  }
+
+  // TODO: Use Vuetify grid sass variable here
+  .layout-page-content {
+    padding-block: 1.5rem;
+  }
+}

@@ -1,0 +1,102 @@
+// 👉 VField
+// Override Vuetify's default outline color for text fields to match the theme
+// ℹ️ We cannot override directly border color because it does not work with dirty or focus state
+.v-field__outline {
+  color: rgba(var(--v-theme-on-surface));
+
+  &:not([class*="text-"]) .v-label {
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+  }
+
+  .v-field__outline__start {
+    flex: 0 0 10px !important;
+  }
+}
+
+// override input height on comfortable and compact density
+.v-text-field,
+.v-autocomplete,
+.v-combobox,
+.v-file-input,
+.v-select {
+  &.v-input {
+    .v-field__input {
+      line-height: 1.375rem;
+    }
+  }
+
+  &.v-input.v-input--density-default:not(.v-textarea) {
+    .v-field__input {
+      min-block-size: 56px;
+    }
+
+    .v-field {
+      border-radius: 10px;
+    }
+  }
+
+  &.v-input.v-input--density-comfortable:not(.v-textarea) {
+    .v-field__input {
+      min-block-size: 48px;
+    }
+  }
+
+  &.v-input.v-input--density-compact:not(.v-textarea) {
+    .v-field__input {
+      min-block-size: 40px;
+    }
+
+    .v-field {
+      border-radius: 6px;
+    }
+  }
+}
+
+.v-field.v-field--focused .v-field__outline,
+.v-input.v-input--error .v-field__outline {
+  --v-field-border-opacity: 1 !important;
+}
+
+// hover state outline color
+@media (hover: hover) {
+  .v-field:not(.v-field--focused):hover .v-field__outline {
+    --v-field-border-opacity: 0.6 !important;
+  }
+}
+
+.v-field__prepend-inner,
+.v-field__append-inner,
+.v-field__clearable,
+.v-input__prepend,
+.v-input__append {
+  > .v-icon {
+    font-size: 20px;
+    opacity: var(--v-high-emphasis-opacity) !important;
+  }
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.v-field {
+  // margin for floating label
+  &.v-field--variant-outlined {
+    .v-label.v-field-label {
+      &.v-field-label--floating {
+        margin-block: 0;
+        margin-inline: 6px;
+      }
+    }
+  }
+
+  // filled variant
+  &.v-field--variant-filled {
+    .v-field__outline::before {
+      opacity: var(--v-medium-emphasis-opacity);
+    }
+
+    &:hover {
+      .v-field__outline::before {
+        opacity: var(--v-high-emphasis-opacity);
+      }
+    }
+  }
+}

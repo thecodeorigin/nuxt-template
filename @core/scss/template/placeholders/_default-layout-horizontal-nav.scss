@@ -1,0 +1,10 @@
+@use "misc";
+@use "@core/scss/base/mixins.scss";
+
+%default-layout-horizontal-nav-navbar-and-nav-container {
+  @include mixins.elevation(2);
+
+  &.header-blur {
+    @extend %blurry-bg;
+  }
+}
