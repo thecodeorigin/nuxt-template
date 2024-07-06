@@ -42,5 +42,6 @@
       }
     ],
     "media-feature-range-notation": null
-  }
+  },
+  "ignoreFiles": "./plugins/iconify/icons.css"
 }

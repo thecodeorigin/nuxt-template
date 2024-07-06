@@ -1,10 +1,13 @@
+import { getI18n } from '@/plugins/i18n/index'
 import { deepMerge } from '@antfu/utils'
+import { themeConfig } from '@themeConfig'
+import { useI18n } from 'vue-i18n'
 import { createVuetify } from 'vuetify'
 import { VBtn } from 'vuetify/components/VBtn'
+import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import defaults from './defaults'
 import { icons } from './icons'
 import { staticPrimaryColor, staticPrimaryDarkenColor, themes } from './theme'
-import { themeConfig } from '@themeConfig'
 
 // Styles
 import { cookieRef } from '@/@layouts/stores/config'
@@ -40,7 +43,9 @@ export default defineNuxtPlugin(nuxtApp => {
     defaults,
     icons,
     theme: optionTheme,
-
+    locale: {
+      adapter: createVueI18nAdapter({ i18n: getI18n(), useI18n }),
+    },
   })
 
   nuxtApp.vueApp.use(vuetify)

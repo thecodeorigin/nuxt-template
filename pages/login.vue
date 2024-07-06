@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
+import type { User } from 'next-auth'
+import type { NuxtError } from 'nuxt/app'
+
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
+import { themeConfig } from '@themeConfig'
+import { VForm } from 'vuetify/components/VForm'
+
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
@@ -8,27 +13,91 @@ import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustrati
 import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
 
-const form = ref({
-  email: '',
-  password: '',
-  remember: false,
-})
+const { signIn, data: sessionData } = useAuth()
+
+const authThemeImg = useGenerateImageVariant(
+  authV2LoginIllustrationLight,
+  authV2LoginIllustrationDark,
+  authV2LoginIllustrationBorderedLight,
+  authV2LoginIllustrationBorderedDark,
+  true,
+)
+
+const authThemeMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginMaskDark)
 
 definePageMeta({
   layout: 'blank',
+  unauthenticatedOnly: true,
 
 })
 
 const isPasswordVisible = ref(false)
-const authV2LoginMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginMaskDark)
-const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
+
+const route = useRoute()
+
+const ability = useAbility()
+
+const errors = ref<Record<string, string | undefined>>({
+  email: undefined,
+  password: undefined,
+})
+
+const refVForm = ref<VForm>()
+
+const credentials = ref({
+  email: 'admin@demo.com',
+  password: 'admin',
+})
+
+const rememberMe = ref(false)
+
+async function login() {
+  const response = await signIn('credentials', {
+    callbackUrl: '/',
+    redirect: false,
+    ...credentials.value,
+  })
+
+  // If error is not null => Error is occurred
+  if (response && response.error) {
+    const apiStringifiedError = response.error
+    const apiError: NuxtError = JSON.parse(apiStringifiedError)
+
+    errors.value = apiError.data as Record<string, string | undefined>
+
+    // If err => Don't execute further
+    return
+  }
+
+  // Reset error on successful login
+  errors.value = {}
+
+  // Update user abilities
+  const { user } = sessionData.value!
+
+  useCookie<Partial<User>>('userData').value = user
+
+  // Save user abilities in cookie so we can retrieve it back on refresh
+  useCookie<User['abilityRules']>('userAbilityRules').value = user.abilityRules
+
+  ability.update(user.abilityRules ?? [])
+
+  navigateTo(route.query.to ? String(route.query.to) : '/', { replace: true })
+}
+
+const onSubmit = () => {
+  refVForm.value?.validate()
+    .then(({ valid: isValid }) => {
+      if (isValid)
+        login()
+    })
+}
 </script>
 
 <template>
   <NuxtLink to="/">
-    <div class="app-logo auth-logo">
+    <div class="auth-logo app-logo">
       <VNodeRenderer :nodes="themeConfig.app.logo" />
       <h1 class="app-logo-title">
         {{ themeConfig.app.title }}
@@ -46,17 +115,18 @@ const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustration
     >
       <div class="d-flex align-center justify-center pa-10">
         <img
-          :src="authV2LoginIllustration"
+          :src="authThemeImg"
           class="auth-illustration w-100"
           alt="auth-illustration"
         >
       </div>
       <VImg
-        :src="authV2LoginMask"
+        :src="authThemeMask"
         class="d-none d-md-flex auth-footer-mask"
         alt="auth-mask"
       />
     </VCol>
+
     <VCol
       cols="12"
       md="4"
@@ -70,55 +140,71 @@ const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustration
       >
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}! 👋🏻</span>
+            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}!</span> 👋🏻
           </h4>
-
           <p class="mb-0">
             Please sign-in to your account and start the adventure
           </p>
         </VCardText>
+        <VCardText>
+          <VAlert
+            color="primary"
+            variant="tonal"
+          >
+            <p class="text-caption mb-2 text-primary">
+              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
+            </p>
+            <p class="text-caption mb-0 text-primary">
+              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
+            </p>
+          </VAlert>
+        </VCardText>
 
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm
+            ref="refVForm"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
               <!-- email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="form.email"
-                  autofocus
+                  v-model="credentials.email"
                   label="Email"
-                  type="email"
                   placeholder="johndoe@email.com"
+                  type="email"
+                  autofocus
+                  :rules="[requiredValidator, emailValidator]"
+                  :error-messages="errors.email"
                 />
               </VCol>
 
               <!-- password -->
               <VCol cols="12">
                 <VTextField
-                  v-model="form.password"
+                  v-model="credentials.password"
                   label="Password"
                   placeholder="············"
+                  :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.password"
                   :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <!-- remember me checkbox -->
-                <div class="d-flex align-center justify-space-between flex-wrap my-6 gap-x-2">
+                <div class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2">
                   <VCheckbox
-                    v-model="form.remember"
+                    v-model="rememberMe"
                     label="Remember me"
                   />
-
-                  <a
+                  <NuxtLink
                     class="text-primary"
-                    href="#"
+                    :to="{ name: 'forgot-password' }"
                   >
                     Forgot Password?
-                  </a>
+                  </NuxtLink>
                 </div>
 
-                <!-- login button -->
                 <VBtn
                   block
                   type="submit"
@@ -135,12 +221,12 @@ const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustration
                 <span class="d-inline-block">
                   New on our platform?
                 </span>
-                <a
+                <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  href="#"
+                  :to="{ name: 'register' }"
                 >
                   Create an account
-                </a>
+                </NuxtLink>
               </VCol>
 
               <VCol
