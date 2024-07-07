@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
-      title: 'Materialize',
+      title: 'Nuxt Template',
 
       link: [{
         rel: 'icon',
@@ -34,7 +34,7 @@ export default defineNuxtConfig({
   */
   runtimeConfig: {
     // Private keys are only available on the server
-    AUTH_ORIGIN: process.env.AUTH_ORIGIN,
+    AUTH_ORIGIN: process.env.NUXT_PUBLIC_APP_BASE_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
 
     // Public keys that are exposed to the client.
@@ -56,7 +56,7 @@ export default defineNuxtConfig({
   },
 
   auth: {
-    baseURL: process.env.AUTH_ORIGIN,
+    baseURL: process.env.NUXT_PUBLIC_APP_BASE_URL,
     globalAppMiddleware: false,
 
     provider: {

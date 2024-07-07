@@ -55,7 +55,7 @@ const referAndEarnSteps = [
           </h4>
 
           <div class="text-body-1">
-            Invite your friend to Materialize, if they sign up, you and your friend will get 30 days free trial
+            Invite your friend to Nuxt Template, if they sign up, you and your friend will get 30 days free trial
           </div>
         </div>
 
@@ -97,7 +97,7 @@ const referAndEarnSteps = [
         </h5>
 
         <p class="mb-2">
-          Enter your friend's email address and invite them to join Materialize 😍
+          Enter your friend's email address and invite them to join Nuxt Template 😍
         </p>
         <VForm
           class="d-flex align-center gap-4 mb-6"

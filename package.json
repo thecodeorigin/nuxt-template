@@ -10,7 +10,19 @@
     "build:icons": "tsx plugins/iconify/build-icons.ts",
     "postinstall": "nuxt prepare && npm run build:icons ",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "supabase:start": "supabase start --exclude realtime,storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:restart": "supabase stop && supabase start --exclude realtime,storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor",
+    "supabase:reset": "supabase db reset",
+    "supabase:migrate": "supabase migration up",
+    "supabase:link": "supabase link",
+    "supabase:generate-types": "supabase gen types typescript --local --schema public > server/_core/types/supabase.ts",
+    "supabase:generate-migration": "supabase db diff | supabase migration new",
+    "supabase:generate-seed": "supabase db dump --data-only --local --schema public -f supabase/seed.sql",
+    "supabase:push": "supabase db push",
+    "supabase:pull": "supabase db pull"
   },
   "dependencies": {
     "@casl/ability": "6.7.1",
@@ -103,6 +115,7 @@
     "stylelint-config-idiomatic-order": "10.0.0",
     "stylelint-config-standard-scss": "13.0.0",
     "stylelint-use-logical-spec": "5.0.1",
+    "supabase": "^1.178.2",
     "tsx": "4.7.3",
     "type-fest": "4.17.0",
     "typescript": "5.4.5",

@@ -1,6 +1,6 @@
-import { createI18n } from 'vue-i18n'
 import { cookieRef } from '@layouts/stores/config'
 import { themeConfig } from '@themeConfig'
+import { createI18n } from 'vue-i18n'
 
 const messages = Object.fromEntries(
   Object.entries(
@@ -23,6 +23,10 @@ export const getI18n = () => {
   return _i18n
 }
 
-export default defineNuxtPlugin(nuxtApp => {
-  nuxtApp.vueApp.use(getI18n())
+export default defineNuxtPlugin({
+  name: 'vue-i18n',
+  parallel: true,
+  setup(nuxtApp) {
+    nuxtApp.vueApp.use(getI18n())
+  }
 })

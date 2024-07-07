@@ -15,6 +15,9 @@ export async function loadFonts() {
   })
 }
 
-export default defineNuxtPlugin(() => {
-  loadFonts()
+export default defineNuxtPlugin({
+  parallel: true,
+  async setup() {
+    await loadFonts()
+  }
 })

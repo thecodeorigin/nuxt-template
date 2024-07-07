@@ -14,39 +14,43 @@ import { cookieRef } from '@/@layouts/stores/config'
 import '@core/scss/template/libs/vuetify/index.scss'
 import 'vuetify/styles'
 
-export default defineNuxtPlugin(nuxtApp => {
-  const cookieThemeValues = {
-    defaultTheme: resolveVuetifyTheme(themeConfig.app.theme),
-    themes: {
-      light: {
-        colors: {
-          'primary': cookieRef('lightThemePrimaryColor', staticPrimaryColor).value,
-          'primary-darken-1': cookieRef('lightThemePrimaryDarkenColor', staticPrimaryDarkenColor).value,
+export default defineNuxtPlugin({
+  name: 'vuetify',
+  parallel: true,
+  setup(nuxtApp) {
+    const cookieThemeValues = {
+      defaultTheme: resolveVuetifyTheme(themeConfig.app.theme),
+      themes: {
+        light: {
+          colors: {
+            'primary': cookieRef('lightThemePrimaryColor', staticPrimaryColor).value,
+            'primary-darken-1': cookieRef('lightThemePrimaryDarkenColor', staticPrimaryDarkenColor).value,
+          },
+        },
+        dark: {
+          colors: {
+            'primary': cookieRef('darkThemePrimaryColor', staticPrimaryColor).value,
+            'primary-darken-1': cookieRef('darkThemePrimaryDarkenColor', staticPrimaryDarkenColor).value,
+          },
         },
       },
-      dark: {
-        colors: {
-          'primary': cookieRef('darkThemePrimaryColor', staticPrimaryColor).value,
-          'primary-darken-1': cookieRef('darkThemePrimaryDarkenColor', staticPrimaryDarkenColor).value,
-        },
+    }
+  
+    const optionTheme = deepMerge({ themes }, cookieThemeValues)
+  
+    const vuetify = createVuetify({
+      ssr: true,
+      aliases: {
+        IconBtn: VBtn,
       },
-    },
+      defaults,
+      icons,
+      theme: optionTheme,
+      locale: {
+        adapter: createVueI18nAdapter({ i18n: getI18n(), useI18n }),
+      },
+    })
+  
+    nuxtApp.vueApp.use(vuetify)
   }
-
-  const optionTheme = deepMerge({ themes }, cookieThemeValues)
-
-  const vuetify = createVuetify({
-    ssr: true,
-    aliases: {
-      IconBtn: VBtn,
-    },
-    defaults,
-    icons,
-    theme: optionTheme,
-    locale: {
-      adapter: createVueI18nAdapter({ i18n: getI18n(), useI18n }),
-    },
-  })
-
-  nuxtApp.vueApp.use(vuetify)
 })
