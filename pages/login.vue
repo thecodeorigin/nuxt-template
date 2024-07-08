@@ -6,6 +6,7 @@ import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import { themeConfig } from '@themeConfig'
 import { VForm } from 'vuetify/components/VForm'
 
+import { cookieRef } from '@/@layouts/stores/config'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
@@ -76,10 +77,10 @@ async function login() {
   // Update user abilities
   const { user } = sessionData.value!
 
-  useCookie<Partial<User>>('userData').value = user
+  cookieRef<Partial<User>>('userData', user).value = user
 
   // Save user abilities in cookie so we can retrieve it back on refresh
-  useCookie<User['abilityRules']>('userAbilityRules').value = user.abilityRules
+  cookieRef<User['abilityRules']>('userAbilityRules', []).value = user.abilityRules
 
   ability.update(user.abilityRules ?? [])
 

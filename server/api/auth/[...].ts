@@ -1,6 +1,6 @@
+import { NuxtAuthHandler } from '#auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import type { NuxtError } from 'nuxt/app'
-import { NuxtAuthHandler } from '#auth'
 
 // import GoogleProvider from 'next-auth/providers/google'
 
@@ -36,6 +36,7 @@ export default NuxtAuthHandler({
   ],
   pages: {
     signIn: '/login',
+    error: '/not-authorized'
   },
   callbacks: {
     jwt: async ({ token, user }) => {
@@ -66,4 +67,18 @@ export default NuxtAuthHandler({
       return session
     },
   },
+  cookies: {
+    sessionToken: {
+      name: 'nuxt-session-token',
+      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30},
+    },
+    callbackUrl: {
+      name: 'nuxt-callback-url',
+      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30},
+    },
+    csrfToken: {
+      name: 'nuxt-csrf-token',
+      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30},
+    },
+  }
 })

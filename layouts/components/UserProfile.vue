@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { cookieRef } from '@/@layouts/stores/config';
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
 
 const ability = useAbility()
 
 // TODO: Get type from backend
-const userData = useCookie<any>('userData')
+const userData = cookieRef('userData', null as any)
 
 const { signOut } = useAuth()
 
@@ -20,7 +21,7 @@ async function logout() {
 
     navigateTo({ name: 'login' })
   }
-  catch (error) {
+  catch (error: any) {
     throw createError(error)
   }
 }

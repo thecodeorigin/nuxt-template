@@ -2,7 +2,6 @@
 definePageMeta({
   action: 'read',
   subject: 'AclDemo',
-
 })
 </script>
 

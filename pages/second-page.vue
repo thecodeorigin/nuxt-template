@@ -1,3 +1,10 @@
+<script setup lang="ts">
+definePageMeta({
+  action: 'read',
+  subject: 'Auth',
+})
+</script>
+
 <template>
   <div>
     <VCard title="Create Awesome 🙌">

@@ -23,7 +23,8 @@ const tabs = [
 
 definePageMeta({
   navActiveLink: 'pages-account-settings-tab',
-
+  action: 'read',
+  subject: 'Auth',
 })
 </script>
 

@@ -11,17 +11,11 @@ export default defineNuxtRouteMiddleware(to => {
   const { status } = useAuth()
   const isLoggedIn = status.value === 'authenticated'
 
-  /*
-      If user is logged in and is trying to access login like page, redirect to home
-      else allow visiting the page
-      (WARN: Don't allow executing further by return statement because next code will check for permissions)
-     */
-  if (to.meta.unauthenticatedOnly) {
+  if (to.meta.unauthenticatedOnly)
     if (isLoggedIn)
       return navigateTo('/')
     else
-      return undefined
-  }
+      return
 
   if (!canNavigate(to) && to.matched.length) {
     /* eslint-disable indent */

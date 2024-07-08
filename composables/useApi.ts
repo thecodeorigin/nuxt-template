@@ -1,9 +1,10 @@
+import { cookieRef } from '@/@layouts/stores/config'
 import { defu } from 'defu'
 import type { UseFetchOptions } from 'nuxt/app'
 
 export const useApi: typeof useFetch = <T>(url: MaybeRefOrGetter<string>, options: UseFetchOptions<T> = {}) => {
   const config = useRuntimeConfig()
-  const accessToken = useCookie('accessToken')
+  const accessToken = cookieRef('accessToken', '')
 
   const defaults: UseFetchOptions<T> = {
     baseURL: config.public.apiBaseUrl,

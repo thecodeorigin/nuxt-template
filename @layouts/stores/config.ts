@@ -8,7 +8,13 @@ import { layoutConfig } from '@themeConfig'
 export const namespaceConfig = (str: string) => `${layoutConfig.app.title}-${str}`
 
 export const cookieRef = <T>(key: string, defaultValue: T) => {
-  return useCookie<T>(namespaceConfig(key), { default: () => defaultValue })
+  return useCookie<T>(
+    namespaceConfig(key),
+    {
+      default: () => defaultValue,
+      maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30,
+    }
+  )
 }
 
 export const useLayoutConfigStore = defineStore('layoutConfig', () => {

@@ -1,3 +1,10 @@
+<script setup lang="ts">
+definePageMeta({
+  action: 'manage',
+  subject: 'all',
+})
+</script>
+
 <template>
   <div>
     <VCard
