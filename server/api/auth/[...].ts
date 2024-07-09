@@ -22,7 +22,7 @@ export default NuxtAuthHandler({
       name: 'Credentials',
       credentials: {}, // Object is required but can be left empty.
       async authorize(credentials: any) {
-        const { user } = await $fetch<any>(`${process.env.NUXT_PUBLIC_API_BASE_URL}/login/`, {
+        const { user } = await $fetch<any>(`${process.env.NUXT_PUBLIC_API_BASE_URL}/auth/login/`, {
           method: 'POST',
           body: JSON.stringify(credentials),
         }).catch((err: NuxtError) => {
@@ -42,7 +42,7 @@ export default NuxtAuthHandler({
     })
   ],
   pages: {
-    signIn: '/login',
+    signIn: '/auth/login',
     error: '/not-authorized'
   },
   callbacks: {

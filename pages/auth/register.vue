@@ -153,7 +153,7 @@ const isPasswordVisible = ref(false)
                 <div class="text-center text-base">
                   <span class="d-inline-block">Already have an account?</span> <NuxtLink
                     class="text-primary d-inline-block"
-                    :to="{ name: 'login' }"
+                    :to="{ name: 'auth-login' }"
                   >
                     Sign in instead
                   </NuxtLink>

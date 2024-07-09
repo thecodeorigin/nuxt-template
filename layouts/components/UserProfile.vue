@@ -19,7 +19,7 @@ async function logout() {
     // Reset user abilities
     ability.update([])
 
-    navigateTo({ name: 'login' })
+    navigateTo({ name: 'auth-login' })
   }
   catch (error: any) {
     throw createError(error)

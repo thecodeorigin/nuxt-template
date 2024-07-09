@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(to => {
     return navigateTo(isLoggedIn
       ? { name: 'not-authorized' }
       : {
-          name: 'login',
+          name: 'auth-login',
           query: {
             ...to.query,
             to: to.fullPath !== '/' ? to.path : undefined,

@@ -31,7 +31,7 @@ const headers = [
 ]
 
 // 👉 Fetching users
-const { data: usersData, execute: fetchUsers } = await useApi<any>(createUrl('/apps/users', {
+const { data: usersData, execute: fetchUsers } = await useApi<any>(createUrl('/users', {
   query: {
     q: searchQuery,
     status: selectedStatus,
@@ -87,7 +87,7 @@ const resolveUserStatusVariant = (stat: string) => {
 
 // 👉 Delete user
 const deleteUser = async (id: number) => {
-  await $api(`/apps/users/${id}`, {
+  await $api(`/users/${id}`, {
     method: 'DELETE',
   })
 
