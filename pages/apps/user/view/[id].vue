@@ -18,7 +18,7 @@ const tabs = [
   { icon: 'ri-link-m', title: 'Connections' },
 ]
 
-const { data: userData } = await useApi<any>(`/apps/users/${route.params.id}`)
+const { data: userData } = await useApi<any>(`/users/${route.params.id}`)
 </script>
 
 <template>

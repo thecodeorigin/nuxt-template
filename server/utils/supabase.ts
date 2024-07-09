@@ -13,16 +13,12 @@ export type InsertPayload<T extends Relation> = Database['public']['Tables'][T][
 
 export type UpdatePayload<T extends Relation> = Database['public']['Tables'][T]['Update']
 
-export function getSupabase() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!
-  )
-}
+export const supabase = createClient<Database>(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
 
-export function getSupabaseAdmin() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_JWT_SECRET!
-  )
-}
+export const supabaseAdmin = createClient<Database>(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)

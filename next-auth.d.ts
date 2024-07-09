@@ -1,12 +1,13 @@
 import type { DefaultSession } from 'next-auth'
 import { Rule } from './plugins/casl/ability'
 
-
 interface UserAdditionalData {
-  username?: string
-  fullName?: string
-  avatar?: string
-  role?: string
+  email?: string
+  phone?: string
+  full_name?: string
+  avatar_url?: string
+  billing_address?: any
+  payment_method?: any
   abilityRules?: Rule[]
 }
 

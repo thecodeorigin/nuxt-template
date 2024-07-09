@@ -96,7 +96,7 @@ const onSubmit = () => {
 }
 
 function handleSignInWithProvider(provider: string) {
-  signIn(provider)
+  signIn(provider, { callbackUrl: '/' })
 }
 </script>
 
@@ -204,7 +204,7 @@ function handleSignInWithProvider(provider: string) {
                   />
                   <NuxtLink
                     class="text-primary"
-                    :to="{ name: 'forgot-password' }"
+                    :to="{ name: 'auth-forgot-password' }"
                   >
                     Forgot Password?
                   </NuxtLink>
@@ -228,7 +228,7 @@ function handleSignInWithProvider(provider: string) {
                 </span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'register' }"
+                  :to="{ name: 'auth-register' }"
                 >
                   Create an account
                 </NuxtLink>

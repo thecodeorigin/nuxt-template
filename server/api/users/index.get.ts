@@ -12,7 +12,7 @@ export default defineEventHandler(async event => {
   const parsedLimit = destr<number>(limit)
   const parsedPage = destr<number>(page)
   
-  const { data, count } = await getSupabase().from('sys_users')
+  const { data, count } = await supabase.from('sys_users')
     .select('*', { count: 'exact', head: true })
     .or(`full_name.ilike.${parsedQuery || ''},full_name.ilike.${parsedQueryLower || ''}`)
     .order(parsedSortBy, { ascending: parsedSortAscending })

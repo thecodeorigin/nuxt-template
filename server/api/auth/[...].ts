@@ -11,12 +11,6 @@ import type { NuxtError } from 'nuxt/app'
 export default NuxtAuthHandler({
   secret: process.env.AUTH_SECRET,
   providers: [
-
-    // GoogleProvider.default({
-    //   clientId: runtimeConfig.public.AUTH_PROVIDER_GOOGLE_CLIENT_ID,
-    //   clientSecret: runtimeConfig.AUTH_PROVIDER_GOOGLE_CLIENT_SECRET,
-    // }),
-
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
       name: 'Credentials',
@@ -52,26 +46,52 @@ export default NuxtAuthHandler({
        * in token which then will be available in the `session()` callback
        */
       if (user) {
-        token.username = user.username
-        token.fullName = user.fullName
-        token.avatar = user.avatar
-        token.abilityRules = user.abilityRules
-        token.role = user.role
+        const { data } = await supabaseAdmin.from('sys_users').select().eq('email', user.email!).maybeSingle()
+
+        if (data)
+          Object.assign(token, data)
       }
 
       return token
     },
-    async session({ session, token }) {
-      // Add custom params to user in session which are added in `jwt()` callback via `token` parameter
+    async session({ token, session }) {
       if (session.user) {
-        session.user.username = token.username
-        session.user.fullName = token.fullName
-        session.user.avatar = token.avatar
-        session.user.abilityRules = token.abilityRules
-        session.user.role = token.role
+        const { data } = await supabaseAdmin.from('sys_users').select().eq('email', session.user.email!).maybeSingle()
+
+        if (data)
+          Object.assign(session.user, data)
       }
 
       return session
+    },
+    async signIn({ account, profile }) {
+      if (profile && account?.provider === "google") {
+        const { data } = await supabaseAdmin.auth.signInWithIdToken({
+          provider: 'google',
+          token: account.id_token!,
+          access_token: account.access_token!,
+        })
+
+        if (data.user) {
+          const { data: signedInUser, error } = await supabaseAdmin.from('sys_users').upsert({
+            id: data.user.id,
+            email: data.user.email!,
+            phone: '',
+            full_name: data.user?.user_metadata.name,
+            avatar_url: data.user?.user_metadata.avatar_url,
+            payment_method: {},
+            billing_address: {},
+          }).select().maybeSingle()
+
+          console.log(signedInUser, error)
+
+          return Boolean(signedInUser)
+        }
+
+        return false
+      }
+
+      return true // Do different verification for other providers that don't have `email_verified`
     },
   },
   cookies: {
