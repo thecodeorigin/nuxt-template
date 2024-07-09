@@ -94,6 +94,10 @@ const onSubmit = () => {
         login()
     })
 }
+
+function handleSignInWithProvider(provider: string) {
+  signIn(provider)
+}
 </script>
 
 <template>
@@ -244,7 +248,7 @@ const onSubmit = () => {
                 cols="12"
                 class="text-center"
               >
-                <AuthProvider />
+                <AuthProvider @signin="handleSignInWithProvider" />
               </VCol>
             </VRow>
           </VForm>

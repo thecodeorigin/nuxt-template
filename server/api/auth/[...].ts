@@ -1,5 +1,7 @@
 import { NuxtAuthHandler } from '#auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
+// import GithubProvider from 'next-auth/providers/github'
 import type { NuxtError } from 'nuxt/app'
 
 // import GoogleProvider from 'next-auth/providers/google'
@@ -33,6 +35,11 @@ export default NuxtAuthHandler({
         return user || null
       },
     }),
+    // @ts-expect-error
+    GoogleProvider.default({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    })
   ],
   pages: {
     signIn: '/login',
