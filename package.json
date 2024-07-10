@@ -31,6 +31,7 @@
     "@formkit/drag-and-drop": "0.0.38",
     "@iconify-json/bxl": "1.1.10",
     "@sindresorhus/is": "6.3.0",
+    "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.44.2",
     "@tiptap/extension-highlight": "2.3.0",
     "@tiptap/extension-image": "2.3.0",

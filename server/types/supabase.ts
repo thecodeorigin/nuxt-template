@@ -9,6 +9,74 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string | null
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string | null
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string | null
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          body: string | null
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          slug: string
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          body?: string | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          slug: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          slug?: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_posts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stripe_customers: {
         Row: {
           created_at: string
@@ -25,15 +93,7 @@ export type Database = {
           id?: string
           stripe_customer_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "public_stripe_customers_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "sys_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       stripe_prices: {
         Row: {
@@ -77,7 +137,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "public_stripe_prices_product_id_fkey"
+            foreignKeyName: "stripe_prices_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "stripe_products"
@@ -169,17 +229,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "public_stripe_subscriptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "sys_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "subscriptions_price_id_fkey"
+            foreignKeyName: "stripe_subscriptions_price_id_fkey"
             columns: ["price_id"]
             isOneToOne: false
             referencedRelation: "stripe_prices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stripe_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sys_users"
             referencedColumns: ["id"]
           },
         ]
@@ -216,7 +276,7 @@ export type Database = {
           message: string | null
           read_at: string | null
           title: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           action?: Json | null
@@ -225,7 +285,7 @@ export type Database = {
           message?: string | null
           read_at?: string | null
           title?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           action?: Json | null
@@ -234,11 +294,11 @@ export type Database = {
           message?: string | null
           read_at?: string | null
           title?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_sys_notifications_user_id_fkey"
+            foreignKeyName: "sys_notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "sys_users"
@@ -246,25 +306,69 @@ export type Database = {
           },
         ]
       }
+      sys_permissions: {
+        Row: {
+          action: Database["public"]["Enums"]["permission_action"]
+          id: string
+          role_id: string | null
+          subject: Database["public"]["Enums"]["permission_subject"]
+        }
+        Insert: {
+          action?: Database["public"]["Enums"]["permission_action"]
+          id?: string
+          role_id?: string | null
+          subject: Database["public"]["Enums"]["permission_subject"]
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["permission_action"]
+          id?: string
+          role_id?: string | null
+          subject?: Database["public"]["Enums"]["permission_subject"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_sys_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "sys_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sys_roles: {
+        Row: {
+          id: string
+          name: string | null
+        }
+        Insert: {
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       sys_shortcuts: {
         Row: {
           id: string
           item: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           id?: string
           item?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           id?: string
           item?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_sys_shortcuts_user_id_fkey"
+            foreignKeyName: "sys_shortcuts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "sys_users"
@@ -283,6 +387,7 @@ export type Database = {
           id: string
           payment_method: Json | null
           phone: string | null
+          role_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -294,6 +399,7 @@ export type Database = {
           id: string
           payment_method?: Json | null
           phone?: string | null
+          role_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -305,10 +411,18 @@ export type Database = {
           id?: string
           payment_method?: Json | null
           phone?: string | null
+          role_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "public_sys_users_id_fkey"
+            foreignKeyName: "public_sys_users_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "sys_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sys_users_id_fkey"
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "users"
@@ -324,6 +438,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      permission_action: "create" | "read" | "update" | "delete" | "manage"
+      permission_subject: "all" | "Post" | "Category" | "User"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
       subscription_status:

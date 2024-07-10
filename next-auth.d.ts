@@ -1,14 +1,10 @@
 import type { DefaultSession } from 'next-auth'
-import { Rule } from './plugins/casl/ability'
+import type { Tables } from './server/types/supabase'
 
-interface UserAdditionalData {
-  email?: string
-  phone?: string
-  full_name?: string
-  avatar_url?: string
-  billing_address?: any
-  payment_method?: any
-  abilityRules?: Rule[]
+type UserAdditionalData = Tables<'sys_users'> & {
+  role: Tables<'sys_roles'> & {
+    permissions: Tables<'sys_permissions'>[]
+  }
 }
 
 declare module 'next-auth/jwt' {

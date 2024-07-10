@@ -12,7 +12,6 @@ definePageMeta({
   alias: '/pages/misc/not-authorized',
   layout: 'blank',
   public: true,
-
 })
 </script>
 

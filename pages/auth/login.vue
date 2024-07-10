@@ -53,8 +53,12 @@ const credentials = ref({
 
 const rememberMe = ref(false)
 
-async function login() {
-  const response = await signIn('credentials', {
+async function login(provider?: string) {
+  const response = provider
+  ? await signIn(provider, {
+    callbackUrl: '/',
+  })
+  : await signIn('credentials', {
     callbackUrl: '/',
     redirect: false,
     ...credentials.value,
@@ -79,10 +83,7 @@ async function login() {
 
   cookieRef<Partial<User>>('userData', user).value = user
 
-  // Save user abilities in cookie so we can retrieve it back on refresh
-  cookieRef<User['abilityRules']>('userAbilityRules', []).value = user.abilityRules
-
-  ability.update(user.abilityRules ?? [])
+  ability.update(user.role.permissions ?? [])
 
   navigateTo(route.query.to ? String(route.query.to) : '/', { replace: true })
 }
@@ -93,10 +94,6 @@ const onSubmit = () => {
       if (isValid)
         login()
     })
-}
-
-function handleSignInWithProvider(provider: string) {
-  signIn(provider, { callbackUrl: '/' })
 }
 </script>
 
@@ -248,7 +245,7 @@ function handleSignInWithProvider(provider: string) {
                 cols="12"
                 class="text-center"
               >
-                <AuthProvider @signin="handleSignInWithProvider" />
+                <AuthProvider @signin="login" />
               </VCol>
             </VRow>
           </VForm>

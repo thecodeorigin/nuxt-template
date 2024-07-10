@@ -40,23 +40,12 @@ export default NuxtAuthHandler({
     error: '/not-authorized'
   },
   callbacks: {
-    jwt: async ({ token, user }) => {
-      /*
-       * For adding custom parameters to user in session, we first need to add those parameters
-       * in token which then will be available in the `session()` callback
-       */
-      if (user) {
-        const { data } = await supabaseAdmin.from('sys_users').select().eq('email', user.email!).maybeSingle()
-
-        if (data)
-          Object.assign(token, data)
-      }
-
+    jwt({ token }) {
       return token
     },
-    async session({ token, session }) {
+    async session({ session }) {
       if (session.user) {
-        const { data } = await supabaseAdmin.from('sys_users').select().eq('email', session.user.email!).maybeSingle()
+        const { data } = await supabaseAdmin.from('sys_users').select('*, role:sys_roles(permissions:sys_permissions(*))').eq('email', session.user.email!).maybeSingle()
 
         if (data)
           Object.assign(session.user, data)
@@ -66,14 +55,19 @@ export default NuxtAuthHandler({
     },
     async signIn({ account, profile }) {
       if (profile && account?.provider === "google") {
-        const { data } = await supabaseAdmin.auth.signInWithIdToken({
+        const { data } = await supabase.auth.signInWithIdToken({
           provider: 'google',
           token: account.id_token!,
           access_token: account.access_token!,
         })
 
         if (data.user) {
-          const { data: signedInUser, error } = await supabaseAdmin.from('sys_users').upsert({
+          const { data: editorRole } = await supabaseAdmin.from('sys_roles').select().eq('name', 'Editor').maybeSingle()
+
+          if (!editorRole)
+            return false
+
+          const {  error } = await supabaseAdmin.from('sys_users').upsert({
             id: data.user.id,
             email: data.user.email!,
             phone: '',
@@ -81,11 +75,16 @@ export default NuxtAuthHandler({
             avatar_url: data.user?.user_metadata.avatar_url,
             payment_method: {},
             billing_address: {},
-          }).select().maybeSingle()
+            role_id: editorRole.id,
+          })
 
-          console.log(signedInUser, error)
+          if (error) {
+            console.error(error)
 
-          return Boolean(signedInUser)
+            return false
+          }
+
+          return true
         }
 
         return false

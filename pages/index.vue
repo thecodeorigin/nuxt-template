@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
-  action: 'manage',
-  subject: 'all',
+  action: ['manage'],
+  subject: ['Post', 'Category'],
 })
 </script>
 
