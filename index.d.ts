@@ -1,7 +1,11 @@
+import type { RouteLocationRaw } from 'vue-router'
+import type { Arrayable } from '@vueuse/core'
+import type { Actions, Subjects } from './plugins/casl/ability'
+
 declare module '#app' {
   interface PageMeta {
-    action?: string
-    subject?: string
+    action?: Actions
+    subject?: Arrayable<Subjects>
     layoutWrapperClasses?: string
     navActiveLink?: RouteLocationRaw
 

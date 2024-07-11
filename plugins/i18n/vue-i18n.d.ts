@@ -6,6 +6,7 @@
 /**
  * you need to import the some interfaces
  */
+import type en from '@/plugins/i18n/locales/en.json'
 import 'vue-i18n'
 
 type LocaleMessage = typeof en

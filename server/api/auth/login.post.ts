@@ -1,5 +1,3 @@
-import { db } from '@/server/fake-db/auth'
-
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody(event)
 
@@ -13,22 +11,26 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const dbUser = db.users.find(u => u.email === email && u.password === password)
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
 
-  if (!dbUser) {
+  if (error) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Invalid email or password',
-      data: {
-        email: ['Invalid email or password'],
-      },
+      statusMessage: error.message,
     })
   }
 
-  // ℹ️ Don't send password in response
-  const { password: _, ...user } = dbUser
+  const { data } = await supabaseAdmin.from('sys_users').select().eq('email', email).maybeSingle()
 
-  return {
-    user,
+  if (!data) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: `User with email "${email}" not found in records.`,
+    })
   }
+
+  return data
 })
