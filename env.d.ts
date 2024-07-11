@@ -1,6 +1,7 @@
 import type { Arrayable } from '@vueuse/core'
 import 'vue-router'
 import type { Actions, Subjects } from './plugins/casl/ability'
+
 declare module 'vue-router' {
   interface RouteMeta {
     action?: Actions

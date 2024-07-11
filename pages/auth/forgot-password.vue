@@ -13,7 +13,8 @@ const authThemeImg = useGenerateImageVariant(
   authV2ForgotPasswordIllustrationDark,
   authV2ForgotPasswordIllustrationBorderedLight,
   authV2ForgotPasswordIllustrationBorderedDark,
-  true)
+  true,
+)
 
 const authThemeMask = useGenerateImageVariant(authV2ForgotPasswordMaskLight, authV2ForgotPasswordMaskDark)
 

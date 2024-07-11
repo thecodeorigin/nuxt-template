@@ -23,8 +23,8 @@ export default defineComponent({
 
       // Force repaint to make sure the
       // animation is triggered correctly.
-      // eslint-disable-next-line no-unused-expressions
-      getComputedStyle(element).height
+
+      getComputedStyle(element)
 
       // Trigger the animation.
       // We use `requestAnimationFrame` because we need
@@ -47,8 +47,8 @@ export default defineComponent({
 
       // Force repaint to make sure the
       // animation is triggered correctly.
-      // eslint-disable-next-line no-unused-expressions
-      getComputedStyle(element).height
+
+      getComputedStyle(element)
 
       requestAnimationFrame(() => {
         element.style.height = '0px'

@@ -1,4 +1,4 @@
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   const session = await setAuthOnlyRoute(event, 'You must be signed in to get your data.')
 
   const { data } = await supabase.from('sys_users').select().eq('email', session.user!.email!).maybeSingle()

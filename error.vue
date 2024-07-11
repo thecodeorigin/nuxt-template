@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { NuxtError } from 'nuxt/app'
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import pages404 from '@images/pages/404.png'
 
 import miscMaskDark from '@images/misc/misc-mask-dark.png'
 import miscMaskLight from '@images/misc/misc-mask-light.png'
 import miscObj from '@images/pages/misc-404-object.png'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 defineOptions({
   inheritAttrs: false,

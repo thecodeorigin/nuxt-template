@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useMouse } from '@vueuse/core'
 import { useTheme } from 'vuetify'
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import darkBg from '@images/front-pages/backgrounds/hero-bg-dark.png'
 import lightBg from '@images/front-pages/backgrounds/hero-bg.png'
 import heroDashboardImgDark from '@images/front-pages/landing-page/hero-dashboard-dark.png'
 import heroDashboardImgLight from '@images/front-pages/landing-page/hero-dashboard-light.png'
 import heroElementsImgDark from '@images/front-pages/landing-page/hero-elements-dark.png'
 import heroElementsImgLight from '@images/front-pages/landing-page/hero-elements-light.png'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 const theme = useTheme()
 const isDark = ref(theme.name)

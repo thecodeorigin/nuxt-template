@@ -91,7 +91,7 @@ const router = useRouter()
 const searchResult = ref<SearchResults[]>([])
 const isLoading = ref(false)
 
-const fetchResults = async () => {
+async function fetchResults() {
   isLoading.value = true
 
   const { data } = await useApi<any>(withQuery('/app-bar/search', { q: searchQuery.value }))
@@ -107,7 +107,7 @@ const fetchResults = async () => {
 watch(searchQuery, fetchResults)
 
 // 👉 redirect the selected page
-const redirectToSuggestedOrSearchedPage = (selected: Suggestion) => {
+function redirectToSuggestedOrSearchedPage(selected: Suggestion) {
   router.push(selected.url as string)
   isAppSearchBarVisible.value = false
   searchQuery.value = ''

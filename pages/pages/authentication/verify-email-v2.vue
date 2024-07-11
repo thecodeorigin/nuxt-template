@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import authV2VerifyEmailIllustrationBorderedDark from '@images/pages/auth-v2-verify-email-illustration-bordered-dark.png'
@@ -8,6 +7,7 @@ import authV2VerifyEmailIllustrationDark from '@images/pages/auth-v2-verify-emai
 import authV2VerifyEmailIllustrationLight from '@images/pages/auth-v2-verify-email-illustration-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 const authV1ThemeVerifyEmailMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginMaskDark)
 const authV2VerifyEmailIllustration = useGenerateImageVariant (authV2VerifyEmailIllustrationLight, authV2VerifyEmailIllustrationDark, authV2VerifyEmailIllustrationBorderedLight, authV2VerifyEmailIllustrationBorderedDark, true)

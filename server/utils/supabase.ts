@@ -1,6 +1,5 @@
-
 import { createClient } from '@supabase/supabase-js'
-import { Database } from '../types/supabase'
+import type { Database } from '../types/supabase'
 
 export const supabase = createClient<Database>(
   process.env.SUPABASE_URL!,
@@ -14,7 +13,7 @@ export const supabaseAdmin = createClient<Database>(
     auth: {
       persistSession: false,
       autoRefreshToken: false,
-      detectSessionInUrl: false
-    }
-  }
+      detectSessionInUrl: false,
+    },
+  },
 )

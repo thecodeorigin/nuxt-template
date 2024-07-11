@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-
 import authV1RegisterMaskDark from '@images/pages/auth-v1-register-mask-dark.png'
 import authV1RegisterMaskLight from '@images/pages/auth-v1-register-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 const authV1ThemeTwoStepMask = useGenerateImageVariant(authV1RegisterMaskLight, authV1RegisterMaskDark)
 
@@ -12,7 +11,7 @@ const router = useRouter()
 const otp = ref('')
 const isOtpInserted = ref(false)
 
-const onFinish = () => {
+function onFinish() {
   isOtpInserted.value = true
 
   setTimeout(() => {

@@ -30,7 +30,7 @@ const plan = ref()
 const status = ref()
 
 // 👉 drawer close
-const closeNavigationDrawer = () => {
+function closeNavigationDrawer() {
   emit('update:isDrawerOpen', false)
 
   nextTick(() => {
@@ -39,7 +39,7 @@ const closeNavigationDrawer = () => {
   })
 }
 
-const onSubmit = () => {
+function onSubmit() {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
       emit('userData', {
@@ -64,7 +64,7 @@ const onSubmit = () => {
   })
 }
 
-const handleDrawerModelValueUpdate = (val: boolean) => {
+function handleDrawerModelValueUpdate(val: boolean) {
   emit('update:isDrawerOpen', val)
 }
 </script>

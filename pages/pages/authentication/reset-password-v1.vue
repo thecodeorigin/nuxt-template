@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import authV1ResetPasswordMaskDark from '@images/pages/auth-v1-reset-password-mask-dark.png'
 import authV1ResetPasswordMaskLight from '@images/pages/auth-v1-reset-password-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 const authV1ResetPasswordMask = useGenerateImageVariant(authV1ResetPasswordMaskLight, authV1ResetPasswordMaskDark)
 

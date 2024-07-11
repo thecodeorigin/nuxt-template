@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import authV2ResetPasswordIllustrationBorderedDark from '@images/pages/auth-v2-reset-password-illustration-bordered-dark.png'
 import authV2ResetPasswordIllustrationBorderedLight from '@images/pages/auth-v2-reset-password-illustration-bordered-light.png'
 import authV2ResetPasswordIllustrationDark from '@images/pages/auth-v2-reset-password-illustration-dark.png'
@@ -8,6 +7,7 @@ import authV2ResetPasswordMaskDark from '@images/pages/auth-v2-reset-password-ma
 import authV2ResetPasswordMaskLight from '@images/pages/auth-v2-reset-password-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 const authV2ResetPasswordMask = useGenerateImageVariant(authV2ResetPasswordMaskLight, authV2ResetPasswordMaskDark)
 const authV2ResetPasswordIllustration = useGenerateImageVariant(authV2ResetPasswordIllustrationLight, authV2ResetPasswordIllustrationDark, authV2ResetPasswordIllustrationBorderedLight, authV2ResetPasswordIllustrationBorderedDark, true)

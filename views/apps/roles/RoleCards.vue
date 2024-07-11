@@ -186,7 +186,7 @@ const roleDetail = ref<RoleDetails>()
 
 const isAddRoleDialogVisible = ref(false)
 
-const editPermission = (value: RoleDetails) => {
+function editPermission(value: RoleDetails) {
   isRoleDialogVisible.value = true
   roleDetail.value = value
 }

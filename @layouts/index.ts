@@ -6,7 +6,7 @@ import type { LayoutConfig } from '@layouts/types'
 import { _setDirAttr } from '@layouts/utils'
 
 // 🔌 Plugin
-export const createLayouts = (userConfig: PartialDeep<LayoutConfig>): Plugin => {
+export function createLayouts(userConfig: PartialDeep<LayoutConfig>): Plugin {
   return (): void => {
     const configStore = useLayoutConfigStore()
 

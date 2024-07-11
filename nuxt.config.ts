@@ -1,5 +1,5 @@
-import vueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { fileURLToPath } from 'node:url'
+import vueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import vuetify from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 

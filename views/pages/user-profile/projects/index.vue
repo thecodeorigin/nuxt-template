@@ -4,7 +4,7 @@ import type { ProjectsTab } from '@db/pages/profile/types'
 const router = useRoute('pages-user-profile-tab')
 const projectData = ref<ProjectsTab[]>([])
 
-const fetchProjectData = async () => {
+async function fetchProjectData() {
   if (router.params.tab === 'projects') {
     const data = await $api('/pages/profile', {
       query: {

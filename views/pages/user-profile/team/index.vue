@@ -4,7 +4,7 @@ import type { TeamsTab } from '@db/pages/profile/types'
 const router = useRoute('pages-user-profile-tab')
 const teamData = ref<TeamsTab[]>([])
 
-const fetchTeamData = async () => {
+async function fetchTeamData() {
   if (router.params.tab === 'teams') {
     const data = await $api('/pages/profile', {
       query: {

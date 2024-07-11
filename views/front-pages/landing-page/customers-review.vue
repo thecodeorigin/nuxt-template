@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import logo1dark from '@images/front-pages/branding/logo-1-dark.png'
 import logo1light from '@images/front-pages/branding/logo-1-light.png'
 import logo1 from '@images/front-pages/branding/logo-1.png'
@@ -17,6 +16,7 @@ import logo5light from '@images/front-pages/branding/logo-5-light.png'
 import { register } from 'swiper/element/bundle'
 
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 register()
 

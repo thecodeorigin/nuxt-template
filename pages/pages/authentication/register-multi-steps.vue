@@ -67,7 +67,7 @@ const form = ref({
   cvv: '',
 })
 
-const onSubmit = () => {
+function onSubmit() {
   // eslint-disable-next-line no-alert
   alert('Submitted..!!')
 }

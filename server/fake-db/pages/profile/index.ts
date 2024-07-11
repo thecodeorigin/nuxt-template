@@ -1,7 +1,10 @@
 import type {
   ConnectionsTab,
   ProfileHeader,
-  ProfileTab, ProjectTableRow, ProjectsTab, TeamsTab,
+  ProfileTab,
+  ProjectTableRow,
+  ProjectsTab,
+  TeamsTab,
 } from '@/server/fake-db/pages/profile/types'
 
 import { getPublicUrl } from '@/server/utils/getPublicUrl'

@@ -1,5 +1,5 @@
 // 👉 IsEmpty
-export const isEmpty = (value: unknown): boolean => {
+export function isEmpty(value: unknown): boolean {
   if (value === null || value === undefined || value === '')
     return true
 
@@ -7,21 +7,22 @@ export const isEmpty = (value: unknown): boolean => {
 }
 
 // 👉 IsNullOrUndefined
-export const isNullOrUndefined = (value: unknown): value is undefined | null => {
+export function isNullOrUndefined(value: unknown): value is undefined | null {
   return value === null || value === undefined
 }
 
 // 👉 IsEmptyArray
-export const isEmptyArray = (arr: unknown): boolean => {
+export function isEmptyArray(arr: unknown): boolean {
   return Array.isArray(arr) && arr.length === 0
 }
 
 // 👉 IsObject
-export const isObject = (obj: unknown): obj is Record<string, unknown> =>
-  obj !== null && !!obj && typeof obj === 'object' && !Array.isArray(obj)
+export function isObject(obj: unknown): obj is Record<string, unknown> {
+  return obj !== null && !!obj && typeof obj === 'object' && !Array.isArray(obj)
+}
 
 // 👉 IsToday
-export const isToday = (date: Date) => {
+export function isToday(date: Date) {
   const today = new Date()
 
   return (

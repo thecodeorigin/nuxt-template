@@ -2,13 +2,13 @@
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import authV2RegisterIllustrationBorderedDark from '@images/pages/auth-v2-register-illustration-bordered-dark.png'
 import authV2RegisterIllustrationBorderedLight from '@images/pages/auth-v2-register-illustration-bordered-light.png'
 import authV2RegisterIllustrationDark from '@images/pages/auth-v2-register-illustration-dark.png'
 import authV2RegisterIllustrationLight from '@images/pages/auth-v2-register-illustration-light.png'
 import authV2RegisterMaskDark from '@images/pages/auth-v2-register-mask-dark.png'
 import authV2RegisterMaskLight from '@images/pages/auth-v2-register-mask-light.png'
+import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 
 const authThemeMask = useGenerateImageVariant(authV2RegisterMaskLight, authV2RegisterMaskDark)
 
@@ -17,7 +17,8 @@ const authThemeImg = useGenerateImageVariant(
   authV2RegisterIllustrationDark,
   authV2RegisterIllustrationBorderedLight,
   authV2RegisterIllustrationBorderedDark,
-  true)
+  true,
+)
 
 definePageMeta({
   layout: 'blank',

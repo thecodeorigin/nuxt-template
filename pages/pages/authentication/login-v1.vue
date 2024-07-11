@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import authV1LoginMaskDark from '@images/pages/auth-v1-login-mask-dark.png'
 import authV1LoginMaskLight from '@images/pages/auth-v1-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 definePageMeta({
   layout: 'blank',

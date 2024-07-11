@@ -37,8 +37,8 @@ const isGroupOpen = ref(false)
  * @param {NavGroup['children']} children  - Nav group children
  * @return {boolean} returns if any of children is open or not.
  */
-const isAnyChildOpen = (children: NavGroup['children']): boolean => {
-  return children.some(child => {
+function isAnyChildOpen(children: NavGroup['children']): boolean {
+  return children.some((child) => {
     let result = openGroups.value.includes(child.title)
 
     if ('children' in child)
@@ -48,8 +48,8 @@ const isAnyChildOpen = (children: NavGroup['children']): boolean => {
   })
 }
 
-const collapseChildren = (children: NavGroup['children']) => {
-  children.forEach(child => {
+function collapseChildren(children: NavGroup['children']) {
+  children.forEach((child) => {
     if ('children' in child)
       collapseChildren(child.children)
 
@@ -112,7 +112,7 @@ watch(isGroupOpen, (val: boolean) => {
       So, we have to find a way to do not close recently opened inactive group.
       For this we will fetch recently added group in openGroups array and won't perform closing operation if recently added group is current group
 */
-watch(openGroups, val => {
+watch(openGroups, (val) => {
   // Prevent closing recently opened inactive group.
   const lastOpenedGroup = val.at(-1)
   if (lastOpenedGroup === props.item.title)
@@ -135,7 +135,7 @@ watch(openGroups, val => {
 // ℹ️ Previously instead of below watcher we were using two individual watcher for `isVerticalNavHovered`, `isVerticalNavCollapsed` & `isLessThanOverlayNavBreakpoint`
 watch(
   configStore.isVerticalNavMini(isVerticalNavHovered),
-  val => {
+  (val) => {
     isGroupOpen.value = val ? false : isGroupActive.value
   },
 )

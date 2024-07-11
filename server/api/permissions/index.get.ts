@@ -2,7 +2,7 @@ import is from '@sindresorhus/is'
 import { destr } from 'destr'
 import { db } from '@/server/fake-db/apps/permissions'
 
-export default defineCachedEventHandler(event => {
+export default defineCachedEventHandler((event) => {
   const { q = '', sortBy, page = 1, itemsPerPage = 10, orderBy } = getQuery(event)
 
   const parsedSortBy = destr(sortBy)

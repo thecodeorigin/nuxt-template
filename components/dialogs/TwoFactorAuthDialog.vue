@@ -37,7 +37,7 @@ const selectedMethod = ref('authApp')
 const isAuthAppDialogVisible = ref(false)
 const isSmsDialogVisible = ref(false)
 
-const openSelectedMethodDialog = () => {
+function openSelectedMethodDialog() {
   if (selectedMethod.value === 'authApp') {
     isAuthAppDialogVisible.value = true
     isSmsDialogVisible.value = false

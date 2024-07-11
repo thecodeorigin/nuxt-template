@@ -1,7 +1,7 @@
 import is from '@sindresorhus/is'
 import { destr } from 'destr'
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   const { q = '', sortBy, sortAscending = true, limit = 10, page = 1 } = getQuery(event)
 
   const parsedQuery = is.string(q) ? q : undefined
@@ -11,7 +11,7 @@ export default defineEventHandler(async event => {
   const parsedSortAscending = destr<boolean>(sortAscending)
   const parsedLimit = destr<number>(limit)
   const parsedPage = destr<number>(page)
-  
+
   const { data, count } = await supabase.from('sys_users')
     .select('*', { count: 'exact', head: true })
     .or(`full_name.ilike.${parsedQuery || ''},full_name.ilike.${parsedQueryLower || ''}`)

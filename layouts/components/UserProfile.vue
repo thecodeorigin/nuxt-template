@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { cookieRef } from '@/@layouts/stores/config';
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { cookieRef } from '@/@layouts/stores/config'
 
 const ability = useAbility()
 

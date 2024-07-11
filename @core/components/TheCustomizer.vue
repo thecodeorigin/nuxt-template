@@ -2,7 +2,6 @@
 import { useStorage } from '@vueuse/core'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useTheme } from 'vuetify'
-import { staticPrimaryColor, staticPrimaryDarkenColor } from '@/plugins/vuetify/theme'
 import { Direction, Layout, Skins, Theme } from '@core/enums'
 import { useConfigStore } from '@core/stores/config'
 import { AppContentLayoutNav, ContentWidth } from '@layouts/enums'
@@ -25,6 +24,7 @@ import rtlDark from '@images/customizer-icons/rtl-dark.svg'
 import rtlLight from '@images/customizer-icons/rtl-light.svg'
 import wideDark from '@images/customizer-icons/wide-dark.svg'
 import wideLight from '@images/customizer-icons/wide-light.svg'
+import { staticPrimaryColor, staticPrimaryDarkenColor } from '@/plugins/vuetify/theme'
 
 const isNavDrawerOpen = ref(false)
 
@@ -33,7 +33,7 @@ const configStore = useConfigStore()
 // 👉 Primary Color
 const vuetifyTheme = useTheme()
 
-const colors: { main: string; darken: string }[] = [
+const colors: { main: string, darken: string }[] = [
   { main: staticPrimaryColor, darken: staticPrimaryDarkenColor },
   { main: '#0D9394', darken: '#0C8485' },
   { main: '#FFB400', darken: '#E6A200' },
@@ -55,7 +55,7 @@ watch(
 )
 
 // ℹ️ It will set primary color for current theme only
-const setPrimaryColor = useDebounceFn((color: { main: string; darken: string }) => {
+const setPrimaryColor = useDebounceFn((color: { main: string, darken: string }) => {
   vuetifyTheme.themes.value[vuetifyTheme.name.value].colors.primary = color.main
   vuetifyTheme.themes.value[vuetifyTheme.name.value].colors['primary-darken-1'] = color.darken
 
@@ -245,7 +245,7 @@ watch([
 }, { deep: true, immediate: true })
 
 // remove all theme related values from localStorage
-const resetCustomizer = async () => {
+async function resetCustomizer() {
   if (isCookieHasAnyValue.value) {
     // reset themeConfig values
     vuetifyTheme.themes.value.light.colors.primary = staticPrimaryColor

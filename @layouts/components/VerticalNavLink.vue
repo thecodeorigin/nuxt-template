@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { NuxtLink } from '#components'
-
 import { layoutConfig } from '@layouts'
 import { can } from '@layouts/plugins/casl'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import type { NavLink } from '@layouts/types'
 import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
+import { NuxtLink } from '#components'
 
 defineProps<{
   item: NavLink

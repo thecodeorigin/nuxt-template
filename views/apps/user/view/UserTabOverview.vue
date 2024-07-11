@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import UserInvoiceTable from './UserInvoiceTable.vue'
 import pdf from '@images/icons/project-icons/pdf.png'
 
 // Images
@@ -12,6 +11,7 @@ import react from '@images/icons/project-icons/react.png'
 import sketch from '@images/icons/project-icons/sketch.png'
 import vue from '@images/icons/project-icons/vue.png'
 import xamarin from '@images/icons/project-icons/xamarin.png'
+import UserInvoiceTable from './UserInvoiceTable.vue'
 
 // Project Table Header
 const projectTableHeaders = [
@@ -80,7 +80,7 @@ const projects = [
   },
 ]
 
-const resolveUserProgressVariant = (progress: number) => {
+function resolveUserProgressVariant(progress: number) {
   if (progress <= 25)
     return 'error'
   if (progress > 25 && progress <= 50)

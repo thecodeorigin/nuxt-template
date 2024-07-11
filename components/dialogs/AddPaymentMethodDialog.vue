@@ -27,7 +27,7 @@ interface Emit {
   (e: 'update:isDialogVisible', val: boolean): void
 }
 
-const dialogVisibleUpdate = (val: boolean) => {
+function dialogVisibleUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 

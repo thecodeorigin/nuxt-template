@@ -25,12 +25,12 @@ const isAccountDeactivated = ref(false)
 
 const validateAccountDeactivation = [(v: string) => !!v || 'Please confirm account deactivation']
 
-const resetForm = () => {
+function resetForm() {
   accountDataLocal.value = structuredClone(accountData)
 }
 
 // changeAvatar function
-const changeAvatar = (file: Event) => {
+function changeAvatar(file: Event) {
   const fileReader = new FileReader()
   const { files } = file.target as HTMLInputElement
 
@@ -44,7 +44,7 @@ const changeAvatar = (file: Event) => {
 }
 
 // reset avatar image
-const resetAvatar = () => {
+function resetAvatar() {
   accountDataLocal.value.avatarImg = accountData.avatarImg
 }
 

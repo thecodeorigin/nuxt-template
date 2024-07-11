@@ -1,6 +1,5 @@
 import type { IconAliases, IconProps } from 'vuetify'
 
-/* eslint-disable regex/invalid */
 import checkboxChecked from '@images/svg/checkbox-checked.svg'
 import checkboxIndeterminate from '@images/svg/checkbox-indeterminate.svg'
 import checkboxUnchecked from '@images/svg/checkbox-unchecked.svg'
@@ -49,7 +48,6 @@ const aliases: Partial<IconAliases> = {
   sortAsc: 'ri-arrow-up-line',
   sortDesc: 'ri-arrow-down-line',
 }
-/* eslint-enable */
 
 export const iconify = {
   component: (props: IconProps) => {

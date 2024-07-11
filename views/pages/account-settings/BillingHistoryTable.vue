@@ -12,7 +12,7 @@ const sortBy = ref()
 const orderBy = ref()
 
 // Update data table options
-const updateOptions = (options: any) => {
+function updateOptions(options: any) {
   page.value = options.page
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
@@ -45,7 +45,7 @@ const invoices = computed((): Invoice[] => invoiceData.value?.invoices)
 const totalInvoices = computed(() => invoiceData.value?.totalInvoices)
 
 // 👉 Invoice balance variant resolver
-const resolveInvoiceBalanceVariant = (balance: string | number, total: number) => {
+function resolveInvoiceBalanceVariant(balance: string | number, total: number) {
   if (balance === total)
     return { status: 'Unpaid', chip: { color: 'error' } }
 
@@ -56,7 +56,7 @@ const resolveInvoiceBalanceVariant = (balance: string | number, total: number) =
 }
 
 // 👉 Invoice status variant resolver
-const resolveInvoiceStatusVariantAndIcon = (status: string) => {
+function resolveInvoiceStatusVariantAndIcon(status: string) {
   if (status === 'Partial Payment')
     return { variant: 'warning', icon: 'ri-line-chart-line' }
   if (status === 'Paid')
@@ -87,7 +87,7 @@ const computedMoreList = computed(() => {
 })
 
 // 👉 Delete Invoice
-const deleteInvoice = async (id: number) => {
+async function deleteInvoice(id: number) {
   await $api(`/apps/invoice/${id}`, { method: 'DELETE' })
   fetchInvoices()
 }

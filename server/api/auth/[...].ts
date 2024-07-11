@@ -1,8 +1,8 @@
-import { NuxtAuthHandler } from '#auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 // import GithubProvider from 'next-auth/providers/github'
 import type { NuxtError } from 'nuxt/app'
+import { NuxtAuthHandler } from '#auth'
 
 // import GoogleProvider from 'next-auth/providers/google'
 
@@ -33,11 +33,11 @@ export default NuxtAuthHandler({
     GoogleProvider.default({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    })
+    }),
   ],
   pages: {
     signIn: '/auth/login',
-    error: '/not-authorized'
+    error: '/not-authorized',
   },
   callbacks: {
     jwt({ token }) {
@@ -54,7 +54,7 @@ export default NuxtAuthHandler({
       return session
     },
     async signIn({ account, profile }) {
-      if (profile && account?.provider === "google") {
+      if (profile && account?.provider === 'google') {
         const { data } = await supabase.auth.signInWithIdToken({
           provider: 'google',
           token: account.id_token!,
@@ -67,7 +67,7 @@ export default NuxtAuthHandler({
           if (!editorRole)
             return false
 
-          const {  error } = await supabaseAdmin.from('sys_users').upsert({
+          const { error } = await supabaseAdmin.from('sys_users').upsert({
             id: data.user.id,
             email: data.user.email!,
             phone: '',
@@ -96,15 +96,15 @@ export default NuxtAuthHandler({
   cookies: {
     sessionToken: {
       name: 'nuxt-session-token',
-      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30},
+      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30 },
     },
     callbackUrl: {
       name: 'nuxt-callback-url',
-      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30},
+      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30 },
     },
     csrfToken: {
       name: 'nuxt-csrf-token',
-      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30},
+      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30 },
     },
-  }
+  },
 })

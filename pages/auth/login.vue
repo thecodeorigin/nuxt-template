@@ -2,11 +2,9 @@
 import type { User } from 'next-auth'
 import type { NuxtError } from 'nuxt/app'
 
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import { themeConfig } from '@themeConfig'
 import { VForm } from 'vuetify/components/VForm'
 
-import { cookieRef } from '@/@layouts/stores/config'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
@@ -14,6 +12,8 @@ import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustrati
 import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import { cookieRef } from '@/@layouts/stores/config'
+import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 
 const { signIn, data: sessionData } = useAuth()
 
@@ -55,14 +55,14 @@ const rememberMe = ref(false)
 
 async function login(provider?: string) {
   const response = provider
-  ? await signIn(provider, {
-    callbackUrl: '/',
-  })
-  : await signIn('credentials', {
-    callbackUrl: '/',
-    redirect: false,
-    ...credentials.value,
-  })
+    ? await signIn(provider, {
+      callbackUrl: '/',
+    })
+    : await signIn('credentials', {
+      callbackUrl: '/',
+      redirect: false,
+      ...credentials.value,
+    })
 
   // If error is not null => Error is occurred
   if (response && response.error) {
@@ -88,7 +88,7 @@ async function login(provider?: string) {
   navigateTo(route.query.to ? String(route.query.to) : '/', { replace: true })
 }
 
-const onSubmit = () => {
+function onSubmit() {
   refVForm.value?.validate()
     .then(({ valid: isValid }) => {
       if (isValid)

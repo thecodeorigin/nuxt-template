@@ -24,7 +24,7 @@ const emit = defineEmits<Emit>()
 const isAllMarkRead = computed(() => props.notifications.some(item => item.isSeen === false),
 )
 
-const markAllReadOrUnread = () => {
+function markAllReadOrUnread() {
   const allNotificationsIds = props.notifications.map(item => item.id)
 
   if (!isAllMarkRead.value)

@@ -139,7 +139,7 @@ const createAppData = ref({
   isSave: false,
 })
 
-const dialogVisibleUpdate = (val: boolean) => {
+function dialogVisibleUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
   currentStep.value = 0
 }
@@ -149,7 +149,7 @@ watch(() => props, () => {
     currentStep.value = 0
 })
 
-const onSubmit = () => {
+function onSubmit() {
   // eslint-disable-next-line no-alert
   alert('submitted...!!')
   emit('updatedData', createAppData.value)

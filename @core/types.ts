@@ -1,6 +1,6 @@
 import type { LiteralUnion, ValueOf } from 'type-fest'
-import type { Skins } from './enums'
 import type { I18nLanguage, LayoutConfig } from '@layouts/types'
+import type { Skins } from './enums'
 
 interface ExplicitThemeConfig {
   app: {
@@ -38,7 +38,7 @@ export interface GridColumn {
 }
 
 // Data table
-export interface SortItem { key: string; order?: boolean | 'asc' | 'desc' }
+export interface SortItem { key: string, order?: boolean | 'asc' | 'desc' }
 
 export interface Options {
   page: number

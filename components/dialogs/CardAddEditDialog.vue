@@ -36,7 +36,7 @@ watch(() => props, () => {
   cardDetails.value = structuredClone(toRaw(props.cardDetails))
 })
 
-const formSubmit = () => {
+function formSubmit() {
   emit('submit', cardDetails.value)
 }
 </script>

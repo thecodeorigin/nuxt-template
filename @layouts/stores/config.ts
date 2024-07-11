@@ -7,13 +7,13 @@ import { layoutConfig } from '@themeConfig'
 
 export const namespaceConfig = (str: string) => `${layoutConfig.app.title}-${str}`
 
-export const cookieRef = <T>(key: string, defaultValue: T) => {
+export function cookieRef<T>(key: string, defaultValue: T) {
   return useCookie<T>(
     namespaceConfig(key),
     {
       default: () => defaultValue,
       maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30,
-    }
+    },
   )
 }
 
@@ -35,7 +35,7 @@ export const useLayoutConfigStore = defineStore('layoutConfig', () => {
   // 👉 App Content Layout Nav
   const appContentLayoutNav = ref(layoutConfig.app.contentLayoutNav)
 
-  watch(appContentLayoutNav, val => {
+  watch(appContentLayoutNav, (val) => {
     // If Navbar type is hidden while switching to horizontal nav => Reset it to sticky
     if (val === AppContentLayoutNav.Horizontal) {
       if (navbarType.value === NavbarType.Hidden)
@@ -83,7 +83,7 @@ export const useLayoutConfigStore = defineStore('layoutConfig', () => {
   // const isAppRTL = ref(layoutConfig.app.isRTL)
   const isAppRTL = ref(false)
 
-  watch(isAppRTL, val => {
+  watch(isAppRTL, (val) => {
     _setDirAttr(val ? 'rtl' : 'ltr')
   })
 

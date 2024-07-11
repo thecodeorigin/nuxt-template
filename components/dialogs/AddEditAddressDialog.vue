@@ -39,12 +39,12 @@ const emit = defineEmits<Emit>()
 
 const billingAddress = ref<BillingAddress>(structuredClone(toRaw(props.billingAddress)))
 
-const resetForm = () => {
+function resetForm() {
   emit('update:isDialogVisible', false)
   billingAddress.value = structuredClone(toRaw(props.billingAddress))
 }
 
-const onFormSubmit = () => {
+function onFormSubmit() {
   emit('update:isDialogVisible', false)
   emit('submit', billingAddress.value)
 }

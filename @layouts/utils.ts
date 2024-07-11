@@ -32,7 +32,7 @@ export const getComputedNavLinkToProp = computed(() => (link: NavLink) => {
  * IF link is object it will resolve the object and will return the link
  // @param {Object, String} link navigation link object/string
  */
-export const resolveNavLinkRouteName = (link: NavLink, router: Router) => {
+export function resolveNavLinkRouteName(link: NavLink, router: Router) {
   if (!link.to)
     return null
 
@@ -46,7 +46,7 @@ export const resolveNavLinkRouteName = (link: NavLink, router: Router) => {
  * Check if nav-link is active
  * @param {object} link nav-link object
  */
-export const isNavLinkActive = (link: NavLink, router: Router) => {
+export function isNavLinkActive(link: NavLink, router: Router) {
   // Matched routes array of current route
   const matchedRoutes = router.currentRoute.value.matched
 
@@ -56,7 +56,7 @@ export const isNavLinkActive = (link: NavLink, router: Router) => {
   if (!resolveRoutedName)
     return false
 
-  return matchedRoutes.some(route => {
+  return matchedRoutes.some((route) => {
     return route.name === resolveRoutedName || route.meta.navActiveLink === resolveRoutedName
   })
 }
@@ -65,8 +65,8 @@ export const isNavLinkActive = (link: NavLink, router: Router) => {
  * Check if nav group is active
  * @param {Array} children Group children
  */
-export const isNavGroupActive = (children: (NavLink | NavGroup)[], router: Router): boolean =>
-  children.some(child => {
+export function isNavGroupActive(children: (NavLink | NavGroup)[], router: Router): boolean {
+  return children.some((child) => {
     // If child have children => It's group => Go deeper(recursive)
     if ('children' in child)
       return isNavGroupActive(child.children, router)
@@ -74,12 +74,13 @@ export const isNavGroupActive = (children: (NavLink | NavGroup)[], router: Route
     // else it's link => Check for matched Route
     return isNavLinkActive(child, router)
   })
+}
 
 /**
  * Change `dir` attribute based on direction
  * @param dir 'ltr' | 'rtl'
  */
-export const _setDirAttr = (dir: 'ltr' | 'rtl') => {
+export function _setDirAttr(dir: 'ltr' | 'rtl') {
   // Check if document exists for SSR
   if (typeof document !== 'undefined')
     document.documentElement.setAttribute('dir', dir)
@@ -90,7 +91,7 @@ export const _setDirAttr = (dir: 'ltr' | 'rtl') => {
  * @param key i18n translation key
  * @param tag tag to wrap the translation with
  */
-export const getDynamicI18nProps = (key: string, tag = 'span') => {
+export function getDynamicI18nProps(key: string, tag = 'span') {
   if (!layoutConfig.app.i18n.enable)
     return {}
 
@@ -101,7 +102,7 @@ export const getDynamicI18nProps = (key: string, tag = 'span') => {
   }
 }
 
-export const switchToVerticalNavOnLtOverlayNavBreakpoint = () => {
+export function switchToVerticalNavOnLtOverlayNavBreakpoint() {
   const configStore = useLayoutConfigStore()
 
   /*
@@ -127,7 +128,7 @@ export const switchToVerticalNavOnLtOverlayNavBreakpoint = () => {
     */
   watch(
     () => configStore.appContentLayoutNav,
-    value => {
+    (value) => {
       if (!configStore.isLessThanOverlayNavBreakpoint)
         lgAndUpNav.value = value
     },
@@ -142,7 +143,7 @@ export const switchToVerticalNavOnLtOverlayNavBreakpoint = () => {
 
   shouldChangeContentLayoutNav.value = false
 
-  watch(() => configStore.isLessThanOverlayNavBreakpoint, val => {
+  watch(() => configStore.isLessThanOverlayNavBreakpoint, (val) => {
     if (!val) {
       configStore.appContentLayoutNav = lgAndUpNav.value
     }
@@ -164,7 +165,7 @@ export const switchToVerticalNavOnLtOverlayNavBreakpoint = () => {
  * @param hex
  */
 
-export const hexToRgb = (hex: string) => {
+export function hexToRgb(hex: string) {
 // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
 
@@ -180,7 +181,7 @@ export const hexToRgb = (hex: string) => {
 /**
  *RGBA color to Hex color with / without opacity
  */
-export const rgbaToHex = (rgba: string, forceRemoveAlpha = false) => {
+export function rgbaToHex(rgba: string, forceRemoveAlpha = false) {
   return (
     `#${
       rgba

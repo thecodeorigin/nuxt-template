@@ -17,7 +17,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 // 👉 Hotkey
-// eslint-disable-next-line camelcase
+
 const { ctrl_k, meta_k } = useMagicKeys({
   passive: false,
   onEventFired(e) {
@@ -31,22 +31,22 @@ const refSearchInput = ref<HTMLInputElement>()
 const searchQueryLocal = ref('')
 
 // 👉 watching control + / to open dialog
-/* eslint-disable camelcase */
+
 watch([
-  ctrl_k, meta_k,
+  ctrl_k,
+  meta_k,
 ], () => {
   emit('update:isDialogVisible', true)
 })
-/* eslint-enable */
 
 // 👉 clear search result and close the dialog
-const clearSearchAndCloseDialog = () => {
+function clearSearchAndCloseDialog() {
   searchQueryLocal.value = ''
   emit('update:isDialogVisible', false)
 }
 
 // 👉 get fucus on search list
-const getFocusOnSearchList = (e: KeyboardEvent) => {
+function getFocusOnSearchList(e: KeyboardEvent) {
   if (e.key === 'ArrowDown') {
     e.preventDefault()
     refSearchList.value?.focus('next')
@@ -57,7 +57,7 @@ const getFocusOnSearchList = (e: KeyboardEvent) => {
   }
 }
 
-const dialogModelValueUpdate = (val: boolean) => {
+function dialogModelValueUpdate(val: boolean) {
   searchQueryLocal.value = ''
   emit('update:isDialogVisible', val)
 }

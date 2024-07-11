@@ -4,7 +4,7 @@ declare module '#app' {
     subject?: string
     layoutWrapperClasses?: string
     navActiveLink?: RouteLocationRaw
-    
+
     unauthenticatedOnly?: boolean
     public?: boolean
   }
@@ -12,7 +12,7 @@ declare module '#app' {
 
 declare module 'nuxt/schema' {
   interface RuntimeConfig {
-    // 
+    //
   }
   interface PublicRuntimeConfig {
     apiBaseUrl: string

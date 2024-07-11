@@ -20,7 +20,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 
-const dialogVisibleUpdate = (val: boolean) => {
+function dialogVisibleUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 

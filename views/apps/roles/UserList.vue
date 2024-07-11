@@ -14,7 +14,7 @@ const sortBy = ref()
 const orderBy = ref()
 
 // Update data table options
-const updateOptions = (options: any) => {
+function updateOptions(options: any) {
   page.value = options.page
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
@@ -56,7 +56,7 @@ const roles = [
   { title: 'Subscriber', value: 'subscriber' },
 ]
 
-const resolveUserRoleVariant = (role: string) => {
+function resolveUserRoleVariant(role: string) {
   const roleLowerCase = role.toLowerCase()
 
   if (roleLowerCase === 'subscriber')
@@ -73,7 +73,7 @@ const resolveUserRoleVariant = (role: string) => {
   return { color: 'primary', icon: 'ri-user-line' }
 }
 
-const resolveUserStatusVariant = (stat: string) => {
+function resolveUserStatusVariant(stat: string) {
   const statLowerCase = stat.toLowerCase()
   if (statLowerCase === 'pending')
     return 'warning'
@@ -86,7 +86,7 @@ const resolveUserStatusVariant = (stat: string) => {
 }
 
 // 👉 Delete user
-const deleteUser = async (id: number) => {
+async function deleteUser(id: number) {
   await $api(`/users/${id}`, {
     method: 'DELETE',
   })

@@ -5,16 +5,18 @@ interface Options {
   query: MaybeRefOrGetter<Record<string, any>>
 }
 
-export const createUrl = (url: MaybeRefOrGetter<string>, options?: Options) => computed(() => {
-  if (!options?.query)
-    return toValue(url)
+export function createUrl(url: MaybeRefOrGetter<string>, options?: Options) {
+  return computed(() => {
+    if (!options?.query)
+      return toValue(url)
 
-  const _url = toValue(url)
-  const _query = toValue(options?.query)
+    const _url = toValue(url)
+    const _query = toValue(options?.query)
 
-  const queryObj = Object.fromEntries(
-    Object.entries(_query).map(([key, val]) => [key, toValue(val)]),
-  )
+    const queryObj = Object.fromEntries(
+      Object.entries(_query).map(([key, val]) => [key, toValue(val)]),
+    )
 
-  return `${_url}${queryObj ? `?${stringifyQuery(queryObj)}` : ''}`
-})
+    return `${_url}${queryObj ? `?${stringifyQuery(queryObj)}` : ''}`
+  })
+}

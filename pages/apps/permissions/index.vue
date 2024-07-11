@@ -17,7 +17,7 @@ const sortBy = ref()
 const orderBy = ref()
 
 // Update data table options
-const updateOptions = (options: any) => {
+function updateOptions(options: any) {
   page.value = options.page
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
@@ -48,7 +48,7 @@ const { data: permissionsData } = await useApi<any>(createUrl('/apps/permissions
 const permissions = computed((): Permission[] => permissionsData.value.permissions)
 const totalPermissions = computed(() => permissionsData.value.totalPermissions)
 
-const editPermission = (name: string) => {
+function editPermission(name: string) {
   isPermissionDialogVisible.value = true
   permissionName.value = name
 }

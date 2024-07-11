@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify';
+import { useTheme } from 'vuetify'
 
 defineEmits<{
   (e: 'signin', provider: string): void
@@ -12,25 +12,25 @@ const authProviders = [
     icon: 'bxl-facebook',
     color: '#497CE2',
     colorInDark: '#497CE2',
-    provider: 'google'
+    provider: 'google',
   },
   {
     icon: 'bxl-twitter',
     color: '#1da1f2',
     colorInDark: '#1da1f2',
-    provider: 'google'
+    provider: 'google',
   },
   {
     icon: 'bxl-github',
     color: '#272727',
     colorInDark: '#fff',
-    provider: 'google'
+    provider: 'google',
   },
   {
     icon: 'bxl-google',
     color: '#db4437',
     colorInDark: '#db4437',
-    provider: 'google'
+    provider: 'google',
   },
 ]
 </script>

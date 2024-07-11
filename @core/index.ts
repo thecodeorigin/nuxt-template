@@ -1,7 +1,7 @@
-import type { UserThemeConfig } from './types'
 import type { LayoutConfig } from '@layouts/types'
+import type { UserThemeConfig } from './types'
 
-export const defineThemeConfig = (userConfig: UserThemeConfig): { themeConfig: UserThemeConfig; layoutConfig: LayoutConfig } => {
+export function defineThemeConfig(userConfig: UserThemeConfig): { themeConfig: UserThemeConfig, layoutConfig: LayoutConfig } {
   return {
     themeConfig: userConfig,
     layoutConfig: {

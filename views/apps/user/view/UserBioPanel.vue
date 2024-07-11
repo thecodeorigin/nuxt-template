@@ -31,7 +31,7 @@ const isUserInfoEditDialogVisible = ref(false)
 const isUpgradePlanDialogVisible = ref(false)
 
 // 👉 Role variant resolver
-const resolveUserRoleVariant = (role: string) => {
+function resolveUserRoleVariant(role: string) {
   if (role === 'subscriber')
     return { color: 'primary', icon: 'ri-user-line' }
   if (role === 'author')

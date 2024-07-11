@@ -41,7 +41,10 @@ const $loading = computed({
   },
 
   set(value: boolean) {
-    props.loading !== undefined ? emit('update:loading', value) : _loading.value = value
+    if (props.loading !== undefined)
+      emit('update:loading', value)
+    else
+      _loading.value = value
   },
 })
 
@@ -49,24 +52,24 @@ const isContentCollapsed = ref(props.collapsed)
 const isCardRemoved = ref(false)
 
 // stop loading
-const stopLoading = () => {
+function stopLoading() {
   $loading.value = false
 }
 
 // trigger collapse
-const triggerCollapse = () => {
+function triggerCollapse() {
   isContentCollapsed.value = !isContentCollapsed.value
   emit('collapsed', isContentCollapsed.value)
 }
 
 // trigger refresh
-const triggerRefresh = () => {
+function triggerRefresh() {
   $loading.value = true
   emit('refresh', stopLoading)
 }
 
 // trigger removal
-const triggeredRemove = () => {
+function triggeredRemove() {
   isCardRemoved.value = true
   emit('trash')
 }

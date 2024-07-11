@@ -1,6 +1,6 @@
 import { useAbility } from '@casl/vue'
-import type { NavGroup } from '@layouts/types'
 import type { RouteLocationNormalized } from 'vue-router'
+import type { NavGroup } from '@layouts/types'
 
 /**
  * Returns ability result if ACL is configured or else just return true
@@ -12,7 +12,7 @@ import type { RouteLocationNormalized } from 'vue-router'
  * @param {string} action CASL Actions // https://casl.js.org/v4/en/guide/intro#basics
  * @param {string} subject CASL Subject // https://casl.js.org/v4/en/guide/intro#basics
  */
-export const can = (action: string | undefined, subject: string | undefined) => {
+export function can(action: string | undefined, subject: string | undefined) {
   const vm = getCurrentInstance()
 
   if (!vm)
@@ -29,7 +29,7 @@ export const can = (action: string | undefined, subject: string | undefined) => 
  * Based on item's action and subject & Hide group if all of it's children are hidden
  * @param {object} item navigation object item
  */
-export const canViewNavMenuGroup = (item: NavGroup) => {
+export function canViewNavMenuGroup(item: NavGroup) {
   const hasAnyVisibleChild = item.children.some(i => can(i.action, i.subject))
 
   // If subject and action is defined in item => Return based on children visibility (Hide group if no child is visible)
@@ -40,7 +40,7 @@ export const canViewNavMenuGroup = (item: NavGroup) => {
   return can(item.action, item.subject) && hasAnyVisibleChild
 }
 
-export const canNavigate = (to: RouteLocationNormalized) => {
+export function canNavigate(to: RouteLocationNormalized) {
   const ability = useAbility()
 
   if (!to.meta.action && !to.meta.subject)

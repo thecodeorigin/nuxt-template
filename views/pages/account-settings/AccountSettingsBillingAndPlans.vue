@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import BillingHistoryTable from './BillingHistoryTable.vue'
-
 // Images
 import mastercard from '@images/icons/payments/mastercard.png'
 import visa from '@images/icons/payments/visa.png'
+import BillingHistoryTable from './BillingHistoryTable.vue'
 
 interface CardDetails {
   name: string
@@ -46,7 +45,7 @@ const countryList = ['United States', 'Canada', 'United Kingdom', 'Australia', '
 
 const currentCardDetails = ref()
 
-const openEditCardDialog = (cardDetails: CardDetails) => {
+function openEditCardDialog(cardDetails: CardDetails) {
   currentCardDetails.value = cardDetails
 
   isCardEditDialogVisible.value = true
@@ -57,7 +56,7 @@ const cardName = ref('john Doe')
 const cardExpiryDate = ref('05/24')
 const cardCvv = ref(420)
 
-const resetPaymentForm = () => {
+function resetPaymentForm() {
   cardNumber.value = 135632156548789
   cardName.value = 'john Doe'
   cardExpiryDate.value = '05/24'

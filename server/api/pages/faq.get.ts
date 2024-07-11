@@ -2,7 +2,7 @@ import is from '@sindresorhus/is'
 import { db } from '@/server/fake-db/pages/faq/index'
 import type { FaqCategory } from '@/server/fake-db/pages/faq/types'
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   const { q = '' } = getQuery(event)
 
   const searchQuery = is.string(q) ? q : undefined
@@ -11,7 +11,7 @@ export default defineEventHandler(async event => {
   const filteredData: FaqCategory[] = []
 
   Object.entries(db.faqs).forEach(([_, faqObj]) => {
-    const filteredQAndA = faqObj.faqs.filter(obj => {
+    const filteredQAndA = faqObj.faqs.filter((obj) => {
       return obj.question.toLowerCase().includes(queryLowered)
     })
 

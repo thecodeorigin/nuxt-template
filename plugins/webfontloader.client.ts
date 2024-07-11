@@ -19,5 +19,5 @@ export default defineNuxtPlugin({
   parallel: true,
   async setup() {
     await loadFonts()
-  }
+  },
 })

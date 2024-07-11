@@ -33,7 +33,7 @@ const isCardEditDialogVisible = ref(false)
 const isCardAddDialogVisible = ref(false)
 const isEditAddressDialogVisible = ref(false)
 
-const openEditCardDialog = (cardDetails: CardDetail) => {
+function openEditCardDialog(cardDetails: CardDetail) {
   currentCardDetails.value = cardDetails
 
   isCardEditDialogVisible.value = true

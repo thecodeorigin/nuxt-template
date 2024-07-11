@@ -2,7 +2,7 @@ import is from '@sindresorhus/is'
 import { db } from '@/server/fake-db/app-bar-search/index'
 import type { SearchResults } from '@/server/fake-db/app-bar-search/types'
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   const { q = '' } = getQuery(event)
 
   const searchQuery = is.string(q) ? q : undefined
@@ -10,7 +10,7 @@ export default defineEventHandler(async event => {
 
   const filteredSearchData = [] as SearchResults[]
 
-  db.searchItems.forEach(item => {
+  db.searchItems.forEach((item) => {
     if (item.children) {
       const matchingChildren = item.children.filter(
         child => child.title.toLowerCase().includes(queryLowered),

@@ -4,7 +4,7 @@ import { AppContentLayoutNav } from '@layouts/enums'
 
 // TODO: Use `VThemeProvider` from dist instead of lib (Using this component from dist causes navbar to loose sticky positioning)
 
-export const useSkins = () => {
+export function useSkins() {
   const configStore = useConfigStore()
 
   const layoutAttrs = computed(() => ({

@@ -1,5 +1,5 @@
-import type { Enums, Tables } from '@/server/types/supabase';
-import { createMongoAbility } from '@casl/ability';
+import { createMongoAbility } from '@casl/ability'
+import type { Enums, Tables } from '@/server/types/supabase'
 
 type Permission = Tables<'sys_permissions'>
 

@@ -3,7 +3,7 @@ import type { GridColumn } from '@core/types'
 
 interface Props {
   selectedRadio: string
-  radioContent: { bgImage: string | undefined; value: string; label?: string }[]
+  radioContent: { bgImage: string | undefined, value: string, label?: string }[]
   gridColumn?: GridColumn
 }
 
@@ -14,7 +14,7 @@ interface Emit {
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
-const updateSelectedOption = (value: string | null) => {
+function updateSelectedOption(value: string | null) {
   if (value !== null)
     emit('update:selectedRadio', value)
 }

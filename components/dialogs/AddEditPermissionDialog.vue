@@ -16,12 +16,12 @@ const emit = defineEmits<Emit>()
 
 const currentPermissionName = ref('')
 
-const onReset = () => {
+function onReset() {
   emit('update:isDialogVisible', false)
   currentPermissionName.value = ''
 }
 
-const onSubmit = () => {
+function onSubmit() {
   emit('update:isDialogVisible', false)
   emit('update:permissionName', currentPermissionName.value)
 }

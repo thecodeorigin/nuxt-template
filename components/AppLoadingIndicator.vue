@@ -20,14 +20,14 @@ function startBuffer() {
   }, 800)
 }
 
-const fallbackHandle = () => {
+function fallbackHandle() {
   showProgress.value = true
   progressValue.value = 10
   isFallbackState.value = true
   startBuffer()
 }
 
-const resolveHandle = () => {
+function resolveHandle() {
   isFallbackState.value = false
   progressValue.value = 100
 

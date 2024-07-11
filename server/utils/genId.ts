@@ -1,4 +1,4 @@
-export const genId = <T extends { id: number | string }>(array: T[]) => {
+export function genId<T extends { id: number | string }>(array: T[]) {
   const { length } = array
 
   let lastIndex = 0

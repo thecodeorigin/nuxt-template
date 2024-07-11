@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
-export const useResponsiveLeftSidebar = (mobileBreakpoint: Ref<boolean> | undefined = undefined) => {
+export function useResponsiveLeftSidebar(mobileBreakpoint: Ref<boolean> | undefined = undefined) {
   const { mdAndDown, name: currentBreakpoint } = useDisplay()
 
   const _mobileBreakpoint = mobileBreakpoint || mdAndDown

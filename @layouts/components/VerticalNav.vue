@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import type { Component } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VNodeRenderer } from './VNodeRenderer'
 import { layoutConfig } from '@layouts'
 import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
 import type { NavGroup, NavLink, NavSectionTitle, VerticalNavItems } from '@layouts/types'
+import { VNodeRenderer } from './VNodeRenderer'
 
 interface Props {
   tag?: string | Component
@@ -27,7 +27,7 @@ provide(injectionKeyIsVerticalNavHovered, isHovered)
 
 const configStore = useLayoutConfigStore()
 
-const resolveNavItemComponent = (item: NavLink | NavSectionTitle | NavGroup): unknown => {
+function resolveNavItemComponent(item: NavLink | NavSectionTitle | NavGroup): unknown {
   if ('heading' in item)
     return VerticalNavSectionTitle
   if ('children' in item)
@@ -49,7 +49,7 @@ watch(() => route.name, () => {
 const isVerticalNavScrolled = ref(false)
 const updateIsVerticalNavScrolled = (val: boolean) => isVerticalNavScrolled.value = val
 
-const handleNavScroll = (evt: Event) => {
+function handleNavScroll(evt: Event) {
   isVerticalNavScrolled.value = (evt.target as HTMLElement).scrollTop > 0
 }
 

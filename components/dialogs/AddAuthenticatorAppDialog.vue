@@ -14,14 +14,14 @@ const emit = defineEmits<Emit>()
 
 const authCode = ref(structuredClone(toRaw(props.authCode)))
 
-const formSubmit = () => {
+function formSubmit() {
   if (authCode.value) {
     emit('submit', authCode.value)
     emit('update:isDialogVisible', false)
   }
 }
 
-const resetAuthCode = () => {
+function resetAuthCode() {
   authCode.value = structuredClone(toRaw(props.authCode))
   emit('update:isDialogVisible', false)
 }

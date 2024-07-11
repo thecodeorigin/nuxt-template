@@ -27,19 +27,18 @@ const popperContentStyles = ref({
   top: '0px',
 })
 
-const updatePopper = async () => {
+async function updatePopper() {
   if (refPopperContainer.value !== undefined && refPopper.value !== undefined) {
-    const { x, y } = await computePosition(refPopperContainer.value,
-      refPopper.value, {
-        placement: props.popperInlineEnd ? (props.isRtl ? 'left-start' : 'right-start') : 'bottom-start',
-        middleware: [
-          ...(configStore.horizontalNavPopoverOffset ? [offset(configStore.horizontalNavPopoverOffset)] : []),
-          flip({ boundary: document.querySelector('body')! }),
+    const { x, y } = await computePosition(refPopperContainer.value, refPopper.value, {
+      placement: props.popperInlineEnd ? (props.isRtl ? 'left-start' : 'right-start') : 'bottom-start',
+      middleware: [
+        ...(configStore.horizontalNavPopoverOffset ? [offset(configStore.horizontalNavPopoverOffset)] : []),
+        flip({ boundary: document.querySelector('body')! }),
 
-          shift({ boundary: document.querySelector('body')! }),
-        ],
+        shift({ boundary: document.querySelector('body')! }),
+      ],
 
-        /*
+      /*
       ℹ️ Why we are not using fixed positioning?
 
       `position: fixed` doesn't work as expected when some CSS properties like `transform` is applied on its parent element.
@@ -52,8 +51,8 @@ const updatePopper = async () => {
 
       NOTE: This issue starts from third level children (Top Level > Sub item > Sub item).
     */
-        // strategy: 'fixed',
-      })
+      // strategy: 'fixed',
+    })
 
     popperContentStyles.value.left = `${x}px`
     popperContentStyles.value.top = `${y}px`
@@ -70,12 +69,12 @@ until(() => configStore.horizontalNavType)
 
 const isContentShown = ref(false)
 
-const showContent = () => {
+function showContent() {
   isContentShown.value = true
   updatePopper()
 }
 
-const hideContent = () => {
+function hideContent() {
   isContentShown.value = false
 }
 

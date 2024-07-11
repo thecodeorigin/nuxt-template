@@ -1,7 +1,7 @@
 import { isEmpty, isEmptyArray, isNullOrUndefined } from './helpers'
 
 // 👉 Required Validator
-export const requiredValidator = (value: unknown) => {
+export function requiredValidator(value: unknown) {
   if (isNullOrUndefined(value) || isEmptyArray(value) || value === false)
     return 'This field is required'
 
@@ -9,11 +9,11 @@ export const requiredValidator = (value: unknown) => {
 }
 
 // 👉 Email Validator
-export const emailValidator = (value: unknown) => {
+export function emailValidator(value: unknown) {
   if (isEmpty(value))
     return true
 
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/i
 
   if (Array.isArray(value))
     return value.every(val => re.test(String(val))) || 'The Email field must be a valid email'
@@ -22,7 +22,7 @@ export const emailValidator = (value: unknown) => {
 }
 
 // 👉 Password Validator
-export const passwordValidator = (password: string) => {
+export function passwordValidator(password: string) {
   const regExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*()]).{8,}/
 
   const validPassword = regExp.test(password)
@@ -31,30 +31,30 @@ export const passwordValidator = (password: string) => {
 }
 
 // 👉 Confirm Password Validator
-export const confirmedValidator = (value: string, target: string) =>
-
-  value === target || 'The Confirm Password field confirmation does not match'
+export function confirmedValidator(value: string, target: string) {
+  return value === target || 'The Confirm Password field confirmation does not match'
+}
 
 // 👉 Between Validator
-export const betweenValidator = (value: unknown, min: number, max: number) => {
+export function betweenValidator(value: unknown, min: number, max: number) {
   const valueAsNumber = Number(value)
 
   return (Number(min) <= valueAsNumber && Number(max) >= valueAsNumber) || `Enter number between ${min} and ${max}`
 }
 
 // 👉 Integer Validator
-export const integerValidator = (value: unknown) => {
+export function integerValidator(value: unknown) {
   if (isEmpty(value))
     return true
 
   if (Array.isArray(value))
-    return value.every(val => /^-?[0-9]+$/.test(String(val))) || 'This field must be an integer'
+    return value.every(val => /^-?\d+$/.test(String(val))) || 'This field must be an integer'
 
-  return /^-?[0-9]+$/.test(String(value)) || 'This field must be an integer'
+  return /^-?\d+$/.test(String(value)) || 'This field must be an integer'
 }
 
 // 👉 Regex Validator
-export const regexValidator = (value: unknown, regex: RegExp | string): string | boolean => {
+export function regexValidator(value: unknown, regex: RegExp | string): string | boolean {
   if (isEmpty(value))
     return true
 
@@ -69,7 +69,7 @@ export const regexValidator = (value: unknown, regex: RegExp | string): string |
 }
 
 // 👉 Alpha Validator
-export const alphaValidator = (value: unknown) => {
+export function alphaValidator(value: unknown) {
   if (isEmpty(value))
     return true
 
@@ -77,17 +77,17 @@ export const alphaValidator = (value: unknown) => {
 }
 
 // 👉 URL Validator
-export const urlValidator = (value: unknown) => {
+export function urlValidator(value: unknown) {
   if (isEmpty(value))
     return true
 
-  const re = /^(https?):\/\/[^\s$.?#].[^\s]*$/
+  const re = /^(https?):\/\/[^\s$.?#].\S*$/
 
   return re.test(String(value)) || 'URL is invalid'
 }
 
 // 👉 Length Validator
-export const lengthValidator = (value: unknown, length: number) => {
+export function lengthValidator(value: unknown, length: number) {
   if (isEmpty(value))
     return true
 
@@ -95,11 +95,11 @@ export const lengthValidator = (value: unknown, length: number) => {
 }
 
 // 👉 Alpha-dash Validator
-export const alphaDashValidator = (value: unknown) => {
+export function alphaDashValidator(value: unknown) {
   if (isEmpty(value))
     return true
 
   const valueAsString = String(value)
 
-  return /^[0-9A-Z_-]*$/i.test(valueAsString) || 'All Character are not valid'
+  return /^[\w-]*$/.test(valueAsString) || 'All Character are not valid'
 }

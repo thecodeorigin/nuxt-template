@@ -2,7 +2,7 @@ import type { Tables } from '@/server/types/supabase'
 
 type User = Tables<'sys_users'>
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   const user = await readBody<User>(event)
 
   const { data, error } = await supabase.from('sys_users').insert(user).select().maybeSingle()

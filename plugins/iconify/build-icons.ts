@@ -134,7 +134,7 @@ const target = join(__dirname, 'icons.css')
       recursive: true,
     })
   }
-  catch (err) {
+  catch {
     //
   }
 
@@ -263,7 +263,7 @@ const target = join(__dirname, 'icons.css')
   await fs.writeFile(target, cssContent, 'utf8')
 
   console.log(`Saved CSS to ${target}!`)
-})().catch(err => {
+})().catch((err) => {
   console.error(err)
 })
 
@@ -273,7 +273,7 @@ const target = join(__dirname, 'icons.css')
 function organizeIconsList(icons: string[]): Record<string, string[]> {
   const sorted: Record<string, string[]> = Object.create(null)
 
-  icons.forEach(icon => {
+  icons.forEach((icon) => {
     const item = stringToIcon(icon)
 
     if (!item)

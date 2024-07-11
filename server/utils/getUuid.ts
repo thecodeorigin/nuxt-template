@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 
-export const getUuid = (event: H3Event, msg404 = 'UUID is required to get information!') => {
+export function getUuid(event: H3Event, msg404 = 'UUID is required to get information!') {
   const uuid = String(event.context.params?.uuid)
 
   if (!uuid) {

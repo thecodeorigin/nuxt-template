@@ -3,10 +3,10 @@ import { useWindowScroll } from '@vueuse/core'
 import type { RouteLocationRaw } from 'vue-router/auto'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useDisplay } from 'vuetify'
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import navImg from '@images/front-pages/misc/nav-img.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 
 interface Props {
   activeId?: string
@@ -84,7 +84,7 @@ const menuItems: MenuItem[] = [
   },
 ]
 
-const isCurrentRoute = (to: RouteLocationRaw) => {
+function isCurrentRoute(to: RouteLocationRaw) {
   return route.matched.some(_route => _route.path.startsWith(router.resolve(to).path))
 
   // ℹ️ Below is much accurate approach if you don't have any nested routes

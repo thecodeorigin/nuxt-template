@@ -20,17 +20,17 @@ const emit = defineEmits<Emit>()
 const unsubscribed = ref(false)
 const cancelled = ref(false)
 
-const updateModelValue = (val: boolean) => {
+function updateModelValue(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 
-const onConfirmation = () => {
+function onConfirmation() {
   emit('confirm', true)
   updateModelValue(false)
   unsubscribed.value = true
 }
 
-const onCancel = () => {
+function onCancel() {
   emit('confirm', false)
   emit('update:isDialogVisible', false)
   cancelled.value = true

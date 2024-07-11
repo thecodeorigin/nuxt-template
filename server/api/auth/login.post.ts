@@ -1,6 +1,6 @@
 import { db } from '@/server/fake-db/auth'
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   const { email, password } = await readBody(event)
 
   if (!email || !password) {

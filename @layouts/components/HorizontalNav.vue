@@ -6,7 +6,7 @@ defineProps<{
   navItems: HorizontalNavItems
 }>()
 
-const resolveNavItemComponent = (item: NavLink | NavGroup) => {
+function resolveNavItemComponent(item: NavLink | NavGroup) {
   if ('children' in item)
     return HorizontalNavGroup
 

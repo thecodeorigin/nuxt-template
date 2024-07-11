@@ -1,12 +1,13 @@
 {
   "name": "@imrim12/nuxt-template",
+  "type": "module",
   "version": "1.0.0",
   "private": false,
-  "type": "module",
+  "packageManager": "pnpm@9.0.6",
   "scripts": {
     "dev": "nuxt dev",
     "build": "node --max-old-space-size=4096 node_modules/nuxt/bin/nuxt.mjs build",
-    "lint": "eslint . -c .eslintrc.cjs --fix --ext .ts,.js,.cjs,.vue,.tsx,.jsx",
+    "lint": "eslint . --fix",
     "build:icons": "tsx plugins/iconify/build-icons.ts",
     "postinstall": "nuxt prepare && npm run build:icons ",
     "generate": "nuxt generate",
@@ -68,6 +69,7 @@
     "webfontloader": "1.6.28"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^2.22.0",
     "@antfu/eslint-config-vue": "0.43.1",
     "@antfu/utils": "0.7.7",
     "@fullcalendar/core": "6.1.11",
@@ -128,21 +130,20 @@
     "vue": "3.3.13",
     "vue-shepherd": "3.0.0"
   },
-  "resolutions": {
-    "postcss": "^8",
-    "@tiptap/core": "^2",
-    "@types/video.js": "^7",
-    "pug": "^3",
-    "stylelint-order": "6.0.3",
-    "vue": "3.3.13"
-  },
   "overrides": {
-    "postcss": "^8",
     "@tiptap/core": "^2",
     "@types/video.js": "^7",
+    "postcss": "^8",
     "pug": "^3",
     "stylelint-order": "6.0.3",
     "vue": "3.3.13"
   },
-  "packageManager": "pnpm@9.0.6"
+  "resolutions": {
+    "@tiptap/core": "^2",
+    "@types/video.js": "^7",
+    "postcss": "^8",
+    "pug": "^3",
+    "stylelint-order": "6.0.3",
+    "vue": "3.3.13"
+  }
 }

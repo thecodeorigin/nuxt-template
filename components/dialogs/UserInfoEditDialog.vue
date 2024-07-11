@@ -55,18 +55,18 @@ watch(() => props, () => {
   userData.value = structuredClone(toRaw(props.userData))
 })
 
-const onFormSubmit = () => {
+function onFormSubmit() {
   emit('update:isDialogVisible', false)
   emit('submit', userData.value)
 }
 
-const onFormReset = () => {
+function onFormReset() {
   userData.value = structuredClone(toRaw(props.userData))
 
   emit('update:isDialogVisible', false)
 }
 
-const dialogVisibleUpdate = (val: boolean) => {
+function dialogVisibleUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 </script>
