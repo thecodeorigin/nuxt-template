@@ -23,3 +23,5 @@ declare module 'next-auth' {
 
   interface User extends UserAdditionalData { }
 }
+
+export {}

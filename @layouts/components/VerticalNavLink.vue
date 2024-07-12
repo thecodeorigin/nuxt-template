@@ -6,17 +6,24 @@ import type { NavLink } from '@layouts/types'
 import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
 import { NuxtLink } from '#components'
 
-defineProps<{
+const props = defineProps<{
   item: NavLink
 }>()
 
 const configStore = useLayoutConfigStore()
 const hideTitleAndBadge = configStore.isVerticalNavMini()
+
+const visible = computed(() => {
+  if (!props.item.action || !props.item.subject)
+    return true
+
+  return can(props.item.action, props.item.subject)
+})
 </script>
 
 <template>
   <li
-    v-if="can(item.action, item.subject)"
+    v-if="visible"
     class="nav-link"
     :class="{ disabled: item.disable }"
   >

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { HorizontalNavGroup, HorizontalNavLink } from '@layouts/components'
-import type { HorizontalNavItems, NavGroup, NavLink } from '@layouts/types'
+import type { HorizontalNavItem } from '@layouts/types'
 
 defineProps<{
-  navItems: HorizontalNavItems
+  navItems: HorizontalNavItem[]
 }>()
 
-function resolveNavItemComponent(item: NavLink | NavGroup) {
+function resolveNavItemComponent(item: HorizontalNavItem) {
   if ('children' in item)
     return HorizontalNavGroup
 

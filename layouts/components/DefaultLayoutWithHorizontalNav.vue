@@ -12,10 +12,12 @@ import NavSearchBar from '@/layouts/components/NavSearchBar.vue'
 import NavbarShortcuts from '@/layouts/components/NavbarShortcuts.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
+
+const layoutStore = useLayoutStore()
 </script>
 
 <template>
-  <HorizontalNavLayout :nav-items="navItems">
+  <HorizontalNavLayout :nav-items="layoutStore.horizontalSidebarItems">
     <!-- 👉 navbar -->
     <template #navbar>
       <NuxtLink

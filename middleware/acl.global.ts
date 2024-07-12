@@ -1,4 +1,5 @@
 import { canNavigate } from '@layouts/plugins/casl'
+import { P, match } from 'ts-pattern'
 
 export default defineNuxtRouteMiddleware((to) => {
   /*
@@ -9,24 +10,23 @@ export default defineNuxtRouteMiddleware((to) => {
     return
 
   const { status } = useAuth()
-  const isLoggedIn = status.value === 'authenticated'
 
-  if (to.meta.unauthenticatedOnly) {
-    if (isLoggedIn)
+  return match([status.value, to.meta.unauthenticatedOnly, canNavigate(to), to.name])
+    .with(['unauthenticated', P.any, P.any, P.not('auth-login')], () => {
+      return navigateTo({
+        name: 'auth-login',
+        query: {
+          ...to.query,
+          to: to.fullPath !== '/' ? to.path : undefined,
+        },
+      })
+    })
+    .with(['authenticated', true, true, P.any], () => {
       return navigateTo('/')
-    else
-      return
-  }
-
-  if (!canNavigate(to) && to.matched.length) {
-    return navigateTo(isLoggedIn
-      ? { name: 'not-authorized' }
-      : {
-          name: 'auth-login',
-          query: {
-            ...to.query,
-            to: to.fullPath !== '/' ? to.path : undefined,
-          },
-        })
-  }
+    })
+    .with(['authenticated', P.any, false, P.any], () => {
+      return navigateTo({ name: 'not-authorized' })
+    })
+    .with([P.any, P.any, P.any, P.any], () => {})
+    .exhaustive()
 })

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-  action: ['manage'],
-  subject: ['Post', 'Category'],
+  sidebar: {
+    title: 'Home',
+    to: { name: 'index' },
+    icon: { icon: 'ri-home-smile-2-line' },
+  },
 })
 </script>
 

@@ -5,12 +5,12 @@ import { layoutConfig } from '@layouts'
 import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
-import type { NavGroup, NavLink, NavSectionTitle, VerticalNavItems } from '@layouts/types'
+import type { VerticalNavItem } from '@layouts/types'
 import { VNodeRenderer } from './VNodeRenderer'
 
 interface Props {
   tag?: string | Component
-  navItems: VerticalNavItems
+  navItems: VerticalNavItem[]
   isOverlayNavActive: boolean
   toggleIsOverlayNavActive: (value: boolean) => void
 }
@@ -27,7 +27,7 @@ provide(injectionKeyIsVerticalNavHovered, isHovered)
 
 const configStore = useLayoutConfigStore()
 
-function resolveNavItemComponent(item: NavLink | NavSectionTitle | NavGroup): unknown {
+function resolveNavItemComponent(item: VerticalNavItem): unknown {
   if ('heading' in item)
     return VerticalNavSectionTitle
   if ('children' in item)

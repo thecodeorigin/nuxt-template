@@ -15,11 +15,18 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isSubItem: false,
 })
+
+const visible = computed(() => {
+  if (!props.item.action || !props.item.subject)
+    return true
+
+  return can(props.item.action, props.item.subject)
+})
 </script>
 
 <template>
   <li
-    v-if="can(item.action, item.subject)"
+    v-if="visible"
     class="nav-link"
     :class="[{
       'sub-item': props.isSubItem,

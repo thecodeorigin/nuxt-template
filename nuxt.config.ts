@@ -42,6 +42,7 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
     },
   },
+
   components: {
     dirs: [{
       path: '@/@core/components',
@@ -165,4 +166,5 @@ export default defineNuxtConfig({
   },
 
   modules: ['@vueuse/nuxt', '@nuxtjs/device', '@sidebase/nuxt-auth', '@pinia/nuxt'],
+  compatibilityDate: '2024-07-12',
 })

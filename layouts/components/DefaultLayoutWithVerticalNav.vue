@@ -16,6 +16,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
 // @layouts plugin
 
 const configStore = useConfigStore()
+const layoutStore = useLayoutStore()
 
 // ℹ️ Provide animation name for vertical nav collapse icon.
 const verticalNavHeaderActionAnimationName = ref<null | 'rotate-back-180' | 'rotate-180'>(null)
@@ -32,7 +33,7 @@ watch([
 </script>
 
 <template>
-  <VerticalNavLayout :nav-items="navItems">
+  <VerticalNavLayout :nav-items="layoutStore.sidebarItems">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">

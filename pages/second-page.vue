@@ -1,7 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-  action: 'read',
-  subject: 'Auth',
+  sidebar: {
+    title: 'Second page',
+    to: { name: 'second-page' },
+    icon: { icon: 'ri-file-text-line' },
+  },
 })
 </script>
 

@@ -37,8 +37,6 @@ const isPasswordVisible = ref(false)
 
 const route = useRoute()
 
-const ability = useAbility()
-
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
@@ -80,6 +78,8 @@ async function login(provider?: string) {
 
   // Update user abilities
   const { user } = sessionData.value!
+
+  const ability = useAbility()
 
   cookieRef<Partial<User>>('userData', user).value = user
 

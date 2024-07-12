@@ -2,9 +2,9 @@ import { createMongoAbility } from '@casl/ability'
 import { abilitiesPlugin } from '@casl/vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const { data: sessionData } = useAuth()
+  const { currentPermissions } = useAuthStore()
 
-  const initialAbility = createMongoAbility(sessionData.value ? sessionData.value.user?.role?.permissions : [])
+  const initialAbility = createMongoAbility(currentPermissions)
 
   nuxtApp.vueApp.use(abilitiesPlugin, initialAbility, {
     useGlobalProperties: true,

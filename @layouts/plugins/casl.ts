@@ -1,6 +1,6 @@
-import { useAbility } from '@casl/vue'
 import type { RouteLocationNormalized } from 'vue-router'
 import type { NavGroup } from '@layouts/types'
+import type { Actions, Subjects } from '@/plugins/casl/ability'
 
 /**
  * Returns ability result if ACL is configured or else just return true
@@ -12,7 +12,7 @@ import type { NavGroup } from '@layouts/types'
  * @param {string} action CASL Actions // https://casl.js.org/v4/en/guide/intro#basics
  * @param {string} subject CASL Subject // https://casl.js.org/v4/en/guide/intro#basics
  */
-export function can(action: string | undefined, subject: string | undefined) {
+export function can(action: Actions, subject: Subjects) {
   const vm = getCurrentInstance()
 
   if (!vm)
@@ -20,7 +20,6 @@ export function can(action: string | undefined, subject: string | undefined) {
 
   const localCan = vm.proxy && '$can' in vm.proxy
 
-  // @ts-expect-error We will get TS error in below line because we aren't using $can in component instance
   return localCan ? vm.proxy?.$can(action, subject) : true
 }
 
@@ -30,7 +29,7 @@ export function can(action: string | undefined, subject: string | undefined) {
  * @param {object} item navigation object item
  */
 export function canViewNavMenuGroup(item: NavGroup) {
-  const hasAnyVisibleChild = item.children.some(i => can(i.action, i.subject))
+  const hasAnyVisibleChild = item.children.some(i => can(i.action!, i.subject!))
 
   // If subject and action is defined in item => Return based on children visibility (Hide group if no child is visible)
   // Else check for ability using provided subject and action along with checking if has any visible child
@@ -43,11 +42,8 @@ export function canViewNavMenuGroup(item: NavGroup) {
 export function canNavigate(to: RouteLocationNormalized) {
   const ability = useAbility()
 
-  if (!to.meta.action && !to.meta.subject)
+  if (!to.meta.action || !to.meta.subject)
     return true
 
-  console.log(ability.rules, to.meta.action, to.meta.subject, ability.can(to.meta.action as string, to.meta.subject!))
-
-  // @ts-expect-error We should allow passing string | undefined to can because for admin ability we omit defining action & subject
-  return to.matched.some(route => ability.can(route.meta.action, route.meta.subject))
+  return ability.can(to.meta.action, to.meta.subject)
 }

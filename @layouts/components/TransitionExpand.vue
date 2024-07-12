@@ -24,7 +24,7 @@ export default defineComponent({
       // Force repaint to make sure the
       // animation is triggered correctly.
 
-      getComputedStyle(element)
+      getComputedStyle(element).height
 
       // Trigger the animation.
       // We use `requestAnimationFrame` because we need
@@ -48,7 +48,7 @@ export default defineComponent({
       // Force repaint to make sure the
       // animation is triggered correctly.
 
-      getComputedStyle(element)
+      getComputedStyle(element).height
 
       requestAnimationFrame(() => {
         element.style.height = '0px'

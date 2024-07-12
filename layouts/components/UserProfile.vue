@@ -2,8 +2,6 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { cookieRef } from '@/@layouts/stores/config'
 
-const ability = useAbility()
-
 // TODO: Get type from backend
 const userData = cookieRef('userData', null as any)
 
@@ -12,6 +10,8 @@ const { signOut } = useAuth()
 async function logout() {
   try {
     await signOut({ redirect: false })
+
+    const ability = useAbility()
 
     // Remove "userData" from cookie
     userData.value = null
