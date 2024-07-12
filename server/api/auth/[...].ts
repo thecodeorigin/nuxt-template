@@ -4,12 +4,10 @@ import GoogleProvider from 'next-auth/providers/google'
 import type { NuxtError } from 'nuxt/app'
 import { NuxtAuthHandler } from '#auth'
 
-// import GoogleProvider from 'next-auth/providers/google'
-
-// const runtimeConfig = useRuntimeConfig()
+const runtimeConfig = useRuntimeConfig()
 
 export default NuxtAuthHandler({
-  secret: process.env.AUTH_SECRET,
+  secret: runtimeConfig.AUTH_SECRET,
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
