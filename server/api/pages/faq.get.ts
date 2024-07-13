@@ -2,23 +2,12 @@ import is from '@sindresorhus/is'
 
 export default defineEventHandler(async (event) => {
   const { q = '' } = getQuery(event)
-
   const searchQuery = is.string(q) ? q : undefined
   const queryLowered = (searchQuery ?? '').toString().toLowerCase()
 
-  const { data: categories } = await supabase.from('sys_faq_categories').select()
-  const { data: faqs } = await supabase.from('sys_faqs').select().ilike('question', `%${queryLowered}%`)
-
-  const result = categories?.map((category) => {
-    const categoryFaqs = faqs?.filter(faq => faq.category_id === category.id) ?? []
-    return {
-      ...category,
-      questions: categoryFaqs,
-    }
-  }) ?? []
-  console.log('result', result, categories, faqs)
-
+  const { data: categories } = await supabase.from('sys_faq_categories').select('*,questions:sys_faqs(*)').ilike('sys_faqs.question', `%${queryLowered}%`)
   setResponseStatus(event, 200)
+  console.log('categories:', categories)
 
-  return result
+  return categories
 })

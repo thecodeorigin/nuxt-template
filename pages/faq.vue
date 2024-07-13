@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import faqIllustration from '@images/illustrations/faq-illustration.png'
+import { debounce } from 'lodash-es'
 import type { Faqs } from '@/utils/types'
 
 const faqSearchQuery = ref('')
@@ -18,9 +19,9 @@ async function fetchFaqs() {
 
 const activeTab = ref('Payment')
 const activeQuestion = ref(1)
-
+onBeforeMount(fetchFaqs)
 watch(activeTab, () => activeQuestion.value = 0)
-watch(faqSearchQuery, fetchFaqs, { immediate: true })
+watch(faqSearchQuery, debounce(fetchFaqs, 1000))
 
 const contactUs = [
   {
@@ -40,7 +41,6 @@ const contactUs = [
   <section>
     <!-- 👉 Search -->
     <AppSearchHeader
-      v-model="faqSearchQuery"
       custom-class="mb-6"
     >
       <template #default>
@@ -54,6 +54,7 @@ const contactUs = [
 
         <!-- 👉 Search Input -->
         <VTextField
+          v-model="faqSearchQuery"
           placeholder="search articles..."
           class="search-header-input mx-auto my-4"
         >
