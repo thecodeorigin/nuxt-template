@@ -1,6 +1,4 @@
 import is from '@sindresorhus/is'
-import { db } from '@/server/fake-db/pages/faq/index'
-import type { FaqCategory } from '@/server/fake-db/pages/faq/types'
 
 export default defineEventHandler(async (event) => {
   const { q = '' } = getQuery(event)
@@ -8,18 +6,19 @@ export default defineEventHandler(async (event) => {
   const searchQuery = is.string(q) ? q : undefined
   const queryLowered = (searchQuery ?? '').toString().toLowerCase()
 
-  const filteredData: FaqCategory[] = []
+  const { data: categories } = await supabase.from('sys_faq_categories').select()
+  const { data: faqs } = await supabase.from('sys_faqs').select().ilike('question', `%${queryLowered}%`)
 
-  Object.entries(db.faqs).forEach(([_, faqObj]) => {
-    const filteredQAndA = faqObj.faqs.filter((obj) => {
-      return obj.question.toLowerCase().includes(queryLowered)
-    })
-
-    if (filteredQAndA.length)
-      filteredData.push({ ...faqObj, faqs: filteredQAndA })
-  })
+  const result = categories?.map((category) => {
+    const categoryFaqs = faqs?.filter(faq => faq.category_id === category.id) ?? []
+    return {
+      ...category,
+      questions: categoryFaqs,
+    }
+  }) ?? []
+  console.log('result', result, categories, faqs)
 
   setResponseStatus(event, 200)
 
-  return filteredData
+  return result
 })

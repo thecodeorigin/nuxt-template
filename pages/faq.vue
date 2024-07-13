@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { FaqCategory } from '@db/pages/faq/types'
 import faqIllustration from '@images/illustrations/faq-illustration.png'
+import type { Faqs } from '@/utils/types'
 
 const faqSearchQuery = ref('')
 
-const faqs = ref<FaqCategory[]>([])
+const faqs = ref<Faqs[]>([])
 
 async function fetchFaqs() {
   const data = await $api('/pages/faq', {
@@ -13,7 +13,7 @@ async function fetchFaqs() {
     },
   }).catch(err => console.log(err))
 
-  faqs.value = data
+  faqs.value = data as Faqs[]
 }
 
 const activeTab = ref('Payment')
@@ -84,14 +84,14 @@ const contactUs = [
         >
           <VTab
             v-for="faq in faqs"
-            :key="faq.faqTitle"
-            :value="faq.faqTitle"
+            :key="faq.id"
+            :value="faq.title"
           >
             <VIcon
-              :icon="faq.faqIcon"
+              :icon="faq.icon"
               start
             />
-            {{ faq.faqTitle }}
+            {{ faq.title }}
           </VTab>
         </VTabs>
         <VImg
@@ -113,8 +113,8 @@ const contactUs = [
         >
           <VWindowItem
             v-for="faq in faqs"
-            :key="faq.faqTitle"
-            :value="faq.faqTitle"
+            :key="faq.id"
+            :value="faq.title"
           >
             <div class="d-flex align-center mb-4 gap-x-4">
               <VAvatar
@@ -125,16 +125,16 @@ const contactUs = [
               >
                 <VIcon
                   :size="30"
-                  :icon="faq.faqIcon"
+                  :icon="faq.icon"
                 />
               </VAvatar>
 
               <div>
                 <h5 class="text-h5">
-                  {{ faq.faqTitle }}
+                  {{ faq.title }}
                 </h5>
                 <div class="text-body-1">
-                  {{ faq.faqSubtitle }}
+                  {{ faq.subtitle }}
                 </div>
               </div>
             </div>
@@ -144,7 +144,7 @@ const contactUs = [
               multiple
             >
               <VExpansionPanel
-                v-for="item in faq.faqs"
+                v-for="item in faq.questions"
                 :key="item.question"
                 :title="item.question"
                 :text="item.answer"
