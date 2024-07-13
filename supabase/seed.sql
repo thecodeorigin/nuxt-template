@@ -139,4 +139,9 @@ SELECT pg_catalog.setval('"public"."sys_faq_categories_id_seq"', 5, true);
 -- PostgreSQL database dump complete
 --
 
+
+--
+-- PostgreSQL database dump complete
+--
+
 RESET ALL;
