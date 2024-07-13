@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import AccountSettingsAccount from '@/views/pages/account-settings/AccountSettingsAccount.vue'
-import AccountSettingsBillingAndPlans from '@/views/pages/account-settings/AccountSettingsBillingAndPlans.vue'
-import AccountSettingsConnections from '@/views/pages/account-settings/AccountSettingsConnections.vue'
-import AccountSettingsNotification from '@/views/pages/account-settings/AccountSettingsNotification.vue'
-import AccountSettingsSecurity from '@/views/pages/account-settings/AccountSettingsSecurity.vue'
+
+const AccountSettingsBillingAndPlans = defineAsyncComponent(() => import('@/views/pages/account-settings/AccountSettingsBillingAndPlans.vue'))
+// import AccountSettingsConnections from '@/views/pages/account-settings/AccountSettingsConnections.vue'
+// import AccountSettingsNotification from '@/views/pages/account-settings/AccountSettingsNotification.vue'
+// import AccountSettingsSecurity from '@/views/pages/account-settings/AccountSettingsSecurity.vue'
 
 const route = useRoute('pages-account-settings-tab')
 
@@ -15,16 +16,14 @@ const activeTab = computed({
 // tabs
 const tabs = [
   { title: 'Account', icon: 'ri-group-line', tab: 'account' },
-  { title: 'Security', icon: 'ri-lock-line', tab: 'security' },
+  // { title: 'Security', icon: 'ri-lock-line', tab: 'security' },
   { title: 'Billing & Plans', icon: 'ri-bookmark-line', tab: 'billing-plans' },
-  { title: 'Notifications', icon: 'ri-notification-3-line', tab: 'notification' },
-  { title: 'Connections', icon: 'ri-link', tab: 'connection' },
+  // { title: 'Notifications', icon: 'ri-notification-3-line', tab: 'notification' },
+  // { title: 'Connections', icon: 'ri-link', tab: 'connection' },
 ]
 
 definePageMeta({
   navActiveLink: 'pages-account-settings-tab',
-  action: 'read',
-  subject: 'Auth',
 })
 </script>
 
@@ -60,9 +59,9 @@ definePageMeta({
         </VWindowItem>
 
         <!-- Security -->
-        <VWindowItem value="security">
+        <!-- <VWindowItem value="security">
           <AccountSettingsSecurity />
-        </VWindowItem>
+        </VWindowItem> -->
 
         <!-- Billing -->
         <VWindowItem value="billing-plans">
@@ -70,14 +69,14 @@ definePageMeta({
         </VWindowItem>
 
         <!-- Notification -->
-        <VWindowItem value="notification">
+        <!-- <VWindowItem value="notification">
           <AccountSettingsNotification />
-        </VWindowItem>
+        </VWindowItem> -->
 
         <!-- Connections -->
-        <VWindowItem value="connection">
+        <!-- <VWindowItem value="connection">
           <AccountSettingsConnections />
-        </VWindowItem>
+        </VWindowItem> -->
       </VWindow>
     </ClientOnly>
   </div>

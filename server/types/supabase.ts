@@ -46,6 +46,7 @@ export type Database = {
           slug: string
           title: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           body?: string | null
@@ -56,6 +57,7 @@ export type Database = {
           slug: string
           title?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           body?: string | null
@@ -66,6 +68,7 @@ export type Database = {
           slug?: string
           title?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -73,6 +76,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sys_users"
             referencedColumns: ["id"]
           },
         ]
@@ -387,9 +397,12 @@ export type Database = {
           full_name: string | null
           id: string
           language: string | null
+          organization: string | null
           payment_method: Json | null
           phone: string | null
+          postcode: string | null
           role_id: string | null
+          status: Database["public"]["Enums"]["user_status"] | null
         }
         Insert: {
           avatar_url?: string | null
@@ -401,9 +414,12 @@ export type Database = {
           full_name?: string | null
           id: string
           language?: string | null
+          organization?: string | null
           payment_method?: Json | null
           phone?: string | null
+          postcode?: string | null
           role_id?: string | null
+          status?: Database["public"]["Enums"]["user_status"] | null
         }
         Update: {
           avatar_url?: string | null
@@ -415,9 +431,12 @@ export type Database = {
           full_name?: string | null
           id?: string
           language?: string | null
+          organization?: string | null
           payment_method?: Json | null
           phone?: string | null
+          postcode?: string | null
           role_id?: string | null
+          status?: Database["public"]["Enums"]["user_status"] | null
         }
         Relationships: [
           {
@@ -432,6 +451,32 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_shortcuts: {
+        Row: {
+          id: string
+          route: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          route: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          route?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_user_shortcuts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sys_users"
             referencedColumns: ["id"]
           },
         ]
@@ -457,6 +502,7 @@ export type Database = {
         | "past_due"
         | "unpaid"
         | "paused"
+      user_status: "active" | "deactivated" | "pending"
     }
     CompositeTypes: {
       [_ in never]: never

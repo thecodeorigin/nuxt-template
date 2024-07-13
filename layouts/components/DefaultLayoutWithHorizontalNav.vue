@@ -16,7 +16,7 @@ const layoutStore = useLayoutStore()
 </script>
 
 <template>
-  <HorizontalNavLayout :nav-items="layoutStore.horizontalSidebarItems">
+  <HorizontalNavLayout :nav-items="layoutStore.horizontalLayoutItems">
     <!-- 👉 navbar -->
     <template #navbar>
       <NuxtLink

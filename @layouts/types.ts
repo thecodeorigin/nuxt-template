@@ -100,6 +100,12 @@ export declare type HorizontalNavItem = NavLink | NavGroup
 
 export declare type VerticalNavItem = HorizontalNavItem | NavSectionTitle
 
+export enum NavGroupType {
+  POPULAR,
+  APP,
+  SETTINGS,
+}
+
 // 👉 Components ========================
 
 export interface I18nLanguage {

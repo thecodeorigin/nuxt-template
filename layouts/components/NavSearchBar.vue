@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import Shepherd from 'shepherd.js'
-import { withQuery } from 'ufo'
 import type { RouteLocationRaw } from 'vue-router'
-import type { SearchResults } from '@db/app-bar-search/types'
 import { useConfigStore } from '@core/stores/config'
+import { debouncedWatch } from '@vueuse/core'
+import { NavGroupType } from '@/@layouts/types'
+
+defineOptions({
+  inheritAttrs: false,
+})
+
+const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/AppBarSearch.vue'))
 
 interface Suggestion {
   icon: string
   title: string
   url: RouteLocationRaw
 }
-
-defineOptions({
-  inheritAttrs: false,
-})
 
 const configStore = useConfigStore()
 
@@ -27,84 +29,71 @@ const isAppSearchBarVisible = ref(false)
 
 // 👉 Default suggestions
 
-const suggestionGroups: SuggestionGroup[] = [
-  {
-    title: 'Popular Searches',
-    content: [
-      { icon: 'ri-bar-chart-line', title: 'Analytics', url: { name: 'dashboards-analytics' } },
-      { icon: 'ri-pie-chart-2-line', title: 'CRM', url: { name: 'dashboards-crm' } },
-      { icon: 'ri-shopping-bag-3-line', title: 'eCommerce', url: { name: 'dashboards-ecommerce' } },
-      { icon: 'ri-car-line', title: 'Logistics', url: { name: 'apps-logistics-dashboard' } },
-    ],
-  },
-  {
-    title: 'Apps & Pages',
-    content: [
-      { icon: 'ri-calendar-line', title: 'Calendar', url: { name: 'apps-calendar' } },
-      { icon: 'ri-lock-unlock-line', title: 'Roles & Permissions', url: { name: 'apps-roles' } },
-      { icon: 'ri-settings-4-line', title: 'Account Settings', url: { name: 'pages-account-settings-tab', params: { tab: 'account' } } },
-      { icon: 'ri-file-copy-line', title: 'Dialog Examples', url: { name: 'pages-dialog-examples' } },
-    ],
-  },
-  {
-    title: 'User Interface',
-    content: [
-      { icon: 'ri-text', title: 'Typography', url: { name: 'pages-typography' } },
-      { icon: 'ri-menu-line', title: 'Accordion', url: { name: 'components-expansion-panel' } },
-      { icon: 'ri-alert-line', title: 'Alerts', url: { name: 'components-alert' } },
-      { icon: 'ri-checkbox-blank-line', title: 'Cards', url: { name: 'pages-cards-card-basic' } },
-    ],
-  },
-  {
-    title: 'Forms & Tables',
-    content: [
-      { icon: 'ri-radio-button-line', title: 'Radio', url: { name: 'forms-radio' } },
-      { icon: 'ri-file-text-line', title: 'Form Layouts', url: { name: 'forms-form-layouts' } },
-      { icon: 'ri-table-line', title: 'Table', url: { name: 'tables-simple-table' } },
-      { icon: 'ri-edit-box-line', title: 'Editor', url: { name: 'forms-editors' } },
-    ],
-  },
-]
+const { layoutItems } = useLayoutStore()
 
-// 👉 No Data suggestion
-const noDataSuggestions: Suggestion[] = [
-  {
-    title: 'Analytics',
-    icon: 'ri-bar-chart-line',
-    url: { name: 'dashboards-analytics' },
-  },
-  {
-    title: 'CRM',
-    icon: 'ri-pie-chart-2-line',
-    url: { name: 'dashboards-crm' },
-  },
-  {
-    title: 'eCommerce',
-    icon: 'ri-shopping-bag-3-line',
-    url: { name: 'dashboards-ecommerce' },
-  },
-]
+const suggestionGroups = computed(() => {
+  const results: SuggestionGroup[] = [
+    { title: 'Popular', content: [] } as SuggestionGroup,
+    { title: 'Apps', content: [] } as SuggestionGroup,
+    { title: 'Settings', content: [] } as SuggestionGroup,
+  ]
+
+  for (const layoutItem of layoutItems) {
+    const item = {
+      icon: 'icon' in layoutItem ? layoutItem.icon?.icon : '',
+      title: 'title' in layoutItem ? layoutItem.title : '',
+      url: 'to' in layoutItem ? layoutItem.to : { },
+    } as Suggestion
+
+    if ('group' in layoutItem) {
+      switch (layoutItem.group) {
+        case NavGroupType.POPULAR:
+          results[0].content.push(item)
+          break
+        case NavGroupType.APP:
+          results[1].content.push(item)
+          break
+        case NavGroupType.SETTINGS:
+          results[2].content.push(item)
+          break
+        default:
+          results[1].content.push(item)
+          break
+      }
+    }
+    else {
+      results[1].content.push(item)
+    }
+  }
+
+  return results.filter(group => group.content.length)
+})
 
 const searchQuery = ref('')
 
 const router = useRouter()
-const searchResult = ref<SearchResults[]>([])
+
 const isLoading = ref(false)
 
-async function fetchResults() {
-  isLoading.value = true
+const searchResult = ref<SuggestionGroup[]>([])
+debouncedWatch(searchQuery, () => {
+  if (!searchQuery.value)
+    searchResult.value = suggestionGroups.value
 
-  const { data } = await useApi<any>(withQuery('/app-bar/search', { q: searchQuery.value }))
+  searchResult.value = suggestionGroups.value.reduce((acc, cur) => {
+    if (cur.content.length) {
+      const content = cur.content.filter((item) => {
+        return item.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+      })
 
-  searchResult.value = data.value
+      if (content.length) {
+        return [...acc, { title: cur.title, content }]
+      }
+    }
 
-  // ℹ️ simulate loading: we have used setTimeout for better user experience your can remove it
-  setTimeout(() => {
-    isLoading.value = false
-  }, 500)
-}
-
-watch(searchQuery, fetchResults)
+    return acc
+  }, [] as SuggestionGroup[])
+}, { debounce: 100, immediate: true })
 
 // 👉 redirect the selected page
 function redirectToSuggestedOrSearchedPage(selected: Suggestion) {
@@ -112,8 +101,6 @@ function redirectToSuggestedOrSearchedPage(selected: Suggestion) {
   isAppSearchBarVisible.value = false
   searchQuery.value = ''
 }
-
-const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/AppBarSearch.vue'))
 </script>
 
 <template>
@@ -187,26 +174,8 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
     </template>
 
     <!-- no data suggestion -->
-    <template #noDataSuggestion>
-      <div class="mt-6">
-        <div class="text-center text-disabled py-2">
-          Try searching for
-        </div>
-        <h6
-          v-for="suggestion in noDataSuggestions"
-          :key="suggestion.title"
-          class="app-bar-search-suggestion text-h6 font-weight-regular cursor-pointer py-2 px-4"
-          @click="redirectToSuggestedOrSearchedPage(suggestion)"
-        >
-          <VIcon
-            size="20"
-            :icon="suggestion.icon"
-            class="me-2"
-          />
-          <span class="d-inline-block">{{ suggestion.title }}</span>
-        </h6>
-      </div>
-    </template>
+    <!-- <template #noDataSuggestion>
+    </template> -->
 
     <!-- search result -->
     <template #searchResult="{ item }">
@@ -214,7 +183,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
         {{ item.title }}
       </VListSubheader>
       <VListItem
-        v-for="list in item.children"
+        v-for="list in item.content"
         :key="list.title"
         @click="redirectToSuggestedOrSearchedPage(list)"
       >

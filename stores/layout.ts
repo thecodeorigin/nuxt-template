@@ -1,20 +1,27 @@
 import { omit } from 'lodash-es'
-import type { HorizontalNavItem, VerticalNavItem } from '@/@layouts/types'
+import type { HorizontalNavItem, NavGroupType, VerticalNavItem } from '@/@layouts/types'
 
 export const useLayoutStore = defineStore('layout', () => {
   const router = useRouter()
 
-  const sidebarItems = computed(
+  const { can } = useAbility()
+
+  const layoutItems = computed(
     () => {
-      const results: VerticalNavItem[] = []
+      const results: (VerticalNavItem & {
+        group: NavGroupType
+      })[] = []
 
       for (const route of router.getRoutes()) {
         if (route.meta.sidebar) {
-          results.push({
+          const item = {
             action: route.meta.action,
             subject: route.meta.subject,
             ...route.meta.sidebar,
-          })
+          }
+
+          if (!item.action || !item.subject || can(item.action, item.subject))
+            results.push(item)
         }
       }
 
@@ -22,14 +29,16 @@ export const useLayoutStore = defineStore('layout', () => {
     },
   )
 
-  const horizontalSidebarItems = computed(
-    () => sidebarItems.value.map(
+  const horizontalLayoutItems = computed(
+    () => layoutItems.value.map(
       i => omit(i, 'heading'),
-    ) as HorizontalNavItem[],
+    ) as (HorizontalNavItem & {
+      group: NavGroupType
+    })[],
   )
 
   return {
-    sidebarItems,
-    horizontalSidebarItems,
+    layoutItems,
+    horizontalLayoutItems,
   }
 })

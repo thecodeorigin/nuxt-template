@@ -32,7 +32,7 @@ watch([
 </script>
 
 <template>
-  <VerticalNavLayout :nav-items="layoutStore.sidebarItems">
+  <VerticalNavLayout :nav-items="layoutStore.layoutItems">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
