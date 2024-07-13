@@ -1,21 +1,29 @@
 <script lang="ts" setup>
 import { layoutConfig } from '@layouts'
-import { can } from '@layouts/plugins/casl'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import type { NavSectionTitle } from '@layouts/types'
 import { getDynamicI18nProps } from '@layouts/utils'
 
-defineProps<{
+const props = defineProps<{
   item: NavSectionTitle
 }>()
 
 const configStore = useLayoutConfigStore()
 const shallRenderIcon = configStore.isVerticalNavMini()
+
+const { can } = useAbility()
+
+const visible = computed(() => {
+  if (!props.item.action || !props.item.subject)
+    return true
+
+  return can(props.item.action, props.item.subject)
+})
 </script>
 
 <template>
   <li
-    v-if="can(item.action, item.subject)"
+    v-if="visible"
     class="nav-section-title"
   >
     <div class="title-wrapper">

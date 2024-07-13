@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { layoutConfig } from '@layouts'
-import { can } from '@layouts/plugins/casl'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import type { NavLink } from '@layouts/types'
 import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
@@ -12,6 +11,8 @@ const props = defineProps<{
 
 const configStore = useLayoutConfigStore()
 const hideTitleAndBadge = configStore.isVerticalNavMini()
+
+const { can } = useAbility()
 
 const visible = computed(() => {
   if (!props.item.action || !props.item.subject)

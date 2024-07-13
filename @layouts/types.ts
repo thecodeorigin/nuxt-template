@@ -1,6 +1,7 @@
 import type { OffsetOptions } from '@floating-ui/dom'
 import type { RouteLocationRaw } from 'vue-router'
 import type { AppContentLayoutNav, ContentWidth, FooterType, HorizontalNavType, NavbarType } from '@layouts/enums'
+import type { Component } from 'vue'
 import type { Actions, Subjects } from '@/plugins/casl/ability'
 
 export interface LayoutConfig {
@@ -26,7 +27,7 @@ export interface LayoutConfig {
   }
   verticalNav: {
     isVerticalNavCollapsed: boolean
-    defaultNavItemIconProps: unknown
+    defaultNavItemIconProps: { icon: string }
   }
   horizontalNav: {
     type: typeof HorizontalNavType[keyof typeof HorizontalNavType]
@@ -79,7 +80,7 @@ export interface NavLinkProps {
 
 export interface NavLink extends NavLinkProps, Partial<AclProperties> {
   title: string
-  icon?: unknown
+  icon?: { icon: string }
   badgeContent?: string
   badgeClass?: string
   disable?: boolean
@@ -88,7 +89,7 @@ export interface NavLink extends NavLinkProps, Partial<AclProperties> {
 // 👉 Vertical nav group
 export interface NavGroup extends Partial<AclProperties> {
   title: string
-  icon?: unknown
+  icon?: { icon: string }
   badgeContent?: string
   badgeClass?: string
   children: HorizontalNavItem[]
