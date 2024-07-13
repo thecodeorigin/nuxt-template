@@ -37,7 +37,7 @@ const userProfileList: Array<{
     type: 'navItem',
     icon: 'ri-user-line',
     title: 'Profile',
-    to: { name: 'apps-user-view-id', params: { id: 21 } },
+    to: { name: 'profile' },
   },
   {
     type: 'navItem',

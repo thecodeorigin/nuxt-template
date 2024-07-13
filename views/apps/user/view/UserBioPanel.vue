@@ -1,25 +1,10 @@
 <script setup lang="ts">
-interface Props {
-  userData: {
-    id: number
-    fullName: string
-    company: string
-    role: string
-    username: string
-    country: string
-    contact: string
-    email: string
-    currentPlan: string
-    status: string
-    avatar: string
-    taskDone: number
-    projectDone: number
-    taxId: string
-    language: string[]
-  }
-}
+const { currentUser } = useAuthStore()
 
-const props = defineProps<Props>()
+const userAvatar = computed(() => currentUser?.avatar_url || currentUser?.image || '')
+const userFullname = computed(() => currentUser?.full_name || currentUser?.name || '')
+const userEmail = computed(() => currentUser?.email || '')
+const userRole = computed(() => currentUser?.role.name || '')
 
 const standardPlan = {
   plan: 'Standard',
@@ -38,9 +23,9 @@ function resolveUserRoleVariant(role: string) {
     return { color: 'warning', icon: 'ri-settings-2-line' }
   if (role === 'maintainer')
     return { color: 'success', icon: 'ri-database-2-line' }
-  if (role === 'editor')
+  if (role === 'Editor')
     return { color: 'info', icon: 'ri-pencil-line' }
-  if (role === 'admin')
+  if (role === 'Admin')
     return { color: 'error', icon: 'ri-server-line' }
 
   return { color: 'primary', icon: 'ri-user-line' }
@@ -51,39 +36,39 @@ function resolveUserRoleVariant(role: string) {
   <VRow>
     <!-- SECTION User Details -->
     <VCol cols="12">
-      <VCard v-if="props.userData">
+      <VCard v-if="currentUser">
         <VCardText class="text-center pt-12 pb-6">
           <!-- 👉 Avatar -->
           <VAvatar
             rounded="lg"
             :size="120"
-            :color="!props.userData.avatar ? 'primary' : undefined"
-            :variant="!props.userData.avatar ? 'tonal' : undefined"
+            :color="!userAvatar ? 'primary' : undefined"
+            :variant="!userAvatar ? 'tonal' : undefined"
           >
             <VImg
-              v-if="props.userData.avatar"
-              :src="props.userData.avatar"
+              v-if="userAvatar"
+              :src="userAvatar"
             />
             <span
               v-else
               class="text-5xl font-weight-medium"
             >
-              {{ avatarText(props.userData.fullName) }}
+              {{ avatarText(userFullname) }}
             </span>
           </VAvatar>
 
           <!-- 👉 User fullName -->
           <h5 class="text-h5 mt-4">
-            {{ props.userData.fullName }}
+            {{ userFullname }}
           </h5>
 
           <!-- 👉 Role chip -->
           <VChip
-            :color="resolveUserRoleVariant(props.userData.role).color"
+            :color="resolveUserRoleVariant(userRole).color"
             size="small"
             class="text-capitalize mt-4"
           >
-            {{ props.userData.role }}
+            {{ userRole }}
           </VChip>
         </VCardText>
 
@@ -105,7 +90,7 @@ function resolveUserRoleVariant(role: string) {
 
             <div>
               <h5 class="text-h5">
-                {{ kFormatter(props.userData.taskDone) }}
+                {{ kFormatter(5) }}
               </h5>
               <span>Task Done</span>
             </div>
@@ -128,7 +113,7 @@ function resolveUserRoleVariant(role: string) {
 
             <div>
               <h5 class="text-h5">
-                {{ kFormatter(props.userData.projectDone) }}
+                {{ kFormatter(5) }}
               </h5>
               <span>Project Done</span>
             </div>
@@ -147,55 +132,26 @@ function resolveUserRoleVariant(role: string) {
           <VList class="card-list">
             <VListItem>
               <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">Username:</span>
-                <span class="text-body-1">
-                  @{{ props.userData.username }}
-                </span>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">
-                  Billing Email:
+                  Email:
                 </span>
-                <span class="text-body-1">{{ props.userData.email }}</span>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">
-                  Status:
-                </span>
-                <span class="text-body-1 text-capitalize">{{ props.userData.status }}</span>
+                <span class="text-body-1">{{ userEmail }}</span>
               </VListItemTitle>
             </VListItem>
 
             <VListItem>
               <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">Role: </span>
-                <span class="text-capitalize text-body-1">{{ props.userData.role }}</span>
+                <span class="text-capitalize text-body-1">{{ userRole }}</span>
               </VListItemTitle>
             </VListItem>
 
             <VListItem>
               <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">
-                  Tax ID:
+                  Phone:
                 </span>
-                <span class="text-body-1">
-                  {{ props.userData.taxId }}
-                </span>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">
-                  Contact:
-                </span>
-                <span class="text-body-1">{{ props.userData.contact }}</span>
+                <span class="text-body-1">{{ currentUser.phone }}</span>
               </VListItemTitle>
             </VListItem>
 
@@ -204,7 +160,7 @@ function resolveUserRoleVariant(role: string) {
                 <span class="font-weight-medium">
                   Language:
                 </span>
-                <span class="text-body-1">{{ props.userData.language }}</span>
+                <span class="text-body-1">{{ currentUser.language }}</span>
               </VListItemTitle>
             </VListItem>
 
@@ -213,7 +169,7 @@ function resolveUserRoleVariant(role: string) {
                 <span class="font-weight-medium">
                   Country:
                 </span>
-                <span class="text-body-1">{{ props.userData.country }}</span>
+                <span class="text-body-1">{{ currentUser.country }}</span>
               </VListItemTitle>
             </VListItem>
           </VList>
@@ -325,10 +281,10 @@ function resolveUserRoleVariant(role: string) {
   </VRow>
 
   <!-- 👉 Edit user info dialog -->
-  <UserInfoEditDialog
+  <!-- <UserInfoEditDialog
     v-model:isDialogVisible="isUserInfoEditDialogVisible"
-    :user-data="props.userData"
-  />
+    :user-data="props.user"
+  /> -->
 
   <!-- 👉 Upgrade plan dialog -->
   <UserUpgradePlanDialog v-model:isDialogVisible="isUpgradePlanDialogVisible" />

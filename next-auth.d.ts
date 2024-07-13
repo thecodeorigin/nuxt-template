@@ -1,7 +1,7 @@
 import type { DefaultSession } from 'next-auth'
 import type { Tables } from './server/types/supabase'
 
-type UserAdditionalData = Tables<'sys_users'> & {
+export type LoggedInUser = Tables<'sys_users'> & {
   role: Tables<'sys_roles'> & {
     permissions: Tables<'sys_permissions'>[]
   }
@@ -9,7 +9,7 @@ type UserAdditionalData = Tables<'sys_users'> & {
 
 declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
-  interface JWT extends UserAdditionalData {}
+  interface JWT extends LoggedInUser {}
 }
 
 declare module 'next-auth' {
@@ -18,10 +18,10 @@ declare module 'next-auth' {
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
   interface Session {
-    user: UserAdditionalData & DefaultSession['user']
+    user: LoggedInUser & DefaultSession['user']
   }
 
-  interface User extends UserAdditionalData { }
+  interface User extends LoggedInUser { }
 }
 
 export {}

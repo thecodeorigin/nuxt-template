@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import UserBioPanel from '@/views/apps/user/view/UserBioPanel.vue'
-import UserTabBillingsPlans from '@/views/apps/user/view/UserTabBillingsPlans.vue'
-import UserTabConnections from '@/views/apps/user/view/UserTabConnections.vue'
-import UserTabNotifications from '@/views/apps/user/view/UserTabNotifications.vue'
-import UserTabOverview from '@/views/apps/user/view/UserTabOverview.vue'
 import UserTabSecurity from '@/views/apps/user/view/UserTabSecurity.vue'
+// import UserTabConnections from '@/views/apps/user/view/UserTabConnections.vue'
+const UserTabBillingsPlans = defineAsyncComponent(() => import('@/views/apps/user/view/UserTabBillingsPlans.vue'))
+const UserTabNotifications = defineAsyncComponent(() => import('@/views/apps/user/view/UserTabNotifications.vue'))
+// import UserTabOverview from '@/views/apps/user/view/UserTabOverview.vue'
 
 const userTab = ref(null)
 
 const tabs = [
-  { icon: 'ri-group-line', title: 'Overview' },
+  // { icon: 'ri-group-line', title: 'Overview' },
   { icon: 'ri-lock-2-line', title: 'Security' },
   { icon: 'ri-bookmark-line', title: 'Billing & Plan' },
   { icon: 'ri-notification-4-line', title: 'Notifications' },
-  { icon: 'ri-link-m', title: 'Connections' },
+  // { icon: 'ri-link-m', title: 'Connections' },
 ]
 
 const { currentUser } = useAuthStore()
@@ -55,9 +55,9 @@ const { currentUser } = useAuthStore()
         class="mt-6 disable-tab-transition"
         :touch="false"
       >
-        <VWindowItem>
+        <!-- <VWindowItem>
           <UserTabOverview />
-        </VWindowItem>
+        </VWindowItem> -->
 
         <VWindowItem>
           <UserTabSecurity />
@@ -71,9 +71,9 @@ const { currentUser } = useAuthStore()
           <UserTabNotifications />
         </VWindowItem>
 
-        <VWindowItem>
+        <!-- <VWindowItem>
           <UserTabConnections />
-        </VWindowItem>
+        </VWindowItem> -->
       </VWindow>
     </VCol>
   </VRow>
