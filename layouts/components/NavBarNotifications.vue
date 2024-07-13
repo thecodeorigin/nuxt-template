@@ -1,63 +1,16 @@
 <script lang="ts" setup>
-import type { Notification } from '@layouts/types'
+import type { Tables } from '~/server/types/supabase.js'
 
-import avatar4 from '@images/avatars/avatar-4.png'
-import avatar5 from '@images/avatars/avatar-5.png'
+const notifications = ref<Tables<'sys_notifications'>[]>([])
 
-const notifications = ref<Notification[]>([
-  {
-    id: 1,
-    img: avatar4,
-    title: 'Congratulation Flora! 🎉',
-    subtitle: 'Won the monthly best seller badge',
-    time: 'Today',
-    isSeen: true,
-  },
-  {
-    id: 2,
-    text: 'Cecilia Becker',
-    title: 'Cecilia Becker',
-    subtitle: 'Accepted your connection',
-    time: '12h ago',
-    isSeen: false,
-    color: 'primary',
-  },
-  {
-    id: 3,
-    img: avatar5,
-    title: 'New message received 👋🏻',
-    subtitle: 'You have 10 unread messages',
-    time: '11 Aug',
-    isSeen: true,
-  },
-  {
-    id: 4,
-    icon: 'ri-bar-chart-line',
-    title: 'Monthly report generated',
-    subtitle: 'July month financial report is generated',
-    time: 'Apr 24, 10:30 AM',
-    isSeen: false,
-    color: 'info',
-  },
-  {
-    id: 5,
-    text: 'Meta Gadgets',
-    title: 'Application has been approved 🚀',
-    subtitle: 'Your Meta Gadgets project application has been approved.',
-    time: 'Feb 17, 12:17 PM',
-    isSeen: false,
-    color: 'success',
-  },
-  {
-    id: 6,
-    icon: 'ri-mail-line',
-    title: 'New message from Harry',
-    subtitle: 'You have new message from Harry',
-    time: 'Jan 6, 1:48 PM',
-    isSeen: true,
-    color: 'error',
-  },
-])
+async function fetchNotification() {
+  $api('/pages/notifications').then((res: any) => {
+    notifications.value = res
+    console.log(res)
+  }).catch(err => console.log(err))
+}
+
+onBeforeMount(fetchNotification)
 
 function removeNotification(notificationId: number) {
   notifications.value.forEach((item, index) => {
@@ -70,7 +23,7 @@ function markRead(notificationId: number[]) {
   notifications.value.forEach((item) => {
     notificationId.forEach((id) => {
       if (id === item.id)
-        item.isSeen = true
+        item.read_at = new Date().toISOString()
     })
   })
 }
@@ -79,13 +32,13 @@ function markUnRead(notificationId: number[]) {
   notifications.value.forEach((item) => {
     notificationId.forEach((id) => {
       if (id === item.id)
-        item.isSeen = false
+        item.read_at = null
     })
   })
 }
 
-function handleNotificationClick(notification: Notification) {
-  if (!notification.isSeen)
+function handleNotificationClick(notification: Tables<'sys_notifications'>) {
+  if (!notification.read_at)
     markRead([notification.id])
 }
 </script>

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import type { Notification } from '@layouts/types'
+import type { Tables } from '~/server/types/supabase'
 
 interface Props {
-  notifications: Notification[]
+  notifications: Tables<'sys_notifications'>[]
   badgeProps?: object
   location?: any
 }
@@ -11,7 +11,7 @@ interface Emit {
   (e: 'read', value: number[]): void
   (e: 'unread', value: number[]): void
   (e: 'remove', value: number): void
-  (e: 'click:notification', value: Notification): void
+  (e: 'click:notification', value: Tables<'sys_notifications'>): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emit>()
 
-const isAllMarkRead = computed(() => props.notifications.some(item => item.isSeen === false),
+const isAllMarkRead = computed(() => props.notifications.some(item => item.read_at === null),
 )
 
 function markAllReadOrUnread() {
@@ -33,7 +33,7 @@ function markAllReadOrUnread() {
     emit('read', allNotificationsIds)
 }
 
-const totalUnreadNotifications = computed(() => props.notifications.filter(item => !item.isSeen).length)
+const totalUnreadNotifications = computed(() => props.notifications.filter(item => !item.read_at).length)
 </script>
 
 <template>
@@ -41,7 +41,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
     <VBadge
       dot
       v-bind="props.badgeProps"
-      :model-value="props.notifications.some(n => !n.isSeen)"
+      :model-value="props.notifications.some(n => !n.read_at)"
       color="error"
       bordered
       offset-x="1"
@@ -119,7 +119,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
                 <!-- Slot: Prepend -->
                 <!-- Handles Avatar: Image, Icon, Text -->
                 <div class="d-flex align-start gap-3">
-                  <VAvatar
+                  <!-- <VAvatar
                     size="40"
                     :color="notification.color && !notification.img ? notification.color : undefined"
                     :variant="notification.img ? undefined : 'tonal' "
@@ -135,7 +135,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
                       v-if="notification.icon"
                       :icon="notification.icon"
                     />
-                  </VAvatar>
+                  </VAvatar> -->
 
                   <div>
                     <div class="text-body-2 text-high-emphasis font-weight-medium mb-1">
@@ -145,13 +145,13 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
                       class="text-caption mb-2 text-medium-emphasis"
                       style="letter-spacing: 0.4px !important; line-height: 18px;"
                     >
-                      {{ notification.subtitle }}
+                      {{ notification.message }}
                     </p>
                     <p
                       class="text-caption mb-0"
                       style="letter-spacing: 0.4px !important; line-height: 18px;"
                     >
-                      {{ notification.time }}
+                      {{ notification.created_at }}
                     </p>
                   </div>
 
@@ -159,11 +159,11 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
 
                   <div class="d-flex flex-column align-end gap-2">
                     <VIcon
-                      :color="!notification.isSeen ? 'primary' : 'secondary'"
-                      :class="`${notification.isSeen ? 'visible-in-hover' : ''} ms-1`"
+                      :color="!notification.read_at ? 'primary' : 'secondary'"
+                      :class="`${notification.read_at ? 'visible-in-hover' : ''} ms-1`"
                       size="10"
                       icon="ri-circle-fill"
-                      @click.stop="$emit(notification.isSeen ? 'unread' : 'read', [notification.id])"
+                      @click.stop="$emit('click:notification', notification)"
                     />
 
                     <div style="block-size: 20px; inline-size: 20px;">
