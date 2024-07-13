@@ -1,20 +1,19 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { cookieRef } from '@/@layouts/stores/config'
-
-// TODO: Get type from backend
-const userData = cookieRef('userData', null as any)
 
 const { signOut } = useAuth()
+const { currentUser } = useAuthStore()
+
+const userAvatar = computed(() => currentUser?.avatar_url || currentUser?.image)
+const userFullname = computed(() => currentUser?.full_name || currentUser?.name)
+const userRole = computed(() => currentUser?.role.name || currentUser?.role)
 
 async function logout() {
   try {
     await signOut({ redirect: false })
 
     const ability = useAbility()
-
-    // Remove "userData" from cookie
-    userData.value = null
 
     // Reset user abilities
     ability.update([])
@@ -26,7 +25,13 @@ async function logout() {
   }
 }
 
-const userProfileList = [
+const userProfileList: Array<{
+  type: 'divider' | 'navItem'
+  icon?: string
+  title?: string
+  to?: RouteLocationRaw
+  chipsProps?: any
+}> = [
   { type: 'divider' },
   {
     type: 'navItem',
@@ -65,7 +70,7 @@ const userProfileList = [
 
 <template>
   <VBadge
-    v-if="userData"
+    v-if="currentUser"
     dot
     bordered
     location="bottom right"
@@ -77,12 +82,12 @@ const userProfileList = [
     <VAvatar
       class="cursor-pointer"
       size="38"
-      :color="!(userData && userData.avatar) ? 'primary' : undefined"
-      :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+      :color="!userAvatar ? 'primary' : undefined"
+      :variant="!userAvatar ? 'tonal' : undefined"
     >
       <VImg
-        v-if="userData && userData.avatar"
-        :src="userData.avatar"
+        v-if="userAvatar"
+        :src="userAvatar"
       />
       <VIcon
         v-else
@@ -100,12 +105,12 @@ const userProfileList = [
           <VListItem class="px-4">
             <div class="d-flex gap-x-2 align-center">
               <VAvatar
-                :color="!(userData && userData.avatar) ? 'primary' : undefined"
-                :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+                :color="!userAvatar ? 'primary' : undefined"
+                :variant="!userAvatar ? 'tonal' : undefined"
               >
                 <VImg
-                  v-if="userData && userData.avatar"
-                  :src="userData.avatar"
+                  v-if="userAvatar"
+                  :src="userAvatar"
                 />
                 <VIcon
                   v-else
@@ -115,10 +120,10 @@ const userProfileList = [
 
               <div>
                 <div class="text-body-2 font-weight-medium text-high-emphasis">
-                  {{ userData.fullName || userData.username }}
+                  {{ userFullname }}
                 </div>
                 <div class="text-capitalize text-caption text-disabled">
-                  {{ userData.role }}
+                  {{ userRole }}
                 </div>
               </div>
             </div>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { User } from 'next-auth'
 import type { NuxtError } from 'nuxt/app'
 
 import { themeConfig } from '@themeConfig'
@@ -80,8 +79,6 @@ async function login(provider?: string) {
   const { user } = sessionData.value!
 
   const ability = useAbility()
-
-  cookieRef<Partial<User>>('userData', user).value = user
 
   ability.update(user.role.permissions ?? [])
 
