@@ -12,7 +12,7 @@ catch (error) {
   console.error(error)
 }
 
-function removeNotification(notificationId: number) {
+function removeNotification(notificationId: string) {
   notifications.value.forEach(async (item, index) => {
     if (notificationId === item.id) {
       await useApi(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
@@ -21,7 +21,7 @@ function removeNotification(notificationId: number) {
   })
 }
 
-function markReadOrUnread(notificationId: number[], type: 'read' | 'unread') {
+function markReadOrUnread(notificationId: string[], type: 'read' | 'unread') {
   notifications.value.forEach((item) => {
     notificationId.forEach(async (id) => {
       if (id === item.id) {

@@ -4,14 +4,14 @@ import type { Tables } from '@/server/types/supabase'
 
 type Notification = Tables<'sys_notifications'>
 interface Props {
-  notifications: Notification[]
+  notifications: Tables<'sys_notifications'>[]
   badgeProps?: object
   location?: any
 }
 interface Emit {
   (e: 'click:notification', value: Notification): void
-  (e: 'markAllReadOrUnread', value: number[], type: 'read' | 'unread'): void
-  (e: 'remove', value: number): void
+  (e: 'markAllReadOrUnread', value: string[], type: 'read' | 'unread'): void
+  (e: 'remove', value: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
