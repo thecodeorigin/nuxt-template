@@ -1,14 +1,14 @@
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event, 'You must be signed in to get your data.')
+  const session = await setAuthOnlyRoute(event)
 
   const { data, error } = await supabaseAdmin.from('user_shortcuts')
     .select('*')
     .match({
-      user_id: session.user!.id!,
+      user_id: session.user.id,
     })
 
   if (error) {
-    setResponseStatus(event, 500, error.message)
+    setResponseStatus(event, 400, error.message)
 
     return error
   }

@@ -1,12 +1,14 @@
 export default defineEventHandler(async (event) => {
-  const userId = getUuid(event, 'User uuid is required to get user details')
+  await setAuthOnlyRoute(event)
 
-  const { data: user } = await supabase.from('sys_users').select().eq('id', userId).maybeSingle()
+  const uuid = getUuid(event, 'Missing UUID to get data')
+
+  const { data: user } = await supabase.from('sys_users').select().eq('id', uuid).maybeSingle()
 
   if (!user) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'User not found',
+      statusMessage: 'Not found',
     })
   }
 

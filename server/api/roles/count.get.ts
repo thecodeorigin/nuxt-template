@@ -1,11 +1,8 @@
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event)
+  await setAuthOnlyRoute(event)
 
-  const { count, error } = await supabaseAdmin.from('categories')
+  const { count, error } = await supabaseAdmin.from('sys_roles')
     .select('*', { count: 'exact', head: true })
-    .match({
-      user_id: session.user!.id!,
-    })
 
   if (error) {
     throw createError({

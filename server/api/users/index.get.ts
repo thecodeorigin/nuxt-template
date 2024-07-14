@@ -1,22 +1,13 @@
-import is from '@sindresorhus/is'
-import { destr } from 'destr'
-
 export default defineEventHandler(async (event) => {
-  const { q = '', sortBy, sortAscending = true, limit = 10, page = 1 } = getQuery(event)
+  await setAuthOnlyRoute(event)
 
-  const parsedQuery = is.string(q) ? q : undefined
-  const parsedQueryLower = (parsedQuery ?? '').toString().toLowerCase()
-
-  const parsedSortBy = destr<string>(sortBy)
-  const parsedSortAscending = destr<boolean>(sortAscending)
-  const parsedLimit = destr<number>(limit)
-  const parsedPage = destr<number>(page)
+  const { keyword = '', keywordLower = '', sortBy, sortAsc = true, limit = 10, page = 1 } = getFilter(event)
 
   const { data, count } = await supabase.from('sys_users')
     .select('*', { count: 'exact', head: true })
-    .or(`full_name.ilike.${parsedQuery || ''},full_name.ilike.${parsedQueryLower || ''}`)
-    .order(parsedSortBy, { ascending: parsedSortAscending })
-    .range(parsedPage - 1, (parsedPage - 1) + parsedLimit)
+    .or(`full_name.ilike.${keyword || ''},full_name.ilike.${keywordLower || ''}`)
+    .order(sortBy, { ascending: sortAsc })
+    .range(page - 1, (page - 1) + limit)
 
   setResponseStatus(event, 200)
 

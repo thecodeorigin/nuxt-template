@@ -3,14 +3,14 @@ export default defineEventHandler(async (event) => {
 
   const uuid = getUuid(event, 'Missing UUID to get data')
 
-  const { data: user } = await supabase.from('sys_users').delete().eq('id', uuid).maybeSingle()
+  const { data: shortcut } = await supabase.from('user_shortcuts').select().eq('id', uuid).maybeSingle()
 
-  if (!user) {
+  if (!shortcut) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Not found',
     })
   }
 
-  return user
+  return shortcut
 })

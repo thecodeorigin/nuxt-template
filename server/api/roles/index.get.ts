@@ -1,7 +1,13 @@
 export default defineEventHandler(async (event) => {
-  await setAuthOnlyRoute(event, 'You must be signed in to get your data.')
+  await setAuthOnlyRoute(event)
 
-  const { data, error } = await supabaseAdmin.from('sys_roles').select('*, permissions:sys_permissions(*)')
+  const { keyword = '', keywordLower = '', sortBy, sortAsc = true, limit = 10, page = 1 } = getFilter(event)
+
+  const { data, error } = await supabaseAdmin.from('sys_roles')
+    .select('*, permissions:sys_permissions(*)', { count: 'exact', head: true })
+    .or(`name.ilike.${keyword || ''},name.ilike.${keywordLower || ''}`)
+    .order(sortBy, { ascending: sortAsc })
+    .range(page - 1, (page - 1) + limit)
 
   if (error) {
     throw createError({

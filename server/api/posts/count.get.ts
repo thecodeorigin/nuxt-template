@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event, 'You must be signed in to get your data.')
+  const session = await setAuthOnlyRoute(event)
 
   const { count, error } = await supabaseAdmin.from('posts')
     .select('*', { count: 'exact', head: true })

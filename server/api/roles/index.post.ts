@@ -1,13 +1,16 @@
 import type { Tables } from '@/server/types/supabase'
 
-type User = Tables<'sys_users'>
+type Role = Tables<'sys_roles'>
 
 export default defineEventHandler(async (event) => {
   await setAuthOnlyRoute(event)
 
-  const user = await readBody<User>(event)
+  const post = await readBody<Role>(event)
 
-  const { data, error } = await supabase.from('sys_users').insert(user).select().maybeSingle()
+  const { data, error } = await supabase.from('sys_roles')
+    .insert(post)
+    .select()
+    .maybeSingle()
 
   if (error)
     setResponseStatus(event, 400, error.message)
