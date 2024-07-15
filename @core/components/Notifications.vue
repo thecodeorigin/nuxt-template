@@ -9,10 +9,9 @@ interface Props {
   location?: any
 }
 interface Emit {
-  (e: 'read', value: number[]): void
-  (e: 'unread', value: number[]): void
-  (e: 'remove', value: number): void
   (e: 'click:notification', value: Notification): void
+  (e: 'markAllReadOrUnread', value: number[], type: 'read' | 'unread'): void
+  (e: 'remove', value: number): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,19 +21,24 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emit>()
 
-const isAllMarkRead = computed(() => props.notifications.every(item => item.read_at),
+const { $formatCreatedAt } = useNuxtApp()
+
+const { notifications } = toRefs(props)
+
+const isAllMarkRead = computed(() => {
+  return notifications.value.every(item => item.read_at)
+},
 )
 
 function markAllReadOrUnread() {
-  const allNotificationsIds = props.notifications.map(item => item.id)
-
-  if (!isAllMarkRead.value)
-    emit('unread', allNotificationsIds)
+  const allNotificationsIds = notifications.value.map(item => item.id)
+  if (isAllMarkRead.value)
+    emit('markAllReadOrUnread', allNotificationsIds, 'unread')
   else
-    emit('read', allNotificationsIds)
+    emit('markAllReadOrUnread', allNotificationsIds, 'read')
 }
 
-const totalUnreadNotifications = computed(() => props.notifications.filter(item => !item.read_at).length)
+const totalUnreadNotifications = computed(() => notifications.value.filter(item => !item.read_at).length)
 </script>
 
 <template>
@@ -68,7 +72,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
 
           <template #append>
             <VChip
-              v-show="!!isAllMarkRead"
+              v-show="!isAllMarkRead"
               size="small"
               class="me-2"
               variant="tonal"
@@ -78,7 +82,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
             </VChip>
 
             <IconBtn
-              v-show="props.notifications.length"
+              v-show="notifications.length"
               size="small"
               @click="markAllReadOrUnread"
             >
@@ -91,7 +95,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
                 activator="parent"
                 location="start"
               >
-                {{ !isAllMarkRead ? 'Mark all as unread' : 'Mark all as read' }}
+                {{ isAllMarkRead ? 'Mark all as unread' : 'Mark all as read' }}
               </VTooltip>
             </IconBtn>
           </template>
@@ -106,7 +110,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
         >
           <VList class="py-0">
             <template
-              v-for="(notification, index) in props.notifications"
+              v-for="(notification, index) in notifications"
               :key="notification.title"
             >
               <VDivider v-if="index > 0" />
@@ -118,26 +122,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
                 @click="$emit('click:notification', notification)"
               >
                 <!-- Slot: Prepend -->
-                <!-- Handles Avatar: Image, Icon, Text -->
                 <div class="d-flex align-start gap-3">
-                  <!-- <VAvatar
-                    size="40"
-                    :color="notification.color && !notification.img ? notification.color : undefined"
-                    :variant="notification.img ? undefined : 'tonal' "
-                  >
-                    <span v-if="notification.text">{{ avatarText(notification.text) }}</span>
-
-                    <VImg
-                      v-if="notification.img"
-                      :src="notification.img"
-                    />
-
-                    <VIcon
-                      v-if="notification.icon"
-                      :icon="notification.icon"
-                    />
-                  </VAvatar> -->
-
                   <div>
                     <div class="text-body-2 text-high-emphasis font-weight-medium mb-1">
                       {{ notification.title }}
@@ -152,12 +137,9 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
                       class="text-caption mb-0"
                       style="letter-spacing: 0.4px !important; line-height: 18px;"
                     >
-                      {{ notification.created_at }}
+                      {{ $formatCreatedAt(notification.created_at) }}
                     </p>
                   </div>
-
-                  <VSpacer />
-
                   <div class="d-flex flex-column align-end gap-2">
                     <VIcon
                       :color="!notification.read_at ? 'primary' : 'secondary'"
@@ -182,7 +164,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
             </template>
 
             <VListItem
-              v-show="!props.notifications.length"
+              v-show="!notifications.length"
               class="text-center text-medium-emphasis"
               style="block-size: 56px;"
             >
@@ -195,7 +177,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
 
         <!-- 👉 Footer -->
         <VCardText
-          v-show="props.notifications.length"
+          v-show="notifications.length"
           class="pa-4"
         >
           <VBtn

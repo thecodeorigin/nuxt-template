@@ -2,44 +2,41 @@
 import type { Tables } from '@/server/types/supabase.js'
 
 type Notification = Tables<'sys_notifications'>
-const notifications = ref<Notification[]>([])
+const notifications = ref<Array<Notification>>([])
 
 try {
   const { data } = await useApi('/pages/notifications')
-  notifications.value = data as unknown as Notification[]
+  notifications.value = data.value as Notification[]
 }
 catch (error) {
   console.error(error)
 }
 
 function removeNotification(notificationId: number) {
-  notifications.value.forEach((item, index) => {
-    if (notificationId === item.id)
+  notifications.value.forEach(async (item, index) => {
+    if (notificationId === item.id) {
+      await useApi(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
       notifications.value.splice(index, 1)
+    }
   })
 }
 
-function markRead(notificationId: number[]) {
+function markReadOrUnread(notificationId: number[], type: 'read' | 'unread') {
   notifications.value.forEach((item) => {
-    notificationId.forEach((id) => {
-      if (id === item.id)
-        item.read_at = new Date().toISOString()
-    })
-  })
-}
-
-function markUnRead(notificationId: number[]) {
-  notifications.value.forEach((item) => {
-    notificationId.forEach((id) => {
-      if (id === item.id)
-        item.read_at = null
+    notificationId.forEach(async (id) => {
+      if (id === item.id) {
+        await useApi(`/pages/notifications/${id}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
+        item.read_at = type === 'read' ? new Date().toDateString() : null
+      }
     })
   })
 }
 
 function handleNotificationClick(notification: Notification) {
   if (!notification.read_at)
-    markRead([notification.id])
+    markReadOrUnread([notification.id], 'read')
+  else
+    markReadOrUnread([notification.id], 'unread')
 }
 </script>
 
@@ -47,8 +44,7 @@ function handleNotificationClick(notification: Notification) {
   <Notifications
     :notifications="notifications"
     @remove="removeNotification"
-    @read="markRead"
-    @unread="markUnRead"
+    @mark-all-read-or-unread="markReadOrUnread"
     @click:notification="handleNotificationClick"
   />
 </template>

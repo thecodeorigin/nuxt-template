@@ -322,7 +322,7 @@ export interface Database {
         Row: {
           action: Json | null
           created_at: string
-          id: number
+          id: string
           message: string | null
           read_at: string | null
           title: string | null
@@ -331,7 +331,7 @@ export interface Database {
         Insert: {
           action?: Json | null
           created_at?: string
-          id?: number
+          id?: string
           message?: string | null
           read_at?: string | null
           title?: string | null
@@ -340,7 +340,7 @@ export interface Database {
         Update: {
           action?: Json | null
           created_at?: string
-          id?: number
+          id?: string
           message?: string | null
           read_at?: string | null
           title?: string | null
