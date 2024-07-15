@@ -389,7 +389,7 @@ export type Database = {
       sys_users: {
         Row: {
           avatar_url: string | null
-          billing_address: Json | null
+          city: string | null
           country: string | null
           created_at: string | null
           deleted_at: string | null
@@ -398,7 +398,6 @@ export type Database = {
           id: string
           language: string | null
           organization: string | null
-          payment_method: Json | null
           phone: string | null
           postcode: string | null
           role_id: string | null
@@ -406,7 +405,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
-          billing_address?: Json | null
+          city?: string | null
           country?: string | null
           created_at?: string | null
           deleted_at?: string | null
@@ -415,7 +414,6 @@ export type Database = {
           id: string
           language?: string | null
           organization?: string | null
-          payment_method?: Json | null
           phone?: string | null
           postcode?: string | null
           role_id?: string | null
@@ -423,7 +421,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
-          billing_address?: Json | null
+          city?: string | null
           country?: string | null
           created_at?: string | null
           deleted_at?: string | null
@@ -432,7 +430,6 @@ export type Database = {
           id?: string
           language?: string | null
           organization?: string | null
-          payment_method?: Json | null
           phone?: string | null
           postcode?: string | null
           role_id?: string | null
@@ -451,6 +448,47 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_payment_methods: {
+        Row: {
+          created_at: string
+          cvv: number
+          expires_at: string
+          id: string
+          number: string
+          placeholder: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cvv: number
+          expires_at: string
+          id?: string
+          number: string
+          placeholder: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cvv?: number
+          expires_at?: string
+          id?: string
+          number?: string
+          placeholder?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_user_payment_methods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sys_users"
             referencedColumns: ["id"]
           },
         ]
