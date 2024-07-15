@@ -3,14 +3,12 @@ import type { Tables } from '~/server/types/supabase.js'
 
 const notifications = ref<Tables<'sys_notifications'>[]>([])
 
-async function fetchNotification() {
-  $api('/pages/notifications').then((res: any) => {
-    notifications.value = res
-    console.log(res)
-  }).catch(err => console.log(err))
-}
-
-onBeforeMount(fetchNotification)
+try {
+    const { data } = await useApi('/pages/notifications')
+    notifications.value = data
+  } catch (error) {
+    console.error(error)
+  }
 
 function removeNotification(notificationId: number) {
   notifications.value.forEach((item, index) => {
