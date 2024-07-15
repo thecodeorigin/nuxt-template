@@ -388,6 +388,7 @@ export type Database = {
       }
       sys_users: {
         Row: {
+          address: string | null
           avatar_url: string | null
           city: string | null
           country: string | null
@@ -404,6 +405,7 @@ export type Database = {
           status: Database["public"]["Enums"]["user_status"] | null
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
           city?: string | null
           country?: string | null
@@ -420,6 +422,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["user_status"] | null
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
           city?: string | null
           country?: string | null

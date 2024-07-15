@@ -1,32 +1,32 @@
 <script lang="ts" setup>
-import avatar1 from '@images/avatars/avatar-1.png'
+const inputFileRef = ref<HTMLElement>()
 
-const accountData = {
-  avatarImg: avatar1,
-  firstName: 'john',
-  lastName: 'Doe',
-  email: 'johnDoe@example.com',
-  org: 'Pixinvent',
-  phone: '+1 (917) 543-9876',
-  address: '123 Main St, New York, NY 10001',
-  state: 'New York',
-  zip: '10001',
-  country: ['USA'],
-  language: ['English'],
-  timezone: '(GMT-11:00) International Date Line West',
-  currency: 'USD',
-}
+const { currentUser } = useAuthStore()
 
-const refInputEl = ref<HTMLElement>()
-
-const isConfirmDialogOpen = ref(false)
-const accountDataLocal = ref(structuredClone(accountData))
-const isAccountDeactivated = ref(false)
-
-const validateAccountDeactivation = [(v: string) => !!v || 'Please confirm account deactivation']
+const formData = ref({
+  avatar_url: currentUser?.avatar_url || '',
+  full_name: currentUser?.full_name || '',
+  email: currentUser?.email || '',
+  organization: currentUser?.organization || '',
+  phone: currentUser?.phone || '',
+  address: currentUser?.address || '',
+  city: currentUser?.city || '',
+  postcode: currentUser?.postcode || '',
+  country: currentUser?.country || '',
+  language: currentUser?.language || '',
+})
 
 function resetForm() {
-  accountDataLocal.value = structuredClone(accountData)
+  formData.value.avatar_url = currentUser?.avatar_url || ''
+  formData.value.full_name = currentUser?.full_name || ''
+  formData.value.email = currentUser?.email || ''
+  formData.value.organization = currentUser?.organization || ''
+  formData.value.phone = currentUser?.phone || ''
+  formData.value.address = currentUser?.address || ''
+  formData.value.city = currentUser?.city || ''
+  formData.value.postcode = currentUser?.postcode || ''
+  formData.value.country = currentUser?.country || ''
+  formData.value.language = currentUser?.language || ''
 }
 
 // changeAvatar function
@@ -38,72 +38,41 @@ function changeAvatar(file: Event) {
     fileReader.readAsDataURL(files[0])
     fileReader.onload = () => {
       if (typeof fileReader.result === 'string')
-        accountDataLocal.value.avatarImg = fileReader.result
+        formData.value.avatar_url = fileReader.result
     }
   }
 }
 
-// reset avatar image
 function resetAvatar() {
-  accountDataLocal.value.avatarImg = accountData.avatarImg
+  formData.value.avatar_url = currentUser?.avatar_url || ''
 }
 
-const timezones = [
-  '(GMT-11:00) International Date Line West',
-  '(GMT-11:00) Midway Island',
-  '(GMT-10:00) Hawaii',
-  '(GMT-09:00) Alaska',
-  '(GMT-08:00) Pacific Time (US & Canada)',
-  '(GMT-08:00) Tijuana',
-  '(GMT-07:00) Arizona',
-  '(GMT-07:00) Chihuahua',
-  '(GMT-07:00) La Paz',
-  '(GMT-07:00) Mazatlan',
-  '(GMT-07:00) Mountain Time (US & Canada)',
-  '(GMT-06:00) Central America',
-  '(GMT-06:00) Central Time (US & Canada)',
-  '(GMT-06:00) Guadalajara',
-  '(GMT-06:00) Mexico City',
-  '(GMT-06:00) Monterrey',
-  '(GMT-06:00) Saskatchewan',
-  '(GMT-05:00) Bogota',
-  '(GMT-05:00) Eastern Time (US & Canada)',
-  '(GMT-05:00) Indiana (East)',
-  '(GMT-05:00) Lima',
-  '(GMT-05:00) Quito',
-  '(GMT-04:00) Atlantic Time (Canada)',
-  '(GMT-04:00) Caracas',
-  '(GMT-04:00) La Paz',
-  '(GMT-04:00) Santiago',
-  '(GMT-03:30) Newfoundland',
-  '(GMT-03:00) Brasilia',
-  '(GMT-03:00) Buenos Aires',
-  '(GMT-03:00) Georgetown',
-  '(GMT-03:00) Greenland',
-  '(GMT-02:00) Mid-Atlantic',
-  '(GMT-01:00) Azores',
-  '(GMT-01:00) Cape Verde Is.',
-  '(GMT+00:00) Casablanca',
-  '(GMT+00:00) Dublin',
-  '(GMT+00:00) Edinburgh',
-  '(GMT+00:00) Lisbon',
-  '(GMT+00:00) London',
-]
+type CountryList = Array<{
+  name: string
+  flag: string
+  iso2: string
+  iso3: string
+}>
 
-const currencies = [
-  'USD',
-  'EUR',
-  'GBP',
-  'AUD',
-  'BRL',
-  'CAD',
-  'CNY',
-  'CZK',
-  'DKK',
-  'HKD',
-  'HUF',
-  'INR',
-]
+type CityList = Array<{ name: string, state_code: string }>
+
+const { data: countryList } = await useLazyApi<CountryList>('/countries')
+
+const cityList = ref<CityList>([])
+async function fetchCities() {
+  const { data } = await useLazyApi<CityList>('/cities', {
+    params: {
+      iso2: formData.value.country,
+    },
+  })
+
+  cityList.value = data.value || []
+}
+
+watch(() => formData.value.country, (value) => {
+  if (value)
+    fetchCities()
+}, { immediate: true })
 </script>
 
 <template>
@@ -117,7 +86,7 @@ const currencies = [
               rounded
               size="100"
               class="me-6"
-              :image="accountDataLocal.avatarImg"
+              :image="formData.avatar_url"
             />
 
             <!-- 👉 Upload Photo -->
@@ -125,7 +94,7 @@ const currencies = [
               <div class="d-flex flex-wrap gap-4">
                 <VBtn
                   color="primary"
-                  @click="refInputEl?.click()"
+                  @click="inputFileRef?.click()"
                 >
                   <VIcon
                     icon="ri-upload-cloud-line"
@@ -134,7 +103,7 @@ const currencies = [
                   <span class="d-none d-sm-block">Upload new photo</span>
                 </VBtn>
                 <input
-                  ref="refInputEl"
+                  ref="inputFileRef"
                   type="file"
                   name="file"
                   accept=".jpeg,.png,.jpg,GIF"
@@ -169,21 +138,9 @@ const currencies = [
                 cols="12"
               >
                 <VTextField
-                  v-model="accountDataLocal.firstName"
+                  v-model="formData.full_name"
                   placeholder="John"
                   label="First Name"
-                />
-              </VCol>
-
-              <!-- 👉 Last Name -->
-              <VCol
-                md="6"
-                cols="12"
-              >
-                <VTextField
-                  v-model="accountDataLocal.lastName"
-                  placeholder="Doe"
-                  label="Last Name"
                 />
               </VCol>
 
@@ -193,7 +150,8 @@ const currencies = [
                 md="6"
               >
                 <VTextField
-                  v-model="accountDataLocal.email"
+                  v-model="formData.email"
+                  disabled
                   label="E-mail"
                   placeholder="johndoe@gmail.com"
                   type="email"
@@ -206,7 +164,7 @@ const currencies = [
                 md="6"
               >
                 <VTextField
-                  v-model="accountDataLocal.org"
+                  v-model="formData.organization"
                   label="Organization"
                   placeholder="Pixinvent"
                 />
@@ -218,7 +176,7 @@ const currencies = [
                 md="6"
               >
                 <VTextField
-                  v-model="accountDataLocal.phone"
+                  v-model="formData.phone"
                   label="Phone Number"
                   placeholder="+1 (917) 543-9876"
                 />
@@ -230,21 +188,9 @@ const currencies = [
                 md="6"
               >
                 <VTextField
-                  v-model="accountDataLocal.address"
+                  v-model="formData.address"
                   label="Address"
                   placeholder="123 Main St, New York, NY 10001"
-                />
-              </VCol>
-
-              <!-- 👉 State -->
-              <VCol
-                cols="12"
-                md="6"
-              >
-                <VTextField
-                  v-model="accountDataLocal.state"
-                  label="State"
-                  placeholder="New York"
                 />
               </VCol>
 
@@ -254,7 +200,7 @@ const currencies = [
                 md="6"
               >
                 <VTextField
-                  v-model="accountDataLocal.zip"
+                  v-model="formData.postcode"
                   label="Zip Code"
                   placeholder="10001"
                 />
@@ -266,13 +212,36 @@ const currencies = [
                 md="6"
               >
                 <VSelect
-                  v-model="accountDataLocal.country"
-                  multiple
-                  chips
-                  closable-chips
+                  v-model="formData.country"
+                  :items="countryList || []"
                   label="Country"
-                  :items="['USA', 'Canada', 'UK', 'India', 'Australia']"
+                  item-title="name"
+                  item-value="iso2"
                   placeholder="Select Country"
+                >
+                  <template #item="{ props, item }">
+                    <VListItem v-bind="props">
+                      <template #prepend>
+                        <VImg :src="item.raw.flag" :style="{ marginRight: '0.5rem' }" :width="24" height="auto" cover />
+                      </template>
+                    </VListItem>
+                  </template>
+                </VSelect>
+              </VCol>
+
+              <!-- 👉 State -->
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <VSelect
+                  v-model="formData.city"
+                  :items="cityList || []"
+                  :disabled="!formData.country"
+                  label="City"
+                  item-title="name"
+                  item-value="state_code"
+                  placeholder="Select City"
                 />
               </VCol>
 
@@ -282,41 +251,12 @@ const currencies = [
                 md="6"
               >
                 <VSelect
-                  v-model="accountDataLocal.language"
+                  v-model="formData.language"
                   label="Language"
-                  multiple
                   chips
                   closable-chips
                   placeholder="Select Language"
                   :items="['English', 'Spanish', 'Arabic', 'Hindi', 'Urdu']"
-                />
-              </VCol>
-
-              <!-- 👉 Timezone -->
-              <VCol
-                cols="12"
-                md="6"
-              >
-                <VSelect
-                  v-model="accountDataLocal.timezone"
-                  label="Timezone"
-                  placeholder="Select Timezone"
-                  :items="timezones"
-                  :menu-props="{ maxHeight: 200 }"
-                />
-              </VCol>
-
-              <!-- 👉 Currency -->
-              <VCol
-                cols="12"
-                md="6"
-              >
-                <VSelect
-                  v-model="accountDataLocal.currency"
-                  label="Currency"
-                  placeholder="Select Currency"
-                  :items="currencies"
-                  :menu-props="{ maxHeight: 200 }"
                 />
               </VCol>
 
@@ -341,45 +281,5 @@ const currencies = [
         </VCardText>
       </VCard>
     </VCol>
-
-    <VCol cols="12">
-      <!-- 👉 Delete Account -->
-      <VCard>
-        <VCardItem class="pb-6">
-          <VCardTitle>
-            Delete Account
-          </VCardTitle>
-        </VCardItem>
-        <VCardText>
-          <!-- 👉 Checkbox and Button  -->
-          <div>
-            <VCheckbox
-              v-model="isAccountDeactivated"
-              :rules="validateAccountDeactivation"
-              label="I confirm my account deactivation"
-            />
-          </div>
-
-          <VBtn
-            :disabled="!isAccountDeactivated"
-            color="error"
-            class="mt-6"
-            @click="isConfirmDialogOpen = true"
-          >
-            Deactivate Account
-          </VBtn>
-        </VCardText>
-      </VCard>
-    </VCol>
   </VRow>
-
-  <!-- Confirm Dialog -->
-  <ConfirmDialog
-    v-model:isDialogVisible="isConfirmDialogOpen"
-    confirmation-question="Are you sure you want to deactivate your account?"
-    confirm-title="Deactivated!"
-    confirm-msg="Your account has been deactivated successfully."
-    cancel-title="Cancelled"
-    cancel-msg="Account Deactivation Cancelled!"
-  />
 </template>

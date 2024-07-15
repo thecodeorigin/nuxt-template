@@ -16,6 +16,8 @@ alter table "public"."sys_users" drop column "billing_address";
 
 alter table "public"."sys_users" drop column "payment_method";
 
+alter table "public"."sys_users" add column "address" text;
+
 alter table "public"."sys_users" add column "city" text;
 
 CREATE UNIQUE INDEX user_payment_methods_pkey ON public.user_payment_methods USING btree (id);
