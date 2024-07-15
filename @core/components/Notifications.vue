@@ -2,6 +2,7 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import type { Tables } from '~/server/types/supabase'
 
+type Notification = Tables<'sys_notifications'>
 interface Props {
   notifications: Tables<'sys_notifications'>[]
   badgeProps?: object
