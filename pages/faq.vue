@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import faqIllustration from '@images/illustrations/faq-illustration.png'
 import { debounce } from 'lodash-es'
-import type { Faqs } from '@/utils/types'
+import type { Tables } from '@/server/types/supabase'
+
+type FaqCategory = Tables<'sys_faq_categories'>
+type Faq = Tables<'sys_faqs'>
+
+type Faqs = FaqCategory & {
+  questions: Faq[]
+}
 
 const faqSearchQuery = ref('')
-
 const faqs = ref<Faqs[]>([])
 
 async function fetchFaqs() {

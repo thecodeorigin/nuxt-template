@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import type { Tables } from '~/server/types/supabase'
+import type { Tables } from '@/server/types/supabase'
 
 type Notification = Tables<'sys_notifications'>
 interface Props {
@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emit>()
 
-const isAllMarkRead = computed(() => props.notifications.some(item => item.read_at === null),
+const isAllMarkRead = computed(() => props.notifications.every(item => item.read_at),
 )
 
 function markAllReadOrUnread() {
@@ -42,7 +42,7 @@ const totalUnreadNotifications = computed(() => props.notifications.filter(item 
     <VBadge
       dot
       v-bind="props.badgeProps"
-      :model-value="props.notifications.some(n => !n.read_at)"
+      :model-value="!isAllMarkRead"
       color="error"
       bordered
       offset-x="1"

@@ -1,14 +1,16 @@
 <script lang="ts" setup>
-import type { Tables } from '~/server/types/supabase.js'
+import type { Tables } from '@/server/types/supabase.js'
 
-const notifications = ref<Tables<'sys_notifications'>[]>([])
+type Notification = Tables<'sys_notifications'>
+const notifications = ref<Notification[]>([])
 
 try {
-    const { data } = await useApi('/pages/notifications')
-    notifications.value = data
-  } catch (error) {
-    console.error(error)
-  }
+  const { data } = await useApi('/pages/notifications')
+  notifications.value = data as unknown as Notification[]
+}
+catch (error) {
+  console.error(error)
+}
 
 function removeNotification(notificationId: number) {
   notifications.value.forEach((item, index) => {
@@ -35,7 +37,7 @@ function markUnRead(notificationId: number[]) {
   })
 }
 
-function handleNotificationClick(notification: Tables<'sys_notifications'>) {
+function handleNotificationClick(notification: Notification) {
   if (!notification.read_at)
     markRead([notification.id])
 }
