@@ -36,20 +36,14 @@ const userProfileList: Array<{
   {
     type: 'navItem',
     icon: 'ri-user-line',
-    title: 'Profile',
-    to: { name: 'profile' },
-  },
-  {
-    type: 'navItem',
-    icon: 'ri-settings-4-line',
-    title: 'Settings',
-    to: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
+    title: 'Profile Settings',
+    to: { name: 'settings-tab', params: { tab: 'account' } },
   },
   {
     type: 'navItem',
     icon: 'ri-file-text-line',
     title: 'Billing Plan',
-    to: { name: 'pages-account-settings-tab', params: { tab: 'billing-plans' } },
+    to: { name: 'settings-tab', params: { tab: 'billing-plans' } },
     chipsProps: { color: 'error', text: '4', size: 'small' },
   },
   { type: 'divider' },
@@ -57,13 +51,13 @@ const userProfileList: Array<{
     type: 'navItem',
     icon: 'ri-money-dollar-circle-line',
     title: 'Pricing',
-    to: { name: 'pages-pricing' },
+    to: { name: 'pricing' },
   },
   {
     type: 'navItem',
     icon: 'ri-question-line',
     title: 'FAQ',
-    to: { name: 'pages-faq' },
+    to: { name: 'faq' },
   },
 ]
 </script>

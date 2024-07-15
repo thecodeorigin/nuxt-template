@@ -22,7 +22,7 @@ const shortcuts = [
     icon: 'ri-computer-line',
     title: 'Role Management',
     subtitle: 'Permissions',
-    to: { name: 'apps-roles' },
+    to: { name: 'roles' },
   },
   {
     icon: 'ri-pie-chart-2-line',
@@ -34,7 +34,7 @@ const shortcuts = [
     icon: 'ri-settings-4-line',
     title: 'Settings',
     subtitle: 'Account Settings',
-    to: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
+    to: { name: 'settings-tab', params: { tab: 'account' } },
   },
 
 ]

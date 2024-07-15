@@ -6,7 +6,7 @@ const AccountSettingsBillingAndPlans = defineAsyncComponent(() => import('@/view
 // import AccountSettingsNotification from '@/views/pages/account-settings/AccountSettingsNotification.vue'
 // import AccountSettingsSecurity from '@/views/pages/account-settings/AccountSettingsSecurity.vue'
 
-const route = useRoute('pages-account-settings-tab')
+const route = useRoute('settings-tab')
 
 const activeTab = computed({
   get: () => route.params.tab,
@@ -23,7 +23,7 @@ const tabs = [
 ]
 
 definePageMeta({
-  navActiveLink: 'pages-account-settings-tab',
+  navActiveLink: 'settings-tab',
 })
 </script>
 
@@ -37,7 +37,7 @@ definePageMeta({
         v-for="item in tabs"
         :key="item.icon"
         :value="item.tab"
-        :to="{ name: 'pages-account-settings-tab', params: { tab: item.tab } }"
+        :to="{ name: 'settings-tab', params: { tab: item.tab } }"
       >
         <VIcon
           start

@@ -203,27 +203,27 @@ export const db: DB = {
           title: 'User Profile - Profile',
         },
         {
-          url: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
+          url: { name: 'settings-tab', params: { tab: 'account' } },
           icon: 'ri-user-settings-line',
           title: 'Account Settings - Account',
         },
         {
-          url: { name: 'pages-account-settings-tab', params: { tab: 'security' } },
+          url: { name: 'settings-tab', params: { tab: 'security' } },
           icon: 'ri-lock-unlock-line',
           title: 'Account Settings - Security',
         },
         {
-          url: { name: 'pages-account-settings-tab', params: { tab: 'billing-plans' } },
+          url: { name: 'settings-tab', params: { tab: 'billing-plans' } },
           icon: 'ri-money-dollar-circle-line',
           title: 'Account Settings - Billing',
         },
         {
-          url: { name: 'pages-account-settings-tab', params: { tab: 'notification' } },
+          url: { name: 'settings-tab', params: { tab: 'notification' } },
           icon: 'ri-notification-3-line',
           title: 'Account Settings - Notifications',
         },
         {
-          url: { name: 'pages-account-settings-tab', params: { tab: 'connection' } },
+          url: { name: 'settings-tab', params: { tab: 'connection' } },
           icon: 'ri-link',
           title: 'Account Settings - Connections',
         },
@@ -348,7 +348,7 @@ export const db: DB = {
           title: 'Roles',
         },
         {
-          url: { name: 'apps-permissions' },
+          url: { name: 'permissions' },
           icon: 'ri-shield-user-line',
           title: 'Permissions',
         },
