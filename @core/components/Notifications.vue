@@ -12,7 +12,7 @@ interface Emit {
   (e: 'read', value: number[]): void
   (e: 'unread', value: number[]): void
   (e: 'remove', value: number): void
-  (e: 'click:notification', value: Tables<'sys_notifications'>): void
+  (e: 'click:notification', value: Notification): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
