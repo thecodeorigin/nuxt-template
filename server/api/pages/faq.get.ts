@@ -7,7 +7,6 @@ export default defineEventHandler(async (event) => {
 
   const { data: categories } = await supabase.from('sys_faq_categories').select('*,questions:sys_faqs(*)').ilike('sys_faqs.question', `%${queryLowered}%`)
   setResponseStatus(event, 200)
-  console.log('categories:', categories)
 
   return categories
 })
