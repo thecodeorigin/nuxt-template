@@ -4,7 +4,7 @@ import type { Tables } from '@/server/types/supabase'
 
 type Notification = Tables<'sys_notifications'>
 interface Props {
-  notifications: Tables<'sys_notifications'>[]
+  notifications: Notification[]
   badgeProps?: object
   location?: any
 }
