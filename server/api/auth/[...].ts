@@ -35,7 +35,7 @@ export default NuxtAuthHandler({
   ],
   pages: {
     signIn: '/auth/login',
-    error: '/not-authorized',
+    error: '/error/not-authorized',
   },
   callbacks: {
     jwt({ token }) {

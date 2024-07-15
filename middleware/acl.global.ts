@@ -25,7 +25,7 @@ export default defineNuxtRouteMiddleware((to) => {
       return navigateTo('/')
     })
     .with(['authenticated', P.any, false, P.any], () => {
-      return navigateTo({ name: 'not-authorized' })
+      return navigateTo({ name: 'error-not-authorized' })
     })
     .with([P.any, P.any, P.any, P.any], () => {})
     .exhaustive()

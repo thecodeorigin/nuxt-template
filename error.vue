@@ -17,28 +17,37 @@ const props = defineProps<{
 
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
-const isDev = process.dev
+const isDev = import.meta.env.DEV
 
 const errToShow = computed(() => {
-  const is404 = props.error?.statusCode === 404 || props.error.message?.includes('404')
-
-  if (is404) {
-    return {
-      title: 'Page Not Found',
-      description: 'We couldn\'t find the page you are looking for.',
-    }
-  }
-
-  else if (isDev) {
-    return {
-      title: props.error?.statusMessage,
-      description: props.error.message,
-    }
-  }
-
-  return {
-    title: 'Oops! Something went wrong.',
-    description: 'We are working on it and we\'ll get it fixed as soon as we can',
+  switch (props.error?.statusCode) {
+    case 404:
+      return {
+        status: 404,
+        title: 'Page Not Found',
+        description: 'We couldn\'t find the page you are looking for.',
+      }
+    case 401:
+      return {
+        status: 401,
+        title: 'You are not authorized! 🔐',
+        description: 'You don\'t have permission to access this page. Go Home!',
+      }
+    default:
+      if (isDev) {
+        return {
+          status: 500,
+          title: props.error?.statusMessage,
+          description: props.error.message,
+        }
+      }
+      else {
+        return {
+          status: 500,
+          title: 'Oops! Something went wrong.',
+          description: 'We are working on it and we\'ll get it fixed as soon as we can',
+        }
+      }
   }
 })
 
@@ -49,7 +58,7 @@ const handleError = () => clearError({ redirect: '/' })
   <NuxtLayout name="blank">
     <div class="misc-wrapper">
       <ErrorHeader
-        :status-code="props.error.statusCode"
+        :status-code="errToShow.status"
         :title="errToShow.title"
         :description="errToShow.description"
         class="mb-10"
@@ -57,7 +66,7 @@ const handleError = () => clearError({ redirect: '/' })
 
       <!-- eslint-disable vue/no-v-html -->
       <div
-        v-if="isDev"
+        v-if="errToShow.status === 500"
         style="max-inline-size: 80dvw; overflow-x: scroll;"
         v-html="error.stack"
       />
@@ -88,8 +97,8 @@ const handleError = () => clearError({ redirect: '/' })
         <VImg
           :src="miscObj"
           class="d-none d-md-block footer-coming-soon-obj"
-          :max-width="177"
-          height="160"
+          :max-width="212"
+          height="165"
         />
       </div>
     </div>

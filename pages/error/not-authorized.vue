@@ -9,9 +9,8 @@ import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVari
 const miscThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
 definePageMeta({
-  alias: '/pages/misc/not-authorized',
-  layout: 'blank',
   public: true,
+  layout: 'blank',
 })
 </script>
 
