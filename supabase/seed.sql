@@ -59,14 +59,6 @@ INSERT INTO "public"."sys_roles" ("id", "name") VALUES
 
 
 --
--- Data for Name: sys_users; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO "public"."sys_users" ("id", "email", "phone", "full_name", "avatar_url", "billing_address", "payment_method", "created_at", "deleted_at", "role_id") VALUES
-	('15e9dc17-b2fa-450c-8a94-30be5b74ef80', 'admin@demo.com', NULL, 'admin', NULL, NULL, NULL, '2024-07-13 08:09:30.342646+00', NULL, 'efb00008-11a4-41dd-b614-7bfad31bdf28');
-
-
---
 -- Data for Name: stripe_subscriptions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -142,9 +134,6 @@ SELECT pg_catalog.setval('"public"."sys_faq_categories_id_seq"', 5, true);
 --
 -- Name: sys_notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
-
-SELECT pg_catalog.setval('"public"."sys_notifications_id_seq"', 1, false);
-
 
 --
 -- PostgreSQL database dump complete
