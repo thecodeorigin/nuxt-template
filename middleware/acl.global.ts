@@ -1,6 +1,8 @@
 import { canNavigate } from '@layouts/plugins/casl'
 import { P, match } from 'ts-pattern'
 
+function canGoNext() {}
+
 export default defineNuxtRouteMiddleware((to) => {
   /*
      * If it's a public route, continue navigation. This kind of pages are allowed to visited by login & non-login users. Basically, without any restrictions.
@@ -12,7 +14,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const { status } = useAuth()
 
   return match([status.value, to.meta.unauthenticatedOnly, canNavigate(to), to.name])
-    .with(['unauthenticated', P.any, P.any, P.not('auth-login')], () => {
+    .with(['unauthenticated', true, P.any, P.any], canGoNext)
+    .with(['unauthenticated', P.nullish.or(false), P.any, P.not('auth-login')], () => {
       return navigateTo({
         name: 'auth-login',
         query: {
@@ -27,6 +30,6 @@ export default defineNuxtRouteMiddleware((to) => {
     .with(['authenticated', P.any, false, P.any], () => {
       return navigateTo({ name: 'error-not-authorized' })
     })
-    .with([P.any, P.any, P.any, P.any], () => {})
+    .with([P.any, P.any, P.any, P.any], canGoNext)
     .exhaustive()
 })

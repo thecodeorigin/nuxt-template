@@ -15,6 +15,8 @@ const configStore = useConfigStore()
 const { isMobile } = useDevice()
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
+
+const notificationStore = useNotificationStore()
 </script>
 
 <template>
@@ -26,6 +28,12 @@ if (isMobile)
       </NuxtLayout>
 
       <ScrollToTop />
+
+      <VSnackbar
+        v-bind="notificationStore.notificationProps"
+      >
+        {{ notificationStore.notificationMessage }}
+      </VSnackbar>
     </VApp>
   </VLocaleProvider>
 </template>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import type { NuxtError } from 'nuxt/app'
+
 import { themeConfig } from '@themeConfig'
+
+import { VForm } from 'vuetify/components/VForm'
 
 import authV2RegisterIllustrationBorderedDark from '@images/pages/auth-v2-register-illustration-bordered-dark.png'
 import authV2RegisterIllustrationBorderedLight from '@images/pages/auth-v2-register-illustration-bordered-light.png'
@@ -8,9 +11,8 @@ import authV2RegisterIllustrationDark from '@images/pages/auth-v2-register-illus
 import authV2RegisterIllustrationLight from '@images/pages/auth-v2-register-illustration-light.png'
 import authV2RegisterMaskDark from '@images/pages/auth-v2-register-mask-dark.png'
 import authV2RegisterMaskLight from '@images/pages/auth-v2-register-mask-light.png'
+import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-
-const authThemeMask = useGenerateImageVariant(authV2RegisterMaskLight, authV2RegisterMaskDark)
 
 const authThemeImg = useGenerateImageVariant(
   authV2RegisterIllustrationLight,
@@ -20,23 +22,97 @@ const authThemeImg = useGenerateImageVariant(
   true,
 )
 
+const authThemeMask = useGenerateImageVariant(authV2RegisterMaskLight, authV2RegisterMaskDark)
+
 definePageMeta({
   layout: 'blank',
   unauthenticatedOnly: true,
-
 })
 
-const form = ref({
-  username: '',
-  email: '',
-  password: '',
-  privacyPolicies: false,
+const errors = ref<Record<string, string | undefined>>({
+  email: undefined,
+  password: undefined,
 })
+
+const acceptPrivacyPolicies = ref(false)
 
 const isPasswordVisible = ref(false)
+
+const isLoading = ref(false)
+
+const formRef = ref<VForm>()
+
+const credentials = ref({
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
+
+const { signIn } = useAuth()
+
+async function login(provider?: string) {
+  try {
+    if (provider) {
+      await signIn(provider, {
+        callbackUrl: '/',
+      })
+    }
+    else {
+      await signIn('credentials', {
+        callbackUrl: '/',
+        ...credentials.value,
+      })
+    }
+  }
+  catch (error: any) {
+    notify(error.message)
+  }
+}
+
+async function signup() {
+  try {
+    isLoading.value = true
+
+    await $api('/auth/signup', {
+      method: 'POST',
+      body: {
+        email: credentials.value.email,
+        password: credentials.value.password,
+      },
+    })
+
+    notify('Please confirm your email address before signin!')
+
+    navigateTo('/auth/login')
+  }
+  catch {
+    notify('An error has occured, please try again later', { type: 'error' })
+  }
+  finally {
+    isLoading.value = false
+  }
+}
+
+function onSubmit() {
+  formRef.value?.validate()
+    .then(({ valid: isValid }) => {
+      if (isValid)
+        signup()
+    })
+}
 </script>
 
 <template>
+  <VOverlay
+    v-model="isLoading"
+    contained
+    persistent
+    scroll-strategy="none"
+    class="align-center justify-center"
+  >
+    <VProgressCircular indeterminate />
+  </VOverlay>
+
   <NuxtLink to="/">
     <div class="app-logo auth-logo">
       <VNodeRenderer :nodes="themeConfig.app.logo" />
@@ -90,43 +166,55 @@ const isPasswordVisible = ref(false)
         </VCardText>
 
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm
+            ref="formRef"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
-              <!-- Username -->
-              <VCol cols="12">
-                <VTextField
-                  v-model="form.username"
-                  autofocus
-                  label="Username"
-                  placeholder="Johndoe"
-                />
-              </VCol>
-
               <!-- email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="form.email"
+                  v-model="credentials.email"
                   label="Email"
-                  type="email"
                   placeholder="johndoe@email.com"
+                  type="email"
+                  autofocus
+                  :rules="[requiredValidator, emailValidator]"
+                  :error-messages="errors.email"
                 />
               </VCol>
 
-              <!-- password -->
               <VCol cols="12">
                 <VTextField
-                  v-model="form.password"
+                  v-model="credentials.password"
                   label="Password"
                   placeholder="············"
+                  :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.password"
                   :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
+              </VCol>
 
+              <VCol cols="12">
+                <VTextField
+                  v-model="credentials.confirmPassword"
+                  label="Confirm Password"
+                  placeholder="············"
+                  :rules="[requiredValidator, confirmedValidator(credentials.confirmPassword, credentials.password)]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.confirmPassword"
+                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
+              </VCol>
+
+              <VCol cols="12">
                 <div class="d-flex align-center my-6">
                   <VCheckbox
                     id="privacy-policy"
-                    v-model="form.privacyPolicies"
+                    v-model="acceptPrivacyPolicies"
                     inline
                   />
                   <VLabel
@@ -144,6 +232,7 @@ const isPasswordVisible = ref(false)
                 <VBtn
                   block
                   type="submit"
+                  :disabled="!acceptPrivacyPolicies"
                 >
                   Sign up
                 </VBtn>
@@ -174,7 +263,7 @@ const isPasswordVisible = ref(false)
                 cols="12"
                 class="text-center"
               >
-                <AuthProvider />
+                <AuthProvider @signin="login" />
               </VCol>
             </VRow>
           </VForm>

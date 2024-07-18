@@ -23,7 +23,6 @@ const email = ref('')
 definePageMeta({
   layout: 'blank',
   unauthenticatedOnly: true,
-
 })
 </script>
 
@@ -107,7 +106,7 @@ definePageMeta({
               <VCol cols="12">
                 <NuxtLink
                   class="d-flex align-center justify-center"
-                  :to="{ name: 'pages-authentication-login-v2' }"
+                  :to="{ name: 'auth-login' }"
                 >
                   <VIcon
                     icon="ri-arrow-left-s-line"

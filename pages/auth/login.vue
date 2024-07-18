@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { NuxtError } from 'nuxt/app'
 
+import { P, match } from 'ts-pattern'
+
 import { themeConfig } from '@themeConfig'
 import { VForm } from 'vuetify/components/VForm'
 
@@ -11,10 +13,7 @@ import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustrati
 import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { cookieRef } from '@/@layouts/stores/config'
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-
-const { signIn, data: sessionData } = useAuth()
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -29,7 +28,6 @@ const authThemeMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginM
 definePageMeta({
   layout: 'blank',
   unauthenticatedOnly: true,
-
 })
 
 const isPasswordVisible = ref(false)
@@ -41,52 +39,44 @@ const errors = ref<Record<string, string | undefined>>({
   password: undefined,
 })
 
-const refVForm = ref<VForm>()
+const formRef = ref<VForm>()
 
 const credentials = ref({
-  email: 'admin@demo.com',
-  password: 'admin',
+  email: '',
+  password: '',
 })
 
 const rememberMe = ref(false)
 
+const { signIn } = useAuth()
+
 async function login(provider?: string) {
-  const response = provider
-    ? await signIn(provider, {
-      callbackUrl: '/',
-    })
-    : await signIn('credentials', {
-      callbackUrl: '/',
-      redirect: false,
-      ...credentials.value,
-    })
+  try {
+    if (provider) {
+      await signIn(provider, {
+        callbackUrl: route.query.to ? String(route.query.to) : '/',
+      })
+    }
+    else {
+      const response = await signIn('credentials', {
+        callbackUrl: route.query.to ? String(route.query.to) : '/',
+        redirect: false,
+        ...credentials.value,
+      })
 
-  // If error is not null => Error is occurred
-  if (response && response.error) {
-    const apiStringifiedError = response.error
-    const apiError: NuxtError = JSON.parse(apiStringifiedError)
-
-    errors.value = apiError.data as Record<string, string | undefined>
-
-    // If err => Don't execute further
-    return
+      match(response)
+        .with({ url: P.string }, ({ url }) => {
+          navigateTo(url, { external: true })
+        })
+    }
   }
-
-  // Reset error on successful login
-  errors.value = {}
-
-  // Update user abilities
-  const { user } = sessionData.value!
-
-  const ability = useAbility()
-
-  ability.update(user.role.permissions ?? [])
-
-  navigateTo(route.query.to ? String(route.query.to) : '/', { replace: true })
+  catch (error: any) {
+    notify(error.message)
+  }
 }
-
+// UJ3K5SpX4KHUgn6gy%D*
 function onSubmit() {
-  refVForm.value?.validate()
+  formRef.value?.validate()
     .then(({ valid: isValid }) => {
       if (isValid)
         login()
@@ -145,23 +135,10 @@ function onSubmit() {
             Please sign-in to your account and start the adventure
           </p>
         </VCardText>
-        <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-caption mb-2 text-primary">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-caption mb-0 text-primary">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
-            </p>
-          </VAlert>
-        </VCardText>
 
         <VCardText>
           <VForm
-            ref="refVForm"
+            ref="formRef"
             @submit.prevent="onSubmit"
           >
             <VRow>
@@ -174,7 +151,7 @@ function onSubmit() {
                   type="email"
                   autofocus
                   :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
+                  :error-messages="errors?.email"
                 />
               </VCol>
 
@@ -186,7 +163,7 @@ function onSubmit() {
                   placeholder="············"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors.password"
+                  :error-messages="errors?.password"
                   :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />

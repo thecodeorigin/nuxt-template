@@ -29,9 +29,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   const currentPermissions = computed(() => normalizeRules(currentRole.value?.permissions || []))
 
+  const pendingUser = ref<{ email: string }>()
+  function setPendingUser(email: string) {
+    pendingUser.value = { email }
+  }
+
   return {
     currentUser,
     currentRole,
     currentPermissions,
+    pendingUser,
+    setPendingUser,
   }
 })

@@ -13,11 +13,6 @@ async function logout() {
   try {
     await signOut({ redirect: false })
 
-    const ability = useAbility()
-
-    // Reset user abilities
-    ability.update([])
-
     navigateTo({ name: 'auth-login' })
   }
   catch (error: any) {

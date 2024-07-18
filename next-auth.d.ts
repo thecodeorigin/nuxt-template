@@ -21,7 +21,9 @@ declare module 'next-auth' {
     user: LoggedInUser & DefaultSession['user']
   }
 
-  interface User extends LoggedInUser { }
+  interface User extends LoggedInUser {
+    verified?: boolean
+  }
 }
 
 export {}

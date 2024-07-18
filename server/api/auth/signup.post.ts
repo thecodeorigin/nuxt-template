@@ -39,8 +39,12 @@ export default defineEventHandler(async (event) => {
       phone: '',
       full_name: signedUpData.user?.user_metadata.name,
       avatar_url: signedUpData.user?.user_metadata.avatar_url,
-      payment_method: {},
-      billing_address: {},
+      language: '',
+      country: '',
+      city: '',
+      postcode: '',
+      address: '',
+      organization: '',
       role_id: editorRole.id,
     })
   }
