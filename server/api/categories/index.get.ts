@@ -1,14 +1,12 @@
 export default defineEventHandler(async (event) => {
   const { session } = await defineEventOptions(event, { auth: true })
 
-  const { keyword = '', keywordLower = '', sortBy, sortAsc = true, limit = 10, page = 1 } = getFilter(event)
+  const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1 } = getFilter(event)
 
   const { data, error } = await supabaseAdmin.from('categories')
-    .select('*', { count: 'exact', head: true })
-    .match({
-      user_id: session.user!.id!,
-    })
-    .or(`name.ilike.${keyword || ''},name.ilike.${keywordLower || ''}`)
+    .select('*', { count: 'exact' })
+    .match({ user_id: session.user!.id! })
+    .or(`name.ilike.${keyword || '%%'},name.ilike.${keywordLower || '%%'}`)
     .order(sortBy, { ascending: sortAsc })
     .range(page - 1, (page - 1) + limit)
 

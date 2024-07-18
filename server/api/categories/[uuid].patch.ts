@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
   const post = await readBody<Category>(event)
 
-  const { data, error } = await supabase.from('categories')
+  const { data, error } = await supabaseAdmin.from('categories')
     .update(post)
     .match({
       id: uuid,

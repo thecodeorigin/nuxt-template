@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   const { session, uuid } = await defineEventOptions(event, { auth: true, detail: true })
 
-  const { data, error } = await supabase.from('categories')
+  const { data, error } = await supabaseAdmin.from('categories')
     .select()
     .match({
       id: uuid,

@@ -14,27 +14,41 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          image_url: string | null
           name: string | null
           slug: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           name?: string | null
           slug: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           name?: string | null
           slug?: string
           updated_at?: string | null
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "public_categories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sys_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts: {
         Row: {

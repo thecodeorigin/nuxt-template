@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
   const post = await readBody<Post>(event)
 
-  const { data, error } = await supabase.from('categories')
+  const { data, error } = await supabaseAdmin.from('categories')
     .insert({
       ...post,
       user_id: session.user!.id!,
