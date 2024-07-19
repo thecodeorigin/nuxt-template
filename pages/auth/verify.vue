@@ -14,49 +14,28 @@ definePageMeta({
 
 const route = useRoute()
 
-const currentEmail = computed(() => route.query.email as string)
+const token = computed(() => route.query.token as string)
+const type = computed(() => route.query.type as string || 'signup')
+const redirectTo = computed(() => route.query.redirect_to as string || '/')
 
-if (!currentEmail.value)
+if (!token.value)
   navigateTo('/')
 
-const canResendConfirmation = ref(false)
-const resendInterval = ref(60)
-
-function startInterval() {
-  canResendConfirmation.value = false
-  resendInterval.value = 60
-
-  const interval = setInterval(() => {
-    if (resendInterval.value > 0) {
-      resendInterval.value--
-    }
-    else {
-      canResendConfirmation.value = true
-      clearInterval(interval)
-    }
-  }, 1000)
-}
-
-onMounted(startInterval)
-
-async function resendConfirmation() {
-  if (!canResendConfirmation.value)
-    return
-
+async function handleVerify() {
   try {
     loading()
 
-    await $api('/auth/resend', {
+    await $api('/auth/verify', {
       method: 'POST',
       body: {
-        email: currentEmail.value,
-        type: 'signup',
+        type: type.value,
+        token: token.value,
       },
     })
 
-    startInterval()
-
     notify('Another confirmation email has been sent to your email address!')
+
+    window.location.href = redirectTo.value
   }
   catch {
     notify('An error has occured, please try again later', { type: 'error' })
@@ -88,19 +67,18 @@ async function resendConfirmation() {
 
       <VCardText>
         <h4 class="text-h4 mb-1">
-          Verify your email ✉️
+          Verify your account ✉️
         </h4>
         <p class="mb-5">
-          Account activation link sent to your email address: <span class="text-high-emphasis font-weight-medium">{{ currentEmail }}</span> Please follow the link inside to continue.
+          Please click the button below to confirm your registration.
         </p>
 
         <VBtn
           block
           class="mb-5"
-          :disabled="!canResendConfirmation"
-          @click="resendConfirmation"
+          @click="handleVerify"
         >
-          Resend Confirmation {{ resendInterval ? `(${resendInterval})` : '' }}
+          Verify Registration
         </VBtn>
       </VCardText>
     </VCard>

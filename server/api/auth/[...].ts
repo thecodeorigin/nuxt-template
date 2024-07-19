@@ -2,7 +2,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 // import GithubProvider from 'next-auth/providers/github'
 import type { NuxtError } from 'nuxt/app'
-import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { AuthError, type User as SupabaseUser } from '@supabase/supabase-js'
 import { NuxtAuthHandler } from '#auth'
 import type { Tables } from '~/server/types/supabase'
 
@@ -59,11 +59,17 @@ export default NuxtAuthHandler({
             verified: true,
           }
         }
-        catch {
-          return {
-            email: credentials.email,
-            verified: false,
+        catch (error: any) {
+          if (error.message.includes('Invalid login credentials'))
+            return new AuthError('Wrong email or password, please try again', 400, '')
+          if (error.message.includes('Email not confirmed')) {
+            return {
+              email: credentials.email,
+              verified: false,
+            }
           }
+
+          return new AuthError('An error has occured, please try again later!', 500)
         }
       },
     }),
@@ -78,19 +84,6 @@ export default NuxtAuthHandler({
     error: '/error/not-authorized',
   },
   callbacks: {
-    jwt({ token }) {
-      return token
-    },
-    async session({ session }) {
-      if (session.user) {
-        const { data } = await supabaseAdmin.from('sys_users').select('*, role:sys_roles(*,permissions:sys_permissions(*))').eq('email', session.user.email!).maybeSingle()
-
-        if (data)
-          Object.assign(session.user, data)
-      }
-
-      return session
-    },
     async signIn({ user, account, profile }) {
       if (profile && account?.provider === 'google') {
         const { data } = await supabase.auth.signInWithIdToken({
@@ -105,13 +98,34 @@ export default NuxtAuthHandler({
         return false
       }
       else if (account?.provider === 'credentials') {
-        if (user?.verified)
+        if (user?.verified === true) {
           return true
-        else
+        }
+        if (user?.verified === false && user.email) {
           return `${process.env.NUXT_PUBLIC_APP_BASE_URL}/auth/confirmation?email=${user?.email}`
+        }
+        else if (user instanceof AuthError) {
+          throw user
+        }
+        else {
+          return false
+        }
       }
 
       return true // Do different verification for other providers that don't have `email_verified`
+    },
+    async session({ session }) {
+      if (session.user) {
+        const { data } = await supabaseAdmin.from('sys_users').select('*, role:sys_roles(*,permissions:sys_permissions(*))').eq('email', session.user.email!).maybeSingle()
+
+        if (data)
+          Object.assign(session.user, data)
+      }
+
+      return session
+    },
+    jwt({ token }) {
+      return token
     },
   },
   cookies: {

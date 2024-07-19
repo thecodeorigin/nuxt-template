@@ -1,3 +1,5 @@
+import { AuthError } from '@supabase/supabase-js'
+
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody(event)
 
@@ -17,19 +19,17 @@ export default defineEventHandler(async (event) => {
   })
 
   if (error) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: error.message,
-    })
+    setResponseStatus(event, error.status, error.message)
+
+    return error
   }
 
   const { data } = await supabaseAdmin.from('sys_users').select().eq('email', email).maybeSingle()
 
   if (!data) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: `User with email "${email}" not found in records.`,
-    })
+    setResponseStatus(event, 404, `User with email "${email}" not found in records.`)
+
+    return new AuthError(`User with email "${email}" not found in records.`, 404)
   }
 
   return data

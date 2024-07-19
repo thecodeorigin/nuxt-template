@@ -38,8 +38,6 @@ const acceptPrivacyPolicies = ref(false)
 
 const isPasswordVisible = ref(false)
 
-const isLoading = ref(false)
-
 const formRef = ref<VForm>()
 
 const credentials = ref({
@@ -52,6 +50,8 @@ const { signIn } = useAuth()
 
 async function login(provider?: string) {
   try {
+    loading()
+
     if (provider) {
       await signIn(provider, {
         callbackUrl: '/',
@@ -65,13 +65,16 @@ async function login(provider?: string) {
     }
   }
   catch (error: any) {
-    notify(error.message)
+    notify(error.data.message || 'An error has occured, please try again later', { type: 'error' })
+  }
+  finally {
+    loading().hide()
   }
 }
 
 async function signup() {
   try {
-    isLoading.value = true
+    loading()
 
     await $api('/auth/signup', {
       method: 'POST',
@@ -85,11 +88,11 @@ async function signup() {
 
     navigateTo('/auth/login')
   }
-  catch {
-    notify('An error has occured, please try again later', { type: 'error' })
+  catch (error: any) {
+    notify(error.data.message || 'An error has occured, please try again later', { type: 'error' })
   }
   finally {
-    isLoading.value = false
+    loading().hide()
   }
 }
 
@@ -103,16 +106,6 @@ function onSubmit() {
 </script>
 
 <template>
-  <VOverlay
-    v-model="isLoading"
-    contained
-    persistent
-    scroll-strategy="none"
-    class="align-center justify-center"
-  >
-    <VProgressCircular indeterminate />
-  </VOverlay>
-
   <NuxtLink to="/">
     <div class="app-logo auth-logo">
       <VNodeRenderer :nodes="themeConfig.app.logo" />

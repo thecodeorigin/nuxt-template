@@ -37,8 +37,21 @@ export const useLayoutStore = defineStore('layout', () => {
     })[],
   )
 
+  const isLoading = ref(false)
+
+  function showLoading() {
+    isLoading.value = true
+  }
+
+  function hideLoading() {
+    isLoading.value = false
+  }
+
   return {
     layoutItems,
     horizontalLayoutItems,
+    isLoading,
+    showLoading,
+    hideLoading,
   }
 })

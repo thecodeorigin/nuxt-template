@@ -5,9 +5,10 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 const { signOut } = useAuth()
 const { currentUser } = useAuthStore()
 
+const userEmail = computed(() => currentUser?.email)
 const userAvatar = computed(() => currentUser?.avatar_url || currentUser?.image)
 const userFullname = computed(() => currentUser?.full_name || currentUser?.name)
-const userRole = computed(() => currentUser?.role.name || currentUser?.role)
+const userRole = computed(() => currentUser?.role?.name || currentUser?.role || 'User')
 
 async function logout() {
   try {
@@ -109,7 +110,7 @@ const userProfileList: Array<{
 
               <div>
                 <div class="text-body-2 font-weight-medium text-high-emphasis">
-                  {{ userFullname }}
+                  {{ userFullname || userEmail }}
                 </div>
                 <div class="text-capitalize text-caption text-disabled">
                   {{ userRole }}

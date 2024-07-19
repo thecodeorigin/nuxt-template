@@ -17,6 +17,7 @@ if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
 const notificationStore = useNotificationStore()
+const layoutStore = useLayoutStore()
 </script>
 
 <template>
@@ -28,6 +29,16 @@ const notificationStore = useNotificationStore()
       </NuxtLayout>
 
       <ScrollToTop />
+
+      <VOverlay
+        :model-value="layoutStore.isLoading"
+        contained
+        persistent
+        scroll-strategy="none"
+        class="align-center justify-center"
+      >
+        <VProgressCircular indeterminate />
+      </VOverlay>
 
       <VSnackbar
         v-bind="notificationStore.notificationProps"

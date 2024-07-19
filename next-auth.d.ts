@@ -1,4 +1,5 @@
 import type { DefaultSession } from 'next-auth'
+import type { AuthError } from '@supabase/supabase-js'
 import type { Tables } from './server/types/supabase'
 
 export type LoggedInUser = Tables<'sys_users'> & {

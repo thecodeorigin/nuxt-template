@@ -52,6 +52,7 @@ const { signIn } = useAuth()
 
 async function login(provider?: string) {
   try {
+    loading()
     if (provider) {
       await signIn(provider, {
         callbackUrl: route.query.to ? String(route.query.to) : '/',
@@ -65,6 +66,9 @@ async function login(provider?: string) {
       })
 
       match(response)
+        .with({ error: P.string }, ({ error }) => {
+          notify(error, { type: 'error' })
+        })
         .with({ url: P.string }, ({ url }) => {
           navigateTo(url, { external: true })
         })
@@ -72,6 +76,9 @@ async function login(provider?: string) {
   }
   catch (error: any) {
     notify(error.message)
+  }
+  finally {
+    loading().hide()
   }
 }
 // UJ3K5SpX4KHUgn6gy%D*
