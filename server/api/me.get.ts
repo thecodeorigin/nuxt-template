@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event)
+  const { session } = await defineEventOptions(event, { auth: true })
 
   const { data } = await supabaseAdmin.from('sys_users').select().eq('email', session.user!.email!).maybeSingle()
 

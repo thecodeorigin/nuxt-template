@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event)
+  const { session } = await defineEventOptions(event, { auth: true })
 
   const { count, error } = await supabaseAdmin.from('posts')
     .select('*', { count: 'exact', head: true })

@@ -73,6 +73,13 @@ watch(() => formData.value.country, (value) => {
   if (value)
     fetchCities()
 }, { immediate: true })
+
+async function handleSubmit() {
+  await $api(`/users/${currentUser?.id}`, {
+    method: 'PATCH',
+    body: formData.value,
+  })
+}
 </script>
 
 <template>
@@ -130,7 +137,7 @@ watch(() => formData.value.country, (value) => {
           </div>
 
           <!-- 👉 Form -->
-          <VForm>
+          <VForm @submit.prevent="handleSubmit">
             <VRow>
               <!-- 👉 Full Name -->
               <VCol
@@ -265,7 +272,9 @@ watch(() => formData.value.country, (value) => {
                 cols="12"
                 class="d-flex flex-wrap gap-4"
               >
-                <VBtn>Save changes</VBtn>
+                <VBtn type="submit">
+                  Save changes
+                </VBtn>
 
                 <VBtn
                   color="secondary"

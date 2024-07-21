@@ -1,7 +1,5 @@
 export default defineEventHandler(async (event) => {
-  await setAuthOnlyRoute(event)
-
-  const uuid = getUuid(event, 'Missing UUID to get data')
+  const { uuid } = await defineEventOptions(event, { auth: true, detail: true })
 
   const { data: shortcut } = await supabase.from('user_shortcuts').select().eq('id', uuid).maybeSingle()
 

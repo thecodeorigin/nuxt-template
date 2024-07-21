@@ -3,14 +3,15 @@ import type { Tables } from '@/server/types/supabase'
 type User = Tables<'sys_users'>
 
 export default defineEventHandler(async (event) => {
-  await setAuthOnlyRoute(event)
+  const { session, uuid } = await defineEventOptions(event, { auth: true, detail: true })
 
-  const uuid = getUuid(event, 'Missing UUID to get data')
+  if (session.user.id !== uuid)
+    return setResponseStatus(event, 403, 'You are not allowed to update other users')
 
-  const post = await readBody<User>(event)
+  const body = await readBody<User>(event)
 
-  const { data, error } = await supabase.from('sys_users')
-    .update(post)
+  const { data, error } = await supabaseAdmin.from('sys_users')
+    .update(body)
     .eq('id', uuid)
     .select()
     .maybeSingle()

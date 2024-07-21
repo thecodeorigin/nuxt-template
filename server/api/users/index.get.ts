@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  await setAuthOnlyRoute(event)
+  await defineEventOptions(event, { auth: true })
 
   const { keyword = '', keywordLower = '', sortBy, sortAsc = true, limit = 10, page = 1 } = getFilter(event)
 

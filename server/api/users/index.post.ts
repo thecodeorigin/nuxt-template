@@ -3,7 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 type User = Tables<'sys_users'>
 
 export default defineEventHandler(async (event) => {
-  await setAuthOnlyRoute(event)
+  await defineEventOptions(event, { auth: true })
 
   const user = await readBody<User>(event)
 

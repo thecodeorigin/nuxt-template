@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  await setAuthOnlyRoute(event)
+  await defineEventOptions(event, { auth: true })
 
   const { count, error } = await supabaseAdmin.from('sys_roles')
     .select('*', { count: 'exact', head: true })

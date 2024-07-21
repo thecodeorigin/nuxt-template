@@ -3,7 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 type Post = Tables<'posts'>
 
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event)
+  const { session } = await defineEventOptions(event, { auth: true })
 
   const post = await readBody<Post>(event)
 
