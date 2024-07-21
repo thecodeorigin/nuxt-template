@@ -132,7 +132,7 @@ watch(() => formData.value.country, (value) => {
           <!-- 👉 Form -->
           <VForm>
             <VRow>
-              <!-- 👉 First Name -->
+              <!-- 👉 Full Name -->
               <VCol
                 md="6"
                 cols="12"
@@ -140,7 +140,7 @@ watch(() => formData.value.country, (value) => {
                 <VTextField
                   v-model="formData.full_name"
                   placeholder="John"
-                  label="First Name"
+                  label="Full Name"
                 />
               </VCol>
 

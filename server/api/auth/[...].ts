@@ -85,6 +85,7 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     async signIn({ user, account, profile }) {
+      console.log('signIn')
       if (profile && account?.provider === 'google') {
         const { data } = await supabase.auth.signInWithIdToken({
           provider: 'google',
@@ -116,7 +117,10 @@ export default NuxtAuthHandler({
     },
     async session({ session }) {
       if (session.user) {
-        const { data } = await supabaseAdmin.from('sys_users').select('*, role:sys_roles(*,permissions:sys_permissions(*))').eq('email', session.user.email!).maybeSingle()
+        const { data } = await supabaseAdmin.from('sys_users')
+          .select('*, role:sys_roles(*,permissions:sys_permissions(*))')
+          .eq('email', session.user.email!)
+          .maybeSingle()
 
         if (data)
           Object.assign(session.user, data)
