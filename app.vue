@@ -4,20 +4,45 @@ import ScrollToTop from '@core/components/ScrollToTop.vue'
 import initCore from '@core/initCore'
 import { initConfigStore, useConfigStore } from '@core/stores/config'
 import { hexToRgb } from '@layouts/utils'
-
-const { global } = useTheme()
+import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 
 // ℹ️ Sync current theme with initial loader theme
 initCore()
 initConfigStore()
-
 const configStore = useConfigStore()
 const { isMobile } = useDevice()
+const config = useRuntimeConfig()
+const { global } = useTheme()
+
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
 const notificationStore = useNotificationStore()
 const layoutStore = useLayoutStore()
+onMounted(() => {
+  Notification.requestPermission()
+    .then((permission) => {
+      if (permission === 'granted') {
+        getToken(useFirebaseMessaging(), { vapidKey: config.public.FB_KEY_PAIR }).then((res) => {
+          console.log('🚀 token:', res)
+        })
+          .catch((error) => {
+            console.log('gettoken error:', error)
+          })
+      }
+    })
+    .catch((error) => {
+      console.log(
+        'Notification.requestPermission ~ error:',
+        error,
+      )
+    })
+
+  onMessage(getMessaging(), (payload) => {
+    // TODO: Handle incoming messages
+    console.log('Client message:', payload)
+  })
+})
 </script>
 
 <template>
