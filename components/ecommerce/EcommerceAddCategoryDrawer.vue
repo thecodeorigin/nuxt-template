@@ -10,12 +10,12 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
 
 interface Props {
-  isDrawerOpen: boolean
+  drawerVisible: boolean
   modelValue: any
 }
 
 interface Emit {
-  (e: 'update:isDrawerOpen', value: boolean): void
+  (e: 'update:drawerVisible', value: boolean): void
   (e: 'update:modelValue', value: any): void
   (e: 'submit'): void
 }
@@ -24,8 +24,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 function handleDrawerModelValueUpdate(val: boolean) {
-  console.log('handleDrawerModelValueUpdate', val)
-  emit('update:isDrawerOpen', val)
+  emit('update:drawerVisible', val)
 }
 
 const editor = useEditor({
@@ -45,7 +44,7 @@ const editor = useEditor({
   ],
 })
 
-const refVForm = ref<VForm>()
+const vFormRef = ref<VForm>()
 
 const categoryData = ref({
   name: '',
@@ -55,8 +54,8 @@ const categoryData = ref({
 })
 
 function resetForm() {
-  emit('update:isDrawerOpen', false)
-  refVForm.value?.reset()
+  emit('update:drawerVisible', false)
+  vFormRef.value?.reset()
   editor.value?.commands.clearContent()
 }
 
@@ -67,7 +66,7 @@ watch(() => categoryData.value, (val) => {
   immediate: true,
 })
 
-watch(() => props.isDrawerOpen, (val) => {
+watch(() => props.drawerVisible, (val) => {
   if (val) {
     if (props.modelValue) {
       categoryData.value = props.modelValue
@@ -75,17 +74,15 @@ watch(() => props.isDrawerOpen, (val) => {
   }
 })
 async function onSubmitted() {
-  console.log('submitted', await refVForm.value?.validate())
-  const isFormValid = (await refVForm.value?.validate())?.valid
-  if (isFormValid) {
+  const { valid } = await vFormRef.value!.validate()
+  if (valid)
     emit('submit')
-  }
 }
 </script>
 
 <template>
   <VNavigationDrawer
-    :model-value="props.isDrawerOpen"
+    :model-value="props.drawerVisible"
     temporary
     location="end"
     width="370"
@@ -95,8 +92,8 @@ async function onSubmitted() {
   >
     <!-- 👉 Header -->
     <AppDrawerHeaderSection
-      :title="props.modelValue ? 'Edit Category' : 'Add Category'"
-      @cancel="$emit('update:isDrawerOpen', false)"
+      :title="props.modelValue.id ? 'Edit Category' : 'Add Category'"
+      @cancel="$emit('update:drawerVisible', false)"
     />
 
     <VDivider />
@@ -104,8 +101,9 @@ async function onSubmitted() {
     <PerfectScrollbar :options="{ wheelPropagation: false }">
       <VCard flat>
         <VCardText>
-          <VForm
-            ref="refVForm"
+          <VForm 
+            v-if="props.drawerVisible"
+            ref="vFormRef"
             @submit.prevent="onSubmitted"
           >
             <VRow>
@@ -159,7 +157,7 @@ async function onSubmitted() {
                     color="primary"
                     class="me-4"
                   >
-                    {{ props.modelValue ? 'Update' : 'Add' }}
+                    {{ props.modelValue.id ? 'Update' : 'Add' }}
                   </VBtn>
                   <VBtn
                     color="error"

@@ -5,7 +5,7 @@ import type { Tables } from '@/server/types/supabase'
 type Category = Tables<'categories'>
 definePageMeta({
   sidebar: {
-    title: 'Category page',
+    title: 'Category',
     to: { name: 'category' },
     icon: { icon: 'ri-file-text-line' },
   },
@@ -41,9 +41,17 @@ const categoryData = ref({
   id: '',
   name: '',
   description: '',
-  total_product: 0,
   slug: '',
 })
+
+function clearCategoryData() {
+  categoryData.value = {
+    id: '',
+    name: '',
+    description: '',
+    slug: '',
+  }
+}
 
 function handleSubmit() {
   if (categoryData.value.id) {
@@ -61,12 +69,12 @@ async function handleCreateCategory() {
       body: {
         name: categoryData.value.name,
         description: categoryData.value.description,
-        total_product: categoryData.value.total_product,
         slug: categoryData.value.slug,
         image_url: '',
       },
     })
     categories.value.unshift(newCategory as Category)
+    clearCategoryData()
     isAddProductDrawerOpen.value = false
   }
   catch (error) {
@@ -81,13 +89,13 @@ async function handleUpdateCategory() {
       body: {
         name: categoryData.value.name,
         description: categoryData.value.description,
-        total_product: categoryData.value.total_product,
         slug: categoryData.value.slug,
         image_url: '',
       },
     })
     const index = categories.value.findIndex(category => category.id === updatedCategory.id)
     categories.value[index] = updatedCategory
+    clearCategoryData()
     isAddProductDrawerOpen.value = false
   }
   catch (error) {
@@ -121,8 +129,12 @@ async function handleDeleteCategory() {
 }
 
 function handleSelectCategory(category: any) {
-  console.log('category', category)
   categoryData.value = { ...category }
+  isAddProductDrawerOpen.value = true
+}
+
+function handleOpenAddCategoryDrawer() {
+  clearCategoryData()
   isAddProductDrawerOpen.value = true
 }
 </script>
@@ -143,7 +155,7 @@ function handleSelectCategory(category: any) {
           <div class="d-flex align-center flex-wrap gap-4">
             <VBtn
               prepend-icon="ri-add-line"
-              @click="isAddProductDrawerOpen = !isAddProductDrawerOpen"
+              @click="handleOpenAddCategoryDrawer"
             >
               Add Category
             </VBtn>
@@ -170,29 +182,6 @@ function handleSelectCategory(category: any) {
           <IconBtn size="small" @click="handleOpenDeleteDialog(item.id)">
             <VIcon icon="ri-delete-bin-5-line" />
           </IconBtn>
-
-          <!-- <MoreBtn
-            size="small"
-            class="text-medium-emphasis"
-            :menu-list="[
-              {
-                title: 'Download',
-                value: 'download',
-                prependIcon: 'ri-download-line',
-              },
-              {
-                title: 'Edit',
-                value: 'edit',
-                prependIcon: 'ri-pencil-line',
-              },
-              {
-                title: 'Duplicate',
-                value: 'duplicate',
-                prependIcon: 'ri-stack-line',
-              },
-            ]"
-            item-props
-          /> -->
         </template>
 
         <template #item.categoryTitle="{ item }">
@@ -228,7 +217,8 @@ function handleSelectCategory(category: any) {
 
         <template #item.totalProduct="{ item }">
           <div class="text-center pe-4">
-            {{ (item.total_product) }}
+            <!-- FIXME - handle count number of product later -->
+            {{ item.total_product || 0 }}
           </div>
         </template>
 
@@ -277,7 +267,7 @@ function handleSelectCategory(category: any) {
       </VDataTable>
     </VCard>
 
-    <ECommerceAddCategoryDrawer v-model:isDrawerOpen="isAddProductDrawerOpen" v-model="categoryData" @submit="handleSubmit" />
+    <ECommerceAddCategoryDrawer v-model:drawerVisible="isAddProductDrawerOpen" v-model="categoryData" @submit="handleSubmit" />
   </div>
 </template>
 
