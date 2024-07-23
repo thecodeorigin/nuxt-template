@@ -48,3 +48,7 @@ public/mockServiceWorker.js
 # Env files
 .env*
 !.env.example
+
+
+# Ignore the build directory
+public/firebase-config.json

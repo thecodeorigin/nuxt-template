@@ -4,7 +4,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 const { signOut } = useAuth()
 const { currentUser } = useAuthStore()
-
+const tokenDeviceStore = useTokenDeviceStore()
 const userEmail = computed(() => currentUser?.email)
 const userAvatar = computed(() => currentUser?.avatar_url || currentUser?.image)
 const userFullname = computed(() => currentUser?.full_name || currentUser?.name)
@@ -12,8 +12,8 @@ const userRole = computed(() => currentUser?.role?.name || currentUser?.role || 
 
 async function logout() {
   try {
+    tokenDeviceStore.clearTokenDevice()
     await signOut({ redirect: false })
-
     navigateTo({ name: 'auth-login' })
   }
   catch (error: any) {

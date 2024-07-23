@@ -6,6 +6,9 @@ import { initConfigStore, useConfigStore } from '@core/stores/config'
 import { hexToRgb } from '@layouts/utils'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 
+const { currentUser } = useAuthStore()
+const tokenDeviceStore = useTokenDeviceStore()
+
 // ℹ️ Sync current theme with initial loader theme
 initCore()
 initConfigStore()
@@ -21,21 +24,22 @@ const notificationStore = useNotificationStore()
 const layoutStore = useLayoutStore()
 onMounted(() => {
   Notification.requestPermission()
-    .then((permission) => {
+    .then(async (permission) => {
       if (permission === 'granted') {
-        getToken(useFirebaseMessaging(), { vapidKey: config.public.FB_KEY_PAIR }).then((res) => {
-          console.log('🚀 token:', res)
-        })
-          .catch((error) => {
-            console.log('gettoken error:', error)
-          })
+        const messaging = getMessaging()
+        const token = await getToken(messaging, { vapidKey: config.public.FB_KEY_PAIR })
+        if (currentUser) {
+          try {
+            await tokenDeviceStore.setTokenDevice(token)
+          }
+          catch (error) {
+            console.log('setTokenDevice error:', error)
+          }
+        }
       }
     })
     .catch((error) => {
-      console.log(
-        'Notification.requestPermission ~ error:',
-        error,
-      )
+      console.log('Notification.requestPermission error:', error)
     })
 
   onMessage(getMessaging(), (payload) => {

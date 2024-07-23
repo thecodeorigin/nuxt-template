@@ -178,7 +178,6 @@ export default defineNuxtConfig({
        messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
        appId: process.env.FB_APP_ID,
        measurementId: process.env.FB_MEASUREMENT_ID,
-
      },
   },
   compatibilityDate: '2024-07-12',

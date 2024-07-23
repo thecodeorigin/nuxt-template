@@ -326,7 +326,7 @@ export interface Database {
           message: string | null
           read_at: string | null
           title: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           action?: Json | null
@@ -335,7 +335,7 @@ export interface Database {
           message?: string | null
           read_at?: string | null
           title?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           action?: Json | null
@@ -344,11 +344,11 @@ export interface Database {
           message?: string | null
           read_at?: string | null
           title?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'sys_notifications_user_id_fkey'
+            foreignKeyName: 'public_sys_notifications_user_id_fkey'
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'sys_users'
@@ -491,6 +491,35 @@ export interface Database {
             columns: ['id']
             isOneToOne: true
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      user_devices: {
+        Row: {
+          created_at: string
+          id: number
+          token_device: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          token_device?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          token_device?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'public_user_devices_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'sys_users'
             referencedColumns: ['id']
           },
         ]

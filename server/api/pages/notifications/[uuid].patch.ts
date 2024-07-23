@@ -3,9 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 type Notification = Tables<'sys_notifications'>
 
 export default defineEventHandler(async (event) => {
-  const session = await setAuthOnlyRoute(event)
-
-  const uuid = getUuid(event, 'Missing UUID to get data')
+  const { session, uuid } = await defineEventOptions(event, { auth: true, detail: true })
 
   const notification = await readBody<Notification>(event)
 
