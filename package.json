@@ -5,7 +5,8 @@
   "private": false,
   "packageManager": "pnpm@9.0.6",
   "scripts": {
-    "dev": "nuxt dev && jiti ./scripts/postbuild.ts",
+    "write": "npx jiti ./scripts/postbuild.ts",
+    "dev": "npx jiti ./scripts/postbuild.ts && nuxt dev",
     "build": "node --max-old-space-size=4096 node_modules/nuxt/bin/nuxt.mjs build && npx jiti ./scripts/postbuild.ts",
     "lint": "eslint . --fix",
     "build:icons": "tsx plugins/iconify/build-icons.ts",

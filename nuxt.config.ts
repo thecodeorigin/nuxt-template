@@ -40,7 +40,7 @@ export default defineNuxtConfig({
     // Public keys that are exposed to the client.
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
-      FB_KEY_PAIR: process.env.FB_KEY_PAIR,
+      FIREBASE_KEY_PAIR: process.env.FIREBASE_KEY_PAIR,
     },
   },
 
@@ -170,14 +170,14 @@ export default defineNuxtConfig({
   vuefire: {
     config:
      {
-       apiKey: process.env.FB_API_KEY,
-       authDomain: process.env.FB_AUTH_DOMAIN,
-       databaseURL: process.env.FB_DB_URL,
-       projectId: process.env.FB_PROJECT_ID,
-       storageBucket: process.env.FB_STORAGE_BUCKET,
-       messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
-       appId: process.env.FB_APP_ID,
-       measurementId: process.env.FB_MEASUREMENT_ID,
+       apiKey: process.env.FIREBASE_API_KEY,
+       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+       databaseURL: process.env.FIREBASE_DB_URL,
+       projectId: process.env.FIREBASE_PROJECT_ID,
+       storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+       appId: process.env.FIREBASE_APP_ID,
+       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
      },
   },
   compatibilityDate: '2024-07-12',

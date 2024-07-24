@@ -22,25 +22,18 @@ if (isMobile)
 
 const notificationStore = useNotificationStore()
 const layoutStore = useLayoutStore()
-onMounted(() => {
-  Notification.requestPermission()
-    .then(async (permission) => {
-      if (permission === 'granted') {
-        const messaging = getMessaging()
-        const token = await getToken(messaging, { vapidKey: config.public.FB_KEY_PAIR })
-        if (currentUser) {
-          try {
-            await tokenDeviceStore.setTokenDevice(token)
-          }
-          catch (error) {
-            console.log('setTokenDevice error:', error)
-          }
-        }
-      }
-    })
-    .catch((error) => {
-      console.log('Notification.requestPermission error:', error)
-    })
+onMounted(async () => {
+  try {
+    const permission = await Notification.requestPermission()
+    if (permission === 'granted' && currentUser) {
+      const messaging = getMessaging()
+      const token = await getToken(messaging, { vapidKey: config.public.FIREBASE_KEY_PAIR })
+      await tokenDeviceStore.setTokenDevice(token)
+    }
+  }
+  catch (error) {
+    console.log('Error:', error)
+  }
 
   onMessage(getMessaging(), (payload) => {
     // TODO: Handle incoming messages

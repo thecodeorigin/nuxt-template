@@ -18,15 +18,14 @@ const queryPagination = computed(() => {
     end: start + query.value.amount - 1,
   }
 })
-async function fetNotifications() {
+async function fetchNotifications() {
   try {
-    const response = await useApi('/pages/notifications', {
+    const response = await $api<Notification[]>('/pages/notifications', {
       method: 'GET',
-      query: queryPagination,
+      query: queryPagination.value,
     })
 
-    const data = response.data.value as Notification[]
-
+    const data = response
     if (data.length < query.value.amount) {
       query.value.empty = true
     }
@@ -37,48 +36,52 @@ async function fetNotifications() {
     console.error(error)
   }
 }
-fetNotifications()
+fetchNotifications()
 
 async function fetchMoreNotifications({ done }: { done: (type: string) => void }) {
+  if (query.value.empty) {
+    done('empty')
+    return
+  }
   query.value.start += query.value.amount
-  await fetNotifications()
+  await fetchNotifications()
   if (query.value.empty)
     done('empty')
   else
     done('ok')
 }
 
-function removeNotification(notificationId: string) {
-  notifications.value.forEach(async (item, index) => {
-    if (notificationId === item.id) {
-      try {
-        await useApi(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
+async function removeNotification(notificationId: string) {
+  try {
+    await $api(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
+    notifications.value.forEach((item, index) => {
+      if (notificationId === item.id) {
         notifications.value.splice(index, 1)
       }
-      catch (error) {
-        console.error(error)
-      }
-    }
-  })
+    })
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 
-function markReadOrUnread(notificationId: string, type: 'read' | 'unread') {
-  notifications.value.forEach(async (item) => {
-    if (notificationId === item.id) {
-      try {
-        await useApi(`/pages/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
+async function markReadOrUnread(notificationId: string, type: 'read' | 'unread') {
+  try {
+    await $api(`/pages/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
+    notifications.value.forEach((item) => {
+      if (notificationId === item.id) {
         item.read_at = type === 'read' ? new Date().toDateString() : null
       }
-      catch (error) {
-        console.error(error)
-      }
-    }
-  })
+    })
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 async function markAllReadOrUnread(type: 'read' | 'unread') {
   try {
     const read = type === 'read'
-    await useApi(`/pages/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
+    await $api(`/pages/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
     })
     notifications.value.forEach((item) => {
       item.read_at = read ? new Date().toDateString() : null
