@@ -12,8 +12,8 @@ const formData = ref({
   address: currentUser?.address || '',
   city: currentUser?.city || '',
   postcode: currentUser?.postcode || '',
-  country: currentUser?.country || '',
-  language: currentUser?.language || '',
+  country: currentUser?.country || null,
+  language: currentUser?.language || null,
 })
 
 function resetForm() {
@@ -25,11 +25,10 @@ function resetForm() {
   formData.value.address = currentUser?.address || ''
   formData.value.city = currentUser?.city || ''
   formData.value.postcode = currentUser?.postcode || ''
-  formData.value.country = currentUser?.country || ''
-  formData.value.language = currentUser?.language || ''
+  formData.value.country = currentUser?.country || null
+  formData.value.language = currentUser?.language || null
 }
 
-// changeAvatar function
 function changeAvatar(file: Event) {
   const fileReader = new FileReader()
   const { files } = file.target as HTMLInputElement
@@ -46,27 +45,33 @@ function changeAvatar(file: Event) {
 function resetAvatar() {
   formData.value.avatar_url = currentUser?.avatar_url || ''
 }
-
-type CountryList = Array<{
+interface Country {
   name: string
   flag: string
   iso2: string
   iso3: string
-}>
+}
 
-type CityList = Array<{ name: string, state_code: string }>
+interface City {
+  name: string
+  state_code: string
+}
+type CountryList = Array<Country>
 
-const { data: countryList } = await useLazyApi<CountryList>('/countries')
+type CityList = Array<City>
+
+const { data: countryList } = await $fetch<{ data: CountryList }>('https://countriesnow.space/api/v0.1/countries/flag/images')
 
 const cityList = ref<CityList>([])
 async function fetchCities() {
-  const { data } = await useLazyApi<CityList>('/cities', {
-    params: {
-      iso2: formData.value.country,
+  const { data } = await $fetch<{ data: Country & { states: CityList } }>('https://countriesnow.space/api/v0.1/countries/states', {
+    method: 'POST',
+    body: {
+      country: formData.value.country,
     },
   })
 
-  cityList.value = data.value || []
+  cityList.value = data.states || []
 }
 
 watch(() => formData.value.country, (value) => {
@@ -223,7 +228,7 @@ async function handleSubmit() {
                   :items="countryList || []"
                   label="Country"
                   item-title="name"
-                  item-value="iso2"
+                  item-value="name"
                   placeholder="Select Country"
                 >
                   <template #item="{ props, item }">
