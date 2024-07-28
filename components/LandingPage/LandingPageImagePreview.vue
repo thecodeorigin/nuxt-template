@@ -1,82 +1,123 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { useDropZone, useFileDialog, useObjectUrl } from '@vueuse/core'
 
-const props = defineProps({
-  id: {
-    type: String,
-    default: '',
+const dropZoneRef = ref<HTMLDivElement>()
+interface FileData {
+  file: File
+  url: string
+}
+
+const fileData = ref<FileData[]>([])
+const { open, onChange } = useFileDialog({ accept: 'image/*' })
+
+function onDrop(DroppedFiles: File[] | null) {
+  DroppedFiles?.forEach((file) => {
+    if (file.type.slice(0, 6) !== 'image/') {
+      // eslint-disable-next-line no-alert
+      alert('Only image files are allowed')
+
+      return
+    }
+
+    fileData.value.push({
+      file,
+      url: useObjectUrl(file).value ?? '',
+    })
   },
-  modelValue: {
-    type: [File, String, null] as PropType<File | string | null>,
-    default: null,
-  },
+  )
+}
+
+onChange((selectedFiles: any) => {
+  if (!selectedFiles)
+    return
+
+  for (const file of selectedFiles) {
+    fileData.value.push({
+      file,
+      url: useObjectUrl(file).value ?? '',
+    })
+  }
 })
 
-const emit = defineEmits(['update:modelValue'])
-
-const fileInputRef = ref<HTMLInputElement | null>(null)
-
-const { previewUrl, onFileChange, removeImage } = useUploadImage(emit)
-
-watch(
-  () => props.modelValue,
-  (newVal) => {
-    if (!newVal)
-      previewUrl.value = null
-  },
-)
-
-function triggerFileInput() {
-  fileInputRef.value?.click()
-}
+useDropZone(dropZoneRef, onDrop)
 </script>
 
 <template>
-  <div class="landing-page-upload">
-    <VFileInput
-      :id="props.id"
-      ref="fileInputRef"
-      type="file"
-      accept="image/*"
-      @change="onFileChange"
-    />
-
-    <div class="landing-page-upload-wrapper mx-auto mt-6">
-      <h2 class="landing-page-upload-title">
-        Drag and drop your file
-      </h2>
-
-      <p class="landing-page-upload-subtitle">
-        PNG, JPG, GIF, WEBP, MP4 or MP3. Max 100mb.
-      </p>
-
-      <p class="landing-page-upload-description">
-        or choose a file
-      </p>
-
-      <VBtn
-        class="landing-page-upload-btn"
-        variant="outlined"
-        @click.prevent="triggerFileInput"
-      >
-        Upload files
-      </VBtn>
-
-      <VBtn
-        v-if="previewUrl"
+  <div
+    ref="dropZoneRef"
+    class="cursor-pointer"
+    @click="() => open()"
+  >
+    <div
+      v-if="fileData.length === 0"
+      class="d-flex flex-column justify-center align-center gap-y-2 pa-12 border-dashed drop-zone"
+    >
+      <VAvatar
+        variant="tonal"
         color="secondary"
-        class="landing-page-image-remove"
-        icon="ri-close-line"
-        size="large"
-        @click="removeImage"
-      />
-
-      <img
-        v-if="previewUrl"
-        class="landing-page-image-preview"
-        :src="previewUrl"
-        alt="Image preview"
+        rounded
       >
+        <VIcon icon="ri-upload-2-line" />
+      </VAvatar>
+      <h4 class="text-h4 text-wrap">
+        Drag and Drop Your Image Here.
+      </h4>
+      <span class="text-disabled">or</span>
+
+      <VBtn
+        variant="outlined"
+        size="small"
+      >
+        Browse Images
+      </VBtn>
+    </div>
+
+    <div
+      v-else
+      class="d-flex justify-center align-center gap-3 pa-8 border-dashed drop-zone flex-wrap"
+    >
+      <VRow class="match-height w-100">
+        <template
+          v-for="(item, index) in fileData"
+          :key="index"
+        >
+          <VCol
+            cols="12"
+            sm="4"
+          >
+            <VCard :ripple="false">
+              <VCardText
+                class="d-flex flex-column"
+                @click.stop
+              >
+                <VImg
+                  :src="item.url"
+                  width="200px"
+                  height="150px"
+                  class="w-100 mx-auto"
+                />
+                <div class="mt-2">
+                  <span class="clamp-text text-wrap">
+                    {{ item.file.name }}
+                  </span>
+                  <span>
+                    {{ item.file.size / 1000 }} KB
+                  </span>
+                </div>
+              </VCardText>
+              <VCardActions>
+                <VBtn
+                  variant="text"
+                  block
+                  @click.stop="fileData.splice(index, 1)"
+                >
+                  Remove File
+                </VBtn>
+              </VCardActions>
+            </VCard>
+          </VCol>
+        </template>
+      </VRow>
     </div>
   </div>
 </template>
@@ -92,39 +133,12 @@ function triggerFileInput() {
     width: 380px;
     height: 350px;
     border: 2px dashed #d3d3d3;
+    padding: 20px;
 
     .landing-page-upload-title {
       margin-top: 24px;
       font-weight: 700;
       line-height: 30px;
-      text-align: center;
-    }
-
-    .landing-page-upload-subtitle {
-      margin-top: 20px;
-      font-weight: 600;
-      line-height: 22px;
-      text-align: center;
-    }
-
-    .landing-page-upload-description {
-      margin-top: 40px;
-      font-weight: 600;
-      line-height: 20px;
-      text-align: center;
-    }
-
-    .landing-page-upload-btn {
-      width: 160px;
-      height: 50px;
-      margin-top: 40px;
-      border: 2px solid #E2E5E8;
-      padding: 6px 24px 6px 24px !important;
-      gap: 8px;
-      border-radius: 90px;
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 20px;
       text-align: center;
     }
 
