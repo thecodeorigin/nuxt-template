@@ -245,9 +245,5 @@ const isCurrentFeatureValid = computed(() => {
   &:hover {
   border-color:rgba(234, 234, 255, 0.7) !important;
   }
-
-  &:active {
-    border-color:#2196F3 !important;
-  }
 }
 </style>

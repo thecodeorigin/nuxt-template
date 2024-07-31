@@ -8,6 +8,13 @@ import heroDashboardImgLight from '@images/front-pages/landing-page/hero-dashboa
 import heroElementsImgDark from '@images/front-pages/landing-page/hero-elements-dark.png'
 import heroElementsImgLight from '@images/front-pages/landing-page/hero-elements-light.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
+import type { HeroSectionData } from '@/types/landing-page'
+
+const props = defineProps({
+  data: {
+    type: Object as PropType<HeroSectionData>,
+  },
+})
 
 const theme = useTheme()
 const isDark = ref(theme.name)
@@ -47,25 +54,25 @@ const translateMouse = computed(() => (speed: number) => {
       <VContainer>
         <div class="text-center pt-6 pb-16">
           <div class="mb-4 landing-page-title">
-            <div>
-              All in one sass application
-            </div>
-            for your business
+            {{ props.data?.main_title }}
           </div>
           <div class="text-body-1 font-weight-medium text-high-emphasis pb-8">
-            <p class="mb-0">
-              No coding required to make customization
-            </p>
-            <p class="mb-0">
-              The live customer has everything your marketing needs
+            <p v-for="(description, index) in props.data?.main_title_desc" :key="index" class="mb-0">
+              {{ description }}
             </p>
           </div>
           <VBtn
-            :to="{ name: 'landing-page', hash: `#pricing-plan` }"
+            :color="data?.main_title_button?.btn_background"
+            :prepend-icon="data?.main_title_button?.btn_prepend_icon"
+            :append-icon="data?.main_title_button?.btn_apend_icon"
+            :to="data?.main_title_button?.btn_link"
+            :variant="data?.main_title_button?.btn_variant"
+            :ripple="data?.main_title_button?.btb_rippled"
+            class="mt-6"
             size="large"
-            :active="false"
+            rounded="rounded"
           >
-            Get Early Access
+            {{ data?.main_title_button?.btn_label }}
           </VBtn>
         </div>
 

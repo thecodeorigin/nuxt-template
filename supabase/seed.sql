@@ -85,12 +85,6 @@ INSERT INTO "public"."categories" ("id", "name", "slug", "description", "created
 -- Data for Name: sys_faq_categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO "public"."sys_faq_categories" ("id", "title", "icon", "subtitle") VALUES
-	(1, 'Payment', 'ri-bank-card-line', 'Get help with payment'),
-	(2, 'Delivery', 'ri-shopping-cart-line', 'Get help with delivery'),
-	(3, 'Cancellation & Return', 'ri-refresh-line', 'Get help with cancellation & return'),
-	(4, 'My Order', 'ri-inbox-archive-line', 'Order details'),
-	(5, 'Product & Services', 'ri-settings-4-line', 'Get help with product & services');
 
 
 --
@@ -163,7 +157,7 @@ INSERT INTO "public"."sys_permissions" ("id", "role_id", "action", "subject") VA
 -- Name: sys_faq_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"public"."sys_faq_categories_id_seq"', 5, true);
+SELECT pg_catalog.setval('"public"."sys_faq_categories_id_seq"', 1, false);
 
 
 --

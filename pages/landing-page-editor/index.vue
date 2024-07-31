@@ -2,19 +2,22 @@
 definePageMeta({
   sidebar: {
     title: 'Landing Page Editor',
-    to: { name: 'landing-page-editor' },
+    to: { name: 'landing-page-editor', params: 'hero-section' },
     icon: { icon: 'ri-file-text-line' },
+
   },
 })
 </script>
 
 <template>
   <form class="landing-page-editor">
-    <LandingPageHeroSection />
-
     <VDivider class="my-6" />
 
     <LandingPageFeature />
+
+    <VDivider class="my-6" />
+
+    <LandingPageCustomerReview />
   </form>
 </template>
 

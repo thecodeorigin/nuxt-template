@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useConfigStore } from '@core/stores/config'
+import { pick } from 'lodash-es'
 
 import Footer from '@/views/front-pages/front-page-footer.vue'
 import Navbar from '@/views/front-pages/front-page-navbar.vue'
@@ -12,6 +13,10 @@ import HeroSection from '@/views/front-pages/landing-page/hero-section.vue'
 import OurTeam from '@/views/front-pages/landing-page/our-team.vue'
 import PricingPlans from '@/views/front-pages/landing-page/pricing-plans.vue'
 import ProductStats from '@/views/front-pages/landing-page/product-stats.vue'
+import type { Tables } from '@/server/types/supabase'
+import type { HeroSectionData } from '@/types/landing-page'
+
+type LandingPage = Tables<'sys_landing_page'>
 
 const store = useConfigStore()
 
@@ -22,7 +27,6 @@ definePageMeta({
 })
 
 const activeSectionId = ref()
-
 const refHome = ref()
 const refFeatures = ref()
 const refTeam = ref()
@@ -39,6 +43,26 @@ useIntersectionObserver(
     threshold: 0.25,
   },
 )
+
+const landingPageData = ref<LandingPage>()
+const heroSectionData = ref<HeroSectionData>()
+
+async function fetchLandingPageData() {
+  try {
+    const data = await $api('/api/pages/landing-page')
+    landingPageData.value = data
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+watch(() => landingPageData.value, (data) => {
+  if (data)
+    heroSectionData.value = pick(data, ['main_title', 'main_title_desc', 'main_title_button'])
+})
+
+onBeforeMount(fetchLandingPageData)
 </script>
 
 <template>
@@ -46,7 +70,7 @@ useIntersectionObserver(
     <Navbar :active-id="activeSectionId" />
 
     <!-- 👉 Hero Section  -->
-    <HeroSection ref="refHome" />
+    <HeroSection ref="refHome" :data="heroSectionData" />
 
     <!-- 👉 Useful features  -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">

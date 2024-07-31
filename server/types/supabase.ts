@@ -445,6 +445,31 @@ export interface Database {
             ]
           },
         ]
+
+      }
+      sys_landing_page: {
+        Row: {
+          created_at: string
+          id: string
+          main_title: string
+          main_title_button: Json | null
+          main_title_desc: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          main_title: string
+          main_title_button?: Json | null
+          main_title_desc?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          main_title?: string
+          main_title_button?: Json | null
+          main_title_desc?: string[] | null
+        }
+        Relationships: []
       }
       sys_notifications: {
         Row: {
