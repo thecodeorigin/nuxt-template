@@ -235,12 +235,12 @@ export interface Database {
           currency: string | null
           description: string | null
           id: string
-          interval: Database['public']['Enums']['pricing_plan_interval'] | null
+          interval: Database["public"]["Enums"]["pricing_plan_interval"] | null
           interval_count: number | null
           metadata: Json | null
           product_id: string | null
           trial_period_days: number | null
-          type: Database['public']['Enums']['pricing_type'] | null
+          type: Database["public"]["Enums"]["pricing_type"] | null
           unit_amount: number | null
         }
         Insert: {
@@ -248,12 +248,12 @@ export interface Database {
           currency?: string | null
           description?: string | null
           id: string
-          interval?: Database['public']['Enums']['pricing_plan_interval'] | null
+          interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
           interval_count?: number | null
           metadata?: Json | null
           product_id?: string | null
           trial_period_days?: number | null
-          type?: Database['public']['Enums']['pricing_type'] | null
+          type?: Database["public"]["Enums"]["pricing_type"] | null
           unit_amount?: number | null
         }
         Update: {
@@ -261,12 +261,12 @@ export interface Database {
           currency?: string | null
           description?: string | null
           id?: string
-          interval?: Database['public']['Enums']['pricing_plan_interval'] | null
+          interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
           interval_count?: number | null
           metadata?: Json | null
           product_id?: string | null
           trial_period_days?: number | null
-          type?: Database['public']['Enums']['pricing_type'] | null
+          type?: Database["public"]["Enums"]["pricing_type"] | null
           unit_amount?: number | null
         }
         Relationships: [
@@ -327,7 +327,7 @@ export interface Database {
           metadata: Json | null
           price_id: string | null
           quantity: number | null
-          status: Database['public']['Enums']['subscription_status'] | null
+          status: Database["public"]["Enums"]["subscription_status"] | null
           trial_end: string | null
           trial_start: string | null
           user_id: string
@@ -344,7 +344,7 @@ export interface Database {
           metadata?: Json | null
           price_id?: string | null
           quantity?: number | null
-          status?: Database['public']['Enums']['subscription_status'] | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
           trial_end?: string | null
           trial_start?: string | null
           user_id: string
@@ -361,7 +361,7 @@ export interface Database {
           metadata?: Json | null
           price_id?: string | null
           quantity?: number | null
-          status?: Database['public']['Enums']['subscription_status'] | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
           trial_end?: string | null
           trial_start?: string | null
           user_id?: string
@@ -450,6 +450,10 @@ export interface Database {
       sys_landing_page: {
         Row: {
           created_at: string
+          feature_data: Json[] | null
+          feature_emphasized_title: Json | null
+          feature_title: string | null
+          feature_title_desc: string | null
           id: string
           main_title: string
           main_title_button: Json | null
@@ -457,6 +461,10 @@ export interface Database {
         }
         Insert: {
           created_at?: string
+          feature_data?: Json[] | null
+          feature_emphasized_title?: Json | null
+          feature_title?: string | null
+          feature_title_desc?: string | null
           id?: string
           main_title: string
           main_title_button?: Json | null
@@ -464,6 +472,10 @@ export interface Database {
         }
         Update: {
           created_at?: string
+          feature_data?: Json[] | null
+          feature_emphasized_title?: Json | null
+          feature_title?: string | null
+          feature_title_desc?: string | null
           id?: string
           main_title?: string
           main_title_button?: Json | null
@@ -515,22 +527,22 @@ export interface Database {
       }
       sys_permissions: {
         Row: {
-          action: Database['public']['Enums']['permission_action']
+          action: Database["public"]["Enums"]["permission_action"]
           id: string
           role_id: string | null
-          subject: Database['public']['Enums']['permission_subject']
+          subject: Database["public"]["Enums"]["permission_subject"]
         }
         Insert: {
-          action?: Database['public']['Enums']['permission_action']
+          action?: Database["public"]["Enums"]["permission_action"]
           id?: string
           role_id?: string | null
-          subject: Database['public']['Enums']['permission_subject']
+          subject: Database["public"]["Enums"]["permission_subject"]
         }
         Update: {
-          action?: Database['public']['Enums']['permission_action']
+          action?: Database["public"]["Enums"]["permission_action"]
           id?: string
           role_id?: string | null
-          subject?: Database['public']['Enums']['permission_subject']
+          subject?: Database["public"]["Enums"]["permission_subject"]
         }
         Relationships: [
           {
@@ -608,7 +620,7 @@ export interface Database {
           phone: string | null
           postcode: string | null
           role_id: string | null
-          status: Database['public']['Enums']['user_status'] | null
+          status: Database["public"]["Enums"]["user_status"] | null
         }
         Insert: {
           address?: string | null
@@ -625,7 +637,7 @@ export interface Database {
           phone?: string | null
           postcode?: string | null
           role_id?: string | null
-          status?: Database['public']['Enums']['user_status'] | null
+          status?: Database["public"]["Enums"]["user_status"] | null
         }
         Update: {
           address?: string | null
@@ -642,7 +654,7 @@ export interface Database {
           phone?: string | null
           postcode?: string | null
           role_id?: string | null
-          status?: Database['public']['Enums']['user_status'] | null
+          status?: Database["public"]["Enums"]["user_status"] | null
         }
         Relationships: [
           {

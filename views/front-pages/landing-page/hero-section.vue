@@ -8,11 +8,11 @@ import heroDashboardImgLight from '@images/front-pages/landing-page/hero-dashboa
 import heroElementsImgDark from '@images/front-pages/landing-page/hero-elements-dark.png'
 import heroElementsImgLight from '@images/front-pages/landing-page/hero-elements-light.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import type { HeroSectionData } from '@/types/landing-page'
+import type { HeroSectionType } from '@/types/landing-page'
 
 const props = defineProps({
   data: {
-    type: Object as PropType<HeroSectionData>,
+    type: Object as PropType<HeroSectionType>,
   },
 })
 

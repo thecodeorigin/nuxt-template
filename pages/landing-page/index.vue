@@ -14,7 +14,7 @@ import OurTeam from '@/views/front-pages/landing-page/our-team.vue'
 import PricingPlans from '@/views/front-pages/landing-page/pricing-plans.vue'
 import ProductStats from '@/views/front-pages/landing-page/product-stats.vue'
 import type { Tables } from '@/server/types/supabase'
-import type { HeroSectionData } from '@/types/landing-page'
+import type { CustomerReviewSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, TeamSectionType } from '@/types/landing-page'
 
 type LandingPage = Tables<'sys_landing_page'>
 
@@ -45,12 +45,16 @@ useIntersectionObserver(
 )
 
 const landingPageData = ref<LandingPage>()
-const heroSectionData = ref<HeroSectionData>()
+const heroSectionData = ref<HeroSectionType>()
+const featureSectionData = ref<FeatureSectionType>()
+const customerReviewSectionData = ref<CustomerReviewSectionType>()
+const ourTeamSectionData = ref<TeamSectionType>()
+const pricingPlansSectionData = ref<PricingSectionType>()
 
 async function fetchLandingPageData() {
   try {
     const data = await $api('/api/pages/landing-page')
-    landingPageData.value = data
+    landingPageData.value = data as LandingPage
   }
   catch (error) {
     console.error(error)
@@ -58,8 +62,17 @@ async function fetchLandingPageData() {
 }
 
 watch(() => landingPageData.value, (data) => {
-  if (data)
-    heroSectionData.value = pick(data, ['main_title', 'main_title_desc', 'main_title_button'])
+  if (data) {
+    heroSectionData.value = pick(data, ['main_title', 'main_title_desc', 'main_title_button']) as HeroSectionType
+
+    featureSectionData.value = pick(data, ['feature_title', 'feature_emphasized_title', 'feature_title_desc', 'feature_data']) as FeatureSectionType
+
+    customerReviewSectionData.value = pick(data, ['customer_review_title', 'customer_review_data', 'customer_review_title_desc', 'customer_review_emphasized_title']) as CustomerReviewSectionType
+
+    ourTeamSectionData.value = pick(data, ['our_team_title', 'our_team_data', 'our_team_desc', 'our_team_emphasized_title']) as TeamSectionType
+
+    pricingPlansSectionData.value = pick(data, ['pricing_title', 'pricing_data', 'pricing_title_desc', 'pricing_emphasized_title']) as PricingSectionType
+  }
 })
 
 onBeforeMount(fetchLandingPageData)
@@ -74,19 +87,19 @@ onBeforeMount(fetchLandingPageData)
 
     <!-- 👉 Useful features  -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
-      <Features ref="refFeatures" />
+      <Features ref="refFeatures" :data="featureSectionData" />
     </div>
 
     <!-- 👉 Customer Review -->
-    <CustomersReview />
+    <CustomersReview :data="customerReviewSectionData" />
 
     <!-- 👉 Our Team -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
-      <OurTeam ref="refTeam" />
+      <OurTeam ref="refTeam" :data="ourTeamSectionData" />
     </div>
 
     <!-- 👉 Pricing Plans -->
-    <PricingPlans />
+    <PricingPlans :data="pricingPlansSectionData" />
 
     <!-- 👉 Product stats -->
     <ProductStats />

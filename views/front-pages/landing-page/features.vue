@@ -1,0 +1,159 @@
+<script setup lang="ts">
+import sectionTitleIcon from '@images/pages/section-title-icon.png'
+import SelectSolid from '@images/svg/3d-select-solid.svg'
+import Edit from '@images/svg/edit.svg'
+import GoogleDocs from '@images/svg/google-docs.svg'
+import LaptopCharging from '@images/svg/laptop-charging.svg'
+import Lifebelt from '@images/svg/lifebelt.svg'
+import TransitionUp from '@images/svg/transition-up.svg'
+import type { FeatureSectionType } from '@/types/landing-page'
+
+defineProps({
+  data: {
+    type: Object as PropType<FeatureSectionType>,
+  },
+})
+
+function getIcon(iconName: string) {
+  switch (iconName) {
+    case 'SelectSolid':
+      return SelectSolid
+    case 'Edit':
+      return Edit
+    case 'GoogleDocs':
+      return GoogleDocs
+    case 'LaptopCharging':
+      return LaptopCharging
+    case 'Lifebelt':
+      return Lifebelt
+    case 'TransitionUp':
+      return TransitionUp
+    default:
+      return SelectSolid
+  }
+}
+</script>
+
+<template>
+  <VContainer id="features">
+    <div class="feature-cards">
+      <div class="headers d-flex justify-center flex-column align-center mb-6">
+        <div class="d-flex gap-x-3 mb-6">
+          <img
+            :src="sectionTitleIcon"
+            alt="section title icon"
+            height="24"
+            width="25"
+          >
+          <div class="text-body-1 text-high-emphasis font-weight-medium">
+            USEFUL FEATURES
+          </div>
+        </div>
+
+        <div class="feature-title-wrapper mb-2 text-center d-flex  gap-1">
+          <Component
+            :is="data?.feature_emphasized_title?.variant"
+            v-if="data?.feature_emphasized_title"
+            :style="{
+              color: data?.feature_emphasized_title?.color,
+              fontSize: `${data?.feature_emphasized_title?.font_size}px`,
+              fontWeight: data?.feature_emphasized_title?.font_weight,
+              textTransform: data?.feature_emphasized_title?.text_transform,
+              textDecoration: data?.feature_emphasized_title?.text_decoration,
+            }"
+          >
+            {{ data?.feature_emphasized_title?.text }}
+          </Component>
+
+          <span class="feature-title text-h5 d-inline-block">
+            {{ data?.feature_title }}
+          </span>
+        </div>
+
+        <p class="text-body-1 font-weight-medium text-center">
+          {{ data?.feature_title_desc }}
+        </p>
+      </div>
+
+      <VRow>
+        <VCol
+          v-for="(feature, index) in data?.feature_data"
+          :key="index"
+          cols="12"
+          sm="6"
+          md="4"
+        >
+          <div class="feature d-flex flex-column gap-y-2 align-center justify-center mt-2">
+            <VAvatar
+              variant="outlined"
+              size="82"
+              color="primary"
+              class="mb-2"
+            >
+              <Component :is="getIcon(feature.icon)" />
+            </VAvatar>
+
+            <h5 class="text-h5">
+              {{ feature.name }}
+            </h5>
+            <p
+              class="text-center text-medium-emphasis"
+              style="max-inline-size: 360px;"
+            >
+              {{ feature.desc }}
+            </p>
+          </div>
+        </VCol>
+      </VRow>
+    </div>
+  </VContainer>
+</template>
+
+<style lang="scss" scoped>
+.feature-cards {
+  margin-block-end: 4.25rem;
+}
+
+#features {
+  padding-block-start: 13rem;
+}
+
+@media (max-width: 960px) {
+  #features {
+    padding-block-start: 6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  #features {
+    padding-block-start: 2rem;
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.feature {
+  .v-avatar {
+    &.v-avatar--variant-outlined {
+      border: 2px solid rgba(var(--v-theme-primary), 0.32);
+
+      &:hover {
+        background: rgba(var(--v-theme-primary), 0.16);
+        cursor: pointer;
+      }
+    }
+  }
+}
+.feature-title{
+  margin-bottom: 2px;
+}
+
+@media screen and (max-width: 510px) {
+  .feature-title-wrapper{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+}
+</style>

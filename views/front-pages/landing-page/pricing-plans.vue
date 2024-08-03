@@ -4,6 +4,14 @@ import frontPageVectorImg from '@images/svg/front-page-vector.svg'
 import ListArrowIcon from '@images/svg/list-arrow-icon.svg'
 import VectorIcon from '@images/svg/vector.svg'
 
+import type { PricingSectionType } from '@/types/landing-page'
+
+defineProps({
+  data: {
+    type: Object as PropType<PricingSectionType>,
+  },
+})
+
 const pricingPlans = [
   {
     title: 'Basic Plan',
@@ -78,18 +86,28 @@ const pricingPlans = [
           </div>
         </div>
 
-        <div class="mb-2 text-center">
-          <span
-            class="text-h4 d-inline-block font-weight-bold"
-            style="line-height: 2rem;"
+        <div class="pricing-title-wrapper mb-2 text-center d-flex gap-1 align-end">
+          <Component
+            :is="data?.pricing_emphasized_title?.variant"
+            v-if="data?.pricing_emphasized_title"
+            :style="{
+              color: data?.pricing_emphasized_title?.color,
+              fontSize: `${data?.pricing_emphasized_title?.font_size}px`,
+              fontWeight: data?.pricing_emphasized_title?.font_weight,
+              textTransform: data?.pricing_emphasized_title?.text_transform,
+              textDecoration: data?.pricing_emphasized_title?.text_decoration,
+            }"
           >
-            Tailored pricing plans
-          </span> <span class="text-h5 d-inline-block">designed for you</span>
+            {{ data?.pricing_emphasized_title?.text }}
+          </Component>
+
+          <span class="pricing-title text-h5 d-inline-block">
+            {{ data?.pricing_title }}
+          </span>
         </div>
 
-        <p class="text-body-1 font-weight-medium text-center mb-0">
-          All plans include 40+ advanced tools and features to boost your product. <br>
-          Choose the best plan to fit your needs.
+        <p v-for="(description, index) in data?.pricing_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
+          {{ description }}
         </p>
       </div>
 
@@ -105,7 +123,7 @@ const pricingPlans = [
 
       <VRow>
         <VCol
-          v-for="(plan, index) in pricingPlans"
+          v-for="(plan, index) in data?.pricing_data"
           :key="index"
         >
           <VCard
