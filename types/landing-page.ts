@@ -97,11 +97,39 @@ export interface PricingSectionType {
 }
 
 // Interface for product stats
-export interface ProductStat {
+export interface ProductStatType {
   id: number
   title: string
   value: number
+  color: string
+  icon: string
 }
 
-// Modify the array type as needed
-export type ProductStatType = ProductStat[]
+export interface ProductStatsSectionType {
+  product_stats: ProductStatType[]
+}
+
+// Interface for FAQ section
+interface FAQ {
+  question: string
+  answer: string
+}
+
+export interface FAQSectionType {
+  faq_emphasized_title: EmphasizedTitle
+  faq_title: string
+  faq_title_desc: string
+  faq_data: FAQ[]
+}
+
+// Interface for about us section
+
+export interface ContactUsSectionType {
+  contact_us_emphasized_title: EmphasizedTitle
+  contact_us_title: string
+  contact_us_title_desc: string
+  contact_us_card_heading: string
+  contact_us_card_emphasized_heading: EmphasizedTitle
+  contact_us_card_image: string
+  contact_us_card_content: string
+}

@@ -50,7 +50,7 @@ function getIcon(iconName: string) {
           </div>
         </div>
 
-        <div class="feature-title-wrapper mb-2 text-center d-flex  gap-1">
+        <div class="mb-2 text-center gap-1">
           <Component
             :is="data?.feature_emphasized_title?.variant"
             v-if="data?.feature_emphasized_title"
@@ -61,6 +61,7 @@ function getIcon(iconName: string) {
               textTransform: data?.feature_emphasized_title?.text_transform,
               textDecoration: data?.feature_emphasized_title?.text_decoration,
             }"
+            class="d-inline-block mr-1"
           >
             {{ data?.feature_emphasized_title?.text }}
           </Component>
@@ -142,18 +143,6 @@ function getIcon(iconName: string) {
         cursor: pointer;
       }
     }
-  }
-}
-.feature-title{
-  margin-bottom: 2px;
-}
-
-@media screen and (max-width: 510px) {
-  .feature-title-wrapper{
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
   }
 }
 </style>

@@ -4,6 +4,20 @@ create table "public"."team_members" (
 );
 
 
+alter table "public"."sys_landing_page" add column "contact_us_card_content" text;
+
+alter table "public"."sys_landing_page" add column "contact_us_card_emphasized_heading" jsonb;
+
+alter table "public"."sys_landing_page" add column "contact_us_card_heading" text;
+
+alter table "public"."sys_landing_page" add column "contact_us_card_image" text;
+
+alter table "public"."sys_landing_page" add column "contact_us_emphasized_title" jsonb;
+
+alter table "public"."sys_landing_page" add column "contact_us_title" text;
+
+alter table "public"."sys_landing_page" add column "contact_us_title_desc" text[];
+
 alter table "public"."sys_landing_page" add column "customer_review_data" jsonb[];
 
 alter table "public"."sys_landing_page" add column "customer_review_emphasized_title" jsonb;
@@ -11,6 +25,14 @@ alter table "public"."sys_landing_page" add column "customer_review_emphasized_t
 alter table "public"."sys_landing_page" add column "customer_review_title" text;
 
 alter table "public"."sys_landing_page" add column "customer_review_title_desc" text[];
+
+alter table "public"."sys_landing_page" add column "faq_data" jsonb[];
+
+alter table "public"."sys_landing_page" add column "faq_emphasized_title" jsonb;
+
+alter table "public"."sys_landing_page" add column "faq_title" text;
+
+alter table "public"."sys_landing_page" add column "faq_title_desc" text[];
 
 alter table "public"."sys_landing_page" add column "feature_data" jsonb[];
 

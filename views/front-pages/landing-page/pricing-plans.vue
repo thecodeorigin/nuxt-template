@@ -35,7 +35,7 @@ defineProps({
           </div>
         </div>
 
-        <div class="pricing-title-wrapper mb-2 text-center d-flex gap-1 align-end">
+        <div class="mb-2 text-center gap-1">
           <Component
             :is="data?.pricing_emphasized_title?.variant"
             v-if="data?.pricing_emphasized_title"
@@ -46,6 +46,7 @@ defineProps({
               textTransform: data?.pricing_emphasized_title?.text_transform,
               textDecoration: data?.pricing_emphasized_title?.text_decoration,
             }"
+            class="d-inline-block mr-1"
           >
             {{ data?.pricing_emphasized_title?.text }}
           </Component>

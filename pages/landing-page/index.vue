@@ -14,7 +14,7 @@ import OurTeam from '@/views/front-pages/landing-page/our-team.vue'
 import PricingPlans from '@/views/front-pages/landing-page/pricing-plans.vue'
 import ProductStats from '@/views/front-pages/landing-page/product-stats.vue'
 import type { Tables } from '@/server/types/supabase'
-import type { CustomerReviewSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatType, TeamSectionType } from '@/types/landing-page'
+import type { ContactUsSectionType, CustomerReviewSectionType, FAQSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatsSectionType, TeamSectionType } from '@/types/landing-page'
 
 type LandingPage = Tables<'sys_landing_page'>
 
@@ -50,7 +50,9 @@ const featureSectionData = ref<FeatureSectionType>()
 const customerReviewSectionData = ref<CustomerReviewSectionType>()
 const ourTeamSectionData = ref<TeamSectionType>()
 const pricingPlansSectionData = ref<PricingSectionType>()
-const ProductStatsData = ref<ProductStatType>()
+const ProductStatsData = ref<ProductStatsSectionType>()
+const faqData = ref<FAQSectionType>()
+const contactData = ref<ContactUsSectionType>()
 
 async function fetchLandingPageData() {
   try {
@@ -74,7 +76,11 @@ watch(() => landingPageData.value, (data) => {
 
     pricingPlansSectionData.value = pick(data, ['pricing_title', 'pricing_data', 'pricing_title_desc', 'pricing_emphasized_title']) as PricingSectionType
 
-    ProductStatsData.value = pick(data, 'product_stats') as ProductStatType
+    ProductStatsData.value = pick(data, 'product_stats') as ProductStatsSectionType
+
+    faqData.value = pick(data, ['faq_data', 'faq_title', 'faq_title_desc', 'faq_emphasized_title']) as FAQSectionType
+
+    contactData.value = pick(data, ['contact_us_title', 'contact_us_emphasized_title', 'contact_us_title_desc', 'contact_us_card_heading', 'contact_us_card_emphasized_heading', 'contact_us_card_image', 'contact_us_card_content']) as ContactUsSectionType
   }
 })
 
@@ -105,16 +111,16 @@ onBeforeMount(fetchLandingPageData)
     <PricingPlans :data="pricingPlansSectionData" />
 
     <!-- 👉 Product stats -->
-    <!-- <ProductStats :data="ProductStatsData" /> -->
+    <ProductStats :data="ProductStatsData" />
 
     <!-- 👉 FAQ Section -->
-    <FaqSection ref="refFaq" />
+    <FaqSection ref="refFaq" :data="faqData" />
 
     <!-- 👉 Banner  -->
     <Banner />
 
     <!-- 👉 Contact Us  -->
-    <ContactUs ref="refContact" />
+    <ContactUs ref="refContact" :data="contactData" />
 
     <!-- 👉 Footer -->
     <Footer />

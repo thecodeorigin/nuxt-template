@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import type { ProductStatType } from '@/types/landing-page'
+import type { ProductStatsSectionType } from '@/types/landing-page'
 
-const props = defineProps<{
-  data: ProductStatType[]
-}>()
+const props = defineProps({
+  data: {
+    type: Object as PropType<ProductStatsSectionType>,
+  },
+})
 
-// Initialize hoverState with correct typing
-const hoverState: Ref<boolean[]> = ref(Array(props.data.length).fill(false))
+const hoverState: Ref<boolean[]> = ref(Array(props.data?.product_stats.length).fill(false))
 
 function handleMouseEnter(index: number) {
   hoverState.value[index] = true
@@ -25,7 +26,7 @@ function handleMouseLeave(index: number) {
       <div class="py-12">
         <VRow>
           <VCol
-            v-for="(product, index) in props.data"
+            v-for="(product, index) in data?.product_stats"
             :key="index"
           >
             <VCard flat>
@@ -33,7 +34,7 @@ function handleMouseLeave(index: number) {
                 <VAvatar
                   size="82"
                   :color="product.color"
-                  :variant="hoverState.value[index] === true ? 'elevated' : 'tonal'"
+                  :variant="hoverState[index] === true ? 'elevated' : 'tonal'"
                   class="mb-6 cursor-pointer"
                   @mouseenter="() => handleMouseEnter(index)"
                   @mouseleave="() => handleMouseLeave(index)"

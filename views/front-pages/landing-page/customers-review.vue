@@ -36,7 +36,7 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
         </div>
       </div>
 
-      <div class="customer-review-title-wrapper mb-2 d-flex gap-1 ">
+      <div class="mb-2 text-center gap-1">
         <component
           :is="data?.customer_review_emphasized_title?.variant"
           v-if="data?.customer_review_emphasized_title"
@@ -47,6 +47,7 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
             textTransform: data?.customer_review_emphasized_title?.text_transform,
             textDecoration: data?.customer_review_emphasized_title?.text_decoration,
           }"
+          class="d-inline-block mr-1"
         >
           {{ data?.customer_review_emphasized_title?.text }}
         </component>
@@ -219,25 +220,6 @@ swiper-container::part(pagination) {
 
   .swiper-pagination {
     inset-block: 0 0 !important;
-  }
-}
-</style>
-
-<style lang="scss" scoped>
-.customer-reviews {
-  margin-block: 6.25rem;
-}
-
-.customer-review-title{
-  margin-bottom: 1px;
-}
-
-@media screen and (max-width: 510px) {
-  .customer-review-title-wrapper{
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
   }
 }
 </style>

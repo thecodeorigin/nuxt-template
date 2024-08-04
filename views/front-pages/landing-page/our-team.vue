@@ -81,7 +81,7 @@ function openLink(url: string) {
           </div>
         </div>
 
-        <div class="our-team-title-wrapper mb-2 d-flex align-end gap-1 ">
+        <div class="mb-2 text-center gap-1 ">
           <component
             :is="data?.our_team_emphasized_title?.variant"
             v-if="data?.our_team_emphasized_title"
@@ -92,6 +92,7 @@ function openLink(url: string) {
               textTransform: data?.our_team_emphasized_title?.text_transform,
               textDecoration: data?.our_team_emphasized_title?.text_decoration,
             }"
+            class="d-inline-block mr-1"
           >
             {{ data?.our_team_emphasized_title?.text }}
           </component>
@@ -185,15 +186,6 @@ function openLink(url: string) {
   position: absolute;
   inset-block-start: 0;
   inset-inline-end: 0;
-}
-
-@media screen and (max-width: 510px) {
-  .our-team-title-wrapper {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-  }
 }
 
 .v-card:hover {
