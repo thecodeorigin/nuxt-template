@@ -36,6 +36,8 @@ alter table "public"."sys_landing_page" add column "pricing_title" text;
 
 alter table "public"."sys_landing_page" add column "pricing_title_desc" text[];
 
+alter table "public"."sys_landing_page" add column "product_stats" jsonb[];
+
 CREATE UNIQUE INDEX team_members_pkey ON public.team_members USING btree (id);
 
 alter table "public"."team_members" add constraint "team_members_pkey" PRIMARY KEY using index "team_members_pkey";

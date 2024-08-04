@@ -11,57 +11,6 @@ defineProps({
     type: Object as PropType<PricingSectionType>,
   },
 })
-
-const pricingPlans = [
-  {
-    title: 'Basic Plan',
-    price: 20,
-    features: [
-      'Timeline',
-      'Basic search',
-      'Live chat widget',
-      'Email marketing',
-      'Custom Forms',
-      'Traffic analytics',
-    ],
-    supportType: 'Basic',
-    supportMedium: 'Only Email',
-    respondTime: 'AVG. Time: 24h',
-    current: false,
-  },
-  {
-    title: 'Favourite Plan',
-    price: 51,
-    features: [
-      'Everything in basic',
-      'Timeline with database',
-      'Advanced search',
-      'Marketing automation',
-      'Advanced chatbot',
-      'Campaign management',
-    ],
-    supportType: 'Standard',
-    supportMedium: 'Email & Chat',
-    respondTime: 'AVG. Time: 6h',
-    current: true,
-  },
-  {
-    title: 'Standard Plan',
-    price: 99,
-    features: [
-      'Campaign management',
-      'Timeline with database',
-      'Fuzzy search',
-      'A/B testing sanbox',
-      'Custom permissions',
-      'Social media automation',
-    ],
-    supportType: 'Exclusive',
-    supportMedium: 'Email, Chat & Google Meet',
-    respondTime: 'Live Support',
-    current: false,
-  },
-]
 </script>
 
 <template>

@@ -14,7 +14,7 @@ import OurTeam from '@/views/front-pages/landing-page/our-team.vue'
 import PricingPlans from '@/views/front-pages/landing-page/pricing-plans.vue'
 import ProductStats from '@/views/front-pages/landing-page/product-stats.vue'
 import type { Tables } from '@/server/types/supabase'
-import type { CustomerReviewSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, TeamSectionType } from '@/types/landing-page'
+import type { CustomerReviewSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatType, TeamSectionType } from '@/types/landing-page'
 
 type LandingPage = Tables<'sys_landing_page'>
 
@@ -50,6 +50,7 @@ const featureSectionData = ref<FeatureSectionType>()
 const customerReviewSectionData = ref<CustomerReviewSectionType>()
 const ourTeamSectionData = ref<TeamSectionType>()
 const pricingPlansSectionData = ref<PricingSectionType>()
+const ProductStatsData = ref<ProductStatType>()
 
 async function fetchLandingPageData() {
   try {
@@ -72,6 +73,8 @@ watch(() => landingPageData.value, (data) => {
     ourTeamSectionData.value = pick(data, ['our_team_title', 'our_team_data', 'our_team_desc', 'our_team_emphasized_title']) as TeamSectionType
 
     pricingPlansSectionData.value = pick(data, ['pricing_title', 'pricing_data', 'pricing_title_desc', 'pricing_emphasized_title']) as PricingSectionType
+
+    ProductStatsData.value = pick(data, 'product_stats') as ProductStatType
   }
 })
 
@@ -102,7 +105,7 @@ onBeforeMount(fetchLandingPageData)
     <PricingPlans :data="pricingPlansSectionData" />
 
     <!-- 👉 Product stats -->
-    <ProductStats />
+    <!-- <ProductStats :data="ProductStatsData" /> -->
 
     <!-- 👉 FAQ Section -->
     <FaqSection ref="refFaq" />

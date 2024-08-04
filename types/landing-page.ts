@@ -95,3 +95,13 @@ export interface PricingSectionType {
   pricing_title_desc: string
   pricing_data: Plan[]
 }
+
+// Interface for product stats
+export interface ProductStat {
+  id: number
+  title: string
+  value: number
+}
+
+// Modify the array type as needed
+export type ProductStatType = ProductStat[]
