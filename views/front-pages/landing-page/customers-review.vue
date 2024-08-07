@@ -7,13 +7,8 @@ import { register } from 'swiper/element/bundle'
 
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import type { CustomerReviewSectionType } from '@/types/landing-page'
 
-defineProps({
-  data: {
-    type: Object as PropType<CustomerReviewSectionType>,
-  },
-})
+const { customerReviewData } = storeToRefs(useLandingPageStore())
 
 register()
 
@@ -38,26 +33,26 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
 
       <div class="mb-2 text-center gap-1">
         <component
-          :is="data?.customer_review_emphasized_title?.variant"
-          v-if="data?.customer_review_emphasized_title"
+          :is="customerReviewData?.customer_review_emphasized_title?.variant"
+          v-if="customerReviewData?.customer_review_emphasized_title"
           :style="{
-            color: data?.customer_review_emphasized_title?.color,
-            fontSize: `${data?.customer_review_emphasized_title?.font_size}px`,
-            fontWeight: data?.customer_review_emphasized_title?.font_weight,
-            textTransform: data?.customer_review_emphasized_title?.text_transform,
-            textDecoration: data?.customer_review_emphasized_title?.text_decoration,
+            color: customerReviewData?.customer_review_emphasized_title?.color,
+            fontSize: `${customerReviewData?.customer_review_emphasized_title?.font_size}px`,
+            fontWeight: customerReviewData?.customer_review_emphasized_title?.font_weight,
+            textTransform: customerReviewData?.customer_review_emphasized_title?.text_transform,
+            textDecoration: customerReviewData?.customer_review_emphasized_title?.text_decoration,
           }"
           class="d-inline-block mr-1"
         >
-          {{ data?.customer_review_emphasized_title?.text }}
+          {{ customerReviewData?.customer_review_emphasized_title?.text }}
         </component>
 
         <span class="customer-review-title text-h5 d-inline-block">
-          {{ data?.customer_review_title }}
+          {{ customerReviewData?.customer_review_title }}
         </span>
       </div>
 
-      <p v-for="(description, index) in data?.customer_review_title_desc" :key="index" class="text-body-1 font-weight-medium text-center">
+      <p v-for="(description, index) in customerReviewData?.customer_review_title_desc" :key="index" class="text-body-1 font-weight-medium text-center">
         {{ description }}
       </p>
     </div>
@@ -103,7 +98,7 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
           }"
         >
           <swiper-slide
-            v-for="(review, index) in data?.customer_review_data"
+            v-for="(review, index) in customerReviewData?.customer_review_data"
             :key="index"
           >
             <VCard class="h-100 d-flex align-stretch">
@@ -163,7 +158,7 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
           }"
         >
           <swiper-slide
-            v-for="(review, index) in data?.customer_review_data"
+            v-for="(review, index) in customerReviewData?.customer_review_data"
             :key="index"
           >
             <VImg
@@ -221,5 +216,11 @@ swiper-container::part(pagination) {
   .swiper-pagination {
     inset-block: 0 0 !important;
   }
+}
+</style>
+
+<style lang="scss" scoped>
+.customer-reviews {
+  margin-block: 6.25rem;
 }
 </style>

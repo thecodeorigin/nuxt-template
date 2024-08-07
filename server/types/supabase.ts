@@ -449,37 +449,109 @@ export interface Database {
       }
       sys_landing_page: {
         Row: {
+          contact_us_card_content: string | null
+          contact_us_card_emphasized_heading: Json | null
+          contact_us_card_heading: string | null
+          contact_us_card_image: string | null
+          contact_us_emphasized_title: Json | null
+          contact_us_title: string | null
+          contact_us_title_desc: string[] | null
           created_at: string
+          customer_review_data: Json[] | null
+          customer_review_emphasized_title: Json | null
+          customer_review_title: string | null
+          customer_review_title_desc: string[] | null
+          faq_data: Json[] | null
+          faq_emphasized_title: Json | null
+          faq_title: string | null
+          faq_title_desc: string[] | null
           feature_data: Json[] | null
           feature_emphasized_title: Json | null
           feature_title: string | null
           feature_title_desc: string | null
+          hero_title: string
+          hero_title_button: Json | null
+          hero_title_desc: string | null
           id: string
-          main_title: string
-          main_title_button: Json | null
-          main_title_desc: string[] | null
+          our_team_data: Json[] | null
+          our_team_desc: string[] | null
+          our_team_emphasized_title: Json | null
+          our_team_title: string | null
+          pricing_data: Json[] | null
+          pricing_emphasized_title: Json | null
+          pricing_title: string | null
+          pricing_title_desc: string[] | null
+          product_stats: Json[] | null
         }
         Insert: {
+          contact_us_card_content?: string | null
+          contact_us_card_emphasized_heading?: Json | null
+          contact_us_card_heading?: string | null
+          contact_us_card_image?: string | null
+          contact_us_emphasized_title?: Json | null
+          contact_us_title?: string | null
+          contact_us_title_desc?: string[] | null
           created_at?: string
+          customer_review_data?: Json[] | null
+          customer_review_emphasized_title?: Json | null
+          customer_review_title?: string | null
+          customer_review_title_desc?: string[] | null
+          faq_data?: Json[] | null
+          faq_emphasized_title?: Json | null
+          faq_title?: string | null
+          faq_title_desc?: string[] | null
           feature_data?: Json[] | null
           feature_emphasized_title?: Json | null
           feature_title?: string | null
           feature_title_desc?: string | null
+          hero_title: string
+          hero_title_button?: Json | null
+          hero_title_desc?: string | null
           id?: string
-          main_title: string
-          main_title_button?: Json | null
-          main_title_desc?: string[] | null
+          our_team_data?: Json[] | null
+          our_team_desc?: string[] | null
+          our_team_emphasized_title?: Json | null
+          our_team_title?: string | null
+          pricing_data?: Json[] | null
+          pricing_emphasized_title?: Json | null
+          pricing_title?: string | null
+          pricing_title_desc?: string[] | null
+          product_stats?: Json[] | null
         }
         Update: {
+          contact_us_card_content?: string | null
+          contact_us_card_emphasized_heading?: Json | null
+          contact_us_card_heading?: string | null
+          contact_us_card_image?: string | null
+          contact_us_emphasized_title?: Json | null
+          contact_us_title?: string | null
+          contact_us_title_desc?: string[] | null
           created_at?: string
+          customer_review_data?: Json[] | null
+          customer_review_emphasized_title?: Json | null
+          customer_review_title?: string | null
+          customer_review_title_desc?: string[] | null
+          faq_data?: Json[] | null
+          faq_emphasized_title?: Json | null
+          faq_title?: string | null
+          faq_title_desc?: string[] | null
           feature_data?: Json[] | null
           feature_emphasized_title?: Json | null
           feature_title?: string | null
           feature_title_desc?: string | null
+          hero_title?: string
+          hero_title_button?: Json | null
+          hero_title_desc?: string | null
           id?: string
-          main_title?: string
-          main_title_button?: Json | null
-          main_title_desc?: string[] | null
+          our_team_data?: Json[] | null
+          our_team_desc?: string[] | null
+          our_team_emphasized_title?: Json | null
+          our_team_title?: string | null
+          pricing_data?: Json[] | null
+          pricing_emphasized_title?: Json | null
+          pricing_title?: string | null
+          pricing_title_desc?: string[] | null
+          product_stats?: Json[] | null
         }
         Relationships: []
       }
@@ -680,6 +752,21 @@ export interface Database {
             ]
           },
         ]
+      }
+      team_members: {
+        Row: {
+          id: string
+          team_data: Json | null
+        }
+        Insert: {
+          id?: string
+          team_data?: Json | null
+        }
+        Update: {
+          id?: string
+          team_data?: Json | null
+        }
+        Relationships: []
       }
       user_devices: {
         Row: {

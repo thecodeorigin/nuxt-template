@@ -1,19 +1,3 @@
-export interface HeroSectionType {
-  main_title: string
-  main_title_desc: string[]
-  main_title_button: {
-    btn_link: string
-    btn_label: string
-    btn_radius: number
-    btb_rippled: boolean
-    btn_variant: string
-    btn_apend_icon: string
-    btn_background: string
-    btn_prepend_icon: string
-  }
-}
-
-// Interface for feature section
 interface EmphasizedTitle {
   text: string
   color: string
@@ -24,6 +8,23 @@ interface EmphasizedTitle {
   text_decoration: string
 }
 
+// Interface for hero section
+export interface HeroSectionType {
+  hero_title: string
+  hero_title_desc: string
+  hero_title_button: {
+    btn_link: string
+    btn_label: string
+    btn_radius: number | string
+    btn_rippled: boolean
+    btn_variant: string
+    btn_apend_icon: string
+    btn_background: string
+    btn_prepend_icon: string
+  }
+}
+
+// Interface for feature section
 interface Feature {
   name: string
   desc: string
@@ -51,8 +52,8 @@ interface CustomerReview {
 export interface CustomerReviewSectionType {
   customer_review_emphasized_title: EmphasizedTitle | null
   customer_review_title: string
-  customer_review_title_desc: string
-  customer_review_data: CustomerReview[]
+  customer_review_title_desc: string[] | null
+  customer_review_data: CustomerReview[] | null
 }
 
 // Interface for our team section
@@ -74,8 +75,8 @@ interface TeamData {
 export interface TeamSectionType {
   our_team_emphasized_title: EmphasizedTitle | null
   our_team_title: string
-  our_team_desc: string
-  our_team_data: TeamData[]
+  our_team_desc: string[] | null
+  our_team_data: TeamData[] | null
 }
 
 // Interface for pricing section
@@ -92,8 +93,8 @@ interface Plan {
 export interface PricingSectionType {
   pricing_emphasized_title: EmphasizedTitle | null
   pricing_title: string
-  pricing_title_desc: string
-  pricing_data: Plan[]
+  pricing_title_desc: string[]
+  pricing_data: Plan[] | null
 }
 
 // Interface for product stats
@@ -106,7 +107,7 @@ export interface ProductStatType {
 }
 
 export interface ProductStatsSectionType {
-  product_stats: ProductStatType[]
+  product_stats: ProductStatType[] | null
 }
 
 // Interface for FAQ section
@@ -116,20 +117,20 @@ interface FAQ {
 }
 
 export interface FAQSectionType {
-  faq_emphasized_title: EmphasizedTitle
+  faq_emphasized_title: EmphasizedTitle | null
   faq_title: string
-  faq_title_desc: string
-  faq_data: FAQ[]
+  faq_title_desc: string[]
+  faq_data: FAQ[] | null
 }
 
 // Interface for about us section
 
 export interface ContactUsSectionType {
-  contact_us_emphasized_title: EmphasizedTitle
+  contact_us_emphasized_title: EmphasizedTitle | null
   contact_us_title: string
-  contact_us_title_desc: string
+  contact_us_title_desc: string[]
   contact_us_card_heading: string
-  contact_us_card_emphasized_heading: EmphasizedTitle
+  contact_us_card_emphasized_heading: EmphasizedTitle | null
   contact_us_card_image: string
   contact_us_card_content: string
 }

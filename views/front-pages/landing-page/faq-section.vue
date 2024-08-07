@@ -2,13 +2,8 @@
 import sittingGirlWithLaptop from '@images/front-pages/landing-page/sitting-girl-with-laptop.png'
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import frontPageElement from '@images/svg/front-page-element.svg'
-import type { FAQSectionType } from '@/types/landing-page'
 
-defineProps({
-  data: {
-    type: Object as PropType<FAQSectionType>,
-  },
-})
+const { faqData } = storeToRefs(useLandingPageStore())
 </script>
 
 <template>
@@ -37,26 +32,26 @@ defineProps({
 
         <div class="mb-2 text-center gap-1">
           <span class="text-h5 d-inline-block mr-1">
-            {{ data?.faq_title }}
+            {{ faqData?.faq_title }}
           </span>
 
           <component
-            :is="data?.faq_emphasized_title?.variant"
-            v-if="data?.faq_emphasized_title"
+            :is="faqData?.faq_emphasized_title?.variant"
+            v-if="faqData?.faq_emphasized_title"
             :style="{
-              color: data?.faq_emphasized_title?.color,
-              fontSize: `${data?.faq_emphasized_title?.font_size}px`,
-              fontWeight: data?.faq_emphasized_title?.font_weight,
-              textTransform: data?.faq_emphasized_title?.text_transform,
-              textDecoration: data?.faq_emphasized_title?.text_decoration,
+              color: faqData?.faq_emphasized_title?.color,
+              fontSize: `${faqData?.faq_emphasized_title?.font_size}px`,
+              fontWeight: faqData?.faq_emphasized_title?.font_weight,
+              textTransform: faqData?.faq_emphasized_title?.text_transform,
+              textDecoration: faqData?.faq_emphasized_title?.text_decoration,
             }"
             class="d-inline-block "
           >
-            {{ data?.faq_emphasized_title?.text }}
+            {{ faqData?.faq_emphasized_title?.text }}
           </component>
         </div>
 
-        <p v-for="(description, index) in data?.faq_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
+        <p v-for="(description, index) in faqData?.faq_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
           {{ description }}
         </p>
       </div>
@@ -75,7 +70,7 @@ defineProps({
         <div>
           <VExpansionPanels class="py-4">
             <VExpansionPanel
-              v-for="(faq, key) in data?.faq_data"
+              v-for="(faq, key) in faqData?.faq_data"
               :key="key"
             >
               <VExpansionPanelTitle>

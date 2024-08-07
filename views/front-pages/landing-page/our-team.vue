@@ -8,11 +8,7 @@ import frontPageElement from '@images/svg/front-page-element.svg'
 
 import type { TeamSectionType } from '@/types/landing-page'
 
-defineProps({
-  data: {
-    type: Object as PropType<TeamSectionType>,
-  },
-})
+const { ourTeamData } = storeToRefs(useLandingPageStore())
 
 function getIcon(iconName: string) {
   switch (iconName) {
@@ -83,27 +79,27 @@ function openLink(url: string) {
 
         <div class="mb-2 text-center gap-1 ">
           <component
-            :is="data?.our_team_emphasized_title?.variant"
-            v-if="data?.our_team_emphasized_title"
+            :is="ourTeamData?.our_team_emphasized_title?.variant"
+            v-if="ourTeamData?.our_team_emphasized_title"
             :style="{
-              color: data?.our_team_emphasized_title?.color,
-              fontSize: `${data?.our_team_emphasized_title?.font_size}px`,
-              fontWeight: data?.our_team_emphasized_title?.font_weight,
-              textTransform: data?.our_team_emphasized_title?.text_transform,
-              textDecoration: data?.our_team_emphasized_title?.text_decoration,
+              color: ourTeamData?.our_team_emphasized_title?.color,
+              fontSize: `${ourTeamData?.our_team_emphasized_title?.font_size}px`,
+              fontWeight: ourTeamData?.our_team_emphasized_title?.font_weight,
+              textTransform: ourTeamData?.our_team_emphasized_title?.text_transform,
+              textDecoration: ourTeamData?.our_team_emphasized_title?.text_decoration,
             }"
             class="d-inline-block mr-1"
           >
-            {{ data?.our_team_emphasized_title?.text }}
+            {{ ourTeamData?.our_team_emphasized_title?.text }}
           </component>
 
           <span class="our-team-title text-h5 d-inline-block">
-            {{ data?.our_team_title }}
+            {{ ourTeamData?.our_team_title }}
           </span>
         </div>
 
         <p
-          v-for="(description, index) in data?.our_team_desc"
+          v-for="(description, index) in ourTeamData?.our_team_desc"
           :key="index"
           class="text-body-1 font-weight-medium text-center"
         >
@@ -113,7 +109,7 @@ function openLink(url: string) {
 
       <VRow>
         <VCol
-          v-for="(member, index) in data?.our_team_data"
+          v-for="(member, index) in ourTeamData?.our_team_data"
           :key="index"
           cols="12"
           lg="3"

@@ -8,11 +8,7 @@ import Lifebelt from '@images/svg/lifebelt.svg'
 import TransitionUp from '@images/svg/transition-up.svg'
 import type { FeatureSectionType } from '@/types/landing-page'
 
-defineProps({
-  data: {
-    type: Object as PropType<FeatureSectionType>,
-  },
-})
+const { featureData } = storeToRefs(useLandingPageStore())
 
 function getIcon(iconName: string) {
   switch (iconName) {
@@ -52,33 +48,33 @@ function getIcon(iconName: string) {
 
         <div class="mb-2 text-center gap-1">
           <Component
-            :is="data?.feature_emphasized_title?.variant"
-            v-if="data?.feature_emphasized_title"
+            :is="featureData?.feature_emphasized_title?.variant"
+            v-if="featureData?.feature_emphasized_title"
             :style="{
-              color: data?.feature_emphasized_title?.color,
-              fontSize: `${data?.feature_emphasized_title?.font_size}px`,
-              fontWeight: data?.feature_emphasized_title?.font_weight,
-              textTransform: data?.feature_emphasized_title?.text_transform,
-              textDecoration: data?.feature_emphasized_title?.text_decoration,
+              color: featureData?.feature_emphasized_title?.color,
+              fontSize: `${featureData?.feature_emphasized_title?.font_size}px`,
+              fontWeight: featureData?.feature_emphasized_title?.font_weight,
+              textTransform: featureData?.feature_emphasized_title?.text_transform,
+              textDecoration: featureData?.feature_emphasized_title?.text_decoration,
             }"
             class="d-inline-block mr-1"
           >
-            {{ data?.feature_emphasized_title?.text }}
+            {{ featureData?.feature_emphasized_title?.text }}
           </Component>
 
           <span class="feature-title text-h5 d-inline-block">
-            {{ data?.feature_title }}
+            {{ featureData?.feature_title }}
           </span>
         </div>
 
         <p class="text-body-1 font-weight-medium text-center">
-          {{ data?.feature_title_desc }}
+          {{ featureData?.feature_title_desc }}
         </p>
       </div>
 
       <VRow>
         <VCol
-          v-for="(feature, index) in data?.feature_data"
+          v-for="(feature, index) in featureData?.feature_data"
           :key="index"
           cols="12"
           sm="6"

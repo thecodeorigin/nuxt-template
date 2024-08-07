@@ -8,13 +8,8 @@ import heroDashboardImgLight from '@images/front-pages/landing-page/hero-dashboa
 import heroElementsImgDark from '@images/front-pages/landing-page/hero-elements-dark.png'
 import heroElementsImgLight from '@images/front-pages/landing-page/hero-elements-light.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import type { HeroSectionType } from '@/types/landing-page'
 
-const props = defineProps({
-  data: {
-    type: Object as PropType<HeroSectionType>,
-  },
-})
+const { heroData } = storeToRefs(useLandingPageStore())
 
 const theme = useTheme()
 const isDark = ref(theme.name)
@@ -54,25 +49,23 @@ const translateMouse = computed(() => (speed: number) => {
       <VContainer>
         <div class="text-center pt-6 pb-16">
           <div class="mb-4 landing-page-title">
-            {{ props.data?.main_title }}
+            {{ heroData?.hero_title }}
           </div>
           <div class="text-body-1 font-weight-medium text-high-emphasis pb-8">
-            <p v-for="(description, index) in props.data?.main_title_desc" :key="index" class="mb-0">
-              {{ description }}
-            </p>
+            {{ heroData?.hero_title_desc }}
           </div>
           <VBtn
-            :color="data?.main_title_button?.btn_background"
-            :prepend-icon="data?.main_title_button?.btn_prepend_icon"
-            :append-icon="data?.main_title_button?.btn_apend_icon"
-            :to="data?.main_title_button?.btn_link"
-            :variant="data?.main_title_button?.btn_variant"
-            :ripple="data?.main_title_button?.btb_rippled"
+            :color="heroData?.hero_title_button?.btn_background"
+            :prepend-icon="heroData?.hero_title_button?.btn_prepend_icon"
+            :append-icon="heroData?.hero_title_button?.btn_apend_icon"
+            :to="heroData?.hero_title_button?.btn_link"
+            :variant="heroData?.hero_title_button?.btn_variant"
+            :ripple="heroData?.hero_title_button?.btn_rippled"
             class="mt-6"
             size="large"
             rounded="rounded"
           >
-            {{ data?.main_title_button?.btn_label }}
+            {{ heroData?.hero_title_button?.btn_label }}
           </VBtn>
         </div>
 

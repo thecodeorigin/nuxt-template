@@ -10,15 +10,7 @@ definePageMeta({
 
 <template>
   <form class="landing-page-editor">
-    <LandingPageHeroSection />
-
-    <VDivider class="my-6" />
-
-    <LandingPageFeature />
-
-    <VDivider class="my-6" />
-
-    <LandingPageCustomerReview />
+    <HeroSectionEditor />
   </form>
 </template>
 

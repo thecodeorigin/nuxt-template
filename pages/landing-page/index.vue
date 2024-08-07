@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useConfigStore } from '@core/stores/config'
-import { pick } from 'lodash-es'
 
 import Footer from '@/views/front-pages/front-page-footer.vue'
 import Navbar from '@/views/front-pages/front-page-navbar.vue'
@@ -13,10 +12,6 @@ import HeroSection from '@/views/front-pages/landing-page/hero-section.vue'
 import OurTeam from '@/views/front-pages/landing-page/our-team.vue'
 import PricingPlans from '@/views/front-pages/landing-page/pricing-plans.vue'
 import ProductStats from '@/views/front-pages/landing-page/product-stats.vue'
-import type { Tables } from '@/server/types/supabase'
-import type { ContactUsSectionType, CustomerReviewSectionType, FAQSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatsSectionType, TeamSectionType } from '@/types/landing-page'
-
-type LandingPage = Tables<'sys_landing_page'>
 
 const store = useConfigStore()
 
@@ -43,48 +38,6 @@ useIntersectionObserver(
     threshold: 0.25,
   },
 )
-
-const landingPageData = ref<LandingPage>()
-const heroSectionData = ref<HeroSectionType>()
-const featureSectionData = ref<FeatureSectionType>()
-const customerReviewSectionData = ref<CustomerReviewSectionType>()
-const ourTeamSectionData = ref<TeamSectionType>()
-const pricingPlansSectionData = ref<PricingSectionType>()
-const ProductStatsData = ref<ProductStatsSectionType>()
-const faqData = ref<FAQSectionType>()
-const contactData = ref<ContactUsSectionType>()
-
-async function fetchLandingPageData() {
-  try {
-    const data = await $api('/api/pages/landing-page')
-    landingPageData.value = data as LandingPage
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
-
-watch(() => landingPageData.value, (data) => {
-  if (data) {
-    heroSectionData.value = pick(data, ['main_title', 'main_title_desc', 'main_title_button']) as HeroSectionType
-
-    featureSectionData.value = pick(data, ['feature_title', 'feature_emphasized_title', 'feature_title_desc', 'feature_data']) as FeatureSectionType
-
-    customerReviewSectionData.value = pick(data, ['customer_review_title', 'customer_review_data', 'customer_review_title_desc', 'customer_review_emphasized_title']) as CustomerReviewSectionType
-
-    ourTeamSectionData.value = pick(data, ['our_team_title', 'our_team_data', 'our_team_desc', 'our_team_emphasized_title']) as TeamSectionType
-
-    pricingPlansSectionData.value = pick(data, ['pricing_title', 'pricing_data', 'pricing_title_desc', 'pricing_emphasized_title']) as PricingSectionType
-
-    ProductStatsData.value = pick(data, 'product_stats') as ProductStatsSectionType
-
-    faqData.value = pick(data, ['faq_data', 'faq_title', 'faq_title_desc', 'faq_emphasized_title']) as FAQSectionType
-
-    contactData.value = pick(data, ['contact_us_title', 'contact_us_emphasized_title', 'contact_us_title_desc', 'contact_us_card_heading', 'contact_us_card_emphasized_heading', 'contact_us_card_image', 'contact_us_card_content']) as ContactUsSectionType
-  }
-})
-
-onBeforeMount(fetchLandingPageData)
 </script>
 
 <template>
@@ -92,35 +45,35 @@ onBeforeMount(fetchLandingPageData)
     <Navbar :active-id="activeSectionId" />
 
     <!-- 👉 Hero Section  -->
-    <HeroSection ref="refHome" :data="heroSectionData" />
+    <HeroSection ref="refHome" />
 
     <!-- 👉 Useful features  -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
-      <Features ref="refFeatures" :data="featureSectionData" />
+      <Features ref="refFeatures" />
     </div>
 
     <!-- 👉 Customer Review -->
-    <CustomersReview :data="customerReviewSectionData" />
+    <CustomersReview />
 
     <!-- 👉 Our Team -->
     <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
-      <OurTeam ref="refTeam" :data="ourTeamSectionData" />
+      <OurTeam ref="refTeam" />
     </div>
 
     <!-- 👉 Pricing Plans -->
-    <PricingPlans :data="pricingPlansSectionData" />
+    <PricingPlans />
 
     <!-- 👉 Product stats -->
-    <ProductStats :data="ProductStatsData" />
+    <ProductStats />
 
     <!-- 👉 FAQ Section -->
-    <FaqSection ref="refFaq" :data="faqData" />
+    <FaqSection ref="refFaq" />
 
     <!-- 👉 Banner  -->
     <Banner />
 
     <!-- 👉 Contact Us  -->
-    <ContactUs ref="refContact" :data="contactData" />
+    <ContactUs ref="refContact" />
 
     <!-- 👉 Footer -->
     <Footer />

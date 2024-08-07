@@ -4,13 +4,7 @@ import frontPageVectorImg from '@images/svg/front-page-vector.svg'
 import ListArrowIcon from '@images/svg/list-arrow-icon.svg'
 import VectorIcon from '@images/svg/vector.svg'
 
-import type { PricingSectionType } from '@/types/landing-page'
-
-defineProps({
-  data: {
-    type: Object as PropType<PricingSectionType>,
-  },
-})
+const { pricingPlansData } = storeToRefs(useLandingPageStore())
 </script>
 
 <template>
@@ -37,26 +31,26 @@ defineProps({
 
         <div class="mb-2 text-center gap-1">
           <Component
-            :is="data?.pricing_emphasized_title?.variant"
-            v-if="data?.pricing_emphasized_title"
+            :is="pricingPlansData?.pricing_emphasized_title?.variant"
+            v-if="pricingPlansData?.pricing_emphasized_title"
             :style="{
-              color: data?.pricing_emphasized_title?.color,
-              fontSize: `${data?.pricing_emphasized_title?.font_size}px`,
-              fontWeight: data?.pricing_emphasized_title?.font_weight,
-              textTransform: data?.pricing_emphasized_title?.text_transform,
-              textDecoration: data?.pricing_emphasized_title?.text_decoration,
+              color: pricingPlansData?.pricing_emphasized_title?.color,
+              fontSize: `${pricingPlansData?.pricing_emphasized_title?.font_size}px`,
+              fontWeight: pricingPlansData?.pricing_emphasized_title?.font_weight,
+              textTransform: pricingPlansData?.pricing_emphasized_title?.text_transform,
+              textDecoration: pricingPlansData?.pricing_emphasized_title?.text_decoration,
             }"
             class="d-inline-block mr-1"
           >
-            {{ data?.pricing_emphasized_title?.text }}
+            {{ pricingPlansData?.pricing_emphasized_title?.text }}
           </Component>
 
           <span class="pricing-title text-h5 d-inline-block">
-            {{ data?.pricing_title }}
+            {{ pricingPlansData?.pricing_title }}
           </span>
         </div>
 
-        <p v-for="(description, index) in data?.pricing_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
+        <p v-for="(description, index) in pricingPlansData?.pricing_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
           {{ description }}
         </p>
       </div>
@@ -73,7 +67,7 @@ defineProps({
 
       <VRow>
         <VCol
-          v-for="(plan, index) in data?.pricing_data"
+          v-for="(plan, index) in pricingPlansData?.pricing_data"
           :key="index"
         >
           <VCard

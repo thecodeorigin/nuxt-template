@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
-import { ref } from 'vue'
-import type { ProductStatsSectionType } from '@/types/landing-page'
+const store = useLandingPageStore()
+const { productStatsData } = storeToRefs(store)
 
-const props = defineProps({
-  data: {
-    type: Object as PropType<ProductStatsSectionType>,
-  },
-})
+const hoverState: Ref<boolean[]> = ref([])
 
-const hoverState: Ref<boolean[]> = ref(Array(props.data?.product_stats.length).fill(false))
+// Watch for changes in productStatsData and update hoverState accordingly
+watch(productStatsData, (newProductStatsData) => {
+  if (newProductStatsData?.product_stats) {
+    hoverState.value = Array(newProductStatsData.product_stats.length).fill(false)
+  }
+}, { immediate: true })
 
 function handleMouseEnter(index: number) {
   hoverState.value[index] = true
@@ -26,7 +26,7 @@ function handleMouseLeave(index: number) {
       <div class="py-12">
         <VRow>
           <VCol
-            v-for="(product, index) in data?.product_stats"
+            v-for="(product, index) in productStatsData?.product_stats"
             :key="index"
           >
             <VCard flat>

@@ -2,17 +2,12 @@
 import ConnectImg from '@images/front-pages/landing-page/lets-contact.png'
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import frontPageVectorImg from '@images/svg/front-page-vector.svg'
-import type { ContactUsSectionType } from '@/types/landing-page'
 
-const props = defineProps({
-  data: {
-    type: Object as PropType<ContactUsSectionType>,
-  },
-})
+const { contactData } = storeToRefs(useLandingPageStore())
 
 const getImg = computed(() => {
-  if (props.data?.contact_us_card_image !== 'ConnectImg') {
-    return props.data?.contact_us_card_image
+  if (contactData.value && contactData.value.contact_us_card_image !== 'ConnectImg') {
+    return contactData.value.contact_us_card_image
   }
   return ConnectImg
 })
@@ -45,24 +40,24 @@ const message = ref('')
 
         <div class="mb-2 text-center gap-1">
           <Component
-            :is="data?.contact_us_emphasized_title?.variant"
-            v-if="data?.contact_us_emphasized_title"
+            :is="contactData?.contact_us_emphasized_title?.variant"
+            v-if="contactData?.contact_us_emphasized_title"
             :style="{
-              color: data?.contact_us_emphasized_title?.color,
-              fontSize: `${data?.contact_us_emphasized_title?.font_size}px`,
-              fontWeight: data?.contact_us_emphasized_title?.font_weight,
-              textTransform: data?.contact_us_emphasized_title?.text_transform,
-              textDecoration: data?.contact_us_emphasized_title?.text_decoration,
+              color: contactData?.contact_us_emphasized_title?.color,
+              fontSize: `${contactData?.contact_us_emphasized_title?.font_size}px`,
+              fontWeight: contactData?.contact_us_emphasized_title?.font_weight,
+              textTransform: contactData?.contact_us_emphasized_title?.text_transform,
+              textDecoration: contactData?.contact_us_emphasized_title?.text_decoration,
             }"
             class="d-inline-block mr-1"
           >
-            {{ data?.contact_us_emphasized_title?.text }}
+            {{ contactData?.contact_us_emphasized_title?.text }}
           </Component>
 
-          <span class="text-h5 d-inline-block">{{ data?.contact_us_title }}</span>
+          <span class="text-h5 d-inline-block">{{ contactData?.contact_us_title }}</span>
         </div>
 
-        <p v-for="(description, index) in data?.contact_us_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
+        <p v-for="(description, index) in contactData?.contact_us_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
           {{ description }}
         </p>
       </div>
@@ -81,22 +76,22 @@ const message = ref('')
             >
               <VCardText class="pa-8">
                 <h6 class="text-h6 mb-1">
-                  {{ data?.contact_us_card_heading }}
+                  {{ contactData?.contact_us_card_heading }}
                 </h6>
 
                 <component
-                  :is="data?.contact_us_card_emphasized_heading?.variant"
-                  v-if="data?.contact_us_card_emphasized_heading"
+                  :is="contactData?.contact_us_card_emphasized_heading?.variant"
+                  v-if="contactData?.contact_us_card_emphasized_heading"
                   :style="{
-                    color: data?.contact_us_card_emphasized_heading?.color,
-                    fontSize: `${data?.contact_us_card_emphasized_heading?.font_size}px`,
-                    fontWeight: data?.contact_us_card_emphasized_heading?.font_weight,
-                    textTransform: data?.contact_us_card_emphasized_heading?.text_transform,
-                    textDecoration: data?.contact_us_card_emphasized_heading?.text_decoration,
+                    color: contactData?.contact_us_card_emphasized_heading?.color,
+                    fontSize: `${contactData?.contact_us_card_emphasized_heading?.font_size}px`,
+                    fontWeight: contactData?.contact_us_card_emphasized_heading?.font_weight,
+                    textTransform: contactData?.contact_us_card_emphasized_heading?.text_transform,
+                    textDecoration: contactData?.contact_us_card_emphasized_heading?.text_decoration,
                   }"
                   class="card-heading"
                 >
-                  {{ data?.contact_us_card_emphasized_heading?.text }}
+                  {{ contactData?.contact_us_card_emphasized_heading?.text }}
                 </component>
 
                 <VImg
@@ -105,7 +100,7 @@ const message = ref('')
                 />
 
                 <div class="text-body-1">
-                  {{ data?.contact_us_card_content }}
+                  {{ contactData?.contact_us_card_content }}
                 </div>
               </VCardText>
             </VCard>
