@@ -2,61 +2,56 @@
 import type { Tables } from '@/server/types/supabase.js'
 
 type Notification = Tables<'sys_notifications'>
-const notifications = ref<Array<Notification>>([])
+// const notifications = ref<Array<Notification>>([])
 
 const location = ref('bottom end')
 const badgeProps = ref<object>({})
-const query = ref({
-  amount: 5,
-  start: 0,
-  empty: false,
+const notificationQuery = ref({
+  offset: 0,
+  limit: 5,
 })
-const queryPagination = computed(() => {
-  const start = query.value.start
-  return {
-    start,
-    end: start + query.value.amount - 1,
-  }
-})
+
 async function fetchNotifications() {
   try {
-    const response = await $api<Notification[]>('/pages/notifications', {
+    return await $api<Notification[]>('/pages/notifications', {
       method: 'GET',
-      query: queryPagination.value,
+      query: notificationQuery.value,
     })
-
-    const data = response
-    if (data.length < query.value.amount) {
-      query.value.empty = true
-    }
-    // @ts-expect-error
-    notifications.value.push(...data)
   }
   catch (error) {
     console.error(error)
   }
 }
-fetchNotifications()
+
+const { data: notifications } = useLazyAsyncData(fetchNotifications)
 
 async function fetchMoreNotifications({ done }: { done: (type: string) => void }) {
-  if (query.value.empty) {
-    done('empty')
-    return
+  try {
+    if (!notifications.value?.length)
+      return done('empty')
+
+    notificationQuery.value.offset += notificationQuery.value.limit
+
+    const nextNotifications = await fetchNotifications()
+
+    if (!nextNotifications || nextNotifications?.length === 0)
+      return done('empty')
+
+    notifications.value?.push(...nextNotifications)
+
+    return done('ok')
   }
-  query.value.start += query.value.amount
-  await fetchNotifications()
-  if (query.value.empty)
-    done('empty')
-  else
-    done('ok')
+  catch {
+    done('error')
+  }
 }
 
 async function removeNotification(notificationId: string) {
   try {
     await $api(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
-    notifications.value.forEach((item, index) => {
+    notifications.value?.forEach((item, index) => {
       if (notificationId === item.id) {
-        notifications.value.splice(index, 1)
+        notifications.value?.splice(index, 1)
       }
     })
   }
@@ -68,7 +63,7 @@ async function removeNotification(notificationId: string) {
 async function markReadOrUnread(notificationId: string, type: 'read' | 'unread') {
   try {
     await $api(`/pages/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
-    notifications.value.forEach((item) => {
+    notifications.value?.forEach((item) => {
       if (notificationId === item.id) {
         item.read_at = type === 'read' ? new Date().toDateString() : null
       }
@@ -83,7 +78,7 @@ async function markAllReadOrUnread(type: 'read' | 'unread') {
     const read = type === 'read'
     await $api(`/pages/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
     })
-    notifications.value.forEach((item) => {
+    notifications.value?.forEach((item) => {
       item.read_at = read ? new Date().toDateString() : null
     })
   }
@@ -98,8 +93,8 @@ function handleNotificationClick(notification: Notification) {
   else
     markReadOrUnread(notification.id, 'unread')
 }
-const totalUnreadNotifications = computed(() => notifications.value.filter(item => !item.read_at).length)
-const isAllMarkRead = computed(() => notifications.value.every(item => item.read_at))
+const totalUnreadNotifications = computed(() => notifications.value?.filter(item => !item.read_at).length)
+const isAllMarkRead = computed(() => notifications.value?.every(item => item.read_at))
 function handleMarkAllReadOrUnread() {
   if (isAllMarkRead.value)
     markAllReadOrUnread('unread')
@@ -149,7 +144,7 @@ function handleMarkAllReadOrUnread() {
             </VChip>
 
             <IconBtn
-              v-show="notifications.length"
+              v-show="notifications?.length"
               size="small"
               @click="handleMarkAllReadOrUnread"
             >
@@ -172,7 +167,7 @@ function handleMarkAllReadOrUnread() {
         <VInfiniteScroll
           :max-height="300"
           :items="notifications"
-          :empty-text="!notifications.length ? 'No Notification Found!' : 'No more notifications'"
+          :empty-text="!notifications?.length ? 'No Notification Found!' : 'No more notifications'"
           @load="fetchMoreNotifications"
         >
           <template
@@ -235,7 +230,7 @@ function handleMarkAllReadOrUnread() {
 
         <!-- 👉 Footer -->
         <VCardText
-          v-show="notifications.length"
+          v-show="notifications?.length"
           class="pa-4"
         >
           <VBtn
