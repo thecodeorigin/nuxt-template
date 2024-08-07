@@ -2,14 +2,13 @@
 import type { Tables } from '@/server/types/supabase.js'
 
 type Notification = Tables<'sys_notifications'>
-// const notifications = ref<Array<Notification>>([])
 
 const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})
 const notifications = ref<Notification[]>([])
 const notificationQuery = ref({
   offset: 0,
-  limit: 5,
+  limit: 10,
 })
 const notificationVisible = ref(false)
 
@@ -38,7 +37,7 @@ watch(notificationVisible, async (visible) => {
 
 async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 'loading' | 'error') => void }) {
   try {
-    if (!notifications.value?.length)
+    if (!notifications.value.length)
       return done('empty')
 
     notificationQuery.value.offset += notificationQuery.value.limit
@@ -48,7 +47,7 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
     if (!nextNotifications || nextNotifications?.length === 0)
       return done('empty')
 
-    notifications.value?.push(...nextNotifications)
+    notifications.value.push(...nextNotifications)
 
     return done('ok')
   }
@@ -60,9 +59,9 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
 async function removeNotification(notificationId: string) {
   try {
     await $api(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
-    notifications.value?.forEach((item, index) => {
+    notifications.value.forEach((item, index) => {
       if (notificationId === item.id) {
-        notifications.value?.splice(index, 1)
+        notifications.value.splice(index, 1)
       }
     })
   }
@@ -74,7 +73,7 @@ async function removeNotification(notificationId: string) {
 async function markReadOrUnread(notificationId: string, type: 'read' | 'unread') {
   try {
     await $api(`/pages/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
-    notifications.value?.forEach((item) => {
+    notifications.value.forEach((item) => {
       if (notificationId === item.id) {
         item.read_at = type === 'read' ? new Date().toDateString() : null
       }
@@ -89,7 +88,7 @@ async function markAllReadOrUnread(type: 'read' | 'unread') {
     const read = type === 'read'
     await $api(`/pages/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
     })
-    notifications.value?.forEach((item) => {
+    notifications.value.forEach((item) => {
       item.read_at = read ? new Date().toDateString() : null
     })
   }
@@ -104,8 +103,9 @@ function handleNotificationClick(notification: Notification) {
   else
     markReadOrUnread(notification.id, 'unread')
 }
-const totalUnreadNotifications = computed(() => notifications.value?.filter(item => !item.read_at).length)
-const isAllMarkRead = computed(() => notifications.value?.every(item => item.read_at))
+
+const isAllMarkRead = computed(() => notifications.value.every(item => item.read_at))
+
 function handleMarkAllReadOrUnread() {
   if (isAllMarkRead.value)
     markAllReadOrUnread('unread')
@@ -152,7 +152,7 @@ function handleMarkAllReadOrUnread() {
               variant="tonal"
               color="primary"
             >
-              {{ totalUnreadNotifications }} unread
+              {{ notifications.filter(item => !item.read_at).length }} unread
             </VChip>
 
             <IconBtn
