@@ -4,12 +4,14 @@ import type { Tables } from '@/server/types/supabase.js'
 type Notification = Tables<'sys_notifications'>
 // const notifications = ref<Array<Notification>>([])
 
-const location = ref('bottom end')
+const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})
+const notifications = ref<Notification[]>([])
 const notificationQuery = ref({
   offset: 0,
   limit: 5,
 })
+const notificationVisible = ref(false)
 
 async function fetchNotifications() {
   try {
@@ -23,9 +25,18 @@ async function fetchNotifications() {
   }
 }
 
-const { data: notifications } = useLazyAsyncData(fetchNotifications)
+watch(notificationVisible, async (visible) => {
+  if (visible) {
+    notificationQuery.value.offset = 0
 
-async function fetchMoreNotifications({ done }: { done: (type: string) => void }) {
+    const response = await fetchNotifications()
+
+    if (response)
+      notifications.value = response
+  }
+})
+
+async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 'loading' | 'error') => void }) {
   try {
     if (!notifications.value?.length)
       return done('empty')
@@ -119,10 +130,11 @@ function handleMarkAllReadOrUnread() {
     </VBadge>
 
     <VMenu
+      v-model="notificationVisible"
       activator="parent"
       width="380"
-      :location="location"
       offset="15px"
+      :location="location"
       :close-on-content-click="false"
     >
       <VCard class="d-flex flex-column">
