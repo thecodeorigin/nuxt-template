@@ -1,4 +1,5 @@
 import { omit } from 'lodash-es'
+import type { RouteLocationRaw } from 'vue-router'
 import type { HorizontalNavItem, NavGroupType, VerticalNavItem } from '@/@layouts/types'
 
 export const useLayoutStore = defineStore('layout', () => {
@@ -17,6 +18,7 @@ export const useLayoutStore = defineStore('layout', () => {
           const item = {
             action: route.meta.action,
             subject: route.meta.subject,
+            to: { name: route.name } as RouteLocationRaw,
             ...route.meta.sidebar,
           }
 

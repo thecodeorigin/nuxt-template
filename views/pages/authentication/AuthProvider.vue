@@ -8,18 +8,18 @@ defineEmits<{
 const { global } = useTheme()
 
 const authProviders = [
-  {
-    icon: 'bxl-facebook',
-    color: '#497CE2',
-    colorInDark: '#497CE2',
-    provider: 'google',
-  },
-  {
-    icon: 'bxl-github',
-    color: '#272727',
-    colorInDark: '#fff',
-    provider: 'github',
-  },
+  // {
+  //   icon: 'bxl-facebook',
+  //   color: '#497CE2',
+  //   colorInDark: '#497CE2',
+  //   provider: 'google',
+  // },
+  // {
+  //   icon: 'bxl-github',
+  //   color: '#272727',
+  //   colorInDark: '#fff',
+  //   provider: 'github',
+  // },
   {
     icon: 'bxl-google',
     color: '#db4437',

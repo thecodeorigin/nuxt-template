@@ -7,7 +7,7 @@ const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})
 const notifications = ref<Notification[]>([])
 const notificationQuery = ref({
-  offset: 0,
+  page: 1,
   limit: 10,
 })
 const notificationVisible = ref(false)
@@ -26,7 +26,7 @@ async function fetchNotifications() {
 
 watch(notificationVisible, async (visible) => {
   if (visible) {
-    notificationQuery.value.offset = 0
+    notificationQuery.value.page = 1
 
     const response = await fetchNotifications()
 
@@ -40,7 +40,7 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
     if (!notifications.value.length)
       return done('empty')
 
-    notificationQuery.value.offset += notificationQuery.value.limit
+    notificationQuery.value.page++
 
     const nextNotifications = await fetchNotifications()
 

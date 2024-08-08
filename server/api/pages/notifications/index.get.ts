@@ -1,16 +1,13 @@
 export default defineEventHandler(async (event) => {
   const { session } = await defineEventOptions(event, { auth: true, detail: true })
 
-  const query = getQuery(event)
-
-  const offset = Number(query.offset)
-  const limit = Number(query.limit)
+  const { limit = 10, page = 1 } = getFilter(event)
 
   const { data, error } = await supabaseAdmin.from('sys_notifications')
     .select()
     .eq('user_id', session.user.id)
     .order('created_at', { ascending: false })
-    .range(offset, offset + limit)
+    .range((page - 1) * limit, page * limit - 1)
 
   if (error) {
     setResponseStatus(event, 400, error.message)

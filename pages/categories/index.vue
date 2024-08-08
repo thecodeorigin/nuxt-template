@@ -5,8 +5,7 @@ import type { Tables } from '@/server/types/supabase'
 type Category = Tables<'categories'>
 definePageMeta({
   sidebar: {
-    title: 'Category',
-    to: { name: 'category' },
+    title: 'Categories',
     icon: { icon: 'ri-file-text-line' },
   },
 })

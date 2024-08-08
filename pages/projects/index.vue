@@ -10,18 +10,19 @@ interface Project extends Tables<'projects'> {
 
 definePageMeta({
   sidebar: {
-    title: 'Project',
-    to: { name: 'project' },
+    title: 'Projects',
     icon: { icon: 'ri-projector-fill' },
   },
 })
 
-const projects = ref<Project[]>([])
-const itemsPerPage = ref(10)
-const searchQuery = ref('')
+const projectQuery = ref({
+  page: 1,
+  limit: 10,
+  keyword: '',
+})
+
 const drawerVisible = ref(false)
-const page = ref(1)
-const categories = ref<Category[]>([])
+
 const projectData = ref<Project>({
   id: '',
   category_id: null,
@@ -48,98 +49,89 @@ const headers = [
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
-async function fetchProjects() {
-  const response = await $api< Project[] >('/projects', {
-    method: 'GET',
-    query: {
-      keyword: searchQuery.value,
-    },
-  })
-  projects.value = response as any as Project[]
-}
-async function fetchCategories() {
-  const response = await $api<Category>('/categories')
-  categories.value = response as any as Category[]
-}
-
-onBeforeMount(() => {
-  fetchProjects()
-  fetchCategories()
+const { data: projects, refresh: refreshProjects } = useLazyApi<Project[]>('/projects', {
+  params: projectQuery.value,
+  default() {
+    return []
+  },
 })
 
-// Update data table options
-function updateOptions(options: any) {
-  page.value = options.page
-}
+// const { data: categories } = useLazyApi<Category[]>('/categories', {
+//   default() {
+//     return []
+//   },
+// })
 
-function clearProjectData() {
-  projectData.value = {
-    id: '',
-    category_id: null,
-    created_at: '',
-    description: null,
-    title: null,
-    user_id: null,
-    category: {
-      name: '',
-      id: '',
-      created_at: '',
-      description: null,
-      image_url: null,
-      slug: '',
-      updated_at: null,
-      user_id: null,
-    },
-  }
-}
+// function clearProjectData() {
+//   projectData.value = {
+//     id: '',
+//     category_id: null,
+//     created_at: '',
+//     description: null,
+//     title: null,
+//     user_id: null,
+//     category: {
+//       name: '',
+//       id: '',
+//       created_at: '',
+//       description: null,
+//       image_url: null,
+//       slug: '',
+//       updated_at: null,
+//       user_id: null,
+//     },
+//   }
+// }
 
-debouncedWatch(searchQuery, () => {
-  fetchProjects()
-}, { debounce: 500 })
+debouncedWatch(
+  projectQuery,
+  () => refreshProjects(),
+  { deep: true, debounce: 500 },
+)
 
-function handleSubmit() {
-  if (projectData.value.id) {
-    handleUpdateProject()
-  }
-  else {
-    handleCreateProjectt()
-  }
-}
+// function handleSubmit() {
+//   if (projectData.value.id) {
+//     handleUpdateProject()
+//   }
+//   else {
+//     handleCreateProjectt()
+//   }
+// }
 
-async function handleCreateProjectt() {
-  try {
-    const { data: newProject } = await $api<{ data: Project }>('/projects', {
-      method: 'POST',
-      body: projectData.value,
-    })
-    projects.value.push(newProject)
-    clearProjectData()
-    drawerVisible.value = false
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
+// async function handleCreateProjectt() {
+//   try {
+//     const { data: newProject } = await $api<{ data: Project }>('/projects', {
+//       method: 'POST',
+//       body: projectData.value,
+//     })
+//     projects.value.push(newProject)
+//     clearProjectData()
+//     drawerVisible.value = false
+//   }
+//   catch (error) {
+//     console.error(error)
+//   }
+// }
 
-async function handleUpdateProject() {
-  try {
-    const { data: updatedProject } = await $api<{ data: Project }>(`/projects/${projectData.value.id}`, {
-      method: 'PATCH',
-      body: {
-        title: projectData.value.title,
-        description: projectData.value.description,
-        category_id: projectData.value.category_id,
-      },
-    })
-    const index = projects.value.findIndex(project => project.id === updatedProject.id)
-    projects.value[index] = updatedProject
-    clearProjectData()
-    drawerVisible.value = false
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
+// async function handleUpdateProject() {
+//   try {
+//     const { data: updatedProject } = await $api<{ data: Project }>(`/projects/${projectData.value.id}`, {
+//       method: 'PATCH',
+//       body: {
+//         title: projectData.value.title,
+//         description: projectData.value.description,
+//         category_id: projectData.value.category_id,
+//       },
+//     })
+//     const index = projects.value.findIndex(project => project.id === updatedProject.id)
+//     projects.value[index] = updatedProject
+//     clearProjectData()
+//     drawerVisible.value = false
+//   }
+//   catch (error) {
+//     console.error(error)
+//   }
+// }
 
 const confirmationDialogData = ref(
   {
@@ -175,10 +167,10 @@ function handleSelectProject(project: Project) {
   drawerVisible.value = true
 }
 
-function handleOpenAddProjectDrawer() {
-  clearProjectData()
-  drawerVisible.value = true
-}
+// function handleOpenAddProjectDrawer() {
+//   clearProjectData()
+//   drawerVisible.value = true
+// }
 </script>
 
 <template>
@@ -188,7 +180,7 @@ function handleOpenAddProjectDrawer() {
       <VCardText>
         <div class="d-flex justify-md-space-between flex-wrap gap-4 justify-center">
           <VTextField
-            v-model="searchQuery"
+            v-model="projectQuery.keyword"
             placeholder="Search"
             density="compact"
             style="max-inline-size: 280px; min-inline-size: 200px;"
@@ -197,7 +189,7 @@ function handleOpenAddProjectDrawer() {
           <div class="d-flex align-center flex-wrap gap-4">
             <VBtn
               prepend-icon="ri-add-line"
-              @click="handleOpenAddProjectDrawer"
+              :to="{ name: 'projects-create' }"
             >
               Add Project
             </VBtn>
@@ -206,15 +198,13 @@ function handleOpenAddProjectDrawer() {
       </VCardText>
 
       <VDataTable
-        v-if="projects"
-        v-model:items-per-page="itemsPerPage"
+        v-model:items-per-page="projectQuery.limit"
+        v-model:page="projectQuery.page"
         :headers="headers"
-        :page="page"
         :items="projects"
         item-value="projectTitle"
         show-select
         class="text-no-wrap category-table"
-        @update:options="updateOptions"
       >
         <template #item.actions="{ item }">
           <IconBtn size="small" @click="handleSelectProject(item)">
@@ -244,63 +234,26 @@ function handleOpenAddProjectDrawer() {
 
         <template #item.description="{ item }">
           <div class="text-center pe-4">
-            <!-- FIXME - handle count number of product later -->
             {{ item.description || 0 }}
           </div>
         </template>
         <template #item.category="{ item }">
           <div class="text-center pe-4">
-            <!-- FIXME - handle count number of product later -->
             {{ item.category.name || 0 }}
           </div>
         </template>
 
-        <!-- Pagination -->
         <template #bottom>
-          <VDivider />
-
-          <div class="d-flex justify-end flex-wrap gap-x-6 px-2 py-1">
-            <div class="d-flex align-center gap-x-2 text-medium-emphasis text-base">
-              Rows Per Page:
-              <VSelect
-                v-model="itemsPerPage"
-                class="per-page-select"
-                variant="plain"
-                :items="[2, 20, 25, 50, 100]"
-              />
-            </div>
-
-            <p class="d-flex align-center text-base text-high-emphasis me-2 mb-0">
-              {{ paginationMeta({ page, itemsPerPage }, projects.length) }}
-            </p>
-
-            <div class="d-flex gap-x-2 align-center me-2">
-              <VBtn
-                class="flip-in-rtl"
-                icon="ri-arrow-left-s-line"
-                variant="text"
-                density="comfortable"
-                color="high-emphasis"
-                :disabled="page <= 1"
-                @click="page <= 1 ? page = 1 : page--"
-              />
-
-              <VBtn
-                class="flip-in-rtl"
-                icon="ri-arrow-right-s-line"
-                density="comfortable"
-                variant="text"
-                color="high-emphasis"
-                :disabled="page >= Math.ceil(projects.length / itemsPerPage)"
-                @click="page >= Math.ceil(projects.length / itemsPerPage) ? page = Math.ceil(projects.length / itemsPerPage) : page++ "
-              />
-            </div>
-          </div>
+          <AppPagination
+            v-model:page="projectQuery.page"
+            v-model:limit="projectQuery.limit"
+            :total="projects.length"
+          />
         </template>
       </VDataTable>
     </VCard>
 
-    <AddProjectDrawer v-model:drawerVisible="drawerVisible" v-model="projectData" :categories="categories" @submit="handleSubmit" />
+    <!-- <AddProjectDrawer v-model:drawerVisible="drawerVisible" v-model="projectData" :categories="categories" @submit="handleSubmit" /> -->
   </div>
 </template>
 
