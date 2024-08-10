@@ -1,4 +1,11 @@
 <script setup lang="ts">
+definePageMeta({
+  sidebar: {
+    title: 'Create New',
+    icon: { icon: 'ri-projector-fill' },
+  },
+})
+
 const inStock = ref(true)
 </script>
 
