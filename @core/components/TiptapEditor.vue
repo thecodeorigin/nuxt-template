@@ -157,4 +157,7 @@ watch(() => props.modelValue, () => {
   background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
   color: rgb(var(--v-theme-primary));
 }
+.has-focus {
+  opacity: 1 !important;
+}
 </style>
