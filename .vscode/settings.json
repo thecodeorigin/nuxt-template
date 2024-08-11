@@ -13,7 +13,7 @@
     "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
   },
   "[scss]": {
-    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
@@ -24,17 +24,13 @@
   "[vue]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
-  "volar.preview.port": 3000,
-  "volar.completion.preferredTagNameCase": "pascal",
   "eslint.options": {},
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.fixAll.stylelint": "explicit",
     "source.organizeImports": "never"
   },
-  "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
-  "eslint.packageManager": "pnpm",
   "stylelint.packageManager": "pnpm",
   "stylelint.validate": [
     "css",

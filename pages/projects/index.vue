@@ -10,8 +10,9 @@ interface Project extends Tables<'projects'> {
 
 definePageMeta({
   sidebar: {
+    order: 0,
     title: 'List',
-    icon: { icon: 'ri-projector-fill' },
+    icon: { icon: 'ri-stack-line' },
   },
 })
 

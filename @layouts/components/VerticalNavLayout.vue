@@ -2,12 +2,12 @@
 import type { PropType } from 'vue'
 import { VerticalNav } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
-import type { VerticalNavItem } from '@layouts/types'
+import type { NavItem } from '@layouts/types'
 
 export default defineComponent({
   props: {
     navItems: {
-      type: Array as PropType<VerticalNavItem[]>,
+      type: Array as PropType<NavItem[]>,
       required: true,
     },
     verticalNavAttrs: {

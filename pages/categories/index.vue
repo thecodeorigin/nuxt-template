@@ -3,10 +3,12 @@ import ECommerceAddCategoryDrawer from '@/components/ecommerce/EcommerceAddCateg
 import type { Tables } from '@/server/types/supabase'
 
 type Category = Tables<'categories'>
+
 definePageMeta({
   sidebar: {
+    order: 2,
     title: 'Categories',
-    icon: { icon: 'ri-file-text-line' },
+    icon: { icon: 'ri-bookmark-line' },
   },
 })
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
   sidebar: {
+    order: 1,
     title: 'Create New',
-    icon: { icon: 'ri-projector-fill' },
+    icon: { icon: 'ri-add-circle-line' },
   },
 })
 

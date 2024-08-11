@@ -1,5 +1,5 @@
 import type { OffsetOptions } from '@floating-ui/dom'
-import type { RouteLocationRaw } from 'vue-router'
+import type { RouteLocationRaw, RouteRecordNormalized } from 'vue-router'
 import type { AppContentLayoutNav, ContentWidth, FooterType, HorizontalNavType, NavbarType } from '@layouts/enums'
 import type { Component } from 'vue'
 import type { Actions, Subjects } from '@/plugins/casl/ability'
@@ -49,11 +49,6 @@ export interface AclProperties {
   subject: Subjects
 }
 
-// 👉 Vertical nav section title
-export interface NavSectionTitle extends Partial<AclProperties> {
-  heading: string
-}
-
 // 👉 Vertical nav link
 declare type ATagTargetAttrValues = '_blank' | '_self' | '_parent' | '_top' | 'framename'
 declare type ATagRelAttrValues =
@@ -78,27 +73,22 @@ export interface NavLinkProps {
   rel?: ATagRelAttrValues
 }
 
-export interface NavLink extends NavLinkProps, Partial<AclProperties> {
-  title: string
-  icon?: { icon: string }
-  badgeContent?: string
-  badgeClass?: string
-  disable?: boolean
-}
-
 // 👉 Vertical nav group
-export interface NavGroup extends Partial<AclProperties> {
+export interface NavItem extends Partial<AclProperties> {
+  order?: number
   title: string
+  heading?: string
   icon?: { icon: string }
   badgeContent?: string
   badgeClass?: string
-  children: HorizontalNavItem[]
+  children: NavItem[]
   disable?: boolean
+  to?: RouteRecordNormalized
+  href?: string
+  target?: ATagTargetAttrValues
+  rel?: ATagRelAttrValues
+  group: NavGroupType
 }
-
-export declare type HorizontalNavItem = NavLink | NavGroup
-
-export declare type VerticalNavItem = HorizontalNavItem | NavSectionTitle
 
 export enum NavGroupType {
   POPULAR,

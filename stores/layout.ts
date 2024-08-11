@@ -1,26 +1,24 @@
-import { omit } from 'lodash-es'
+import { omit, sortBy } from 'lodash-es'
 import type { RouteRecordNormalized } from 'vue-router'
-import type { HorizontalNavItem, NavGroupType, VerticalNavItem } from '@/@layouts/types'
+import type { NavGroupType, NavItem } from '@/@layouts/types'
 
-// TODO: Simplify VerticalNavItem and HorizontalNavItem because now we generate it from routes
-type SidebarItem = VerticalNavItem & { group: NavGroupType, to: RouteRecordNormalized, children?: SidebarItem[] }
-type HorizontalSidebarItem = HorizontalNavItem & { group: NavGroupType, to: RouteRecordNormalized, children?: HorizontalSidebarItem[] }
-
-function createRouteTree(routes: RouteRecordNormalized[] = []): SidebarItem[] {
+function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[] {
   const { can } = useAbility()
 
-  let tree: SidebarItem[] = []
+  let tree: NavItem[] = []
 
   for (const route of routes) {
     if (!route.meta.sidebar)
       continue
 
-    const item = route.meta.sidebar as SidebarItem
+    const item = route.meta.sidebar as NavItem
     const to = route
     const children = createRouteTree(route.children as RouteRecordNormalized[])
 
     if (children.length) {
-      item.children = children
+      item.children = sortBy(children, [
+        function (o) { return o.order || 0 },
+      ])
     }
 
     if (!route.meta.action || !route.meta.subject || can(route.meta.action, route.meta.subject)) {
@@ -34,11 +32,13 @@ function createRouteTree(routes: RouteRecordNormalized[] = []): SidebarItem[] {
 
     // filter routes in tree that are also in children
     tree = tree.filter((item) => {
-      return !children.some(child => child.to.name === item.to.name)
+      return !children.some(child => child.to?.name === item.to?.name)
     })
   }
 
-  return tree
+  return sortBy(tree, [
+    function (o) { return o.order || 0 },
+  ])
 }
 
 export const useLayoutStore = defineStore('layout', () => {
@@ -51,7 +51,7 @@ export const useLayoutStore = defineStore('layout', () => {
   const horizontalLayoutItems = computed(
     () => layoutItems.value.map(
       i => omit(i, 'heading'),
-    ) as HorizontalSidebarItem[],
+    ) as NavItem[],
   )
 
   const isLoading = ref(false)

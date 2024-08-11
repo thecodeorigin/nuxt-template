@@ -392,7 +392,7 @@ function resetPaymentForm() {
               >
                 <VTextField
                   label="Company Name"
-                  placeholder="Pixinvent"
+                  placeholder="Thecodeorigin"
                 />
               </VCol>
 
@@ -403,7 +403,7 @@ function resetPaymentForm() {
               >
                 <VTextField
                   label="Billing Email"
-                  placeholder="pixinvent@email.com"
+                  placeholder="contact@thecodeorigin.com"
                 />
               </VCol>
 

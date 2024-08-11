@@ -194,7 +194,7 @@ const membersList: Member[] = [
               size="20"
               class="me-2"
             />
-            <span>Public to Master - Pixinvent</span>
+            <span>Public to Master - Thecodeorigin</span>
           </div>
 
           <VBtn prepend-icon="ri-link">

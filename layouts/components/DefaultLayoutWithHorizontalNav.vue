@@ -53,7 +53,7 @@ const layoutStore = useLayoutStore()
     </template>
 
     <!-- 👉 Customizer -->
-    <TheCustomizer />
+    <!-- <TheCustomizer /> -->
   </HorizontalNavLayout>
 </template>
 

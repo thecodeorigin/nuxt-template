@@ -6,15 +6,16 @@ import { initConfigStore, useConfigStore } from '@core/stores/config'
 import { hexToRgb } from '@layouts/utils'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 
-const { currentUser } = useAuthStore()
-const tokenDeviceStore = useTokenDeviceStore()
-
 // ℹ️ Sync current theme with initial loader theme
 initCore()
 initConfigStore()
-const configStore = useConfigStore()
-const { isMobile } = useDevice()
 const config = useRuntimeConfig()
+
+const configStore = useConfigStore()
+const authStore = useAuthStore()
+const tokenDeviceStore = useTokenDeviceStore()
+const { status } = useAuth()
+const { isMobile } = useDevice()
 const { global } = useTheme()
 
 if (isMobile)
@@ -22,24 +23,32 @@ if (isMobile)
 
 const notificationStore = useNotificationStore()
 const layoutStore = useLayoutStore()
-onMounted(async () => {
-  try {
-    const permission = await Notification.requestPermission()
-    if (permission === 'granted' && currentUser) {
-      const messaging = getMessaging()
-      const token = await getToken(messaging, { vapidKey: config.public.FIREBASE_KEY_PAIR })
-      await tokenDeviceStore.setTokenDevice(token)
-    }
-  }
-  catch (error) {
-    console.log('Error:', error)
-  }
 
-  onMessage(getMessaging(), (payload) => {
-    // TODO: Handle incoming messages
-    console.log('Client message:', payload)
-  })
-})
+watch(
+  status,
+  async () => {
+    if (status.value === 'authenticated') {
+      try {
+        if (Notification.permission !== 'granted')
+          await Notification.requestPermission()
+
+        if (Notification.permission === 'granted' && authStore.currentUser) {
+          const messaging = getMessaging()
+          const token = await getToken(messaging, { vapidKey: config.public.FIREBASE_KEY_PAIR })
+          await tokenDeviceStore.setTokenDevice(token)
+        }
+      }
+      catch (error) {
+        console.log('Error:', error)
+      }
+
+      onMessage(getMessaging(), (payload) => {
+        // TODO: Handle incoming messages
+        console.log('Client message:', payload)
+      })
+    }
+  },
+)
 </script>
 
 <template>

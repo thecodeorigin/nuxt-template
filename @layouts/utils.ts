@@ -1,8 +1,8 @@
-import type { Router } from 'vue-router'
+import type { RouteRecordNormalized, Router } from 'vue-router'
 import { layoutConfig } from '@layouts/config'
 import { AppContentLayoutNav } from '@layouts/enums'
 import { useLayoutConfigStore } from '@layouts/stores/config'
-import type { NavGroup, NavLink, NavLinkProps } from '@layouts/types'
+import type { NavItem, NavLinkProps } from '@layouts/types'
 
 export const openGroups = ref<string[]>([])
 
@@ -11,7 +11,7 @@ export const openGroups = ref<string[]>([])
  // @param {Object, String} item navigation routeName or route Object provided in navigation data
  */
 
-export const getComputedNavLinkToProp = computed(() => (link: NavLink) => {
+export const getComputedNavLinkToProp = computed(() => (link: NavItem) => {
   const props: NavLinkProps = {
     target: link.target,
     rel: link.rel,
@@ -20,7 +20,7 @@ export const getComputedNavLinkToProp = computed(() => (link: NavLink) => {
   // If route is string => it assumes string is route name => Create route object from route name
   // If route is not string => It assumes it's route object => returns passed route object
   if (link.to)
-    props.to = typeof link.to === 'string' ? { name: link.to } : link.to
+    props.to = (typeof link.to === 'string' ? { name: link.to } : link.to) as RouteRecordNormalized
   else props.href = link.href
 
   return props
@@ -32,7 +32,7 @@ export const getComputedNavLinkToProp = computed(() => (link: NavLink) => {
  * IF link is object it will resolve the object and will return the link
  // @param {Object, String} link navigation link object/string
  */
-export function resolveNavLinkRouteName(link: NavLink, router: Router) {
+export function resolveNavLinkRouteName(link: NavItem, router: Router) {
   if (!link.to)
     return null
 
@@ -46,7 +46,7 @@ export function resolveNavLinkRouteName(link: NavLink, router: Router) {
  * Check if nav-link is active
  * @param {object} link nav-link object
  */
-export function isNavLinkActive(link: NavLink, router: Router) {
+export function isNavLinkActive(link: NavItem, router: Router) {
   // Matched routes array of current route
   const matchedRoutes = router.currentRoute.value.matched
 
@@ -65,7 +65,7 @@ export function isNavLinkActive(link: NavLink, router: Router) {
  * Check if nav group is active
  * @param {Array} children Group children
  */
-export function isNavGroupActive(children: (NavLink | NavGroup)[], router: Router): boolean {
+export function isNavGroupActive(children: (NavItem | NavItem)[], router: Router): boolean {
   return children.some((child) => {
     // If child have children => It's group => Go deeper(recursive)
     if ('children' in child)

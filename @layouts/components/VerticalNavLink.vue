@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { layoutConfig } from '@layouts'
 import { useLayoutConfigStore } from '@layouts/stores/config'
-import type { NavLink } from '@layouts/types'
+import type { NavItem } from '@layouts/types'
 import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
 import { NuxtLink } from '#components'
 
 const props = defineProps<{
-  item: NavLink
+  item: NavItem
 }>()
 
 const configStore = useLayoutConfigStore()

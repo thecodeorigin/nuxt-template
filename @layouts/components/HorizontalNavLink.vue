@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { layoutConfig } from '@layouts'
-import type { NavLink } from '@layouts/types'
+import type { NavItem } from '@layouts/types'
 import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
 import { NuxtLink } from '#components'
 
 interface Props {
-  item: NavLink
+  item: NavItem
 
   // ℹ️ We haven't added this prop in vertical nav because we don't need such differentiation in vertical nav for styling
   isSubItem?: boolean

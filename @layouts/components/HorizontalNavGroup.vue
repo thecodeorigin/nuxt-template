@@ -2,11 +2,11 @@
 import { layoutConfig } from '@layouts'
 import { HorizontalNavLink, HorizontalNavPopper } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
-import type { NavGroup } from '@layouts/types'
+import type { NavItem } from '@layouts/types'
 import { getDynamicI18nProps, isNavGroupActive } from '@layouts/utils'
 
 interface Props {
-  item: NavGroup
+  item: NavItem
   childrenAtEnd?: boolean
 
   // ℹ️ We haven't added this prop in vertical nav because we don't need such differentiation in vertical nav for styling

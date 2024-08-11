@@ -132,7 +132,7 @@ function handleDrawerModelValueUpdate(val: boolean) {
                   v-model="company"
                   :rules="[requiredValidator]"
                   label="Company"
-                  placeholder="Pixinvent"
+                  placeholder="Thecodeorigin"
                 />
               </VCol>
 

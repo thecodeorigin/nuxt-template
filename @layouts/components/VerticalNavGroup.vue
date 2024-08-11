@@ -4,7 +4,7 @@ import { layoutConfig } from '@layouts'
 import { TransitionExpand, VerticalNavLink } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
-import type { NavGroup } from '@layouts/types'
+import type { NavItem } from '@layouts/types'
 import { getDynamicI18nProps, isNavGroupActive, openGroups } from '@layouts/utils'
 
 defineOptions({
@@ -12,7 +12,7 @@ defineOptions({
 })
 
 const props = defineProps<{
-  item: NavGroup
+  item: NavItem
 }>()
 
 const route = useRoute()
@@ -33,10 +33,10 @@ const isGroupOpen = ref(false)
  * Checks if any of children group is open or not.
  * This is helpful in preventing closing inactive parent group when inactive child group is opened. (i.e. Do not close "Nav Levels" group if child "Nav Level 2.2" is opened/clicked)
  *
- * @param {NavGroup['children']} children  - Nav group children
+ * @param {NavItem['children']} children  - Nav group children
  * @return {boolean} returns if any of children is open or not.
  */
-function isAnyChildOpen(children: NavGroup['children']): boolean {
+function isAnyChildOpen(children: NavItem['children']): boolean {
   return children.some((child) => {
     let result = openGroups.value.includes(child.title)
 
@@ -47,7 +47,7 @@ function isAnyChildOpen(children: NavGroup['children']): boolean {
   })
 }
 
-function collapseChildren(children: NavGroup['children']) {
+function collapseChildren(children: NavItem['children']) {
   children.forEach((child) => {
     if ('children' in child)
       collapseChildren(child.children)

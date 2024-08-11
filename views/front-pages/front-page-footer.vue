@@ -185,20 +185,20 @@ const menus: Menu[] = [
               icon="ri-heart-fill"
               color="#FF4D49"
             /></span> by <a
-              href="https://pixinvent.com/"
+              href="https://thecodeorigin.com/"
               target="_blank"
               rel="noopener noreferrer"
               class="ms-1 footer-heading font-weight-regular"
               style="color: rgba(255, 255, 255, var(--v-high-emphasis-opacity));"
-            >Pixinvent</a>
+            >Thecodeorigin</a>
           </span>
           <div class="d-flex gap-x-1">
             <template
               v-for="(item, index) in [
-                { title: 'github', icon: 'bxl-github', href: 'https://github.com/pixinvent' },
-                { title: 'facebook', icon: 'bxl-facebook', href: 'https://www.facebook.com/pixinvents/' },
-                { title: 'twitter', icon: 'bxl-twitter', href: 'https://twitter.com/pixinvents' },
-                { title: 'instagram', icon: 'bxl-linkedin', href: 'https://www.linkedin.com/company/pixinvent' },
+                { title: 'github', icon: 'bxl-github', href: 'https://github.com/thecodeorigin' },
+                { title: 'facebook', icon: 'bxl-facebook', href: 'https://www.facebook.com/thecodeorigins/' },
+                { title: 'twitter', icon: 'bxl-twitter', href: 'https://twitter.com/thecodeorigins' },
+                { title: 'instagram', icon: 'bxl-linkedin', href: 'https://www.linkedin.com/company/thecodeorigin' },
               ]"
               :key="index"
             >

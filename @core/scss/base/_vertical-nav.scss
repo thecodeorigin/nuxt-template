@@ -161,6 +161,8 @@
       .nav-link {
         .nav-item-icon {
           @extend %vertical-nav-items-nested-icon;
+
+          font-size: 1rem;
         }
       }
 
