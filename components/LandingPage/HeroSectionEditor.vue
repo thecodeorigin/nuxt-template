@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { z } from 'zod'
 
+import { VTextField } from 'vuetify/components'
 import type { HeroSectionType } from '@/types/landing-page'
 
 const { heroData } = storeToRefs(useLandingPageStore())
@@ -27,7 +28,7 @@ const heroForm = ref<HeroSectionType>({
 })
 
 const heroSchema = z.object({
-  hero_title: z.string(),
+  hero_title: z.string().min(2, { message: 'Hero title is 2 or more characters long' }),
   hero_title_desc: z.string(),
   hero_title_button: z.object({
     btn_link: z.string(),
@@ -43,6 +44,38 @@ const heroSchema = z.object({
 
 type FormSchemaType = z.infer<typeof heroSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
+
+async function onSubmit() {
+  const validInput = heroSchema.safeParse(heroForm.value)
+
+  if (!validInput.success) {
+    error.value = validInput.error.format()
+    notify('Invalid input, please check and try again', {
+      type: 'error',
+      timeout: 2000,
+    })
+  }
+  else {
+    console.log('««««« error »»»»»', error)
+    console.log('««««« heroForm run »»»»»')
+    error.value = null
+
+    // try {
+    //   await $api('/api/pages/landing-page/hero', {
+    //     method: 'PATCH',
+    //     body: heroForm.value,
+    //   })
+    // }
+    // catch (e) {
+    //   if (e instanceof z.ZodError) {
+    //     console.log(e.errors.map(err => err.message).join('\n'))
+    //   }
+    //   else {
+    //     console.log('Unexpected error: ', e)
+    //   }
+    // }
+  }
+}
 
 watch(heroData, (newHeroData) => {
   heroForm.value = {
@@ -60,167 +93,182 @@ watch(heroData, (newHeroData) => {
     },
   }
 }, { deep: true })
-
-async function onSubmit() {
-  const validInput = heroSchema.safeParse(heroForm.value)
-
-  if (!validInput.success) {
-    error.value = validInput.error.format()
-    console.log('««««« error.value »»»»»', error.value)
-  }
-  else {
-    error.value = null
-
-    try {
-      await $api('/api/pages/landing-page/hero', {
-        method: 'PATCH',
-        body: heroForm.value,
-      })
-    }
-    catch (e) {
-      if (e instanceof z.ZodError) {
-        console.log(e.errors.map(err => err.message).join('\n'))
-      }
-      else {
-        console.log('Unexpected error: ', e)
-      }
-    }
-  }
-}
 </script>
 
 <template>
+  Error: {{ error }}
   <form class="landing-page-hero" @submit.prevent="onSubmit">
-    <h2>Hero Section </h2>
+    <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
+      Hero Section
+    </VLabel>
 
     <div class="d-flex flex-column gap-4">
-      <VCard class="pa-4">
-        <VRow>
-          <VCol cols="12" sm="12">
-            <VCardTitle>Main page heading: </VCardTitle>
+      <VRow>
+        <VCol cols="12" md="8">
+          <VCard class="pa-4">
+            <!-- 👉 Hero Main Title -->
+            <VCardTitle class="text-center mb-4">
+              Main page heading
+            </VCardTitle>
+
+            <VLabel class="mb-2 label">
+              Main Title:
+            </VLabel>
             <TiptapEditor
               v-model="heroForm.hero_title"
-              class="border rounded-lg"
+              class="border rounded-lg mb-5"
               placeholder="Text here..."
             />
-          </VCol>
+            <div v-if="error?.hero_title">
+              <span v-for="(warn, index) in error?.hero_title?._errors" :key="index">
+                {{ warn }}
+              </span>
+            </div>
 
-          <VCol cols="12" sm="12">
-            <VCardTitle>Sub page heading: </VCardTitle>
-
-            <VTextarea
+            <!-- 👉 Hero Main Description -->
+            <VLabel class="mb-2 label">
+              Description:
+            </VLabel>
+            <TiptapEditor
               v-model="heroForm.hero_title_desc"
               label="Sub page heading"
               placeholder="Text here..."
+              :rules="[requiredValidator, lengthValidator(heroForm.hero_title_desc, 5)]"
+            />
+          </VCard>
+        </VCol>
+
+        <VCol cols="12" md="4">
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              Main page Button
+            </VCardTitle>
+
+            <VLabel class="mb-2 label">
+              Button settings
+            </VLabel>
+
+            <VRow class="mt-2">
+              <VCol cols="12" sm="12" class="mb-2">
+                <VTextField
+                  v-model="heroForm.hero_title_button.btn_label"
+                  label="Button label"
+                  placeholder="Placeholder Text"
+                />
+              </VCol>
+
+              <VCol cols="12" sm="12" class="mb-2">
+                <VSelect
+                  v-model="heroForm.hero_title_button.btn_variant"
+                  label="Button style"
+                  :items="['flat', 'contained', 'outlined', 'text']"
+                />
+              </vcol>
+
+              <VCol cols="12" sm="12" class="mb-2">
+                <VSelect
+                  v-model="heroForm.hero_title_button.btn_background"
+                  label="Button style"
+                  :items="['primary', 'secondary', 'accent', 'error', 'warning', 'info', 'success']"
+                />
+              </vcol>
+
+              <VCol cols="12" sm="6" class="mb-2">
+                <VSelect
+                  v-model="heroForm.hero_title_button.btn_radius"
+                  label="Button radius"
+                  :items="['0', 'sx', 'sm', 'md', 'lg', 'xl']"
+                />
+              </VCol>
+
+              <VCol cols="12" sm="6">
+                <VSwitch
+                  v-model="heroForm.hero_title_button.btn_rippled"
+                  label="Ripple effect"
+                />
+              </VCol>
+
+              <VCol cols="12" sm="6">
+                <VSelect
+                  v-model="heroForm.hero_title_button.btn_prepend_icon"
+                  label="Prepend icon"
+                  :items="['', 'ri-arrow-left-line', 'ri-arrow-right-line']"
+                />
+              </VCol>
+
+              <VCol cols="12" sm="6">
+                <VSelect
+                  v-model="heroForm.hero_title_button.btn_apend_icon"
+                  label="Append icon"
+                  :items="['', 'ri-arrow-right-line', 'ri-arrow-left-line']"
+                />
+              </VCol>
+            </vrow>
+          </VCard>
+
+          <VCard class="pa-4 mt-4 d-flex justify-center align-center flex-column">
+            <VCardTitle class="text-center mb-1">
+              Preview button
+            </VCardTitle>
+            <VBtn
+              v-bind="heroForm.hero_title_button"
+              :href="heroForm.hero_title_button.btn_link"
+              :prepend-icon="heroForm.hero_title_button.btn_prepend_icon"
+              :append-icon="heroForm.hero_title_button.btn_apend_icon"
+              :variant="heroForm.hero_title_button.btn_variant"
+              :color="heroForm.hero_title_button.btn_background"
+              :ripple="heroForm.hero_title_button.btn_rippled"
+              :rounded="heroForm.hero_title_button.btn_radius"
+            >
+              {{ heroForm.hero_title_button.btn_label }}
+            </vbtn>
+          </VCard>
+        </VCol>
+      </VRow>
+
+      <!-- 👉 Hero Image -->
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          Upload image
+        </VCardTitle>
+
+        <VRow class="mb-6">
+          <VCol cols="12" sm="6">
+            <VLabel class="mb-2 label">
+              Main Hero image (Light to dark):
+            </VLabel>
+
+            <LandingPageImagePreview
+              id="image"
+              :model-value="imageFile"
+              @update:model-value="handleImageUpdate"
+            />
+          </VCol>
+
+          <VCol cols="12" sm="6">
+            <VLabel class="mb-2 label">
+              Sub Hero image (Light to dark):
+            </VLabel>
+            <LandingPageImagePreview
+              id="image"
+              :model-value="imageFile"
+              @update:model-value="handleImageUpdate"
             />
           </VCol>
         </VRow>
       </VCard>
 
-      <VCard class="pa-4">
-        <VCardTitle>Main page button: </VCardTitle>
-        <VExpansionPanels ripple>
-          <VExpansionPanel
-            title="Button settings panel"
-            class="landing-page-pannel"
-          >
-            <template #text>
-              <VRow class="mt-2">
-                <VCol cols="12" sm="6">
-                  <VTextField
-                    v-model="heroForm.hero_title_button.btn_label"
-                    label="Button label"
-                    placeholder="Placeholder Text"
-                  />
-                </VCol>
-
-                <VCol cols="12" sm="6">
-                  <VSelect
-                    v-model="heroForm.hero_title_button.btn_variant"
-                    label="Button style"
-                    :items="['flat', 'contained', 'outlined', 'text']"
-                  />
-                </vcol>
-
-                <VCol cols="6" sm="3">
-                  <VSelect
-                    v-model="heroForm.hero_title_button.btn_radius"
-                    label="Button radius"
-                    :items="['0', 'sx', 'sm', 'md', 'lg', 'xl']"
-                  />
-                </VCol>
-
-                <VCol cols="6" sm="3">
-                  <VSwitch
-                    v-model="heroForm.hero_title_button.btn_rippled"
-                    label="Ripple effect"
-                  />
-                </VCol>
-
-                <VCol cols="6" sm="3">
-                  <VSelect
-                    v-model="heroForm.hero_title_button.btn_prepend_icon"
-                    label="Prepend icon"
-                    :items="['ri-arrow-left-line', 'ri-arrow-right-line']"
-                  />
-                </VCol>
-
-                <VCol cols="6" sm="3">
-                  <VSelect
-                    v-model="heroForm.hero_title_button.btn_apend_icon"
-                    label="Append icon"
-                    :items="['ri-arrow-right-line', 'ri-arrow-left-line']"
-                  />
-                </VCol>
-              </vrow>
-
-              <!-- <VDivider class="my-4" />
-
-              <div class="d-flex align-center justify-end gap-3">
-                <VBtn color="primary">
-                  Save
-                </VBtn>
-
-                <VBtn color="secondary">
-                  Set to default
-                </VBtn>
-              </div> -->
-            </template>
-          </VExpansionPanel>
-        </VExpansionPanels>
-
-        <VCardTitle class="mt-6">
-          Preview button:
-        </VCardTitle>
+      <div class="w-100 d-flex justify-center align-center">
         <VBtn
-          v-bind="heroForm.hero_title_button"
-          class="text-capitalize ml-3"
-          :href="heroForm.hero_title_button.btn_link"
-          :prepend-icon="heroForm.hero_title_button.btn_prepend_icon"
-          :append-icon="heroForm.hero_title_button.btn_apend_icon"
-          :variant="heroForm.hero_title_button.btn_variant"
-          :color="heroForm.hero_title_button.btn_background"
-          :ripple="heroForm.hero_title_button.btn_rippled"
-          :rounded="heroForm.hero_title_button.btn_radius"
+          class="mx-auto w-100"
+          type="submit"
+          color="primary"
+          variant="outlined"
+          @click="onSubmit"
         >
-          {{ heroForm.hero_title_button.btn_label }}
-        </vbtn>
-      </VCard>
-
-      <VCard class="pa-4">
-        <VCardTitle>Upload image:</VCardTitle>
-        <VExpansionPanels>
-          <VExpansionPanel title="Upload pannel">
-            <template #text>
-              <LandingPageImagePreview
-                id="image"
-                :model-value="imageFile"
-                @update:model-value="handleImageUpdate"
-              />
-            </template>
-          </VExpansionPanel>
-        </VExpansionPanels>
-      </VCard>
+          Update Hero Section Content
+        </VBtn>
+      </div>
     </div>
 
     <VBtn
@@ -235,4 +283,12 @@ async function onSubmit() {
 </template>
 
 <style lang="scss" scoped>
+ .drop-zone {
+    border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
+    border-radius: 8px;
+  }
+
+  .label {
+    line-height: 20px;
+  }
 </style>

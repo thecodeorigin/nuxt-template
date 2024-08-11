@@ -9,19 +9,29 @@ definePageMeta({
 </script>
 
 <template>
-  <form class="landing-page-editor">
-    <HeroSectionEditor />
-  </form>
+  <div class="landing-page-container">
+    <div class="landing-page-header d-flex align-center justify-space-between mb-8">
+      <VLabel class="text-h2 text-capitalize font-weight-bold">
+        Landing page Editor
+      </VLabel>
+
+      <VBtn
+        class="text-capitalize"
+        type="submit"
+        color="primary"
+        variant="outlined"
+        @click="handleNavigate"
+      >
+        Preview landing page
+      </VBtn>
+    </div>
+
+    <form class="landing-page-editor">
+      <HeroSectionEditor />
+    </form>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.landing-page-editor {
-  .landing-page-panel {
-    :deep(.v-expansion-panel-text) {
-      :deep(.v-expansion-panel-text__wrapper) {
-        margin-top: 30px;
-      }
-    }
-  }
-}
+
 </style>

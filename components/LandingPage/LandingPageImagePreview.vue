@@ -50,7 +50,7 @@ useDropZone(dropZoneRef, onDrop)
   >
     <div
       v-if="fileData.length === 0"
-      class="d-flex flex-column justify-center align-center gap-y-2 pa-12 border-dashed drop-zone"
+      class="d-flex flex-column justify-center align-center gap-y-2 pa-8 border-dashed drop-zone"
     >
       <VAvatar
         variant="tonal"
@@ -123,47 +123,8 @@ useDropZone(dropZoneRef, onDrop)
 </template>
 
 <style lang="scss">
-.landing-page-upload-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    width: 380px;
-    height: 350px;
-    border: 2px dashed #d3d3d3;
-    padding: 20px;
-
-    .landing-page-upload-title {
-      margin-top: 24px;
-      font-weight: 700;
-      line-height: 30px;
-      text-align: center;
-    }
-
-    .landing-page-image-remove {
-      cursor: pointer;
-      position: absolute;
-      z-index: 100;
-      top: 10px;
-      right: 10px;
-      width: 50px;
-      height: 50px;
-
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
-
-    .landing-page-image-preview {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: linear-gradient(162.52deg, #36FDDE -33.13%, #F4FDD0 39.28%, #F7EFC2 68.59%, #FFCEA1 104.14%);
-    }
-
-  }
+  .drop-zone {
+  border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 8px;
+}
 </style>
