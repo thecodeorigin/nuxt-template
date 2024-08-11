@@ -14,7 +14,7 @@ const notificationVisible = ref(false)
 
 async function fetchNotifications() {
   try {
-    return await $api<Notification[]>('/pages/notifications', {
+    return await $api<Notification[]>('/notifications', {
       method: 'GET',
       query: notificationQuery.value,
     })
@@ -58,7 +58,7 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
 
 async function removeNotification(notificationId: string) {
   try {
-    await $api(`/pages/notifications/${notificationId}`, { method: 'DELETE' })
+    await $api(`/notifications/${notificationId}`, { method: 'DELETE' })
     notifications.value.forEach((item, index) => {
       if (notificationId === item.id) {
         notifications.value.splice(index, 1)
@@ -72,7 +72,7 @@ async function removeNotification(notificationId: string) {
 
 async function markReadOrUnread(notificationId: string, type: 'read' | 'unread') {
   try {
-    await $api(`/pages/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
+    await $api(`/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
     notifications.value.forEach((item) => {
       if (notificationId === item.id) {
         item.read_at = type === 'read' ? new Date().toDateString() : null
@@ -86,7 +86,7 @@ async function markReadOrUnread(notificationId: string, type: 'read' | 'unread')
 async function markAllReadOrUnread(type: 'read' | 'unread') {
   try {
     const read = type === 'read'
-    await $api(`/pages/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
+    await $api(`/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
     })
     notifications.value.forEach((item) => {
       item.read_at = read ? new Date().toDateString() : null

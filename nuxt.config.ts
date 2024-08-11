@@ -107,8 +107,6 @@ export default defineNuxtConfig({
           '@images/*': ['../assets/images/*'],
           '@styles/*': ['../assets/styles/*'],
           '@validators': ['../@core/utils/validators'],
-          '@db/*': ['../server/fake-db/*'],
-          '@api-utils/*': ['../server/utils/*'],
         },
       },
     },
@@ -138,8 +136,6 @@ export default defineNuxtConfig({
         '@images': fileURLToPath(new URL('./assets/images/', import.meta.url)),
         '@styles': fileURLToPath(new URL('./assets/styles/', import.meta.url)),
         '@configured-variables': fileURLToPath(new URL('./assets/styles/variables/_template.scss', import.meta.url)),
-        '@db': fileURLToPath(new URL('./server/fake-db/', import.meta.url)),
-        '@api-utils': fileURLToPath(new URL('./server/utils/', import.meta.url)),
       },
     },
 

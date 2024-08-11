@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Invoice } from '@db/apps/invoice/types'
-
 const searchQuery = ref('')
 const selectedStatus = ref()
 const selectedRows = ref<string[]>([])
@@ -41,10 +39,10 @@ const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(createUr
   },
 }))
 
-const invoices = computed((): Invoice[] => invoiceData.value?.invoices)
+const invoices = computed((): any[] => invoiceData.value?.invoices)
 const totalInvoices = computed(() => invoiceData.value?.totalInvoices)
 
-// 👉 Invoice balance variant resolver
+// 👉 any balance variant resolver
 function resolveInvoiceBalanceVariant(balance: string | number, total: number) {
   if (balance === total)
     return { status: 'Unpaid', chip: { color: 'error' } }
@@ -55,7 +53,7 @@ function resolveInvoiceBalanceVariant(balance: string | number, total: number) {
   return { status: balance, chip: { variant: 'text' } }
 }
 
-// 👉 Invoice status variant resolver
+// 👉 any status variant resolver
 function resolveInvoiceStatusVariantAndIcon(status: string) {
   if (status === 'Partial Payment')
     return { variant: 'warning', icon: 'ri-line-chart-line' }
@@ -86,7 +84,7 @@ const computedMoreList = computed(() => {
   ])
 })
 
-// 👉 Delete Invoice
+// 👉 Delete any
 async function deleteInvoice(id: number) {
   await $api(`/apps/invoice/${id}`, { method: 'DELETE' })
   fetchInvoices()
@@ -95,7 +93,7 @@ async function deleteInvoice(id: number) {
 
 <template>
   <section v-if="invoices">
-    <!-- 👉 Invoice Filters  -->
+    <!-- 👉 any Filters  -->
 
     <VCard id="invoice-list">
       <VCardText class="d-flex align-center flex-wrap gap-4">
@@ -117,11 +115,11 @@ async function deleteInvoice(id: number) {
           <div class="invoice-list-search">
             <VTextField
               v-model="searchQuery"
-              placeholder="Search Invoice"
+              placeholder="Search any"
             />
           </div>
 
-          <!-- 👉 Filter Invoice  -->
+          <!-- 👉 Filter any  -->
 
           <div style="inline-size: 10.9375rem;">
             <VSelect
