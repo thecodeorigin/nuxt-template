@@ -32,10 +32,10 @@ interface Feature {
 }
 
 export interface FeatureSectionType {
-  feature_emphasized_title: EmphasizedTitle | null
-  feature_title: string | null
-  feature_title_desc: string | null
-  feature_data: Feature[] | null
+  feature_emphasized_title?: EmphasizedTitle
+  feature_title: string
+  feature_title_desc: string
+  feature_data: Feature[]
 }
 
 // Interface for customer review section

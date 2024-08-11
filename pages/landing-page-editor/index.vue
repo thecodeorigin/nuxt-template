@@ -28,6 +28,10 @@ definePageMeta({
 
     <form class="landing-page-editor">
       <HeroSectionEditor />
+
+      <VDivider class="my-8" />
+
+      <FeatureSectionEditor />
     </form>
   </div>
 </template>

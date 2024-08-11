@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { z } from 'zod'
 
-import { VTextField } from 'vuetify/components'
 import type { HeroSectionType } from '@/types/landing-page'
 
 const { heroData } = storeToRefs(useLandingPageStore())
@@ -30,32 +29,9 @@ const heroForm = ref<HeroSectionType>({
   },
 })
 
-const heroSchema = z.object({
-  hero_title: z.string().min(2, { message: 'Hero title is 2 or more characters long' }).max(100, { message: 'Hero title is 100 or less characters long' }),
-  hero_title_desc: z.string().min(2, { message: 'Hero description is 2 or more characters long' }).max(500, { message: 'Hero description is 500 or less characters long' }),
-  hero_main_img_light: z.string(),
-  hero_main_img_dark: z.string(),
-  hero_sub_img_light: z.string(),
-  hero_sub_img_dark: z.string(),
-  hero_title_button: z.object({
-    btn_link: z.string(),
-    btn_label: z.string().min(2, { message: 'Button label is 2 or more characters long' }).max(20, { message: 'Button label is 100 or less characters long' }),
-    btn_radius: z.union([z.string(), z.number()]),
-    btn_rippled: z.boolean(),
-    btn_variant: z.string(),
-    btn_apend_icon: z.string(),
-    btn_background: z.string(),
-    btn_prepend_icon: z.string(),
-  }),
-})
-
-type FormSchemaType = z.infer<typeof heroSchema>
+type FormSchemaType = z.infer<typeof heroSchema> // validation.ts
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
-function removeEmptyTags(html: string): string {
-  // Remove empty <p> tags from tiptap editor
-  return html.replace(/<p>\s*<\/p>/g, '')
-}
 function onTitleUpdate(editorValue: string) {
   return tiptapTitleInput.value = removeEmptyTags(editorValue)
 }
@@ -108,30 +84,30 @@ async function onSubmit() {
   }
 }
 
-watch(heroData, (newHeroData) => {
+watch(heroData, (value) => {
   heroForm.value = {
-    hero_title: newHeroData?.hero_title ? removeEmptyTags(newHeroData.hero_title) : '',
-    hero_title_desc: newHeroData?.hero_title_desc ? removeEmptyTags(newHeroData.hero_title_desc) : '',
-    hero_main_img_light: newHeroData?.hero_main_img_light || '',
-    hero_main_img_dark: newHeroData?.hero_main_img_dark || '',
-    hero_sub_img_light: newHeroData?.hero_sub_img_light || '',
-    hero_sub_img_dark: newHeroData?.hero_sub_img_dark || '',
+    hero_title: value?.hero_title ? removeEmptyTags(value.hero_title) : '',
+    hero_title_desc: value?.hero_title_desc ? removeEmptyTags(value.hero_title_desc) : '',
+    hero_main_img_light: value?.hero_main_img_light || '',
+    hero_main_img_dark: value?.hero_main_img_dark || '',
+    hero_sub_img_light: value?.hero_sub_img_light || '',
+    hero_sub_img_dark: value?.hero_sub_img_dark || '',
     hero_title_button: {
-      btn_link: newHeroData?.hero_title_button?.btn_link || '',
-      btn_label: newHeroData?.hero_title_button?.btn_label || '',
-      btn_radius: newHeroData?.hero_title_button?.btn_radius || '',
-      btn_rippled: newHeroData?.hero_title_button?.btn_rippled || false,
-      btn_variant: newHeroData?.hero_title_button?.btn_variant || 'flat',
-      btn_apend_icon: newHeroData?.hero_title_button?.btn_apend_icon || '',
-      btn_background: newHeroData?.hero_title_button?.btn_background || '',
-      btn_prepend_icon: newHeroData?.hero_title_button?.btn_prepend_icon || '',
+      btn_link: value?.hero_title_button?.btn_link || '',
+      btn_label: value?.hero_title_button?.btn_label || '',
+      btn_radius: value?.hero_title_button?.btn_radius || '',
+      btn_rippled: value?.hero_title_button?.btn_rippled || false,
+      btn_variant: value?.hero_title_button?.btn_variant || 'flat',
+      btn_apend_icon: value?.hero_title_button?.btn_apend_icon || '',
+      btn_background: value?.hero_title_button?.btn_background || '',
+      btn_prepend_icon: value?.hero_title_button?.btn_prepend_icon || '',
     },
   }
 
   tiptapTitleInput.value = heroForm.value.hero_title
 
   tiptapDescriptionInput.value = heroForm.value.hero_title_desc
-}, { deep: true })
+}, { deep: true, immediate: true })
 </script>
 
 <template>
@@ -146,19 +122,19 @@ watch(heroData, (newHeroData) => {
         <VCol cols="12" md="8">
           <VCard class="pa-4">
             <VCardTitle class="text-center mb-4">
-              Main page heading
+              Hero page heading
             </VCardTitle>
 
             <!-- 👉 Hero Main Title -->
             <div class="mb-6 position-relative">
               <VLabel class="mb-2 label">
-                Main Title:
+                Hero title:
                 <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
               </VLabel>
 
               <TiptapEditor
                 v-model="heroForm.hero_title"
-                class="border rounded-lg"
+                class="border rounded-lg title-content"
                 :class="{ 'border-error border-opacity-100': error?.hero_title && tiptapTitleInput.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
@@ -179,7 +155,7 @@ watch(heroData, (newHeroData) => {
               </VLabel>
               <TiptapEditor
                 v-model="heroForm.hero_title_desc"
-                class="border rounded-lg"
+                class="border rounded-lg "
                 :class="{ 'border-error border-opacity-100': error?.hero_title_desc && tiptapDescriptionInput.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
@@ -343,7 +319,6 @@ watch(heroData, (newHeroData) => {
           type="submit"
           color="primary"
           variant="outlined"
-          @click="onSubmit"
         >
           <VProgressCircular
             indeterminate
@@ -373,6 +348,12 @@ watch(heroData, (newHeroData) => {
 
   .label {
     line-height: 20px;
+  }
+
+  .title-content {
+    :deep(.ProseMirror) {
+      min-block-size: 5vh;
+    }
   }
 
   .error-text{

@@ -46,30 +46,9 @@ function getIcon(iconName: string) {
           </div>
         </div>
 
-        <div class="mb-2 text-center gap-1">
-          <Component
-            :is="featureData?.feature_emphasized_title?.variant"
-            v-if="featureData?.feature_emphasized_title"
-            :style="{
-              color: featureData?.feature_emphasized_title?.color,
-              fontSize: `${featureData?.feature_emphasized_title?.font_size}px`,
-              fontWeight: featureData?.feature_emphasized_title?.font_weight,
-              textTransform: featureData?.feature_emphasized_title?.text_transform,
-              textDecoration: featureData?.feature_emphasized_title?.text_decoration,
-            }"
-            class="d-inline-block mr-1"
-          >
-            {{ featureData?.feature_emphasized_title?.text }}
-          </Component>
+        <p class="feature-title text-h5 d-inline-block" v-html="featureData?.feature_title" />
 
-          <span class="feature-title text-h5 d-inline-block">
-            {{ featureData?.feature_title }}
-          </span>
-        </div>
-
-        <p class="text-body-1 font-weight-medium text-center">
-          {{ featureData?.feature_title_desc }}
-        </p>
+        <p class="text-body-1 font-weight-medium text-center" v-html="featureData?.feature_title_desc" />
       </div>
 
       <VRow>
