@@ -16,6 +16,16 @@ export default defineNuxtConfig({
         href: '/favicon.ico',
       }],
     },
+
+    pageTransition: {
+      name: 'app-transition-slide-fade',
+      mode: 'out-in',
+    },
+
+    layoutTransition: {
+      name: 'app-transition-slide-fade',
+      mode: 'out-in',
+    },
   },
 
   devtools: {
