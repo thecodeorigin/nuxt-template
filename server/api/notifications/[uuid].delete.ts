@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const uuid = getUuid(event, 'Missing UUID to get data')
+  const { uuid } = await defineEventOptions(event, { auth: true, detail: true })
 
   const { data, error } = await supabaseAdmin.from('sys_notifications')
     .delete().eq('id', uuid).maybeSingle()

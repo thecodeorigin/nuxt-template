@@ -1,4 +1,4 @@
-export function serviceAccount() {
+export function getFirebaseServiceAccount() {
   return {
     type: process.env.FIREBASE_TYPE,
     project_id: process.env.FIREBASE_PROJECT_ID,

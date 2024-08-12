@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   if (!user_id)
     return { message: 'User id is required' }
 
-  const service = serviceAccount()
+  const service = getFirebaseServiceAccount()
   if (admin.apps.length === 0) {
     admin.initializeApp({
       credential: admin.credential.cert(service as admin.ServiceAccount),
