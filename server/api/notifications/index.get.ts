@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true, detail: true })
+  const { session } = await defineEventOptions(event, { auth: true })
 
   const { limit = 10, page = 1 } = getFilter(event)
 

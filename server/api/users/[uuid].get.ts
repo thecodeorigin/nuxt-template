@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const { uuid } = await defineEventOptions(event, { auth: true, detail: true })
+  const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
   const { data: user } = await supabase.from('sys_users').select().eq('id', uuid).maybeSingle()
 

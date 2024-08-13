@@ -2,6 +2,12 @@ export function getStripeProduct(productId: string) {
   return stripeAdmin.products.retrieve(productId)
 }
 
+export function getStripeAllProducts() {
+  return stripeAdmin.products.search({
+    query: `metadata[\'lookup_key\']:\'${process.env.STRIPE_PRODUCT_LOOKUP_KEY}\'`,
+  })
+}
+
 export function createStripeProduct(payload: {
   name: string
   description: string
@@ -9,6 +15,9 @@ export function createStripeProduct(payload: {
 }) {
   return stripeAdmin.products.create({
     name: payload.name,
+    metadata: {
+      lookup_key: process.env.STRIPE_PRODUCT_LOOKUP_KEY!,
+    },
     description: payload.description,
     marketing_features: payload.features.map(feature => ({ name: feature })),
   })

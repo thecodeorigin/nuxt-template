@@ -3,7 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 type Notification = Tables<'sys_notifications'>
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, detail: true })
+  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
   const notification = await readBody<Notification>(event)
 

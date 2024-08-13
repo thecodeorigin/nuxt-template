@@ -1,13 +1,15 @@
 import type Stripe from 'stripe'
 
 export async function createStripeSubscription(customerId: string, priceId: string) {
-  const subscriptions = await getStripeCustomerSubscription(customerId, priceId)
+  const subscriptions = await getStripeCustomerSubscriptions(customerId)
 
   if (subscriptions.data.length > 0) {
-    if (subscriptions.data[0].status === 'paused')
+    const sub = subscriptions.data.find(s => s.items.data.some(i => i.price.id === priceId))
+
+    if (sub?.status === 'paused')
       await resumeStripeSubscription(subscriptions.data[0].id)
 
-    return subscriptions.data[0]
+    return sub
   }
   else {
     return stripeAdmin.subscriptions.create({

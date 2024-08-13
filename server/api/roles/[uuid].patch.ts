@@ -3,7 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 type Role = Tables<'sys_roles'>
 
 export default defineEventHandler(async (event) => {
-  const { uuid } = await defineEventOptions(event, { auth: true, detail: true })
+  const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
   const post = await readBody<Role>(event)
 

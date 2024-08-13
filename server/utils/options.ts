@@ -2,24 +2,28 @@ import type { H3Event } from 'h3'
 import type { Session } from 'next-auth'
 import { getServerSession } from '#auth'
 
-interface RouteOptions<T extends boolean, U extends boolean> {
+interface RouteOptions<U extends boolean, P extends string[]> {
   auth?: U
-  detail?: T
+  params?: P
 }
 
 type ConditionalType<Condition, TrueType, FalseType> = Condition extends true ? TrueType : FalseType
 
+type TupleType<T extends string[]> = [...T]
+
 export async function defineEventOptions<
-  UseDetailT extends boolean,
   UseAuthU extends boolean,
->(event: H3Event, options?: RouteOptions<UseDetailT, UseAuthU>) {
-  type UUIDType = ConditionalType<UseDetailT, string, null>
+  ParamsT extends string[],
+>(event: H3Event, options?: RouteOptions<UseAuthU, TupleType<ParamsT>>) {
   type SessionType = ConditionalType<UseAuthU, Session, null>
 
-  const result = { uuid: null, session: null } as {
-    uuid: UUIDType
+  type Result = {
+    [K in TupleType<ParamsT>[number]]: string
+  } & {
     session: SessionType
   }
+
+  const result = { session: null } as Result
 
   if (options?.auth) {
     const session = await getServerSession(event)
@@ -34,10 +38,10 @@ export async function defineEventOptions<
     result.session = session as SessionType
   }
 
-  if (options?.detail) {
-    const uuid = getUuid(event)
-
-    result.uuid = uuid as UUIDType
+  if (options?.params) {
+    for (const param of options.params) {
+      result[param] = getParam(event, param) as any
+    }
   }
 
   return result

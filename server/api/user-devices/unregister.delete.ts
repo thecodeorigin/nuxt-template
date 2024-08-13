@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true, detail: true })
+  const { session } = await defineEventOptions(event, { auth: true })
   const { token } = await readBody(event)
   const { error } = await supabaseAdmin.from('user_devices').delete().match({
     user_id: session.user.id,

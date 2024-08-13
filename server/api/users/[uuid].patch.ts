@@ -3,7 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 type User = Tables<'sys_users'>
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, detail: true })
+  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
   if (session.user.id !== uuid)
     return setResponseStatus(event, 403, 'You are not allowed to update other users')

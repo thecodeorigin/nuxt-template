@@ -1,14 +1,14 @@
 import type { H3Event } from 'h3'
 
-export function getUuid(event: H3Event) {
-  const uuid = String(event.context.params?.uuid)
+export function getParam(event: H3Event, key = 'uuid') {
+  const value = getRouterParam(event, key)
 
-  if (!uuid) {
+  if (!value) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Not Found!',
     })
   }
 
-  return uuid
+  return value
 }

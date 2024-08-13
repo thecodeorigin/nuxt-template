@@ -1,7 +1,13 @@
-export function getStripeFreePrice() {
-  return stripeAdmin.prices.search({
-    query: 'lookup_key:"free"',
-    limit: 1,
+export function getStripeFreePrices(productId: string) {
+  return stripeAdmin.prices.list({
+    product: productId,
+    lookup_keys: ['free'],
+  })
+}
+
+export function getStripeAllPrices(productId: string) {
+  return stripeAdmin.prices.list({
+    product: productId,
   })
 }
 

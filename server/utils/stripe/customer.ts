@@ -8,10 +8,10 @@ export async function getStripeCustomerByEmail(email: string) {
   return customers[0]
 }
 
-export function getStripeCustomerSubscription(customerId: string, priceId: string) {
+export function getStripeCustomerSubscriptions(customerId: string) {
   return stripeAdmin.subscriptions.list({
     customer: customerId,
-    price: priceId,
+    expand: [],
   })
 }
 
