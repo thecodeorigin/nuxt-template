@@ -20,17 +20,25 @@ import type { z } from 'zod'
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import { VTextField } from 'vuetify/components'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import type { CustomerReviewSectionType } from '@/types/landing-page'
+import type { CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
 
 register()
 
 const { customerReviewData } = storeToRefs(useLandingPageStore())
+
+const DRAWER_ACTION_TYPES = {
+  ADD: 'add' as const,
+  EDIT: 'edit' as const,
+}
+
 const tiptapTitleInput = ref<string>('')
 const tiptapDescriptionInput = ref<string>('')
 const isLoading = ref(false)
-const reviewerDrawerOption = ref({
+
+const reviewerDrawerOption = ref<DrawerConfig>({
   isVisible: false,
-  type: 'edit',
+  type: DRAWER_ACTION_TYPES.ADD,
+  reviewerId: null,
 })
 
 const reviewForm = ref<CustomerReviewSectionType>({
@@ -61,30 +69,31 @@ function onDescriptionUpdate(editorValue: string) {
   return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
 }
 
-const brandLogo1 = useGenerateImageVariant(logo1light, logo1dark)
-const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
-const brandLogo3 = useGenerateImageVariant(logo3light, logo3dark)
-const brandLogo4 = useGenerateImageVariant(logo4light, logo4dark)
-const brandLogo5 = useGenerateImageVariant(logo5light, logo5dark)
+// const brandLogo1 = useGenerateImageVariant(logo1light, logo1dark)
+// const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
+// const brandLogo3 = useGenerateImageVariant(logo3light, logo3dark)
+// const brandLogo4 = useGenerateImageVariant(logo4light, logo4dark)
+// const brandLogo5 = useGenerateImageVariant(logo5light, logo5dark)
 
 async function onSubmit() {
 
 }
 
-function handleOpenEditDrawer(ReviewId: string) {
+function handleOpenEditDrawer(ReviewId: any) {
   reviewerDrawerOption.value = {
     isVisible: true,
-    type: 'edit',
+    type: DRAWER_ACTION_TYPES.EDIT, // 'edit'
+    reviewerId: ReviewId,
   }
 }
 
 function handleOpenAddDrawer() {
   reviewerDrawerOption.value = {
     isVisible: true,
-    type: 'add',
+    type: DRAWER_ACTION_TYPES.ADD, // 'add'
+    reviewerId: null,
   }
 }
-
 watch(customerReviewData, (value) => {
   reviewForm.value = {
     customer_review_title: value?.customer_review_title ? removeEmptyTags(value.customer_review_title) : '',
@@ -216,7 +225,7 @@ watch(customerReviewData, (value) => {
       </div>
     </form>
 
-    <LandingPageAddReviewerDrawer :is-drawer-open="reviewerDrawerOption.isVisible" @update:is-drawer-open="reviewerDrawerOption.isVisible = $event" />
+    <LandingPageAddReviewerDrawer :drawer-config="reviewerDrawerOption" @update:is-drawer-open="reviewerDrawerOption.isVisible = $event" />
   </div>
 </template>
 
@@ -238,6 +247,12 @@ watch(customerReviewData, (value) => {
   border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+  }
+}
+
+.title-content {
+  :deep(.ProseMirror) {
+    min-block-size: 5vh;
   }
 }
 </style>

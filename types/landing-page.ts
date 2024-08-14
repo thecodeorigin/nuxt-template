@@ -39,7 +39,7 @@ export interface FeatureSectionType {
 }
 
 // Interface for customer review section
-interface CustomerReview {
+export interface CustomerReview {
   id: any
   desc: string
   main_logo: string
@@ -48,6 +48,12 @@ interface CustomerReview {
   rating: number
   name: string
   position: string
+}
+
+export interface DrawerConfig {
+  isVisible: boolean
+  type: 'add' | 'edit'
+  reviewerId: any
 }
 
 export interface CustomerReviewSectionType {

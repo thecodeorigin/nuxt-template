@@ -1,74 +1,63 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
-import type { EditKanbanItem, KanbanItem } from '@db/apps/kanban/types'
 import avatar1 from '@images/avatars/avatar-1.png'
 import avatar2 from '@images/avatars/avatar-2.png'
 import avatar3 from '@images/avatars/avatar-3.png'
 import avatar4 from '@images/avatars/avatar-4.png'
 import avatar5 from '@images/avatars/avatar-5.png'
 import avatar6 from '@images/avatars/avatar-6.png'
+import type { CustomerReview, CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'update:kanbanItem', value: EditKanbanItem): void
-  (e: 'deleteKanbanItem', value: EditKanbanItem): void
 }
 
-const props = withDefaults(defineProps<{
-  kanbanItem?: EditKanbanItem | undefined
-  isDrawerOpen: boolean
-}>(), {
-  kanbanItem: () => ({
-    item: {
-      title: '',
-      dueDate: '2022-01-01T00:00:00Z',
-      labels: [],
-      members: [],
-      id: 0,
-      attachments: 0,
-      commentsCount: 0,
-      image: '',
-      comments: '',
-    },
-    boardId: 0,
-    boardName: '',
-  }),
-})
+const props = defineProps<{
+  drawerConfig: DrawerConfig
+}>()
 
 const emit = defineEmits<Emit>()
 
-const refEditTaskForm = ref<VForm>()
+const formRef = ref<VForm>()
+const reviewerData = ref<CustomerReview>({
+  id: null,
+  desc: '',
+  main_logo: '',
+  logo_dark: '',
+  logo_light: '',
+  name: '',
+  position: '',
+  rating: 0,
+})
 const labelOptions = ['UX', 'Image', 'Code Review', 'Dashboard', 'Bug', 'Charts & maps']
-
-const localKanbanItem = ref<KanbanItem>(JSON.parse(JSON.stringify(props.kanbanItem.item)))
 
 function handleDrawerModelValueUpdate(val: boolean) {
   emit('update:isDrawerOpen', val)
 
   if (!val)
-    refEditTaskForm.value?.reset()
+    formRef.value?.reset()
 }
 
-// kanban item watcher
-watch(() => props.kanbanItem, () => {
-  localKanbanItem.value = JSON.parse(JSON.stringify(props.kanbanItem.item))
-}, { deep: true })
-
-function updateKanbanItem() {
-  refEditTaskForm.value?.validate().then(async (valid) => {
+function checkActionSubmit() {
+  formRef.value?.validate().then(async (valid) => {
     if (valid.valid) {
-      emit('update:kanbanItem', { item: localKanbanItem.value, boardId: props.kanbanItem.boardId, boardName: props.kanbanItem.boardName })
+      if (props.drawerConfig.type === 'edit') {
+        emit('update:isDrawerOpen', false)
+      }
       emit('update:isDrawerOpen', false)
       await nextTick()
-      refEditTaskForm.value?.reset()
+      formRef.value?.reset()
     }
   })
 }
 
+function updateReviewerData() {
+  emit('update:isDrawerOpen', false)
+}
+
 // delete kanban item
 function deleteKanbanItem() {
-  emit('deleteKanbanItem', { item: localKanbanItem.value, boardId: props.kanbanItem.boardId, boardName: props.kanbanItem.boardName })
   emit('update:isDrawerOpen', false)
 }
 
@@ -91,7 +80,28 @@ const users = [
   { img: avatar6, name: 'Anna Black' },
 ]
 
-const fileAttached = ref()
+function handleImageUpdate(file: File | null) {
+  console.log('««««« file »»»»»', file)
+}
+
+watch(() => props.drawerConfig.reviewerId, async (id) => {
+  if (id) {
+    try {
+      const data = await $api<CustomerReviewSectionType>(`/api/pages/landing-page/customer-review`)
+
+      if (data) {
+        reviewerData.value = data.customer_review_data?.find((item: any) => item.id === id)
+        console.log('««««« formRef »»»»»', formRef.value)
+      }
+    }
+    catch (error) {
+      console.log('««««« error »»»»»', error)
+    }
+  }
+}, {
+  immediate: true,
+  deep: true,
+})
 </script>
 
 <template>
@@ -100,12 +110,12 @@ const fileAttached = ref()
     :width="370"
     temporary
     border="0"
-    :model-value="props.isDrawerOpen"
+    :model-value="drawerConfig.isVisible"
     @update:model-value="handleDrawerModelValueUpdate"
   >
     <!-- 👉 Header -->
     <AppDrawerHeaderSection
-      title="Edit Task"
+      :title="drawerConfig.type === 'add' ? 'Add Reviewer' : 'Edit Reviewer'"
       @cancel="$emit('update:isDrawerOpen', false)"
     />
     <VDivider />
@@ -115,99 +125,46 @@ const fileAttached = ref()
       style="block-size: calc(100vh - 4rem);"
     >
       <VForm
-        v-if="localKanbanItem"
-        ref="refEditTaskForm"
-        @submit.prevent="updateKanbanItem"
+        v-if="drawerConfig.isVisible"
+        ref="formRef"
+        @submit.prevent="checkActionSubmit"
       >
         <VCardText>
           <VRow>
             <VCol cols="12">
               <VTextField
-                v-model="localKanbanItem.title"
-                label="Title"
+                v-model="reviewerData.name"
+                label="Reviewer Name"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
             <VCol cols="12">
-              <AppDateTimePicker
-                v-model="localKanbanItem.dueDate"
-                label="Due date"
+              <VTextField
+                v-model="reviewerData.position"
+                label="Position"
+                :rules="[requiredValidator]"
               />
             </VCol>
 
-            <VCol cols="12">
-              <VSelect
-                v-model="localKanbanItem.labels"
-                :items="labelOptions"
-                label="Label"
-                multiple
-                eager
-              >
-                <template #chip="{ item }">
-                  <VChip :color="resolveLabelColor[item.raw]">
-                    {{ item.raw }}
-                  </VChip>
-                </template>
-              </VSelect>
+            <VCol cols="12" class="d-flex align-center gap-2">
+              <VLabel class="label">
+                Rating:
+              </VLabel>
+              <VRating v-model="reviewerData.rating" />
             </VCol>
 
             <VCol cols="12">
-              <p class="mb-1">
-                Assigned
-              </p>
-
-              <div>
-                <VSelect
-                  v-model="localKanbanItem.members"
-                  :items="users"
-                  item-title="name"
-                  item-value="name"
-                  multiple
-                  return-object
-                  variant="plain"
-                  :menu-props="{
-                    offset: 10,
-                  }"
-                  class="assignee-select"
-                >
-                  <template #selection="{ item }">
-                    <VAvatar size="26">
-                      <VImg :src="item.raw.img" />
-
-                      <VTooltip activator="parent">
-                        {{ item.raw.name }}
-                      </VTooltip>
-                    </VAvatar>
-                  </template>
-
-                  <template #prepend-inner>
-                    <IconBtn
-                      size="26"
-                      variant="tonal"
-                      class="mt-1"
-                    >
-                      <VIcon
-                        size="20"
-                        icon="ri-add-line"
-                      />
-                    </IconBtn>
-                  </template>
-                </VSelect>
-              </div>
-            </VCol>
-
-            <VCol cols="12">
-              <VFileInput
-                v-model="fileAttached"
-                label="Choose file"
-                multiple
+              <LandingPageImagePreview
+                id="image"
+                :model-value="reviewerData.main_logo"
+                @update:model-value="handleImageUpdate"
               />
             </VCol>
 
             <VCol cols="12">
               <VTextarea
-                v-model="localKanbanItem.comments"
+                v-model="reviewerData.desc"
                 label="Comment"
                 placeholder="Write a comment..."
                 rows="5"
@@ -219,6 +176,7 @@ const fileAttached = ref()
               <VBtn
                 type="submit"
                 class="me-3"
+                @click="updateReviewerData"
               >
                 Update
               </VBtn>
@@ -245,4 +203,7 @@ const fileAttached = ref()
     }
   }
 }
+.label {
+    line-height: 20px;
+  }
 </style>

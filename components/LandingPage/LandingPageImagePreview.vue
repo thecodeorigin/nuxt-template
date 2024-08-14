@@ -59,7 +59,7 @@ useDropZone(dropZoneRef, onDrop)
       >
         <VIcon icon="ri-upload-2-line" />
       </VAvatar>
-      <h4 class="text-h4 text-wrap">
+      <h4 class="text-h4 text-wrap text-center clamp-text">
         Drag and Drop Your Image Here.
       </h4>
       <span class="text-disabled">or</span>
