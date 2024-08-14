@@ -32,6 +32,10 @@ definePageMeta({
       <VDivider class="my-8" />
 
       <FeatureSectionEditor />
+
+      <VDivider class="my-8" />
+
+      <ReviewEditor />
     </form>
   </div>
 </template>

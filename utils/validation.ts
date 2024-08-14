@@ -53,3 +53,20 @@ export const featureSchema = z.object({
     icon: z.string(),
   })),
 })
+
+// 👉 Customer Review Schema
+export const customerReviewSchema = z.object({
+  customer_review_emphasized_title: emphasizedTitleSchema.optional(),
+  customer_review_title: titleSchema,
+  customer_review_title_desc: descriptionSchema,
+  customer_review_data: z.array(z.object({
+    id: z.any(),
+    desc: z.string(),
+    main_logo: z.string(),
+    logo_dark: z.string(),
+    logo_light: z.string(),
+    rating: z.number(),
+    name: z.string(),
+    position: z.string(),
+  })),
+})

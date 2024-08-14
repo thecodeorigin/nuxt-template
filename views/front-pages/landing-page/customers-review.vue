@@ -115,8 +115,8 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
                 <div>
                   <VRating
                     :model-value="review.rating"
+                    :size="8"
                     color="warning"
-                    readonly
                   />
                 </div>
 

@@ -126,10 +126,6 @@ watch(featureData, (value) => {
   <form class="landing-page-feature" @submit.prevent="onFeatureSubmit">
     <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
       Feature Section
-      <br>
-      {{ featureForm.feature_title }}
-      <br>
-      {{ featureForm.feature_title_desc }}
     </VLabel>
 
     <div class="d-flex flex-column gap-4">

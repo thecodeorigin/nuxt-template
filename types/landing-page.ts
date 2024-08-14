@@ -40,6 +40,7 @@ export interface FeatureSectionType {
 
 // Interface for customer review section
 interface CustomerReview {
+  id: any
   desc: string
   main_logo: string
   logo_dark: string
@@ -50,9 +51,9 @@ interface CustomerReview {
 }
 
 export interface CustomerReviewSectionType {
-  customer_review_emphasized_title: EmphasizedTitle | null
+  customer_review_emphasized_title?: EmphasizedTitle | null
   customer_review_title: string
-  customer_review_title_desc: string[] | null
+  customer_review_title_desc: string
   customer_review_data: CustomerReview[] | null
 }
 
@@ -75,7 +76,7 @@ interface TeamData {
 export interface TeamSectionType {
   our_team_emphasized_title: EmphasizedTitle | null
   our_team_title: string
-  our_team_desc: string[] | null
+  our_team_desc: string | null
   our_team_data: TeamData[] | null
 }
 
@@ -91,9 +92,9 @@ interface Plan {
 }
 
 export interface PricingSectionType {
-  pricing_emphasized_title: EmphasizedTitle | null
+  pricing_emphasized_title?: EmphasizedTitle | null
   pricing_title: string
-  pricing_title_desc: string[]
+  pricing_title_desc: string
   pricing_data: Plan[] | null
 }
 
@@ -117,9 +118,9 @@ interface FAQ {
 }
 
 export interface FAQSectionType {
-  faq_emphasized_title: EmphasizedTitle | null
+  faq_emphasized_title?: EmphasizedTitle | null
   faq_title: string
-  faq_title_desc: string[]
+  faq_title_desc: string
   faq_data: FAQ[] | null
 }
 
@@ -128,9 +129,9 @@ export interface FAQSectionType {
 export interface ContactUsSectionType {
   contact_us_emphasized_title: EmphasizedTitle | null
   contact_us_title: string
-  contact_us_title_desc: string[]
+  contact_us_title_desc: string
   contact_us_card_heading: string
-  contact_us_card_emphasized_heading: EmphasizedTitle | null
+  contact_us_card_emphasized_heading?: EmphasizedTitle | null
   contact_us_card_image: string
   contact_us_card_content: string
 }
