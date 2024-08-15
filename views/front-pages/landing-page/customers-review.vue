@@ -52,8 +52,8 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
         </span>
       </div>
 
-      <p v-for="(description, index) in customerReviewData?.customer_review_title_desc" :key="index" class="text-body-1 font-weight-medium text-center">
-        {{ description }}
+      <p class="text-body-1 font-weight-medium text-center">
+        {{ customerReviewData?.customer_review_title_desc }}
       </p>
     </div>
 

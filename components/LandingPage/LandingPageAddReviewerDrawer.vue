@@ -21,7 +21,7 @@ const emit = defineEmits<Emit>()
 
 const formRef = ref<VForm>()
 const reviewerData = ref<CustomerReview>({
-  id: null,
+  id: '',
   desc: '',
   main_logo: '',
   logo_dark: '',
@@ -84,23 +84,24 @@ function handleImageUpdate(file: File | null) {
   console.log('««««« file »»»»»', file)
 }
 
-watch(() => props.drawerConfig.reviewerId, async (id) => {
-  if (id) {
-    try {
-      const data = await $api<CustomerReviewSectionType>(`/api/pages/landing-page/customer-review`)
+async function getReviewerData() {
+  try {
+    const res = await $api<CustomerReviewSectionType>(`/api/pages/landing-page/customer-review`)
 
-      if (data) {
-        reviewerData.value = data.customer_review_data?.find((item: any) => item.id === id)
-        console.log('««««« formRef »»»»»', formRef.value)
-      }
-    }
-    catch (error) {
-      console.log('««««« error »»»»»', error)
+    if (res.customer_review_data) {
+      const found = res.customer_review_data.find((item: CustomerReview) => item.id === props.drawerConfig.reviewerId)
+      reviewerData.value = found as CustomerReview
     }
   }
-}, {
-  immediate: true,
-  deep: true,
+  catch (error) {
+    console.log('««««« error »»»»»', error)
+  }
+}
+
+watchEffect(() => {
+  if (props.drawerConfig.type === 'edit' && props.drawerConfig.reviewerId) {
+    getReviewerData()
+  }
 })
 </script>
 
