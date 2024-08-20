@@ -11,8 +11,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
 
   const { status, data, signOut } = useAuth()
-
-  const nuxtApp = useNuxtApp()
+  // const nuxtApp = useNuxtApp()
 
   return match([status.value, data.value?.user.id, to.meta.unauthenticatedOnly, to.name])
     .with(['unauthenticated', P.any, true, P.any], canGoNext)

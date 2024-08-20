@@ -53,7 +53,6 @@ export interface CustomerReview {
 export interface DrawerConfig {
   isVisible: boolean
   type: 'add' | 'edit'
-  reviewerId: any
 }
 
 export interface CustomerReviewSectionType {

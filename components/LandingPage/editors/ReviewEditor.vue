@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { register } from 'swiper/element/bundle'
+import { Image } from '@tiptap/extension-image'
+import { Link } from '@tiptap/extension-link'
+import { Placeholder } from '@tiptap/extension-placeholder'
+import { Underline } from '@tiptap/extension-underline'
+import { StarterKit } from '@tiptap/starter-kit'
+import { EditorContent, useEditor } from '@tiptap/vue-3'
+import defu from 'defu'
 import logo1dark from '@images/front-pages/branding/logo-1-dark.png'
 import logo1light from '@images/front-pages/branding/logo-1-light.png'
 import logo1 from '@images/front-pages/branding/logo-1.png'
@@ -20,7 +27,7 @@ import type { z } from 'zod'
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import { VTextField } from 'vuetify/components'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import type { CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
+import type { CustomerReview, CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
 
 register()
 
@@ -31,14 +38,44 @@ const DRAWER_ACTION_TYPES = {
   EDIT: 'edit' as const,
 }
 
+type DrawerActionTypes = typeof DRAWER_ACTION_TYPES[keyof typeof DRAWER_ACTION_TYPES]
+
 const tiptapTitleInput = ref<string>('')
 const tiptapDescriptionInput = ref<string>('')
+const reviewerData = ref<CustomerReview>({
+  id: '',
+  desc: '',
+  main_logo: '',
+  logo_dark: '',
+  logo_light: '',
+  name: '',
+  position: '',
+  rating: 0,
+})
 const isLoading = ref(false)
+
+const editor = useEditor({
+  content: '',
+  extensions: [
+    StarterKit,
+    Image,
+    Placeholder.configure({
+      placeholder: 'Write a Comment...',
+    }),
+    Underline,
+    Link.configure(
+      {
+        openOnClick: false,
+      },
+    ),
+  ],
+})
+
+const reviewerList = computed(() => customerReviewData.value?.customer_review_data)
 
 const reviewerDrawerOption = ref<DrawerConfig>({
   isVisible: false,
   type: DRAWER_ACTION_TYPES.ADD,
-  reviewerId: null,
 })
 
 const reviewForm = ref<CustomerReviewSectionType>({
@@ -46,7 +83,7 @@ const reviewForm = ref<CustomerReviewSectionType>({
   customer_review_title_desc: '',
   customer_review_data: [
     {
-      id: null,
+      id: '',
       desc: '',
       main_logo: '',
       logo_dark: '',
@@ -79,32 +116,51 @@ async function onSubmit() {
 
 }
 
-function handleOpenEditDrawer(ReviewId: any) {
+function handleOpenEditDrawer(ReviewId: string) {
+  const foundReviewer = reviewerList.value?.find((reviewer: CustomerReview) => reviewer.id === ReviewId)
+  if (!foundReviewer)
+    return false
+
+  reviewerData.value = foundReviewer
+
   reviewerDrawerOption.value = {
     isVisible: true,
-    type: DRAWER_ACTION_TYPES.EDIT, // 'edit'
-    reviewerId: ReviewId,
+    type: DRAWER_ACTION_TYPES.EDIT,
   }
 }
 
 function handleOpenAddDrawer() {
   reviewerDrawerOption.value = {
     isVisible: true,
-    type: DRAWER_ACTION_TYPES.ADD, // 'add'
-    reviewerId: null,
+    type: DRAWER_ACTION_TYPES.ADD,
   }
 }
+
+function handleReviewerChange(value: CustomerReview, action: DrawerActionTypes) {
+  if (action === DRAWER_ACTION_TYPES.EDIT) {
+    reviewerList.value = reviewerList.value?.map((reviewer: CustomerReview) => {
+      if (reviewer.id === value.id)
+        return value
+      return reviewer
+    })
+  }
+}
+
+function handleToggleReviewerDrawer(val: boolean) {
+  reviewerDrawerOption.value.isVisible = val
+}
+
 watch(customerReviewData, (value) => {
   reviewForm.value = {
     customer_review_title: value?.customer_review_title ? removeEmptyTags(value.customer_review_title) : '',
-    customer_review_title_desc: value?.customer_review_title_desc ? removeEmptyTags(value.customer_review_title_desc) : '',
+    customer_review_title_desc: value?.customer_review_title_desc ? removeEmptyTags(value.customer_review_title_desc as string) : '',
     customer_review_data: [
       ...value?.customer_review_data || [],
     ],
   }
 
   tiptapTitleInput.value = reviewForm.value.customer_review_title
-  tiptapDescriptionInput.value = reviewForm.value.customer_review_title_desc
+  tiptapDescriptionInput.value = reviewForm.value.customer_review_title_desc as string
 }, {
   immediate: true,
   deep: true,
@@ -127,7 +183,7 @@ watch(customerReviewData, (value) => {
                 Customer page heading
               </VCardTitle>
 
-              <!-- 👉 Hero Main Title -->
+              <!-- 👉 Review Main Title -->
               <div class="mb-6 position-relative">
                 <VLabel class="mb-2 label">
                   Review title:
@@ -149,14 +205,14 @@ watch(customerReviewData, (value) => {
                 </div>
               </div>
 
-              <!-- 👉 Hero Main Description -->
+              <!-- 👉 Review Main Description -->
               <div class="mb-6 position-relative">
                 <VLabel class="mb-2 label">
                   Review:
                   <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
                 </VLabel>
                 <TiptapEditor
-                  v-model="reviewForm.customer_review_title_desc"
+                  v-model="reviewForm.customer_review_title_desc as string"
                   class="border rounded-lg "
                   :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && tiptapDescriptionInput.length === 0 }"
                   placeholder="Text here..."
@@ -172,6 +228,7 @@ watch(customerReviewData, (value) => {
             </VCard>
           </VCol>
 
+          <!-- 👉 Reviewers -->
           <VCol cols="12" md="6">
             <VCard class="pa-4">
               <VCardTitle class="text-center mb-4">
@@ -225,7 +282,11 @@ watch(customerReviewData, (value) => {
       </div>
     </form>
 
-    <LandingPageAddReviewerDrawer :drawer-config="reviewerDrawerOption" @update:is-drawer-open="reviewerDrawerOption.isVisible = $event" />
+    <LandingPageAddReviewerDrawer
+      v-model="reviewerData"
+      :drawer-config="reviewerDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
+      @update:model-value="handleReviewerChange"
+    />
   </div>
 </template>
 
@@ -236,6 +297,7 @@ watch(customerReviewData, (value) => {
 
 .review-card {
   min-width: 30px;
+  min-height: 200px;
   cursor: pointer;
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
@@ -245,6 +307,7 @@ watch(customerReviewData, (value) => {
 .add-card{
   cursor: pointer;
   border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
+  min-height: 200px;
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
   }

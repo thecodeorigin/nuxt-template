@@ -1,26 +1,25 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
-import avatar1 from '@images/avatars/avatar-1.png'
-import avatar2 from '@images/avatars/avatar-2.png'
-import avatar3 from '@images/avatars/avatar-3.png'
-import avatar4 from '@images/avatars/avatar-4.png'
-import avatar5 from '@images/avatars/avatar-5.png'
-import avatar6 from '@images/avatars/avatar-6.png'
-import type { CustomerReview, CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
+import type { CustomerReview, DrawerConfig } from '@/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
+  (e: 'update:modelValue', value: CustomerReview, type?: 'add' | 'edit'): void
+
+}
+interface Props {
+  drawerConfig: DrawerConfig
+  modelValue: CustomerReview
 }
 
-const props = defineProps<{
-  drawerConfig: DrawerConfig
-}>()
+const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 
 const formRef = ref<VForm>()
-const reviewerData = ref<CustomerReview>({
+
+const localReviewerData = ref<CustomerReview>({
   id: '',
   desc: '',
   main_logo: '',
@@ -30,7 +29,6 @@ const reviewerData = ref<CustomerReview>({
   position: '',
   rating: 0,
 })
-const labelOptions = ['UX', 'Image', 'Code Review', 'Dashboard', 'Bug', 'Charts & maps']
 
 function handleDrawerModelValueUpdate(val: boolean) {
   emit('update:isDrawerOpen', val)
@@ -44,64 +42,40 @@ function checkActionSubmit() {
     if (valid.valid) {
       if (props.drawerConfig.type === 'edit') {
         emit('update:isDrawerOpen', false)
+        emit('update:modelValue', localReviewerData.value, 'edit')
       }
       emit('update:isDrawerOpen', false)
+      emit('update:modelValue', localReviewerData.value, 'add')
       await nextTick()
       formRef.value?.reset()
     }
   })
 }
 
-function updateReviewerData() {
-  emit('update:isDrawerOpen', false)
-}
-
-// delete kanban item
+// delete reviewer --------------------------------------
 function deleteKanbanItem() {
   emit('update:isDrawerOpen', false)
 }
-
-// 👉 label/chip color
-const resolveLabelColor: any = {
-  'UX': 'success',
-  'Image': 'warning',
-  'Code Review': 'info',
-  'Dashboard': 'primary',
-  'Bug': 'error',
-  'Charts & maps': 'primary',
-}
-
-const users = [
-  { img: avatar1, name: 'John Doe' },
-  { img: avatar2, name: 'Jane Smith' },
-  { img: avatar3, name: 'Robert Johnson' },
-  { img: avatar4, name: 'Lucy Brown' },
-  { img: avatar5, name: 'Mike White' },
-  { img: avatar6, name: 'Anna Black' },
-]
 
 function handleImageUpdate(file: File | null) {
   console.log('««««« file »»»»»', file)
 }
 
-async function getReviewerData() {
-  try {
-    const res = await $api<CustomerReviewSectionType>(`/api/pages/landing-page/customer-review`)
+watch(() => localReviewerData.value, (val) => {
+  emit('update:modelValue', val)
+}, {
+  deep: true,
+  immediate: true,
+})
 
-    if (res.customer_review_data) {
-      const found = res.customer_review_data.find((item: CustomerReview) => item.id === props.drawerConfig.reviewerId)
-      reviewerData.value = found as CustomerReview
+watch(() => props.drawerConfig.isVisible, (val) => {
+  if (val) {
+    if (props.modelValue) {
+      localReviewerData.value = { ...props.modelValue }
     }
   }
-  catch (error) {
-    console.log('««««« error »»»»»', error)
-  }
-}
-
-watchEffect(() => {
-  if (props.drawerConfig.type === 'edit' && props.drawerConfig.reviewerId) {
-    getReviewerData()
-  }
+}, {
+  deep: true,
 })
 </script>
 
@@ -110,6 +84,7 @@ watchEffect(() => {
     location="end"
     :width="370"
     temporary
+    persistent
     border="0"
     :model-value="drawerConfig.isVisible"
     @update:model-value="handleDrawerModelValueUpdate"
@@ -134,7 +109,7 @@ watchEffect(() => {
           <VRow>
             <VCol cols="12">
               <VTextField
-                v-model="reviewerData.name"
+                v-model="localReviewerData.name"
                 label="Reviewer Name"
                 :rules="[requiredValidator]"
               />
@@ -142,7 +117,7 @@ watchEffect(() => {
 
             <VCol cols="12">
               <VTextField
-                v-model="reviewerData.position"
+                v-model="localReviewerData.position"
                 label="Position"
                 :rules="[requiredValidator]"
               />
@@ -152,20 +127,20 @@ watchEffect(() => {
               <VLabel class="label">
                 Rating:
               </VLabel>
-              <VRating v-model="reviewerData.rating" />
+              <VRating v-model="localReviewerData.rating" />
             </VCol>
 
             <VCol cols="12">
               <LandingPageImagePreview
                 id="image"
-                :model-value="reviewerData.main_logo"
+                :model-value="localReviewerData.main_logo"
                 @update:model-value="handleImageUpdate"
               />
             </VCol>
 
             <VCol cols="12">
               <VTextarea
-                v-model="reviewerData.desc"
+                v-model="localReviewerData.desc"
                 label="Comment"
                 placeholder="Write a comment..."
                 rows="5"
@@ -177,9 +152,8 @@ watchEffect(() => {
               <VBtn
                 type="submit"
                 class="me-3"
-                @click="updateReviewerData"
               >
-                Update
+                {{ drawerConfig.type === 'add' ? 'Add' : 'Update' }}
               </VBtn>
               <VBtn
                 color="error"
@@ -194,6 +168,8 @@ watchEffect(() => {
       </VForm>
     </PerfectScrollbar>
   </VNavigationDrawer>
+
+  <!-- <ConfirmDialog v-bind="confirmationDialogData" v-model:isDialogVisible="confirmationDialogData.isDialogVisible" @confirm="handleDeleteCategory" /> -->
 </template>
 
 <style lang="scss">
