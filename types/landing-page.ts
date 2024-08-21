@@ -42,10 +42,10 @@ export interface FeatureSectionType {
 export interface CustomerReview {
   id: string
   desc: string
-  main_logo: string
-  logo_dark: string
-  logo_light: string
-  rating: number
+  main_logo: string | null
+  logo_dark: string | null
+  logo_light: string | null
+  rating: number | null
   name: string
   position: string
 }

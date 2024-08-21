@@ -62,9 +62,9 @@ export const customerReviewSchema = z.object({
   customer_review_data: z.array(z.object({
     id: z.any(),
     desc: z.string(),
-    main_logo: z.string(),
-    logo_dark: z.string(),
-    logo_light: z.string(),
+    main_logo: z.union([z.string(), z.null()]).optional(),
+    logo_dark: z.union([z.string(), z.null()]).optional(),
+    logo_light: z.union([z.string(), z.null()]).optional(),
     rating: z.number(),
     name: z.string(),
     position: z.string(),

@@ -22,12 +22,12 @@ const formRef = ref<VForm>()
 const localReviewerData = ref<CustomerReview>({
   id: '',
   desc: '',
-  main_logo: '',
+  main_logo: null,
   logo_dark: '',
   logo_light: '',
   name: '',
   position: '',
-  rating: 0,
+  rating: null,
 })
 
 function handleDrawerModelValueUpdate(val: boolean) {
@@ -39,13 +39,21 @@ function handleDrawerModelValueUpdate(val: boolean) {
 
 function checkActionSubmit() {
   formRef.value?.validate().then(async (valid) => {
+    const formData = { ...localReviewerData.value }
+
     if (valid.valid) {
+      formData.rating = Number(formData.rating)
+
       if (props.drawerConfig.type === 'edit') {
-        emit('update:isDrawerOpen', false)
-        emit('update:modelValue', localReviewerData.value, 'edit')
+        emit('update:modelValue', formData, 'edit')
       }
+      else {
+        formData.id = crypto.randomUUID()
+        emit('update:modelValue', formData, 'add')
+      }
+
       emit('update:isDrawerOpen', false)
-      emit('update:modelValue', localReviewerData.value, 'add')
+
       await nextTick()
       formRef.value?.reset()
     }
@@ -60,13 +68,6 @@ function deleteKanbanItem() {
 function handleImageUpdate(file: File | null) {
   console.log('««««« file »»»»»', file)
 }
-
-watch(() => localReviewerData.value, (val) => {
-  emit('update:modelValue', val)
-}, {
-  deep: true,
-  immediate: true,
-})
 
 watch(() => props.drawerConfig.isVisible, (val) => {
   if (val) {
@@ -155,6 +156,7 @@ watch(() => props.drawerConfig.isVisible, (val) => {
               >
                 {{ drawerConfig.type === 'add' ? 'Add' : 'Update' }}
               </VBtn>
+
               <VBtn
                 color="error"
                 variant="outlined"

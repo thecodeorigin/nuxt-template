@@ -1,32 +1,8 @@
 <script setup lang="ts">
 import { register } from 'swiper/element/bundle'
-import { Image } from '@tiptap/extension-image'
-import { Link } from '@tiptap/extension-link'
-import { Placeholder } from '@tiptap/extension-placeholder'
-import { Underline } from '@tiptap/extension-underline'
-import { StarterKit } from '@tiptap/starter-kit'
-import { EditorContent, useEditor } from '@tiptap/vue-3'
-import defu from 'defu'
-import logo1dark from '@images/front-pages/branding/logo-1-dark.png'
-import logo1light from '@images/front-pages/branding/logo-1-light.png'
-import logo1 from '@images/front-pages/branding/logo-1.png'
-import logo2dark from '@images/front-pages/branding/logo-2-dark.png'
-import logo2light from '@images/front-pages/branding/logo-2-light.png'
-import logo2 from '@images/front-pages/branding/logo-2.png'
-import logo3dark from '@images/front-pages/branding/logo-3-dark.png'
-import logo3light from '@images/front-pages/branding/logo-3-light.png'
-import logo3 from '@images/front-pages/branding/logo-3.png'
-import logo4dark from '@images/front-pages/branding/logo-4-dark.png'
-import logo4light from '@images/front-pages/branding/logo-4-light.png'
-import logo4 from '@images/front-pages/branding/logo-4.png'
-import logo5dark from '@images/front-pages/branding/logo-5-dark.png'
-import logo5light from '@images/front-pages/branding/logo-5-light.png'
+import { z } from 'zod'
 
-import type { z } from 'zod'
-
-import sectionTitleIcon from '@images/pages/section-title-icon.png'
-import { VTextField } from 'vuetify/components'
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import type { CustomerReview, CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
 
 register()
@@ -38,46 +14,10 @@ const DRAWER_ACTION_TYPES = {
   EDIT: 'edit' as const,
 }
 
-type DrawerActionTypes = typeof DRAWER_ACTION_TYPES[keyof typeof DRAWER_ACTION_TYPES]
+export type DrawerActionTypes = typeof DRAWER_ACTION_TYPES[keyof typeof DRAWER_ACTION_TYPES] | undefined
 
 const tiptapTitleInput = ref<string>('')
 const tiptapDescriptionInput = ref<string>('')
-const reviewerData = ref<CustomerReview>({
-  id: '',
-  desc: '',
-  main_logo: '',
-  logo_dark: '',
-  logo_light: '',
-  name: '',
-  position: '',
-  rating: 0,
-})
-const isLoading = ref(false)
-
-const editor = useEditor({
-  content: '',
-  extensions: [
-    StarterKit,
-    Image,
-    Placeholder.configure({
-      placeholder: 'Write a Comment...',
-    }),
-    Underline,
-    Link.configure(
-      {
-        openOnClick: false,
-      },
-    ),
-  ],
-})
-
-const reviewerList = computed(() => customerReviewData.value?.customer_review_data)
-
-const reviewerDrawerOption = ref<DrawerConfig>({
-  isVisible: false,
-  type: DRAWER_ACTION_TYPES.ADD,
-})
-
 const reviewForm = ref<CustomerReviewSectionType>({
   customer_review_title: '',
   customer_review_title_desc: '',
@@ -94,6 +34,37 @@ const reviewForm = ref<CustomerReviewSectionType>({
     },
   ],
 })
+const reviewerData = ref<CustomerReview>({
+  id: '',
+  desc: '',
+  main_logo: null,
+  logo_dark: null,
+  logo_light: null,
+  name: '',
+  position: '',
+  rating: 0,
+})
+
+function clearReviewerData() {
+  reviewerData.value = {
+    id: '',
+    desc: '',
+    main_logo: null,
+    logo_dark: null,
+    logo_light: null,
+    name: '',
+    position: '',
+    rating: 0,
+  }
+}
+const isLoading = ref(false)
+
+const reviewerList = computed(() => reviewForm.value?.customer_review_data)
+
+const reviewerDrawerOption = ref<DrawerConfig>({
+  isVisible: false,
+  type: DRAWER_ACTION_TYPES.ADD,
+})
 
 type FormSchemaType = z.infer<typeof customerReviewSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
@@ -104,16 +75,6 @@ function onTitleUpdate(editorValue: string) {
 
 function onDescriptionUpdate(editorValue: string) {
   return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
-}
-
-// const brandLogo1 = useGenerateImageVariant(logo1light, logo1dark)
-// const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
-// const brandLogo3 = useGenerateImageVariant(logo3light, logo3dark)
-// const brandLogo4 = useGenerateImageVariant(logo4light, logo4dark)
-// const brandLogo5 = useGenerateImageVariant(logo5light, logo5dark)
-
-async function onSubmit() {
-
 }
 
 function handleOpenEditDrawer(ReviewId: string) {
@@ -134,15 +95,73 @@ function handleOpenAddDrawer() {
     isVisible: true,
     type: DRAWER_ACTION_TYPES.ADD,
   }
+
+  clearReviewerData()
 }
 
-function handleReviewerChange(value: CustomerReview, action: DrawerActionTypes) {
-  if (action === DRAWER_ACTION_TYPES.EDIT) {
-    reviewerList.value = reviewerList.value?.map((reviewer: CustomerReview) => {
-      if (reviewer.id === value.id)
-        return value
-      return reviewer
+async function onSubmit() {
+  const formData = {
+    ...reviewForm.value,
+    customer_review_title: tiptapTitleInput.value,
+    customer_review_title_desc: tiptapDescriptionInput.value,
+  }
+
+  const validInput = customerReviewSchema.safeParse(formData)
+
+  if (!validInput.success) {
+    error.value = validInput.error.format()
+    console.log('««««« error »»»»»', error)
+    notify('Invalid input, please check and try again', {
+      type: 'error',
+      timeout: 5000,
     })
+  }
+  else {
+    error.value = null
+    isLoading.value = true
+
+    try {
+      await $api<CustomerReviewSectionType>('/api/pages/landing-page/customer-review', {
+        method: 'PATCH',
+        body: reviewForm.value,
+      })
+
+      notify('Customer Review updated successfully', {
+        type: 'success',
+        timeout: 2000,
+      })
+    }
+    catch (e) {
+      if (e instanceof z.ZodError) {
+        console.log(e.errors.map(err => err.message).join('\n'))
+      }
+      else {
+        console.log('Unexpected error: ', e)
+      }
+    }
+    finally {
+      isLoading.value = false
+    }
+  }
+}
+
+function handleReviewerChange(value: CustomerReview, type: DrawerActionTypes) {
+  if (reviewForm.value && type === DRAWER_ACTION_TYPES.EDIT) {
+    reviewForm.value.customer_review_data = reviewForm.value?.customer_review_data?.map(
+      (reviewer: CustomerReview) => {
+        if (reviewer.id === value.id) {
+          return value
+        }
+        return reviewer
+      },
+    ) || []
+  }
+
+  if (reviewForm.value && type === DRAWER_ACTION_TYPES.ADD) {
+    reviewForm.value.customer_review_data = [
+      ...reviewForm.value?.customer_review_data || [],
+      value,
+    ]
   }
 }
 
@@ -169,6 +188,7 @@ watch(customerReviewData, (value) => {
 
 <template>
   <div>
+    {{ error }}
     <form class="customer-reviews" @submit.prevent="onSubmit">
       <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
         Customer Review Section
@@ -230,55 +250,89 @@ watch(customerReviewData, (value) => {
 
           <!-- 👉 Reviewers -->
           <VCol cols="12" md="6">
-            <VCard class="pa-4">
+            <VCard class="pa-4 customer-reviews-container">
               <VCardTitle class="text-center mb-4">
                 Customer reviews
               </VCardTitle>
 
-              <VRow>
-                <VCol v-for="(review, index) in reviewForm.customer_review_data" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(review.id)">
-                  <VCard class="review-card d-flex flex-column align-center pa-2" hover min-width="100" max-height="200" ripple>
-                    <VCardTitle class="text-center mb-4 d-flex flex-column">
-                      {{ review.name }}
+              <PerfectScrollbar
+                :options="{ wheelPropagation: false, suppressScrollX: true, swipeEasing: true }"
+                style="padding: 16px;
+                max-height: 490px;"
+              >
+                <VRow>
+                  <VCol cols="12" md="6" lg="6">
+                    <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
+                      <VIcon icon="ri-add-circle-line" size="40" />
+                    </VCard>
+                  </VCol>
 
-                      <span class="text-body-2">
-                        {{ review.position }}
-                      </span>
-                    </VCardTitle>
+                  <VCol v-for="(review, index) in reviewForm.customer_review_data" :key="index" cols="12" md="6" lg="6" @click="handleOpenEditDrawer(review.id)">
+                    <VCard class="review-card d-flex flex-column align-center pa-2" hover min-width="100" max-height="200" ripple>
+                      <VCardTitle class="text-center mb-4 d-flex flex-column">
+                        {{ review.name }}
 
-                    <VImg
-                      v-if="review.main_logo"
-                      :src="review.main_logo"
-                      class="rounded-circle"
-                      cover
-                    />
+                        <span class="text-body-2">
+                          {{ review.position }}
+                        </span>
+                      </VCardTitle>
 
-                    <VAvatar
-                      variant="outlined"
-                      size="40"
-                      color="primary"
-                    />
-
-                    <VCardText>
-                      <VRating
-                        :model-value="review.rating"
-                        color="warning"
-                        readonly
-                        class="rating-container"
+                      <VImg
+                        v-if="review.main_logo"
+                        :src="review.main_logo"
+                        class="rounded-circle"
+                        cover
                       />
-                    </VCardText>
-                  </VCard>
-                </VCol>
 
-                <VCol cols="12" md="6" lg="4">
-                  <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
-                    <VIcon icon="ri-add-circle-line" size="40" />
-                  </VCard>
-                </VCol>
-              </VRow>
+                      <VAvatar
+                        variant="outlined"
+                        size="40"
+                        color="primary"
+                      />
+
+                      <VCardText>
+                        <VRating
+                          v-model.number="review.rating"
+                          color="warning"
+                          readonly
+                          class="rating-container"
+                        />
+                      </VCardText>
+                    </VCard>
+                  </VCol>
+                </VRow>
+              </PerfectScrollbar>
             </VCard>
           </VCol>
         </VRow>
+
+        <!-- 👉 Reviewer Button Submit -->
+        <div class="w-100 d-flex justify-center align-center">
+          <VBtn
+            v-if="isLoading === false"
+            class="mx-auto w-100"
+            type="submit"
+            color="primary"
+            variant="outlined"
+            @click="onSubmit"
+          >
+            Update Reviewer Section Content
+          </VBtn>
+
+          <VBtn
+            v-else
+            class="mx-auto w-100"
+            type="submit"
+            color="primary"
+            variant="outlined"
+          >
+            <VProgressCircular
+              indeterminate
+              color="primary"
+              size="24"
+            />
+          </VBtn>
+        </div>
       </div>
     </form>
 
