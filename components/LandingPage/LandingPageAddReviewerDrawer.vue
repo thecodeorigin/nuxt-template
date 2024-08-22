@@ -6,8 +6,17 @@ import type { CustomerReview, DrawerConfig } from '@/types/landing-page'
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
   (e: 'update:modelValue', value: CustomerReview, type?: 'add' | 'edit'): void
-
 }
+
+type DialogType = 'warning' | 'info'
+
+interface DialogConfig {
+  isDialogVisible: boolean
+  title: string
+  label: string
+  type: DialogType
+}
+
 interface Props {
   drawerConfig: DrawerConfig
   modelValue: CustomerReview
@@ -18,6 +27,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 const formRef = ref<VForm>()
+const isConfirming = ref(false)
 
 const localReviewerData = ref<CustomerReview>({
   id: '',
@@ -30,11 +40,31 @@ const localReviewerData = ref<CustomerReview>({
   rating: null,
 })
 
+const dialogConfig = ref<DialogConfig>({
+  isDialogVisible: false,
+  title: '',
+  label: '',
+  type: 'info',
+})
+
 function handleDrawerModelValueUpdate(val: boolean) {
   emit('update:isDrawerOpen', val)
 
-  if (!val)
+  if (!val) {
     formRef.value?.reset()
+  }
+  else {
+    dialogConfig.value = {
+      isDialogVisible: true,
+      title: 'Note',
+      label: 'Are you sure you want to close this drawer?',
+      type: 'info',
+    }
+
+    if (isConfirming.value) {
+      emit('update:isDrawerOpen', val)
+    }
+  }
 }
 
 function checkActionSubmit() {
@@ -61,12 +91,36 @@ function checkActionSubmit() {
 }
 
 // delete reviewer --------------------------------------
-function deleteKanbanItem() {
-  emit('update:isDrawerOpen', false)
+function handleDeleteReviewer() {
+  if (props.drawerConfig.type === 'add') {
+    if (formRef.value) {
+      dialogConfig.value = {
+        isDialogVisible: true,
+        title: 'Discard New Reviewer',
+        label: 'Are you sure you want to discard this reviewer?',
+        type: 'info',
+      }
+
+      if (isConfirming.value) {
+        emit('update:isDrawerOpen', false)
+        formRef.value?.reset()
+      }
+    }
+  }
 }
 
 function handleImageUpdate(file: File | null) {
   console.log('««««« file »»»»»', file)
+}
+
+function onConfirmDialog(value: boolean) {
+  if (value) {
+    isConfirming.value = true
+  }
+  else {
+    isConfirming.value = false
+    dialogConfig.value.isDialogVisible = false
+  }
 }
 
 watch(() => props.drawerConfig.isVisible, (val) => {
@@ -160,9 +214,9 @@ watch(() => props.drawerConfig.isVisible, (val) => {
               <VBtn
                 color="error"
                 variant="outlined"
-                @click="deleteKanbanItem"
+                @click="handleDeleteReviewer"
               >
-                Delete
+                {{ drawerConfig.type === 'add' ? 'Cancel' : 'Delete' }}
               </VBtn>
             </VCol>
           </VRow>
@@ -171,7 +225,13 @@ watch(() => props.drawerConfig.isVisible, (val) => {
     </PerfectScrollbar>
   </VNavigationDrawer>
 
-  <!-- <ConfirmDialog v-bind="confirmationDialogData" v-model:isDialogVisible="confirmationDialogData.isDialogVisible" @confirm="handleDeleteCategory" /> -->
+  <LandingPageReviewerDiaglog
+    :is-dialog-visible="dialogConfig.isDialogVisible"
+    :title="dialogConfig.title"
+    :label="dialogConfig.label"
+    :type="dialogConfig.type"
+    @confirm="onConfirmDialog"
+  />
 </template>
 
 <style lang="scss">

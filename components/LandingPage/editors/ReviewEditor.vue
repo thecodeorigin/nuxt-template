@@ -110,7 +110,6 @@ async function onSubmit() {
 
   if (!validInput.success) {
     error.value = validInput.error.format()
-    console.log('««««« error »»»»»', error)
     notify('Invalid input, please check and try again', {
       type: 'error',
       timeout: 5000,
@@ -174,7 +173,10 @@ watch(customerReviewData, (value) => {
     customer_review_title: value?.customer_review_title ? removeEmptyTags(value.customer_review_title) : '',
     customer_review_title_desc: value?.customer_review_title_desc ? removeEmptyTags(value.customer_review_title_desc as string) : '',
     customer_review_data: [
-      ...value?.customer_review_data || [],
+      ...value?.customer_review_data?.map(review => ({
+        ...review,
+        rating: Number(review.rating),
+      })) || [],
     ],
   }
 
@@ -197,7 +199,7 @@ watch(customerReviewData, (value) => {
       <div class="d-flex flex-column gap-4">
         <VRow>
           <!-- 👉 Review Heading -->
-          <VCol cols="12" md="6">
+          <VCol cols="12" md="4">
             <VCard class="pa-4">
               <VCardTitle class="text-center mb-4">
                 Customer page heading
@@ -249,8 +251,8 @@ watch(customerReviewData, (value) => {
           </VCol>
 
           <!-- 👉 Reviewers -->
-          <VCol cols="12" md="6">
-            <VCard class="pa-4 customer-reviews-container">
+          <VCol cols="12" md="8">
+            <VCard class="pa-4 h-100 customer-reviews-container">
               <VCardTitle class="text-center mb-4">
                 Customer reviews
               </VCardTitle>
@@ -261,13 +263,13 @@ watch(customerReviewData, (value) => {
                 max-height: 490px;"
               >
                 <VRow>
-                  <VCol cols="12" md="6" lg="6">
+                  <VCol cols="12" md="6" lg="4">
                     <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
                       <VIcon icon="ri-add-circle-line" size="40" />
                     </VCard>
                   </VCol>
 
-                  <VCol v-for="(review, index) in reviewForm.customer_review_data" :key="index" cols="12" md="6" lg="6" @click="handleOpenEditDrawer(review.id)">
+                  <VCol v-for="(review, index) in reviewForm.customer_review_data" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(review.id)">
                     <VCard class="review-card d-flex flex-column align-center pa-2" hover min-width="100" max-height="200" ripple>
                       <VCardTitle class="text-center mb-4 d-flex flex-column">
                         {{ review.name }}
@@ -289,15 +291,6 @@ watch(customerReviewData, (value) => {
                         size="40"
                         color="primary"
                       />
-
-                      <VCardText>
-                        <VRating
-                          v-model.number="review.rating"
-                          color="warning"
-                          readonly
-                          class="rating-container"
-                        />
-                      </VCardText>
                     </VCard>
                   </VCol>
                 </VRow>
@@ -351,7 +344,7 @@ watch(customerReviewData, (value) => {
 
 .review-card {
   min-width: 30px;
-  min-height: 200px;
+  min-height: 180px;
   cursor: pointer;
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
@@ -361,7 +354,7 @@ watch(customerReviewData, (value) => {
 .add-card{
   cursor: pointer;
   border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
-  min-height: 200px;
+  min-height: 180px;
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
   }
