@@ -5,7 +5,7 @@ import type { CustomerReview, DrawerConfig } from '@/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'update:modelValue', value: CustomerReview, type?: 'add' | 'edit'): void
+  (e: 'update:modelValue', value: CustomerReview, type?: 'add' | 'edit' | 'delete'): void
 }
 
 type DialogType = 'warning' | 'info'
@@ -27,7 +27,6 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 const formRef = ref<VForm>()
-const isConfirming = ref(false)
 
 const localReviewerData = ref<CustomerReview>({
   id: '',
@@ -52,18 +51,6 @@ function handleDrawerModelValueUpdate(val: boolean) {
 
   if (!val) {
     formRef.value?.reset()
-  }
-  else {
-    dialogConfig.value = {
-      isDialogVisible: true,
-      title: 'Note',
-      label: 'Are you sure you want to close this drawer?',
-      type: 'info',
-    }
-
-    if (isConfirming.value) {
-      emit('update:isDrawerOpen', val)
-    }
   }
 }
 
@@ -100,11 +87,18 @@ function handleDeleteReviewer() {
         label: 'Are you sure you want to discard this reviewer?',
         type: 'info',
       }
-
-      if (isConfirming.value) {
-        emit('update:isDrawerOpen', false)
-        formRef.value?.reset()
+    }
+    else {
+      if (formRef.value) {
+        dialogConfig.value = {
+          isDialogVisible: true,
+          title: 'Delete Reviewer',
+          label: 'Are you sure you want to delete this reviewer?',
+          type: 'warning',
+        }
       }
+      emit('update:isDrawerOpen', false)
+      emit('update:modelValue', localReviewerData, 'delete')
     }
   }
 }
@@ -115,11 +109,12 @@ function handleImageUpdate(file: File | null) {
 
 function onConfirmDialog(value: boolean) {
   if (value) {
-    isConfirming.value = true
+    emit('update:isDrawerOpen', false)
+    emit('update:modelValue', localReviewerData.value)
+    dialogConfig.value.isDialogVisible = false
   }
   else {
-    isConfirming.value = false
-    dialogConfig.value.isDialogVisible = false
+    emit('update:isDrawerOpen', true)
   }
 }
 

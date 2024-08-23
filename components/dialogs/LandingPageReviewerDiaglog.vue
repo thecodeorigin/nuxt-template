@@ -50,7 +50,7 @@ function oncancel() {
         v-if="props.type !== 'warning'"
         variant="text"
         size="default"
-        @click="emit('update:isDialogVisible', false)"
+        @click="oncancel"
       />
 
       <VCardText>

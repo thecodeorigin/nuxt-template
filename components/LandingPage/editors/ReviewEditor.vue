@@ -12,6 +12,7 @@ const { customerReviewData } = storeToRefs(useLandingPageStore())
 const DRAWER_ACTION_TYPES = {
   ADD: 'add' as const,
   EDIT: 'edit' as const,
+  DELETE: 'delete' as const,
 }
 
 export type DrawerActionTypes = typeof DRAWER_ACTION_TYPES[keyof typeof DRAWER_ACTION_TYPES] | undefined
