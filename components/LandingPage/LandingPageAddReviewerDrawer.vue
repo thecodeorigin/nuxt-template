@@ -78,7 +78,7 @@ function checkActionSubmit() {
 }
 
 // delete reviewer --------------------------------------
-function handleDeleteReviewer() {
+function handleOpenConfirmation() {
   if (props.drawerConfig.type === 'add') {
     if (formRef.value) {
       dialogConfig.value = {
@@ -88,17 +88,15 @@ function handleDeleteReviewer() {
         type: 'info',
       }
     }
-    else {
-      if (formRef.value) {
-        dialogConfig.value = {
-          isDialogVisible: true,
-          title: 'Delete Reviewer',
-          label: 'Are you sure you want to delete this reviewer?',
-          type: 'warning',
-        }
+  }
+  else if (props.drawerConfig.type === 'edit') {
+    if (formRef.value) {
+      dialogConfig.value = {
+        isDialogVisible: true,
+        title: 'Delete Reviewer',
+        label: 'Are you sure you want to delete this reviewer?',
+        type: 'warning',
       }
-      emit('update:isDrawerOpen', false)
-      emit('update:modelValue', localReviewerData, 'delete')
     }
   }
 }
@@ -110,11 +108,12 @@ function handleImageUpdate(file: File | null) {
 function onConfirmDialog(value: boolean) {
   if (value) {
     emit('update:isDrawerOpen', false)
-    emit('update:modelValue', localReviewerData.value)
+    emit('update:modelValue', localReviewerData.value, 'delete')
     dialogConfig.value.isDialogVisible = false
   }
   else {
     emit('update:isDrawerOpen', true)
+    dialogConfig.value.isDialogVisible = false
   }
 }
 
@@ -209,7 +208,7 @@ watch(() => props.drawerConfig.isVisible, (val) => {
               <VBtn
                 color="error"
                 variant="outlined"
-                @click="handleDeleteReviewer"
+                @click="handleOpenConfirmation"
               >
                 {{ drawerConfig.type === 'add' ? 'Cancel' : 'Delete' }}
               </VBtn>
@@ -226,6 +225,7 @@ watch(() => props.drawerConfig.isVisible, (val) => {
     :label="dialogConfig.label"
     :type="dialogConfig.type"
     @confirm="onConfirmDialog"
+    @update:is-dialog-visible="dialogConfig.isDialogVisible = $event"
   />
 </template>
 

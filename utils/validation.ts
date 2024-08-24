@@ -70,3 +70,24 @@ export const customerReviewSchema = z.object({
     position: z.string(),
   })),
 })
+
+// 👉 Our Team Schema
+export const ourTeamSchema = z.object({
+  our_team_title: titleSchema,
+  our_team_desc: descriptionSchema,
+  our_team_emphasized_title: emphasizedTitleSchema.optional(),
+  our_team_data: z.array(z.object({
+    id: z.any(),
+    name: z.string(),
+    position: z.string(),
+    image: z.string().nullable(),
+    backgroundColor: z.union([z.string(), z.null()]).optional(),
+    borderColor: z.union([z.string(), z.null()]).optional(),
+    social_networks: z.object({
+      facebook: z.string().nullable(),
+      twitter: z.string().nullable(),
+      linkedin: z.string().nullable(),
+      instagram: z.string().nullable(),
+    }),
+  })),
+})

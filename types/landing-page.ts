@@ -64,22 +64,22 @@ export interface CustomerReviewSectionType {
 
 // Interface for our team section
 interface SocialLink {
-  facebook: string
-  twitterX: string
-  linkedin: string
+  facebook: string | null
+  twitterX: string | null
+  linkedin: string | null
 }
-interface TeamData {
+export interface TeamData {
   id: any
   name: string
   position: string
-  image: string
-  backgroundColor: string
-  borderColor: string
+  image: string | null
+  backgroundColor: string | null
+  borderColor: string | null
   social_networks: SocialLink
 }
 
 export interface TeamSectionType {
-  our_team_emphasized_title: EmphasizedTitle | null
+  our_team_emphasized_title?: EmphasizedTitle | null
   our_team_title: string
   our_team_desc: string | null
   our_team_data: TeamData[] | null
@@ -130,7 +130,6 @@ export interface FAQSectionType {
 }
 
 // Interface for about us section
-
 export interface ContactUsSectionType {
   contact_us_emphasized_title: EmphasizedTitle | null
   contact_us_title: string
