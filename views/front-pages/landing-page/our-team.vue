@@ -6,8 +6,6 @@ import teamPerson4 from '@images/front-pages/landing-page/team-member-4.png'
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import frontPageElement from '@images/svg/front-page-element.svg'
 
-import type { TeamSectionType } from '@/types/landing-page'
-
 const { ourTeamData } = storeToRefs(useLandingPageStore())
 
 function getIcon(iconName: string) {
@@ -99,11 +97,9 @@ function openLink(url: string) {
         </div>
 
         <p
-          v-for="(description, index) in ourTeamData?.our_team_desc"
-          :key="index"
           class="text-body-1 font-weight-medium text-center"
         >
-          {{ description }}
+          {{ ourTeamData?.our_team_desc }}
         </p>
       </div>
 
@@ -121,15 +117,15 @@ function openLink(url: string) {
             min-width="267"
             class="position-relative overflow-visible mt-16"
             :style="{
-              '--hover-border-color': member.borderColor,
+              '--hover-border-color': member.border_color,
             }"
           >
             <VImg
-              :src="getImage(member.image)"
+              :src="getImage(member.image as string)"
               height="240px"
               class="team-image"
             />
-            <div :style="{ 'maxHeight': '185px', 'minHeight': '185px', 'backgroundColor': member.backgroundColor, 'border-top-left-radius': '0.625rem', 'border-top-right-radius': '0.625rem' }" />
+            <div :style="{ 'maxHeight': '185px', 'minHeight': '185px', 'backgroundColor': member.background_color, 'border-top-left-radius': '0.625rem', 'border-top-right-radius': '0.625rem' }" />
             <VCardText class="text-center">
               <div class="mb-3">
                 <h5 class="text-h5">
@@ -150,7 +146,7 @@ function openLink(url: string) {
                     size="22"
                     :color="getIconColor(key)"
                     class="cursor-pointer"
-                    @click="openLink(link)"
+                    @click="openLink(link as string)"
                   />
                 </template>
               </div>

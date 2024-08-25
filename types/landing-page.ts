@@ -73,8 +73,8 @@ export interface TeamData {
   name: string
   position: string
   image: string | null
-  backgroundColor: string | null
-  borderColor: string | null
+  background_color: string | null
+  border_color: string | null
   social_networks: SocialLink
 }
 

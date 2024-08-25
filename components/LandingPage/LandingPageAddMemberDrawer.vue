@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
-import type { CustomerReview, DrawerConfig } from '@/types/landing-page'
+import { cloneDeep } from 'lodash-es'
+import type { DrawerConfig, TeamData } from '@/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'update:modelValue', value: CustomerReview, type?: 'add' | 'edit' | 'delete'): void
+  (e: 'update:modelValue', value: TeamData, type?: 'add' | 'edit' | 'delete'): void
 }
 
 type DialogType = 'warning' | 'info'
@@ -19,7 +20,7 @@ interface DialogConfig {
 
 interface Props {
   drawerConfig: DrawerConfig
-  modelValue: CustomerReview
+  modelValue: TeamData
 }
 
 const props = defineProps<Props>()
@@ -28,15 +29,18 @@ const emit = defineEmits<Emit>()
 
 const formRef = ref<VForm>()
 
-const localReviewerData = ref<CustomerReview>({
+const localMemberData = ref<TeamData>({
   id: '',
-  desc: '',
-  main_logo: null,
-  logo_dark: '',
-  logo_light: '',
   name: '',
   position: '',
-  rating: null,
+  image: null,
+  background_color: '',
+  border_color: '',
+  social_networks: {
+    facebook: '',
+    twitterX: '',
+    linkedin: '',
+  },
 })
 
 const dialogConfig = ref<DialogConfig>({
@@ -56,11 +60,9 @@ function handleDrawerModelValueUpdate(val: boolean) {
 
 function checkActionSubmit() {
   formRef.value?.validate().then(async (valid) => {
-    const formData = { ...localReviewerData.value }
+    const formData = { ...localMemberData.value }
 
     if (valid.valid) {
-      formData.rating = Number(formData.rating)
-
       if (props.drawerConfig.type === 'edit') {
         emit('update:modelValue', formData, 'edit')
       }
@@ -108,7 +110,7 @@ function handleImageUpdate(file: File | null) {
 function onConfirmDialog(value: boolean) {
   if (value) {
     emit('update:isDrawerOpen', false)
-    emit('update:modelValue', localReviewerData.value, 'delete')
+    emit('update:modelValue', localMemberData.value, 'delete')
     dialogConfig.value.isDialogVisible = false
   }
   else {
@@ -120,7 +122,7 @@ function onConfirmDialog(value: boolean) {
 watch(() => props.drawerConfig.isVisible, (val) => {
   if (val) {
     if (props.modelValue) {
-      localReviewerData.value = { ...props.modelValue }
+      localMemberData.value = cloneDeep(props.modelValue)
     }
   }
 }, {
@@ -158,42 +160,80 @@ watch(() => props.drawerConfig.isVisible, (val) => {
           <VRow>
             <VCol cols="12">
               <VTextField
-                v-model="localReviewerData.name"
-                label="Reviewer Name"
+                v-model="localMemberData.name"
+                label="Memeber Name"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
             <VCol cols="12">
               <VTextField
-                v-model="localReviewerData.position"
+                v-model="localMemberData.position"
                 label="Position"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
-            <VCol cols="12" class="d-flex align-center gap-2">
+            <VCol cols="12" class="d-flex flex-column align-start gap-2">
               <VLabel class="label">
-                Rating:
+                Facebook:
               </VLabel>
-              <VRating v-model="localReviewerData.rating" />
+              <VTextField
+                v-model="localMemberData.social_networks.facebook"
+                label="Facebook link"
+                class="w-100"
+              />
+            </VCol>
+
+            <VCol cols="12" class="d-flex flex-column align-start gap-2">
+              <VLabel class="label">
+                Twitter:
+              </VLabel>
+              <VTextField
+                v-model="localMemberData.social_networks.twitterX"
+                label="Twitter link"
+                class="w-100"
+              />
+            </VCol>
+
+            <VCol cols="12" class="d-flex flex-column align-start gap-2">
+              <VLabel class="label">
+                LinkedIn:
+              </VLabel>
+              <VTextField
+                v-model="localMemberData.social_networks.linkedin"
+                label="LinkedIn link"
+                class="w-100"
+              />
             </VCol>
 
             <VCol cols="12">
               <LandingPageImagePreview
                 id="image"
-                :model-value="localReviewerData.main_logo"
+                :model-value="localMemberData.image"
                 @update:model-value="handleImageUpdate"
               />
             </VCol>
 
-            <VCol cols="12">
-              <VTextarea
-                v-model="localReviewerData.desc"
-                label="Comment"
-                placeholder="Write a comment..."
-                rows="5"
-                textarea
+            <VCol cols="12" class="d-flex flex-column align-start gap-2">
+              <VLabel class="label">
+                Prefer background color:
+              </VLabel>
+              <VTextField
+                v-model="localMemberData.background_color"
+                label="Background color"
+                class="w-100"
+              />
+            </VCol>
+
+            <VCol cols="12" class="d-flex flex-column align-start gap-2">
+              <VLabel class="label">
+                Prefer border color:
+              </VLabel>
+              <VTextField
+                v-model="localMemberData.border_color"
+                label="Border color"
+                class="w-100"
               />
             </VCol>
 

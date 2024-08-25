@@ -81,13 +81,12 @@ export const ourTeamSchema = z.object({
     name: z.string(),
     position: z.string(),
     image: z.string().nullable(),
-    backgroundColor: z.union([z.string(), z.null()]).optional(),
-    borderColor: z.union([z.string(), z.null()]).optional(),
+    background_color: z.union([z.string(), z.null()]).optional(),
+    border_color: z.union([z.string(), z.null()]).optional(),
     social_networks: z.object({
       facebook: z.string().nullable(),
-      twitter: z.string().nullable(),
+      twitterX: z.string().nullable(),
       linkedin: z.string().nullable(),
-      instagram: z.string().nullable(),
     }),
   })),
 })

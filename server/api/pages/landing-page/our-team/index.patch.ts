@@ -1,16 +1,16 @@
 import type { Tables } from '@/server/types/supabase'
 
-type Review = Tables<'sys_landing_page'>
+type Team = Tables<'sys_landing_page'>
 
 export default defineEventHandler(async (event) => {
-  const customerReqBody = await readBody<Partial<Review>>(event)
+  const customerReqBody = await readBody<Partial<Team>>(event)
 
   const { error } = await supabaseAdmin.from('sys_landing_page')
     .update({
-      customer_review_data: customerReqBody.customer_review_data,
-      customer_review_emphasized_title: customerReqBody.customer_review_emphasized_title,
-      customer_review_title: customerReqBody.customer_review_title,
-      customer_review_title_desc: customerReqBody.customer_review_title_desc,
+      our_team_data: customerReqBody.our_team_data,
+      our_team_title: customerReqBody.our_team_title,
+      our_team_desc: customerReqBody.our_team_desc,
+      our_team_emphasized_title: customerReqBody.our_team_emphasized_title,
     })
     .match({
       id: 'df02f75c-afab-41ef-ab6d-e1aa04d7ec6d',
