@@ -12,14 +12,9 @@ definePageMeta({
   },
 })
 
-const categories = ref<Category[]>([])
-
-async function fetchCategories() {
-  const { data: response } = await useApi<Category>('/categories')
-  categories.value = response.value as any as Category[]
-}
-
-await fetchCategories()
+const { data: categories } = await useAsyncData(() => $api<Category[]>('/categories'), {
+  default: () => [] as Category[],
+})
 
 const headers = [
   { title: 'Categories', key: 'categoryTitle' },
@@ -85,7 +80,7 @@ async function handleCreateCategory() {
 
 async function handleUpdateCategory() {
   try {
-    const { data: updatedCategory } = await $fetch(`/api/categories/${categoryData.value.id}`, {
+    const { data: updatedCategory } = await $api(`/api/categories/${categoryData.value.id}`, {
       method: 'PATCH',
       body: {
         name: categoryData.value.name,
@@ -119,9 +114,10 @@ function handleOpenDeleteDialog(id: string) {
 
 async function handleDeleteCategory() {
   try {
-    await $fetch(`/api/categories/${confirmationDialogData.value.categorySelectedId}`, {
-      method: 'delete',
+    await $api(`/api/categories/${confirmationDialogData.value.categorySelectedId}`, {
+      method: 'DELETE',
     })
+
     categories.value = categories.value.filter(category => category.id !== confirmationDialogData.value.categorySelectedId)
   }
   catch (error) {
