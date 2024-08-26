@@ -138,7 +138,7 @@ watch(featureData, (value) => {
         <!-- 👉 Feature Main Title -->
         <div class="mb-6 position-relative">
           <VLabel class="mb-2 label">
-            Feature title:
+            Feature heading:
             <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
           </VLabel>
 
@@ -171,6 +171,11 @@ watch(featureData, (value) => {
             placeholder="Text here..."
             @update:model-value="onDescriptionUpdate"
           />
+          <div v-if="error?.feature_title && tiptapDescriptionInput.length === 0">
+            <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
+              {{ warn }}
+            </span>
+          </div>
         </div>
       </VCard>
 
@@ -181,7 +186,7 @@ watch(featureData, (value) => {
         </VCardTitle>
 
         <VLabel class="mb-3 label">
-          Feature title:
+          Feature:
           <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
         </VLabel>
 

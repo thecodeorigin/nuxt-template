@@ -50,11 +50,6 @@ export interface CustomerReview {
   position: string
 }
 
-export interface DrawerConfig {
-  isVisible: boolean
-  type: 'add' | 'edit'
-}
-
 export interface CustomerReviewSectionType {
   customer_review_emphasized_title?: EmphasizedTitle | null
   customer_review_title: string
@@ -86,14 +81,13 @@ export interface TeamSectionType {
 }
 
 // Interface for pricing section
-interface Plan {
+export interface PlanData {
   title: string
   price: number
   features: string[]
-  supportType: string
-  supportMedium: string
-  respondTime: string
-  current: boolean
+  support_type: string
+  support_medium: string
+  respond_time: string
 }
 
 export interface PricingSectionType {
@@ -138,4 +132,10 @@ export interface ContactUsSectionType {
   contact_us_card_emphasized_heading?: EmphasizedTitle | null
   contact_us_card_image: string
   contact_us_card_content: string
+}
+
+// Others
+export interface DrawerConfig {
+  isVisible: boolean
+  type: 'add' | 'edit'
 }

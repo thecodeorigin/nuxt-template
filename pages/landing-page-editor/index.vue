@@ -2,7 +2,7 @@
 definePageMeta({
   sidebar: {
     title: 'Landing Page Editor',
-    to: { name: 'landing-page-editor', params: 'hero-section' },
+    to: { name: 'landing-page-editor'},
     icon: { icon: 'ri-file-text-line' },
   },
 })
@@ -40,6 +40,10 @@ definePageMeta({
       <VDivider class="my-8" />
 
       <OurTeamSectionEditor />
+
+      <VDivider class="my-8" />
+
+      <PricingSectionEditor />
     </form>
   </div>
 </template>

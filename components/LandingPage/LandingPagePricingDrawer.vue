@@ -2,11 +2,11 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
 import { cloneDeep } from 'lodash-es'
-import type { DrawerConfig, TeamData } from '@/types/landing-page'
+import type { DrawerConfig, PlanData } from '@/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'update:modelValue', value: TeamData, type?: 'add' | 'edit' | 'delete'): void
+  (e: 'update:modelValue', value: PlanData, type?: 'add' | 'edit' | 'delete'): void
 }
 
 type DialogType = 'warning' | 'info'
@@ -20,7 +20,7 @@ interface DialogConfig {
 
 interface Props {
   drawerConfig: DrawerConfig
-  modelValue: TeamData
+  modelValue: PlanData
 }
 
 const props = defineProps<Props>()
@@ -29,18 +29,13 @@ const emit = defineEmits<Emit>()
 
 const formRef = ref<VForm>()
 
-const localMemberData = ref<TeamData>({
-  id: '',
-  name: '',
-  position: '',
-  image: null,
-  background_color: '',
-  border_color: '',
-  social_networks: {
-    facebook: '',
-    twitterX: '',
-    linkedin: '',
-  },
+const localPriceData = ref<PlanData>({
+  title: '',
+  price: 0,
+  features: [],
+  support_type: '',
+  support_medium: '',
+  respond_time: '',
 })
 
 const dialogConfig = ref<DialogConfig>({
@@ -60,14 +55,13 @@ function handleDrawerModelValueUpdate(val: boolean) {
 
 function checkActionSubmit() {
   formRef.value?.validate().then(async (valid) => {
-    const formData = { ...localMemberData.value }
+    const formData = { ...localPriceData.value }
 
     if (valid.valid) {
       if (props.drawerConfig.type === 'edit') {
         emit('update:modelValue', formData, 'edit')
       }
       else {
-        formData.id = crypto.randomUUID()
         emit('update:modelValue', formData, 'add')
       }
 
@@ -85,8 +79,8 @@ function handleOpenConfirmation() {
     if (formRef.value) {
       dialogConfig.value = {
         isDialogVisible: true,
-        title: 'Discard New Reviewer',
-        label: 'Are you sure you want to discard this reviewer?',
+        title: 'Discard New Pricing Card',
+        label: 'Are you sure you want to discard this pricing card?',
         type: 'info',
       }
     }
@@ -95,8 +89,8 @@ function handleOpenConfirmation() {
     if (formRef.value) {
       dialogConfig.value = {
         isDialogVisible: true,
-        title: 'Delete Reviewer',
-        label: 'Are you sure you want to delete this reviewer?',
+        title: 'Delete Pricing Card',
+        label: 'Are you sure you want to delete this pricing card?',
         type: 'warning',
       }
     }
@@ -110,7 +104,7 @@ function handleImageUpdate(file: File | null) {
 function onConfirmDialog(value: boolean) {
   if (value) {
     emit('update:isDrawerOpen', false)
-    emit('update:modelValue', localMemberData.value, 'delete')
+    emit('update:modelValue', localPriceData.value, 'delete')
     dialogConfig.value.isDialogVisible = false
   }
   else {
@@ -122,7 +116,7 @@ function onConfirmDialog(value: boolean) {
 watch(() => props.drawerConfig.isVisible, (val) => {
   if (val) {
     if (props.modelValue) {
-      localMemberData.value = cloneDeep(props.modelValue)
+      localPriceData.value = cloneDeep(props.modelValue)
     }
   }
 }, {
@@ -159,80 +153,64 @@ watch(() => props.drawerConfig.isVisible, (val) => {
         <VCardText>
           <VRow>
             <VCol cols="12">
+              <VLabel class="label">
+                Card title
+              </VLabel>
               <VTextField
-                v-model="localMemberData.name"
-                label="Memeber Name"
+                v-model="localPriceData.title"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
             <VCol cols="12">
+              <VLabel class="label">
+                Price
+              </VLabel>
               <VTextField
-                v-model="localMemberData.position"
-                label="Position"
+                v-model:number="localPriceData.price"
+                label="Price"
+                type="number"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+
+            <VCol cols="12">
+              <VLabel class="label">
+                features
+              </VLabel>
+              <VTextField
+                v-model="localPriceData.features"
+                label="Features"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
             <VCol cols="12" class="d-flex flex-column align-start gap-2">
               <VLabel class="label">
-                Facebook:
+                Support type:
               </VLabel>
               <VTextField
-                v-model="localMemberData.social_networks.facebook"
-                label="Facebook link"
+                v-model="localPriceData.support_type"
                 class="w-100"
               />
             </VCol>
 
             <VCol cols="12" class="d-flex flex-column align-start gap-2">
               <VLabel class="label">
-                Twitter:
+                Support medium:
               </VLabel>
               <VTextField
-                v-model="localMemberData.social_networks.twitterX"
-                label="Twitter link"
+                v-model="localPriceData.support_medium"
                 class="w-100"
               />
             </VCol>
 
             <VCol cols="12" class="d-flex flex-column align-start gap-2">
               <VLabel class="label">
-                LinkedIn:
+                Response time:
               </VLabel>
               <VTextField
-                v-model="localMemberData.social_networks.linkedin"
-                label="LinkedIn link"
-                class="w-100"
-              />
-            </VCol>
-
-            <VCol cols="12">
-              <LandingPageImagePreview
-                id="image"
-                :model-value="localMemberData.image"
-                @update:model-value="handleImageUpdate"
-              />
-            </VCol>
-
-            <VCol cols="12" class="d-flex flex-column align-start gap-2">
-              <VLabel class="label">
-                Prefer background color:
-              </VLabel>
-              <VTextField
-                v-model="localMemberData.background_color"
-                label="Background color"
-                class="w-100"
-              />
-            </VCol>
-
-            <VCol cols="12" class="d-flex flex-column align-start gap-2">
-              <VLabel class="label">
-                Prefer border color:
-              </VLabel>
-              <VTextField
-                v-model="localMemberData.border_color"
-                label="Border color"
+                v-model="localPriceData.respond_time"
                 class="w-100"
               />
             </VCol>

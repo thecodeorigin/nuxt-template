@@ -1,3 +1,4 @@
+import { features } from 'node:process'
 import { z } from 'zod'
 
 const emphasizedTitleSchema = z.object({
@@ -89,4 +90,26 @@ export const ourTeamSchema = z.object({
       linkedin: z.string().nullable(),
     }),
   })),
+})
+
+// 👉 Pricing Schema
+export const pricingSchema = z.object({
+  pricing_title: z.string(),
+  pricing_title_desc: z.string(),
+  pricing_data: z.array(
+    z.object({
+      title: z.string(),
+      price: z.number(),
+      features: z.array(z.string()),
+      support_type: z.string(),
+      support_medium: z.string(),
+      respond_time: z.string(),
+      current: z.boolean(),
+    }),
+  ).refine((data) => {
+    const titles = data.map(item => item.title)
+    return new Set(titles).size === titles.length
+  }, {
+    message: 'All pricing titles must be unique.',
+  }),
 })

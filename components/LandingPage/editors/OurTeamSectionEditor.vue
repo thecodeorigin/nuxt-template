@@ -23,8 +23,8 @@ const ourTeamForm = ref<TeamSectionType>({
       name: '',
       position: '',
       image: null,
-      backgroundColor: '',
-      borderColor: '',
+      background_color: '',
+      border_color: '',
       social_networks: {
         facebook: null,
         twitterX: null,
@@ -38,8 +38,8 @@ const teamData = ref<TeamData>({
   name: '',
   position: '',
   image: null,
-  backgroundColor: '',
-  borderColor: '',
+  background_color: '',
+  border_color: '',
   social_networks: {
     facebook: '',
     twitterX: '',
@@ -264,9 +264,8 @@ watch(ourTeamData, (value) => {
             </VCardTitle>
 
             <PerfectScrollbar
-              :options="{ wheelPropagation: false, suppressScrollX: true, swipeEasing: true }"
-              style="padding: 16px;
-                max-height: 490px;"
+              :options="{ wheelPropagation: false, suppressScrollX: true }"
+              class="h-100"
             >
               <VRow>
                 <VCol cols="12" sm="6" md="4" lg="6">
@@ -329,7 +328,7 @@ watch(ourTeamData, (value) => {
     </div>
   </VForm>
 
-  <LandingPageAddMemberDrawer
+  <LandingPageOurTeamDrawer
     v-model="teamData"
     :drawer-config="memberDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
     @update:model-value="handleReviewerChange"
@@ -337,10 +336,6 @@ watch(ourTeamData, (value) => {
 </template>
 
 <style lang="scss" scoped>
-.rating-container {
-  transform: scale(0.6);
-}
-
 .member-card {
   min-width: 30px;
   min-height: 180px;

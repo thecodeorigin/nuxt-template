@@ -205,7 +205,7 @@ watch(customerReviewData, (value) => {
         <VCol cols="12" md="4">
           <VCard class="pa-4">
             <VCardTitle class="text-center mb-4">
-              Customer page heading
+              Customer heading
             </VCardTitle>
 
             <!-- 👉 Review Main Title -->
@@ -332,7 +332,7 @@ watch(customerReviewData, (value) => {
     </div>
   </form>
 
-  <LandingPageAddReviewerDrawer
+  <LandingPageReviewerDrawer
     v-model="reviewerData"
     :drawer-config="reviewerDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
     @update:model-value="handleReviewerChange"
