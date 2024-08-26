@@ -5,10 +5,10 @@ type Category = Tables<'categories'>
 export default defineEventHandler(async (event) => {
   const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const post = await readBody<Category>(event)
+  const category = await readBody<Category>(event)
 
   const { data, error } = await supabaseAdmin.from('categories')
-    .update(post)
+    .update(category)
     .match({
       id: uuid,
       user_id: session.user!.id!,

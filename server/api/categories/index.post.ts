@@ -1,15 +1,15 @@
 import type { Tables } from '@/server/types/supabase'
 
-type Post = Tables<'categories'>
+type Category = Tables<'categories'>
 
 export default defineEventHandler(async (event) => {
   const { session } = await defineEventOptions(event, { auth: true })
 
-  const post = await readBody<Post>(event)
+  const category = await readBody<Category>(event)
 
   const { data, error } = await supabaseAdmin.from('categories')
     .insert({
-      ...post,
+      ...category,
       user_id: session.user!.id!,
     })
     .select()
