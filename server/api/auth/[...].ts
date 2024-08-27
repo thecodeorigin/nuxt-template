@@ -3,6 +3,7 @@ import GoogleProvider from 'next-auth/providers/google'
 // import GithubProvider from 'next-auth/providers/github'
 import type { NuxtError } from 'nuxt/app'
 import { AuthError, type User as SupabaseUser } from '@supabase/supabase-js'
+import type { Session } from 'next-auth'
 import { NuxtAuthHandler } from '#auth'
 import type { Tables } from '~/server/types/supabase'
 
@@ -85,7 +86,6 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log('signIn')
       if (profile && account?.provider === 'google') {
         const { data } = await supabase.auth.signInWithIdToken({
           provider: 'google',
@@ -116,6 +116,15 @@ export default NuxtAuthHandler({
       return true // Do different verification for other providers that don't have `email_verified`
     },
     async session({ session }) {
+      const storage = useStorage('redis')
+
+      const sessionKey = getStorageSessionKey(session.user.id)
+
+      const cachedSession = await storage.getItem<Session | null>(sessionKey)
+
+      if (cachedSession)
+        return cachedSession
+
       if (session.user) {
         const { data } = await supabaseAdmin.from('sys_users')
           .select('*, role:sys_roles(*,permissions:sys_permissions(*))')
@@ -124,6 +133,8 @@ export default NuxtAuthHandler({
 
         if (data)
           Object.assign(session.user, data)
+
+        storage.setItem(session.user.email!, session)
       }
 
       return session

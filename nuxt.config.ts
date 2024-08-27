@@ -47,6 +47,12 @@ export default defineNuxtConfig({
     AUTH_ORIGIN: process.env.NUXT_PUBLIC_APP_BASE_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
 
+    redis: {
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      password: process.env.REDIS_PASSWORD,
+    },
+
     // Public keys that are exposed to the client.
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
@@ -179,6 +185,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-vuefire',
   ],
+
   vuefire: {
     config: {
       apiKey: process.env.FIREBASE_API_KEY,
@@ -191,5 +198,6 @@ export default defineNuxtConfig({
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
   },
+
   compatibilityDate: '2024-07-12',
 })

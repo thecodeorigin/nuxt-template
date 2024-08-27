@@ -92,148 +92,150 @@ function onSubmit() {
 </script>
 
 <template>
-  <NuxtLink to="/">
-    <div class="auth-logo app-logo">
-      <VNodeRenderer :nodes="themeConfig.app.logo" />
-      <h1 class="app-logo-title">
-        {{ themeConfig.app.title }}
-      </h1>
-    </div>
-  </NuxtLink>
-
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex align-center justify-center position-relative"
-    >
-      <div class="d-flex align-center justify-center pa-10">
-        <img
-          :src="authThemeImg"
-          class="auth-illustration w-100"
-          alt="auth-illustration"
-        >
+  <div>
+    <NuxtLink to="/">
+      <div class="auth-logo app-logo">
+        <VNodeRenderer :nodes="themeConfig.app.logo" />
+        <h1 class="app-logo-title">
+          {{ themeConfig.app.title }}
+        </h1>
       </div>
-      <VImg
-        :src="authThemeMask"
-        class="d-none d-md-flex auth-footer-mask"
-        alt="auth-mask"
-      />
-    </VCol>
+    </NuxtLink>
 
-    <VCol
-      cols="12"
-      md="4"
-      class="auth-card-v2 d-flex align-center justify-center"
-      style="background-color: rgb(var(--v-theme-surface));"
+    <VRow
+      no-gutters
+      class="auth-wrapper"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+      <VCol
+        md="8"
+        class="d-none d-md-flex align-center justify-center position-relative"
       >
-        <VCardText>
-          <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}!</span> 👋🏻
-          </h4>
-          <p class="mb-0">
-            Please sign-in to your account and start the adventure
-          </p>
-        </VCardText>
-
-        <VCardText>
-          <VForm
-            ref="formRef"
-            @submit.prevent="onSubmit"
+        <div class="d-flex align-center justify-center pa-10">
+          <img
+            :src="authThemeImg"
+            class="auth-illustration w-100"
+            alt="auth-illustration"
           >
-            <VRow>
-              <!-- email -->
-              <VCol cols="12">
-                <VTextField
-                  v-model="credentials.email"
-                  label="Email"
-                  placeholder="johndoe@email.com"
-                  type="email"
-                  autofocus
-                  :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors?.email"
-                />
-              </VCol>
+        </div>
+        <VImg
+          :src="authThemeMask"
+          class="d-none d-md-flex auth-footer-mask"
+          alt="auth-mask"
+        />
+      </VCol>
 
-              <!-- password -->
-              <VCol cols="12">
-                <VTextField
-                  v-model="credentials.password"
-                  label="Password"
-                  placeholder="············"
-                  :rules="[requiredValidator]"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors?.password"
-                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
+      <VCol
+        cols="12"
+        md="4"
+        class="auth-card-v2 d-flex align-center justify-center"
+        style="background-color: rgb(var(--v-theme-surface));"
+      >
+        <VCard
+          flat
+          :max-width="500"
+          class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+        >
+          <VCardText>
+            <h4 class="text-h4 mb-1">
+              Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}!</span> 👋🏻
+            </h4>
+            <p class="mb-0">
+              Please sign-in to your account and start the adventure
+            </p>
+          </VCardText>
 
-                <div class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2">
-                  <VCheckbox
-                    v-model="rememberMe"
-                    label="Remember me"
+          <VCardText>
+            <VForm
+              ref="formRef"
+              @submit.prevent="onSubmit"
+            >
+              <VRow>
+                <!-- email -->
+                <VCol cols="12">
+                  <VTextField
+                    v-model="credentials.email"
+                    label="Email"
+                    placeholder="johndoe@email.com"
+                    type="email"
+                    autofocus
+                    :rules="[requiredValidator, emailValidator]"
+                    :error-messages="errors?.email"
                   />
-                  <NuxtLink
-                    class="text-primary"
-                    :to="{ name: 'auth-forgot-password' }"
+                </VCol>
+
+                <!-- password -->
+                <VCol cols="12">
+                  <VTextField
+                    v-model="credentials.password"
+                    label="Password"
+                    placeholder="············"
+                    :rules="[requiredValidator]"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    :error-messages="errors?.password"
+                    :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  />
+
+                  <div class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2">
+                    <VCheckbox
+                      v-model="rememberMe"
+                      label="Remember me"
+                    />
+                    <NuxtLink
+                      class="text-primary"
+                      :to="{ name: 'auth-forgot-password' }"
+                    >
+                      Forgot Password?
+                    </NuxtLink>
+                  </div>
+
+                  <VBtn
+                    block
+                    type="submit"
                   >
-                    Forgot Password?
+                    Login
+                  </VBtn>
+                </VCol>
+
+                <!-- create account -->
+                <VCol
+                  cols="12"
+                  class="text-body-1 text-center"
+                >
+                  <span class="d-inline-block">
+                    New on our platform?
+                  </span>
+                  <NuxtLink
+                    class="text-primary ms-1 d-inline-block text-body-1"
+                    :to="{ name: 'auth-register' }"
+                  >
+                    Create an account
                   </NuxtLink>
-                </div>
+                </VCol>
 
-                <VBtn
-                  block
-                  type="submit"
+                <VCol
+                  cols="12"
+                  class="d-flex align-center"
                 >
-                  Login
-                </VBtn>
-              </VCol>
+                  <VDivider />
+                  <span class="mx-4 text-high-emphasis">or</span>
+                  <VDivider />
+                </VCol>
 
-              <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
-                <span class="d-inline-block">
-                  New on our platform?
-                </span>
-                <NuxtLink
-                  class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'auth-register' }"
+                <!-- auth providers -->
+                <VCol
+                  cols="12"
+                  class="text-center"
                 >
-                  Create an account
-                </NuxtLink>
-              </VCol>
-
-              <VCol
-                cols="12"
-                class="d-flex align-center"
-              >
-                <VDivider />
-                <span class="mx-4 text-high-emphasis">or</span>
-                <VDivider />
-              </VCol>
-
-              <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
-                <AuthProvider @signin="login" />
-              </VCol>
-            </VRow>
-          </VForm>
-        </VCardText>
-      </VCard>
-    </VCol>
-  </VRow>
+                  <AuthProvider @signin="login" />
+                </VCol>
+              </VRow>
+            </VForm>
+          </VCardText>
+        </VCard>
+      </VCol>
+    </VRow>
+  </div>
 </template>
 
 <style lang="scss">
