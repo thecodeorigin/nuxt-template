@@ -120,6 +120,7 @@ export default NuxtAuthHandler({
 
       const sessionKey = getStorageSessionKey(session.user.id)
 
+      // TODO: invalidate cache on change user, permissions, etc.
       const cachedSession = await storage.getItem<Session | null>(sessionKey)
 
       if (cachedSession)
@@ -141,6 +142,14 @@ export default NuxtAuthHandler({
     },
     jwt({ token }) {
       return token
+    },
+  },
+  events: {
+    async signOut({ token }) {
+      const storage = useStorage('redis')
+      const sessionKey = getStorageSessionKey(token.id)
+
+      await storage.removeItem(sessionKey)
     },
   },
   cookies: {
