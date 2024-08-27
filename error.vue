@@ -38,7 +38,7 @@ const errToShow = computed(() => {
         return {
           status: 500,
           title: props.error?.statusMessage,
-          description: props.error.message,
+          description: props.error?.message,
         }
       }
       else {

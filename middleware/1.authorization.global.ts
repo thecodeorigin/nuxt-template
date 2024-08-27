@@ -5,5 +5,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
 
   if (!canNavigate(to))
-    return navigateTo({ name: 'error' })
+    return navigateTo({ name: 'error-not-authorized' })
 })
