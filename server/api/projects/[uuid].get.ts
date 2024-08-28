@@ -1,25 +1,22 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Project = Tables<'projects'>
-
+// get project by uuid
 export default defineEventHandler(async (event) => {
   const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const project = await readBody<Project>(event)
-
-  const { data, error } = await supabaseAdmin.from('projects')
-    .update(project)
+  const { data, error } = await supabaseAdmin
+    .from('projects')
+    .select()
     .match({
       id: uuid,
       user_id: session.user!.id!,
     })
-    .select('*')
     .maybeSingle()
 
   if (error)
     setResponseStatus(event, 400, error.message)
+  else if (!data)
+    setResponseStatus(event, 404)
   else
-    setResponseStatus(event, 201)
+    setResponseStatus(event, 200)
 
-  return { data }
+  return data
 })

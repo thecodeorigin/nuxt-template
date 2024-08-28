@@ -81,7 +81,7 @@ function onCancel() {
   </VDialog>
 
   <!-- Unsubscribed -->
-  <VDialog
+  <!-- <VDialog
     v-model="unsubscribed"
     max-width="500"
   >
@@ -113,10 +113,10 @@ function onCancel() {
         </VBtn>
       </VCardText>
     </VCard>
-  </VDialog>
+  </VDialog> -->
 
   <!-- Cancelled -->
-  <VDialog
+  <!-- <VDialog
     v-model="cancelled"
     max-width="500"
   >
@@ -146,5 +146,5 @@ function onCancel() {
         </VBtn>
       </VCardText>
     </VCard>
-  </VDialog>
+  </VDialog> -->
 </template>

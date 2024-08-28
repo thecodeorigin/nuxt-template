@@ -8,7 +8,7 @@ function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[] {
   let tree: NavItem[] = []
 
   for (const route of routes) {
-    if (!route.meta.sidebar)
+    if (!route.meta || !route.meta.sidebar)
       continue
 
     const item = route.meta.sidebar as NavItem

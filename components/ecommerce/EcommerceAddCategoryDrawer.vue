@@ -101,7 +101,7 @@ async function onSubmitted() {
     <PerfectScrollbar :options="{ wheelPropagation: false }">
       <VCard flat>
         <VCardText>
-          <VForm 
+          <VForm
             v-if="props.drawerVisible"
             ref="vFormRef"
             @submit.prevent="onSubmitted"
