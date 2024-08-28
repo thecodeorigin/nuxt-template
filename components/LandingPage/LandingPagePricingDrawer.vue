@@ -113,6 +113,14 @@ function onConfirmDialog(value: boolean) {
   }
 }
 
+function addFeature() {
+  localPriceData.value.features.push('')
+}
+
+function removeFeature(index: number) {
+  localPriceData.value.features.splice(index, 1)
+}
+
 watch(() => props.drawerConfig.isVisible, (val) => {
   if (val) {
     if (props.modelValue) {
@@ -153,7 +161,7 @@ watch(() => props.drawerConfig.isVisible, (val) => {
         <VCardText>
           <VRow>
             <VCol cols="12">
-              <VLabel class="label">
+              <VLabel class="label mb-2">
                 Card title
               </VLabel>
               <VTextField
@@ -163,30 +171,19 @@ watch(() => props.drawerConfig.isVisible, (val) => {
             </VCol>
 
             <VCol cols="12">
-              <VLabel class="label">
+              <VLabel class="label mb-2">
                 Price
               </VLabel>
               <VTextField
-                v-model:number="localPriceData.price"
+                v-model="localPriceData.price"
                 label="Price"
                 type="number"
                 :rules="[requiredValidator]"
               />
             </VCol>
 
-            <VCol cols="12">
-              <VLabel class="label">
-                features
-              </VLabel>
-              <VTextField
-                v-model="localPriceData.features"
-                label="Features"
-                :rules="[requiredValidator]"
-              />
-            </VCol>
-
             <VCol cols="12" class="d-flex flex-column align-start gap-2">
-              <VLabel class="label">
+              <VLabel class="label mb-2">
                 Support type:
               </VLabel>
               <VTextField
@@ -196,7 +193,7 @@ watch(() => props.drawerConfig.isVisible, (val) => {
             </VCol>
 
             <VCol cols="12" class="d-flex flex-column align-start gap-2">
-              <VLabel class="label">
+              <VLabel class="label mb-2">
                 Support medium:
               </VLabel>
               <VTextField
@@ -206,13 +203,36 @@ watch(() => props.drawerConfig.isVisible, (val) => {
             </VCol>
 
             <VCol cols="12" class="d-flex flex-column align-start gap-2">
-              <VLabel class="label">
+              <VLabel class="label mb-2">
                 Response time:
               </VLabel>
               <VTextField
                 v-model="localPriceData.respond_time"
                 class="w-100"
               />
+            </VCol>
+
+            <VCol cols="12">
+              <VLabel class="label mb-2">
+                Features:
+              </VLabel>
+              <VRow v-for="(_, index) in localPriceData.features" :key="index">
+                <VCol cols="10">
+                  <VTextField
+                    v-model="localPriceData.features[index]"
+                    :rules="[requiredValidator]"
+                    :label=" `Feature ${index + 1}`"
+                  />
+                </VCol>
+                <VCol cols="2" class="d-flex align-center">
+                  <VBtn variant="text" icon rounded="lg" @click="removeFeature(index)">
+                    <VIcon icon="ri-close-circle-line" />
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VBtn color="primary" class="mt-3" @click="addFeature">
+                Add Feature
+              </VBtn>
             </VCol>
 
             <VCol cols="12">
@@ -256,6 +276,6 @@ watch(() => props.drawerConfig.isVisible, (val) => {
   }
 }
 .label {
-    line-height: 20px;
-  }
+    line-height: 40px;
+}
 </style>

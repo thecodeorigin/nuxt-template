@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { VForm } from 'vuetify/components'
-import type { ECommerceProduct } from '@db/apps/ecommerce/types'
 import type { DrawerConfig, PlanData, PricingSectionType } from '@/types/landing-page'
 
 const { pricingPlansData } = storeToRefs(useLandingPageStore())
@@ -149,22 +148,34 @@ async function onSubmit() {
     error.value = null
     isLoading.value = true
     try {
-      await $api('/api/pages/landing-page/pricing', {
+      const res = await $api('/api/pages/landing-page/pricing', {
         method: 'PATCH',
         body: pricingForm.value,
       })
 
-      notify('Successfully updated', {
-        type: 'success',
-        timeout: 3000,
-      })
+      if ('success' in res && res.success) {
+        notify('Successfully updated', {
+          type: 'success',
+          timeout: 3000,
+        })
+      }
+      else if ('error' in res && res.error) {
+        notify(res.error, {
+          type: 'error',
+          timeout: 5000,
+        })
+      }
     }
-    catch (e) {
-      if (e instanceof z.ZodError) {
-        console.log(e.errors.map(err => err.message).join('\n'))
+    catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log(error.errors.map(err => err.message).join('\n'))
       }
       else {
-        console.log('Unexpected error: ', e)
+        console.log('Unexpected error: ', error)
+        notify(error as string, {
+          type: 'error',
+          timeout: 3000,
+        })
       }
     }
     finally {
@@ -304,6 +315,9 @@ watch(pricingPlansData, (value) => {
 </template>
 
 <style lang="scss" scoped>
+  .label {
+    line-height: 40px;
+  }
 .member-card {
   min-width: 30px;
   min-height: 180px;
@@ -315,6 +329,7 @@ watch(pricingPlansData, (value) => {
 }
 
 .add-card{
+  min-height: 100px;
   cursor: pointer;
   border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
   &:hover {

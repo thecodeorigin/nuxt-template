@@ -76,31 +76,13 @@ function openLink(url: string) {
         </div>
 
         <div class="mb-2 text-center gap-1 ">
-          <component
-            :is="ourTeamData?.our_team_emphasized_title?.variant"
-            v-if="ourTeamData?.our_team_emphasized_title"
-            :style="{
-              color: ourTeamData?.our_team_emphasized_title?.color,
-              fontSize: `${ourTeamData?.our_team_emphasized_title?.font_size}px`,
-              fontWeight: ourTeamData?.our_team_emphasized_title?.font_weight,
-              textTransform: ourTeamData?.our_team_emphasized_title?.text_transform,
-              textDecoration: ourTeamData?.our_team_emphasized_title?.text_decoration,
-            }"
-            class="d-inline-block mr-1"
-          >
-            {{ ourTeamData?.our_team_emphasized_title?.text }}
-          </component>
-
-          <span class="our-team-title text-h5 d-inline-block">
-            {{ ourTeamData?.our_team_title }}
-          </span>
+          <span class="our-team-title text-h5 d-inline-block" v-html="ourTeamData?.our_team_title" />
         </div>
 
         <p
           class="text-body-1 font-weight-medium text-center"
-        >
-          {{ ourTeamData?.our_team_desc }}
-        </p>
+          v-html="ourTeamData?.our_team_desc"
+        />
       </div>
 
       <VRow>

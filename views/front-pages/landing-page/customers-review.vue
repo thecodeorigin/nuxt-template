@@ -31,25 +31,8 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
         </div>
       </div>
 
-      <div class="mb-2 text-center gap-1">
-        <component
-          :is="customerReviewData?.customer_review_emphasized_title?.variant"
-          v-if="customerReviewData?.customer_review_emphasized_title"
-          :style="{
-            color: customerReviewData?.customer_review_emphasized_title?.color,
-            fontSize: `${customerReviewData?.customer_review_emphasized_title?.font_size}px`,
-            fontWeight: customerReviewData?.customer_review_emphasized_title?.font_weight,
-            textTransform: customerReviewData?.customer_review_emphasized_title?.text_transform,
-            textDecoration: customerReviewData?.customer_review_emphasized_title?.text_decoration,
-          }"
-          class="d-inline-block mr-1"
-        >
-          {{ customerReviewData?.customer_review_emphasized_title?.text }}
-        </component>
-
-        <span class="customer-review-title text-h5 d-inline-block">
-          {{ customerReviewData?.customer_review_title }}
-        </span>
+      <div class="mb-2 text-center text-h5">
+        {{ customerReviewData?.customer_review_title }}
       </div>
 
       <p class="text-body-1 font-weight-medium text-center">

@@ -113,3 +113,11 @@ export const pricingSchema = z.object({
     message: 'All pricing titles must be unique.',
   }),
 })
+
+// 👉 Product Stat Schema
+export const productStatSchema = z.object({
+  title: titleSchema,
+  value: z.number(),
+  color: z.string(),
+  icon: z.string(),
+})

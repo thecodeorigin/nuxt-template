@@ -94,17 +94,19 @@ export interface PricingSectionType {
   pricing_emphasized_title?: EmphasizedTitle | null
   pricing_title: string
   pricing_title_desc: string | string[]
-  pricing_data: Plan[] | null
+  pricing_data: PlanData[] | null
 }
 
 // Interface for product stats
 export interface ProductStatType {
-  id: number
+  id: string
   title: string
   value: number
   color: string
-  icon: string
+  icon: IconList
 }
+
+export type IconList = 'Time Line' | 'Home' | 'Settings' | 'User' | 'Calendar' | 'Search' | 'Notification' | 'Camera' | 'Shopping Cart' | 'Heart' | 'Layout' | 'User Smile' | null
 
 export interface ProductStatsSectionType {
   product_stats: ProductStatType[] | null

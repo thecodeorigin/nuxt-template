@@ -159,22 +159,34 @@ async function onSubmit() {
     isLoading.value = true
 
     try {
-      await $api('/api/pages/landing-page/our-team', {
+      const res = await $api('/api/pages/landing-page/our-team', {
         method: 'PATCH',
         body: ourTeamForm.value,
       })
 
-      notify('Successfully updated', {
-        type: 'success',
-        timeout: 3000,
-      })
+      if ('success' in res && res.success) {
+        notify('Successfully updated', {
+          type: 'success',
+          timeout: 3000,
+        })
+      }
+      else if ('error' in res && res.error) {
+        notify(res.error, {
+          type: 'error',
+          timeout: 5000,
+        })
+      }
     }
-    catch (e) {
-      if (e instanceof z.ZodError) {
-        console.log(e.errors.map(err => err.message).join('\n'))
+    catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log(error.errors.map(err => err.message).join('\n'))
       }
       else {
-        console.log('Unexpected error: ', e)
+        console.log('Unexpected error: ', error)
+        notify(error as string, {
+          type: 'error',
+          timeout: 3000,
+        })
       }
     }
     finally {
@@ -336,6 +348,10 @@ watch(ourTeamData, (value) => {
 </template>
 
 <style lang="scss" scoped>
+.label {
+  line-height: 40px;
+}
+
 .member-card {
   min-width: 30px;
   min-height: 180px;

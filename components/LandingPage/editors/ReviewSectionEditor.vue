@@ -149,22 +149,34 @@ async function onSubmit() {
     isLoading.value = true
 
     try {
-      await $api<CustomerReviewSectionType>('/api/pages/landing-page/customer-review', {
+      const res = await $api('/api/pages/landing-page/customer-review', {
         method: 'PATCH',
         body: reviewForm.value,
       })
 
-      notify('Customer Review updated successfully', {
-        type: 'success',
-        timeout: 2000,
-      })
+      if ('success' in res && res.success) {
+        notify('Successfully updated', {
+          type: 'success',
+          timeout: 3000,
+        })
+      }
+      else if ('error' in res && res.error) {
+        notify(res.error, {
+          type: 'error',
+          timeout: 5000,
+        })
+      }
     }
-    catch (e) {
-      if (e instanceof z.ZodError) {
-        console.log(e.errors.map(err => err.message).join('\n'))
+    catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log(error.errors.map(err => err.message).join('\n'))
       }
       else {
-        console.log('Unexpected error: ', e)
+        console.log('Unexpected error: ', error)
+        notify(error as string, {
+          type: 'error',
+          timeout: 5000,
+        })
       }
     }
     finally {
@@ -342,6 +354,10 @@ watch(customerReviewData, (value) => {
 <style lang="scss" scoped>
 .rating-container {
   transform: scale(0.6);
+}
+
+.label {
+  line-height: 40px;
 }
 
 .review-card {

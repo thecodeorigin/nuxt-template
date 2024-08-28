@@ -30,29 +30,10 @@ const { pricingPlansData } = storeToRefs(useLandingPageStore())
         </div>
 
         <div class="mb-2 text-center gap-1">
-          <Component
-            :is="pricingPlansData?.pricing_emphasized_title?.variant"
-            v-if="pricingPlansData?.pricing_emphasized_title"
-            :style="{
-              color: pricingPlansData?.pricing_emphasized_title?.color,
-              fontSize: `${pricingPlansData?.pricing_emphasized_title?.font_size}px`,
-              fontWeight: pricingPlansData?.pricing_emphasized_title?.font_weight,
-              textTransform: pricingPlansData?.pricing_emphasized_title?.text_transform,
-              textDecoration: pricingPlansData?.pricing_emphasized_title?.text_decoration,
-            }"
-            class="d-inline-block mr-1"
-          >
-            {{ pricingPlansData?.pricing_emphasized_title?.text }}
-          </Component>
-
-          <span class="pricing-title text-h5 d-inline-block">
-            {{ pricingPlansData?.pricing_title }}
-          </span>
+          <span class="pricing-title text-h5 d-inline-block" v-html="pricingPlansData?.pricing_title" />
         </div>
 
-        <p v-for="(description, index) in pricingPlansData?.pricing_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
-          {{ description }}
-        </p>
+        <p class="text-body-1 font-weight-medium text-center mb-0" v-html="pricingPlansData?.pricing_title_desc" />
       </div>
 
       <div class="w-75 mx-auto">
@@ -130,10 +111,10 @@ const { pricingPlansData } = storeToRefs(useLandingPageStore())
                   <div class="d-flex align-center justify-space-between flex-wrap gap-2">
                     <div>
                       <div class="text-body-1 font-weight-medium text-high-emphasis mb-1">
-                        {{ plan.supportType }} Support
+                        {{ plan.support_type }} Support
                       </div>
                       <div class="text-body-2">
-                        {{ plan.supportMedium }}
+                        {{ plan.support_medium }}
                       </div>
                     </div>
 
@@ -143,7 +124,7 @@ const { pricingPlansData } = storeToRefs(useLandingPageStore())
                       size="small"
                       class="font-weight-medium"
                     >
-                      {{ plan.respondTime }}
+                      {{ plan.respond_time }}
                     </VChip>
                   </div>
                 </div>

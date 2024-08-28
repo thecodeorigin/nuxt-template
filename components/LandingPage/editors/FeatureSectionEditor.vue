@@ -81,15 +81,17 @@ async function onFeatureSubmit() {
     error.value = null
     isLoading.value = true
     try {
-      await $api('/api/pages/landing-page/feature', {
+      const res = await $api('/api/pages/landing-page/feature', {
         method: 'PATCH',
         body: featureForm.value,
       })
 
-      notify('Feature section updated successfully', {
-        type: 'success',
-        timeout: 2000,
-      })
+      if (res.success) {
+        notify('Feature section updated successfully', {
+          type: 'success',
+          timeout: 2000,
+        })
+      }
     }
     catch (error) {
       if (error instanceof z.ZodError) {
@@ -97,6 +99,10 @@ async function onFeatureSubmit() {
       }
       else {
         console.log('Unexpected error: ', error)
+        notify(error as string, {
+          type: 'error',
+          timeout: 3000,
+        })
       }
     }
     finally {
@@ -206,13 +212,26 @@ watch(featureData, (value) => {
             />
           </VCol>
 
-          <VCol cols="12" sm="8">
+          <VCol cols="12" sm="7">
             <VTextarea
               v-model="feature.desc"
               label="Feature description"
               placeholder="Text here..."
               rows="4"
             />
+          </VCol>
+
+          <VCol cols="12" sm="1" class="d-flex align-center">
+            <VBtn
+              icon
+              variant="tonal"
+              color="error"
+              rounded="lg"
+              class="w-100 h-100 d-flex align-center justify-center pa-2"
+              @click="featureForm.feature_data.splice(index, 1)"
+            >
+              <VIcon icon="ri-close-circle-line" />
+            </VBtn>
           </VCol>
         </VRow>
 
@@ -233,23 +252,21 @@ watch(featureData, (value) => {
           Feature content
         </VCardTitle>
 
-        <VCardText>
-          <VRow>
-            <VCol v-for="(feature, index) in featureForm.feature_data" :key="index" cols="12" sm="6" md="4">
-              <div class="feature d-flex flex-column gap-y-2 align-center justify-center mt-2">
-                <VAvatar variant="outlined" size="82" color="primary" class="mb-2">
-                  <component :is="iconMap[feature.icon]" />
-                </VAvatar>
-                <h5 class="text-h5">
-                  {{ feature.name }}
-                </h5>
-                <p class="text-center text-medium-emphasis" style="max-inline-size: 360px;">
-                  {{ feature.desc }}
-                </p>
-              </div>
-            </VCol>
-          </VRow>
-        </VCardText>
+        <VRow>
+          <VCol v-for="(feature, index) in featureForm.feature_data" :key="index" cols="12" sm="6" md="4">
+            <div class="feature d-flex flex-column gap-y-2 align-center justify-center mt-2">
+              <VAvatar variant="outlined" size="82" color="primary" class="mb-2">
+                <component :is="iconMap[feature.icon]" />
+              </VAvatar>
+              <h5 class="text-h5">
+                {{ feature.name }}
+              </h5>
+              <p class="text-center text-medium-emphasis" style="max-inline-size: 360px;">
+                {{ feature.desc }}
+              </p>
+            </div>
+          </VCol>
+        </VRow>
       </VCard>
 
       <!-- 👉 Feature Button Submit -->
@@ -284,14 +301,6 @@ watch(featureData, (value) => {
 </template>
 
 <style lang="scss" scoped>
-.emphasis-panels {
-  border-color:rgba(133, 133, 133, 0.5) !important;
-
-  &:hover {
-  border-color:rgba(234, 234, 255, 0.7) !important;
-  }
-}
-
 .title-content {
   :deep(.ProseMirror) {
     min-block-size: 5vh;
@@ -305,4 +314,7 @@ watch(featureData, (value) => {
     margin-bottom: 0;
   }
 }
+.label {
+    line-height: 40px;
+  }
 </style>

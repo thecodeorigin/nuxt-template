@@ -60,22 +60,28 @@ async function onSubmit() {
     error.value = null
     isLoading.value = true
     try {
-      await $api('/api/pages/landing-page/hero', {
+      const res = await $api('/api/pages/landing-page/hero', {
         method: 'PATCH',
         body: heroForm.value,
       })
 
-      notify('Hero section updated successfully', {
-        type: 'success',
-        timeout: 2000,
-      })
+      if (res.success) {
+        notify('Hero section updated successfully', {
+          type: 'success',
+          timeout: 2000,
+        })
+      }
     }
-    catch (e) {
-      if (e instanceof z.ZodError) {
-        console.log(e.errors.map(err => err.message).join('\n'))
+    catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log(error.errors.map(err => err.message).join('\n'))
       }
       else {
-        console.log('Unexpected error: ', e)
+        console.log('Unexpected error: ', error)
+        notify(error as string, {
+          type: 'error',
+          timeout: 3000,
+        })
       }
     }
     finally {
@@ -347,7 +353,7 @@ watch(heroData, (value) => {
   }
 
   .label {
-    line-height: 20px;
+    line-height: 40px;
   }
 
   .title-content {
