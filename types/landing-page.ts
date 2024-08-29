@@ -113,7 +113,7 @@ export interface ProductStatsSectionType {
 }
 
 // Interface for FAQ section
-interface FAQ {
+export interface FAQ {
   question: string
   answer: string
 }

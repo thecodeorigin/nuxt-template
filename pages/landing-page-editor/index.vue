@@ -48,6 +48,10 @@ definePageMeta({
       <VDivider class="my-8" />
 
       <ProductStatEditor />
+
+      <VDivider class="my-8" />
+
+      <FaqSectionEditor />
     </form>
   </div>
 </template>

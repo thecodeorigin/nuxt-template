@@ -97,10 +97,6 @@ function handleOpenConfirmation() {
   }
 }
 
-function handleImageUpdate(file: File | null) {
-  console.log('««««« file »»»»»', file)
-}
-
 function onConfirmDialog(value: boolean) {
   if (value) {
     emit('update:isDrawerOpen', false)

@@ -121,3 +121,13 @@ export const productStatSchema = z.object({
   color: z.string(),
   icon: z.string(),
 })
+
+// 👉FAQ Schema
+export const faqSchema = z.object({
+  faq_title: titleSchema,
+  faq_title_desc: descriptionSchema,
+  faq_data: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })),
+})

@@ -31,29 +31,10 @@ const { faqData } = storeToRefs(useLandingPageStore())
         </div>
 
         <div class="mb-2 text-center gap-1">
-          <span class="text-h5 d-inline-block mr-1">
-            {{ faqData?.faq_title }}
-          </span>
-
-          <component
-            :is="faqData?.faq_emphasized_title?.variant"
-            v-if="faqData?.faq_emphasized_title"
-            :style="{
-              color: faqData?.faq_emphasized_title?.color,
-              fontSize: `${faqData?.faq_emphasized_title?.font_size}px`,
-              fontWeight: faqData?.faq_emphasized_title?.font_weight,
-              textTransform: faqData?.faq_emphasized_title?.text_transform,
-              textDecoration: faqData?.faq_emphasized_title?.text_decoration,
-            }"
-            class="d-inline-block "
-          >
-            {{ faqData?.faq_emphasized_title?.text }}
-          </component>
+          <span class="text-h5 d-inline-block mr-1" v-html="faqData?.faq_title" />
         </div>
 
-        <p v-for="(description, index) in faqData?.faq_title_desc" :key="index" class="text-body-1 font-weight-medium text-center mb-0">
-          {{ description }}
-        </p>
+        <p class="text-body-1 font-weight-medium text-center mb-0" v-html="faqData?.faq_title_desc" />
       </div>
 
       <div
