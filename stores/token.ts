@@ -8,7 +8,7 @@ export const useTokenDeviceStore = defineStore('token-device', {
     async setTokenDevice(token: string) {
       try {
         this.tokenDevice = token
-        await useApi('/user-devices/register', {
+        await $api('/user-devices/register', {
           method: 'POST',
           body: {
             token,
@@ -21,7 +21,7 @@ export const useTokenDeviceStore = defineStore('token-device', {
     },
     async clearTokenDevice() {
       try {
-        await useApi(createUrl('/user-devices/unregister'), {
+        await $api('/user-devices/unregister', {
           method: 'DELETE',
           body: {
             token: this.tokenDevice,

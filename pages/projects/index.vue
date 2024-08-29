@@ -50,89 +50,20 @@ const headers = [
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
-const { data: projects, refresh: refreshProjects } = useLazyApi<Project[]>('/projects', {
-  params: projectQuery.value,
-  default() {
-    return []
+const { data: projects, refresh: refreshProjects } = useLazyAsyncData<Project[]>(
+  () => $api('/projects', { params: projectQuery.value }),
+  {
+    default() {
+      return []
+    },
   },
-})
-
-// const { data: categories } = useLazyApi<Category[]>('/categories', {
-//   default() {
-//     return []
-//   },
-// })
-
-// function clearProjectData() {
-//   projectData.value = {
-//     id: '',
-//     category_id: null,
-//     created_at: '',
-//     description: null,
-//     title: null,
-//     user_id: null,
-//     category: {
-//       name: '',
-//       id: '',
-//       created_at: '',
-//       description: null,
-//       image_url: null,
-//       slug: '',
-//       updated_at: null,
-//       user_id: null,
-//     },
-//   }
-// }
+)
 
 debouncedWatch(
   projectQuery,
   () => refreshProjects(),
   { deep: true, debounce: 500 },
 )
-
-// function handleSubmit() {
-//   if (projectData.value.id) {
-//     handleUpdateProject()
-//   }
-//   else {
-//     handleCreateProjectt()
-//   }
-// }
-
-// async function handleCreateProjectt() {
-//   try {
-//     const { data: newProject } = await $api<{ data: Project }>('/projects', {
-//       method: 'POST',
-//       body: projectData.value,
-//     })
-//     projects.value.push(newProject)
-//     clearProjectData()
-//     drawerVisible.value = false
-//   }
-//   catch (error) {
-//     console.error(error)
-//   }
-// }
-
-// async function handleUpdateProject() {
-//   try {
-//     const { data: updatedProject } = await $api<{ data: Project }>(`/projects/${projectData.value.id}`, {
-//       method: 'PATCH',
-//       body: {
-//         title: projectData.value.title,
-//         description: projectData.value.description,
-//         category_id: projectData.value.category_id,
-//       },
-//     })
-//     const index = projects.value.findIndex(project => project.id === updatedProject.id)
-//     projects.value[index] = updatedProject
-//     clearProjectData()
-//     drawerVisible.value = false
-//   }
-//   catch (error) {
-//     console.error(error)
-//   }
-// }
 
 const confirmationDialogData = ref(
   {

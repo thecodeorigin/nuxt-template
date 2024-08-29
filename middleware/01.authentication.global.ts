@@ -1,4 +1,3 @@
-import { canNavigate } from '@layouts/plugins/casl'
 import { P, match } from 'ts-pattern'
 
 function canGoNext() { /* does nothing on purpose */ }

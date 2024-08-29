@@ -28,7 +28,7 @@ const headers = [
 ]
 
 // 👉 Fetch Invoices
-const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(createUrl('/apps/invoice', {
+const { data: invoiceData, execute: fetchInvoices } = await useAsyncData<any>(() => $api(createUrl('/apps/invoice', {
   query: {
     q: searchQuery,
     status: selectedStatus,
@@ -37,7 +37,7 @@ const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(createUr
     sortBy,
     orderBy,
   },
-}))
+}).value))
 
 const invoices = computed((): any[] => invoiceData.value?.invoices)
 const totalInvoices = computed(() => invoiceData.value?.totalInvoices)

@@ -1,99 +1,62 @@
 <script setup lang="ts">
-import { Image } from '@tiptap/extension-image'
-import { Link } from '@tiptap/extension-link'
-import { Placeholder } from '@tiptap/extension-placeholder'
-import { Underline } from '@tiptap/extension-underline'
-import { StarterKit } from '@tiptap/starter-kit'
-import { EditorContent, useEditor } from '@tiptap/vue-3'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import { VForm } from 'vuetify/components/VForm'
+import type { Tables } from '@/server/types/supabase'
 
-interface Props {
-  drawerVisible: boolean
-  modelValue: any
-}
+type Category = Tables<'categories'>
 
-interface Emit {
-  (e: 'update:drawerVisible', value: boolean): void
-  (e: 'update:modelValue', value: any): void
-  (e: 'submit'): void
-}
+type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const emit = defineEmits<{
+  (e: 'submit', payload: FormData): void
+}>()
 
-function handleDrawerModelValueUpdate(val: boolean) {
-  emit('update:drawerVisible', val)
-}
+const modelValue = defineModel('modelValue', {
+  type: Boolean,
+  default: false,
+})
 
-const editor = useEditor({
-  content: '',
-  extensions: [
-    StarterKit,
-    Image,
-    Placeholder.configure({
-      placeholder: 'Write a Comment...',
-    }),
-    Underline,
-    Link.configure(
-      {
-        openOnClick: false,
-      },
-    ),
-  ],
+const formData = defineModel('formData', {
+  type: Object as PropType<FormData>,
+  default() {
+    return {
+      name: '',
+      slug: '',
+      description: '',
+      image_url: '',
+    }
+  },
 })
 
 const vFormRef = ref<VForm>()
 
-const categoryData = ref({
-  name: '',
-  slug: '',
-  description: '',
-  img: '',
-})
-
 function resetForm() {
-  emit('update:drawerVisible', false)
+  modelValue.value = false
+
   vFormRef.value?.reset()
-  editor.value?.commands.clearContent()
 }
 
-watch(() => categoryData.value, (val) => {
-  emit('update:modelValue', val)
-}, {
-  deep: true,
-  immediate: true,
-})
-
-watch(() => props.drawerVisible, (val) => {
-  if (val) {
-    if (props.modelValue) {
-      categoryData.value = props.modelValue
-    }
-  }
-})
-async function onSubmitted() {
+async function handleSubmit() {
   const { valid } = await vFormRef.value!.validate()
   if (valid)
-    emit('submit')
+    emit('submit', formData.value)
 }
 </script>
 
 <template>
   <VNavigationDrawer
-    :model-value="props.drawerVisible"
+    v-model="modelValue"
     temporary
     location="end"
     width="370"
     class="category-navigation-drawer scrollable-content"
     border="none"
-    @update:model-value="handleDrawerModelValueUpdate"
   >
     <!-- 👉 Header -->
     <AppDrawerHeaderSection
-      :title="props.modelValue.id ? 'Edit Category' : 'Add Category'"
-      @cancel="$emit('update:drawerVisible', false)"
+      title="Edit Category"
+      @cancel="modelValue = false"
     />
 
     <VDivider />
@@ -102,14 +65,14 @@ async function onSubmitted() {
       <VCard flat>
         <VCardText>
           <VForm
-            v-if="props.drawerVisible"
+            v-if="modelValue"
             ref="vFormRef"
-            @submit.prevent="onSubmitted"
+            @submit.prevent="handleSubmit"
           >
             <VRow>
               <VCol cols="12">
                 <VTextField
-                  v-model="categoryData.name"
+                  v-model="formData.name"
                   label="Title"
                   :rules="[requiredValidator]"
                   placeholder="Fashion"
@@ -118,7 +81,7 @@ async function onSubmitted() {
 
               <VCol cols="12">
                 <VTextField
-                  v-model="categoryData.slug"
+                  v-model="formData.slug"
                   label="Slug"
                   :rules="[requiredValidator]"
                   placeholder="Trends fashion"
@@ -127,9 +90,9 @@ async function onSubmitted() {
 
               <VCol cols="12">
                 <VFileInput
-                  v-model="categoryData.img"
+                  v-model="formData.image_url"
                   prepend-icon=""
-                  :rules="modelValue ? [] : [requiredValidator]"
+                  :rules="[requiredValidator]"
                   density="compact"
                   label="No file chosen"
                   clearable
@@ -143,7 +106,7 @@ async function onSubmitted() {
               </VCol>
               <VCol cols="12">
                 <VTextField
-                  v-model="categoryData.description"
+                  v-model="formData.description"
                   label="Description"
                   :rules="[requiredValidator]"
                   placeholder="Trends fashion"
@@ -157,7 +120,7 @@ async function onSubmitted() {
                     color="primary"
                     class="me-4"
                   >
-                    {{ props.modelValue.id ? 'Update' : 'Add' }}
+                    Update
                   </VBtn>
                   <VBtn
                     color="error"

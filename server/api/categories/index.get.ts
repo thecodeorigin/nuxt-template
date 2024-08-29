@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  console.log('HEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
   const { session } = await defineEventOptions(event, { auth: true })
 
   const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1 } = getFilter(event)

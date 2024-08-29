@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import ECommerceAddCategoryDrawer from '@/components/ecommerce/EcommerceAddCategoryDrawer.vue'
 import type { Tables } from '@/server/types/supabase'
 
 type Category = Tables<'categories'>
+
+type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>
 
 definePageMeta({
   sidebar: {
@@ -12,9 +13,7 @@ definePageMeta({
   },
 })
 
-const { data: categories } = await useAsyncData(() => $api<Category[]>('/categories'), {
-  default: () => [] as Category[],
-})
+const categoryStore = useCategoryStore()
 
 const headers = [
   { title: 'Categories', key: 'categoryTitle' },
@@ -23,127 +22,84 @@ const headers = [
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
-const itemsPerPage = ref(10)
-const searchQuery = ref('')
-const isAddProductDrawerOpen = ref(false)
-const page = ref(1)
+const isCreatingCategory = ref(false)
+const isEditingCategory = ref(false)
 
-// Update data table options
-function updateOptions(options: any) {
-  page.value = options.page
-}
-
-const categoryData = ref({
-  id: '',
-  name: '',
-  description: '',
-  slug: '',
+const categoryQuery = ref({
+  page: 1,
+  limit: 10,
+  keyword: '',
 })
 
-function clearCategoryData() {
-  categoryData.value = {
-    id: '',
-    name: '',
-    description: '',
-    slug: '',
-  }
-}
+const selectingCategory = ref<Category>()
 
-function handleSubmit() {
-  if (categoryData.value.id) {
-    handleUpdateCategory()
-  }
-  else {
-    handleCreateCategory()
-  }
-}
+const { data: categories, refresh: refreshCategories } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
+  default: () => [] as Category[],
+})
 
-async function handleCreateCategory() {
+watchDebounced(categoryQuery, () => {
+  refreshCategories()
+}, { deep: true, debounce: 500 })
+
+async function handleSubmitNewCategory(payload: FormData) {
   try {
-    const { data: newCategory } = await $fetch('/api/categories', {
-      method: 'POST',
-      body: {
-        name: categoryData.value.name,
-        description: categoryData.value.description,
-        slug: categoryData.value.slug,
-        image_url: '',
-      },
-    })
-    categories.value.unshift(newCategory as Category)
-    clearCategoryData()
-    isAddProductDrawerOpen.value = false
+    await categoryStore.createCategory(payload)
+
+    await refreshCategories()
+
+    isCreatingCategory.value = false
   }
   catch (error) {
     console.error('error', error)
   }
 }
 
-async function handleUpdateCategory() {
+async function handleUpdateCategory(payload: FormData) {
   try {
-    const { data: updatedCategory } = await $api(`/api/categories/${categoryData.value.id}`, {
-      method: 'PATCH',
-      body: {
-        name: categoryData.value.name,
-        description: categoryData.value.description,
-        slug: categoryData.value.slug,
-        image_url: '',
-      },
-    })
-    const index = categories.value.findIndex(category => category.id === updatedCategory.id)
-    categories.value[index] = updatedCategory
-    clearCategoryData()
-    isAddProductDrawerOpen.value = false
+    if (!selectingCategory.value)
+      return
+
+    await categoryStore.updateCategory(selectingCategory.value.id, payload)
+
+    await refreshCategories()
+
+    isEditingCategory.value = false
   }
   catch (error) {
     console.error('error', error)
   }
 }
 
-const confirmationDialogData = ref(
-  {
-    confirmationQuestion: 'Are you sure you want to delete this category?',
-    isDialogVisible: false,
-    categorySelectedId: 'null',
-  },
-)
-
-function handleOpenDeleteDialog(id: string) {
-  confirmationDialogData.value.categorySelectedId = id
-  confirmationDialogData.value.isDialogVisible = true
-}
-
-async function handleDeleteCategory() {
+async function handleDeleteCategory(item: Category) {
   try {
-    await $api(`/api/categories/${confirmationDialogData.value.categorySelectedId}`, {
-      method: 'DELETE',
-    })
+    if (!selectingCategory.value)
+      return
 
-    categories.value = categories.value.filter(category => category.id !== confirmationDialogData.value.categorySelectedId)
+    await categoryStore.deleteCategory(item.id)
+
+    await refreshCategories()
   }
   catch (error) {
     console.error('error', error)
   }
 }
 
-function handleSelectCategory(category: any) {
-  categoryData.value = { ...category }
-  isAddProductDrawerOpen.value = true
-}
+async function handleSelectCategory(item: Category) {
+  selectingCategory.value = item
 
-function handleOpenAddCategoryDrawer() {
-  clearCategoryData()
-  isAddProductDrawerOpen.value = true
+  await nextTick()
+
+  isEditingCategory.value = true
 }
 </script>
 
 <template>
   <div>
-    <ConfirmDialog v-bind="confirmationDialogData" v-model:isDialogVisible="confirmationDialogData.isDialogVisible" @confirm="handleDeleteCategory" />
     <VCard>
       <VCardText>
         <div class="d-flex justify-md-space-between flex-wrap gap-4 justify-center">
           <VTextField
-            v-model="searchQuery"
+            v-model="categoryQuery.keyword"
             placeholder="Search"
             density="compact"
             style="max-inline-size: 280px; min-inline-size: 200px;"
@@ -152,7 +108,7 @@ function handleOpenAddCategoryDrawer() {
           <div class="d-flex align-center flex-wrap gap-4">
             <VBtn
               prepend-icon="ri-add-line"
-              @click="handleOpenAddCategoryDrawer"
+              @click="isCreatingCategory = true"
             >
               Add Category
             </VBtn>
@@ -162,21 +118,20 @@ function handleOpenAddCategoryDrawer() {
 
       <VDataTable
         v-if="categories"
-        v-model:items-per-page="itemsPerPage"
+        v-model:items-per-page="categoryQuery.limit"
+        v-model:page="categoryQuery.page"
         :headers="headers"
-        :page="page"
         :items="categories"
-        item-value="categoryTitle"
-        :search="searchQuery"
+        :search="categoryQuery.keyword"
         show-select
+        item-value="categoryTitle"
         class="text-no-wrap category-table"
-        @update:options="updateOptions"
       >
         <template #item.actions="{ item }">
           <IconBtn size="small" @click="handleSelectCategory(item)">
             <VIcon icon="ri-edit-box-line" />
           </IconBtn>
-          <IconBtn size="small" @click="handleOpenDeleteDialog(item.id)">
+          <IconBtn size="small" @click="handleDeleteCategory(item)">
             <VIcon icon="ri-delete-bin-5-line" />
           </IconBtn>
         </template>
@@ -218,53 +173,11 @@ function handleOpenAddCategoryDrawer() {
             {{ item.total_product || 0 }}
           </div>
         </template>
-
-        <!-- Pagination -->
-        <template #bottom>
-          <VDivider />
-
-          <div class="d-flex justify-end flex-wrap gap-x-6 px-2 py-1">
-            <div class="d-flex align-center gap-x-2 text-medium-emphasis text-base">
-              Rows Per Page:
-              <VSelect
-                v-model="itemsPerPage"
-                class="per-page-select"
-                variant="plain"
-                :items="[10, 20, 25, 50, 100]"
-              />
-            </div>
-
-            <p class="d-flex align-center text-base text-high-emphasis me-2 mb-0">
-              {{ paginationMeta({ page, itemsPerPage }, categories.length) }}
-            </p>
-
-            <div class="d-flex gap-x-2 align-center me-2">
-              <VBtn
-                class="flip-in-rtl"
-                icon="ri-arrow-left-s-line"
-                variant="text"
-                density="comfortable"
-                color="high-emphasis"
-                :disabled="page <= 1"
-                @click="page <= 1 ? page = 1 : page--"
-              />
-
-              <VBtn
-                class="flip-in-rtl"
-                icon="ri-arrow-right-s-line"
-                density="comfortable"
-                variant="text"
-                color="high-emphasis"
-                :disabled="page >= Math.ceil(categories.length / itemsPerPage)"
-                @click="page >= Math.ceil(categories.length / itemsPerPage) ? page = Math.ceil(categories.length / itemsPerPage) : page++ "
-              />
-            </div>
-          </div>
-        </template>
       </VDataTable>
     </VCard>
 
-    <ECommerceAddCategoryDrawer v-model:drawerVisible="isAddProductDrawerOpen" v-model="categoryData" @submit="handleSubmit" />
+    <CategoryCreateDrawer v-model="isCreatingCategory" @submit="handleSubmitNewCategory" />
+    <CategoryEditDrawer v-model="isEditingCategory" v-model:form-data="selectingCategory" @submit="handleUpdateCategory" />
   </div>
 </template>
 
