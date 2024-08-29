@@ -17,6 +17,8 @@ export const useNotificationStore = defineStore('notification', () => {
   const notificationTimeout = ref(3000)
   const notificationOutline = ref(false)
 
+  const confirmationMessage = ref('')
+
   const notificationProps = computed(() => ({
     modelValue: notificationVisible.value,
     location: notificationLocation.value,
@@ -42,12 +44,33 @@ export const useNotificationStore = defineStore('notification', () => {
     notificationMessage.value = ''
     notificationType.value = 'success'
     notificationLocation.value = 'bottom'
+    notificationTimeout.value = 3000
+  }
+
+  let confirmationResolver: (value: boolean) => void
+  function showConfirmation(message: string) {
+    confirmationMessage.value = message
+
+    return new Promise<boolean>((resolve) => {
+      confirmationResolver = resolve
+    })
+  }
+
+  function resolveConfirmation(value: boolean) {
+    if (confirmationResolver) {
+      confirmationResolver(value)
+
+      confirmationMessage.value = ''
+    }
   }
 
   return {
     notificationProps,
     notificationMessage,
+    confirmationMessage,
     showNotification,
     hideNotification,
+    showConfirmation,
+    resolveConfirmation,
   }
 })

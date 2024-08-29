@@ -75,3 +75,16 @@ export function downloadDocx(subtitle: Subtitle[], filename?: string) {
     downloadBlob(blob, `${filename || new Date().toISOString()}.docx`)
   })
 };
+
+export async function uploadToS3(file: File, filename: string) {
+  const s3Store = useS3Store()
+
+  const { uploadUrl, assetUrl } = await s3Store.getSignedUrl(filename)
+
+  await fetch(uploadUrl, {
+    method: 'PUT',
+    body: file,
+  })
+
+  return assetUrl
+}

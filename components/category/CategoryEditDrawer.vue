@@ -2,6 +2,7 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import { VForm } from 'vuetify/components/VForm'
+import { kebabCase } from 'lodash-es'
 import type { Tables } from '@/server/types/supabase'
 
 type Category = Tables<'categories'>
@@ -29,6 +30,8 @@ const formData = defineModel('formData', {
   },
 })
 
+const formFiles = ref<File[]>([])
+
 const vFormRef = ref<VForm>()
 
 function resetForm() {
@@ -39,8 +42,18 @@ function resetForm() {
 
 async function handleSubmit() {
   const { valid } = await vFormRef.value!.validate()
-  if (valid)
-    emit('submit', formData.value)
+  if (valid) {
+    const slug = formData.value.slug ?? kebabCase(formData.value.name || '')
+    const ext = formFiles.value[0].name.split('.').pop()
+    const filename = formFiles.value[0].name.replace(/\s/, '_')
+    const imageUrl = await uploadToS3(formFiles.value[0], `categories/${slug}/${filename || `${new Date().getTime()}.${ext}`}`)
+
+    emit('submit', {
+      ...formData.value,
+      image_url: imageUrl,
+      slug,
+    })
+  }
 }
 </script>
 
@@ -83,16 +96,14 @@ async function handleSubmit() {
                 <VTextField
                   v-model="formData.slug"
                   label="Slug"
-                  :rules="[requiredValidator]"
                   placeholder="Trends fashion"
                 />
               </VCol>
 
               <VCol cols="12">
                 <VFileInput
-                  v-model="formData.image_url"
+                  v-model="formFiles"
                   prepend-icon=""
-                  :rules="[requiredValidator]"
                   density="compact"
                   label="No file chosen"
                   clearable
@@ -108,7 +119,6 @@ async function handleSubmit() {
                 <VTextField
                   v-model="formData.description"
                   label="Description"
-                  :rules="[requiredValidator]"
                   placeholder="Trends fashion"
                 />
               </VCol>

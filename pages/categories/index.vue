@@ -16,9 +16,8 @@ definePageMeta({
 const categoryStore = useCategoryStore()
 
 const headers = [
-  { title: 'Categories', key: 'categoryTitle' },
-  { title: 'Total Products', key: 'totalProduct', align: 'center' },
-  { title: 'Created at', key: 'createdAt', align: 'end' },
+  { title: 'Categories', key: 'name' },
+  { title: 'Created at', key: 'created_at', align: 'end' as const },
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
@@ -77,12 +76,13 @@ async function handleUpdateCategory(payload: FormData) {
 
 async function handleDeleteCategory(item: Category) {
   try {
-    if (!selectingCategory.value)
-      return
+    const canDelete = await confirmation('Are you sure you want to delete this category?')
 
-    await categoryStore.deleteCategory(item.id)
+    if (canDelete) {
+      await categoryStore.deleteCategory(item.id)
 
-    await refreshCategories()
+      await refreshCategories()
+    }
   }
   catch (error) {
     console.error('error', error)
@@ -129,7 +129,7 @@ async function handleSelectCategory(item: Category) {
         :items="categories"
         :search="categoryQuery.keyword"
         show-select
-        item-value="categoryTitle"
+        item-value="name"
         class="text-no-wrap category-table"
       >
         <template #item.actions="{ item }">
@@ -141,18 +141,19 @@ async function handleSelectCategory(item: Category) {
           </IconBtn>
         </template>
 
-        <template #item.categoryTitle="{ item }">
+        <template #item.name="{ item }">
           <div class="d-flex gap-x-3">
             <VAvatar
+              v-if="item.image_url"
               variant="tonal"
               rounded
-              size="38"
+              size="40"
             >
               <img
-                :src="item.image"
-                :alt="item.categoryTitle"
-                width="38"
-                height="38"
+                :src="item.image_url"
+                :alt="item.name || ''"
+                width="40"
+                height="40"
               >
             </VAvatar>
             <div>
@@ -166,16 +167,9 @@ async function handleSelectCategory(item: Category) {
           </div>
         </template>
 
-        <template #item.createdAt="{ item }">
+        <template #item.created_at="{ item }">
           <div class="text-end pe-4">
             {{ (item.created_at).toLocaleString().split("T")[0] }}
-          </div>
-        </template>
-
-        <template #item.totalProduct="{ item }">
-          <div class="text-center pe-4">
-            <!-- FIXME - handle count number of product later -->
-            {{ item.total_product || 0 }}
           </div>
         </template>
       </VDataTable>

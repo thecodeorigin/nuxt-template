@@ -77,6 +77,11 @@ watch(
       >
         {{ notificationStore.notificationMessage }}
       </VSnackbar>
+      <ConfirmDialog
+        :model-value="Boolean(notificationStore.confirmationMessage)"
+        :message="notificationStore.confirmationMessage"
+        @confirm="notificationStore.resolveConfirmation"
+      />
     </VApp>
   </VLocaleProvider>
 </template>
