@@ -19,6 +19,7 @@ const tiptapTitleInput = ref<string>('')
 const tiptapDescriptionInput = ref<string>('')
 const formRef = ref<VForm>()
 const isLoading = ref(false)
+const selectedPricingIndex = ref<number | null>(null)
 
 const pricingForm = ref<PricingSectionType>({
   pricing_title: '',
@@ -45,7 +46,7 @@ const pricingData = ref<PlanData>({
 })
 
 const pricingDataList = computed(() => {
-  return pricingForm?.value.pricing_data
+  return pricingForm.value?.pricing_data
 })
 
 function priceFormatted(price: number) {
@@ -56,6 +57,7 @@ function priceFormatted(price: number) {
     minimumFractionDigits: 0,
   }).format(price)
 }
+
 function clearPricingData() {
   pricingData.value = {
     title: '',
@@ -91,12 +93,18 @@ function handleOpenAddDrawer() {
   clearPricingData()
 }
 
-function handleOpenEditDrawer(pricingName: string) {
-  const foundPrice = pricingDataList.value?.find((price: PlanData) => price.title === pricingName)
+function handleOpenEditDrawer(index: number) {
+  if (!pricingForm.value?.pricing_data)
+    return false
+
+  const foundPrice = pricingForm.value?.pricing_data[index]
+
   if (!foundPrice)
     return false
 
   pricingData.value = foundPrice
+
+  selectedPricingIndex.value = index
 
   pricingDrawerOption.value = {
     isVisible: true,
@@ -104,16 +112,14 @@ function handleOpenEditDrawer(pricingName: string) {
   }
 }
 
-function handleReviewerChange(value: PlanData, type: DrawerActionTypes) {
+function handlePricingChange(value: PlanData, type: DrawerActionTypes) {
+  if (!pricingForm.value?.pricing_data || selectedPricingIndex.value === null)
+    return
+
   if (pricingForm.value && type === DRAWER_ACTION_TYPES.EDIT) {
-    pricingForm.value.pricing_data = pricingForm.value?.pricing_data?.map(
-      (price: PlanData) => {
-        if (price.title === value.title) {
-          return value
-        }
-        return price
-      },
-    ) || []
+    pricingForm.value.pricing_data[selectedPricingIndex.value] = value
+
+    selectedPricingIndex.value = null
   }
   else if (pricingForm.value && type === DRAWER_ACTION_TYPES.ADD) {
     pricingForm.value.pricing_data = [
@@ -188,7 +194,9 @@ watch(pricingPlansData, (value) => {
   pricingForm.value = {
     pricing_title: value?.pricing_title as string,
     pricing_title_desc: value?.pricing_title_desc as string,
-    pricing_data: value?.pricing_data || [],
+    pricing_data: [
+      ...value?.pricing_data || [],
+    ],
   }
 
   tiptapTitleInput.value = pricingForm.value.pricing_title
@@ -262,7 +270,7 @@ watch(pricingPlansData, (value) => {
                 </VCard>
               </VCol>
 
-              <VCol v-for="(priceCard, index) in pricingForm.pricing_data" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(priceCard.title)">
+              <VCol v-for="(priceCard, index) in pricingForm.pricing_data" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(index)">
                 <VCard class="price-card d-flex flex-column align-center pa-5" hover min-width="100" max-height="200" ripple>
                   <VCardTitle class="text-center d-flex flex-column">
                     {{ priceCard.title }}
@@ -310,7 +318,7 @@ watch(pricingPlansData, (value) => {
   <LandingPagePricingDrawer
     v-model="pricingData"
     :drawer-config="pricingDrawerOption" @update:is-drawer-open="handleToggleDrawer"
-    @update:model-value="handleReviewerChange"
+    @update:model-value="handlePricingChange"
   />
 </template>
 

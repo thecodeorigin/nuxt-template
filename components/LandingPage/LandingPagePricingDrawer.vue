@@ -179,6 +179,7 @@ watch(() => props.drawerConfig.isVisible, (val) => {
                 label="Price"
                 type="number"
                 :rules="[requiredValidator]"
+                @update:model-value="(value: string | number) => localPriceData.price = Number(value)"
               />
             </VCol>
 

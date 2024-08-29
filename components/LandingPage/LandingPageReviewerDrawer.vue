@@ -176,7 +176,10 @@ watch(() => props.drawerConfig.isVisible, (val) => {
               <VLabel class="label">
                 Rating:
               </VLabel>
-              <VRating v-model="localReviewerData.rating" />
+              <VRating
+                v-model="localReviewerData.rating"
+                @update:model-value="(value: string | number) => localReviewerData.rating = Number(value)"
+              />
             </VCol>
 
             <VCol cols="12">
