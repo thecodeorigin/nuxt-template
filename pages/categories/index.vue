@@ -33,9 +33,14 @@ const categoryQuery = ref({
 
 const selectingCategory = ref<Category>()
 
-const { data: categories, refresh: refreshCategories } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
+const { data: categories, refresh: refreshCategories, error: categoriesError } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
   default: () => [] as Category[],
 })
+
+watchDebounced(categoriesError, (error) => {
+  if (error)
+    notify(getNuxtError(error).message, { type: 'error' })
+}, { immediate: true, debounce: 500 })
 
 watchDebounced(categoryQuery, () => {
   refreshCategories()

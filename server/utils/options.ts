@@ -31,7 +31,7 @@ export async function defineEventOptions<
     if (!session) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'Unauthorized!',
+        statusMessage: 'You don\'t have permissions to perform this action!',
       })
     }
 
