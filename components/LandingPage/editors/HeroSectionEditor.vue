@@ -117,8 +117,8 @@ watch(heroData, (value) => {
 </script>
 
 <template>
-  <form class="landing-page-hero" @submit.prevent="onSubmit">
-    <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
+  <form  class="landing-page-hero" @submit.prevent="onSubmit">
+    <VLabel v-if="heroData" class="text-h3 text-capitalize text-primary font-weight-bold mb-4 d-block label">
       Hero Section
     </VLabel>
 

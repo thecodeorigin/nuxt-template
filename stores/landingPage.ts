@@ -1,7 +1,7 @@
 import { pick } from 'lodash-es'
 import type { Tables } from '@/server/types/supabase'
 
-import type { ContactUsSectionType, CustomerReviewSectionType, FAQSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatsSectionType, TeamSectionType } from '@/types/landing-page'
+import type { BannerSectionType, ContactUsSectionType, CustomerReviewSectionType, FAQSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatsSectionType, TeamSectionType } from '@/types/landing-page'
 
 export const useLandingPageStore = defineStore('landing-page', () => {
 type LandingPage = Tables<'sys_landing_page'>
@@ -15,6 +15,7 @@ const pricingPlansData = ref<PricingSectionType>()
 const productStatsData = ref<ProductStatsSectionType>()
 const faqData = ref<FAQSectionType>()
 const contactData = ref<ContactUsSectionType>()
+const bannerData = ref<BannerSectionType>()
 
 async function fetchLandingPageData() {
   try {
@@ -43,6 +44,8 @@ watch(() => landingPageData.value, (data) => {
     faqData.value = pick(data, ['faq_data', 'faq_title', 'faq_title_desc', 'faq_emphasized_title']) as FAQSectionType
 
     contactData.value = pick(data, ['contact_us_title', 'contact_us_emphasized_title', 'contact_us_title_desc', 'contact_us_card_heading', 'contact_us_card_emphasized_heading', 'contact_us_card_image', 'contact_us_card_content']) as ContactUsSectionType
+
+    bannerData.value = pick(data, 'banner_title', 'banner_title_desc', 'banner_button', 'banner_img') as BannerSectionType
   }
 })
 
@@ -58,5 +61,6 @@ return {
   productStatsData,
   faqData,
   contactData,
+  bannerData,
 }
 })

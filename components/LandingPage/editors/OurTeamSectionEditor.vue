@@ -295,13 +295,13 @@ watch(ourTeamData, (value) => {
                         {{ member.position }}
                       </span>
                     </VCardTitle>
-
+<!-- 
                     <VImg
                       v-if="member.image"
                       :src="member.image"
                       class="rounded-circle"
                       cover
-                    />
+                    /> -->
                   </VCard>
                 </VCol>
               </VRow>

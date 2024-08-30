@@ -27,31 +27,44 @@ definePageMeta({
     </div>
 
     <form class="landing-page-editor">
-      <HeroSectionEditor />
+      <client-only>
+        <HeroSectionEditor />
+      </client-only>
+
+      <VDivider class="my-8" />
+      <client-only>
+        <FeatureSectionEditor />
+      </client-only>
+
+      <VDivider class="my-8" />
+      <client-only>
+        <ReviewSectionEditor />
+      </client-only>
+
+      <VDivider class="my-8" />
+      <client-only>
+        <OurTeamSectionEditor />
+      </client-only>
+
+      <VDivider class="my-8" />
+      <client-only>
+        <PricingSectionEditor />
+      </client-only>
+
+      <VDivider class="my-8" />
+      <client-only>
+        <ProductStatEditor />
+      </client-only>
 
       <VDivider class="my-8" />
 
-      <FeatureSectionEditor />
+      <client-only>
+        <FaqSectionEditor />
+      </client-only>
 
       <VDivider class="my-8" />
 
-      <ReviewSectionEditor />
-
-      <VDivider class="my-8" />
-
-      <OurTeamSectionEditor />
-
-      <VDivider class="my-8" />
-
-      <PricingSectionEditor />
-
-      <VDivider class="my-8" />
-
-      <ProductStatEditor />
-
-      <VDivider class="my-8" />
-
-      <FaqSectionEditor />
+      <BannerSectionEditor />
     </form>
   </div>
 </template>

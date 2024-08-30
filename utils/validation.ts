@@ -131,3 +131,11 @@ export const faqSchema = z.object({
     answer: z.string(),
   })),
 })
+
+// 👉 Banner Schema
+export const bannerSchema = z.object({
+  banner_title: titleSchema,
+  banner_title_desc: descriptionSchema,
+  banner_button: z.string(),
+  banner_img: z.string().nullable(),
+})

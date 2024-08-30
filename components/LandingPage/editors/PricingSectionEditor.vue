@@ -45,10 +45,6 @@ const pricingData = ref<PlanData>({
   respond_time: '',
 })
 
-const pricingDataList = computed(() => {
-  return pricingForm.value?.pricing_data
-})
-
 function priceFormatted(price: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -73,10 +69,14 @@ type FormSchemaType = z.infer<typeof pricingSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
   return tiptapTitleInput.value = removeEmptyTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
   return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
 }
 
@@ -191,16 +191,18 @@ async function onSubmit() {
 }
 
 watch(pricingPlansData, (value) => {
-  pricingForm.value = {
-    pricing_title: value?.pricing_title as string,
-    pricing_title_desc: value?.pricing_title_desc as string,
-    pricing_data: [
-      ...value?.pricing_data || [],
-    ],
-  }
+  if (value) {
+    pricingForm.value = {
+      pricing_title: value.pricing_title as string,
+      pricing_title_desc: value.pricing_title_desc as string,
+      pricing_data: [
+        ...value?.pricing_data || [],
+      ],
+    }
 
-  tiptapTitleInput.value = pricingForm.value.pricing_title
-  tiptapDescriptionInput.value = pricingForm.value.pricing_title_desc as string
+    tiptapTitleInput.value = pricingForm.value?.pricing_title
+    tiptapDescriptionInput.value = pricingForm.value?.pricing_title_desc as string
+  }
 }, { deep: true, immediate: true })
 </script>
 

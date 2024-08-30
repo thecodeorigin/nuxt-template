@@ -125,6 +125,13 @@ export interface FAQSectionType {
   faq_data: FAQ[] | null
 }
 
+export interface BannerSectionType {
+  banner_title: string
+  banner_title_desc: string
+  banner_button: string
+  banner_img: string | null
+}
+
 // Interface for about us section
 export interface ContactUsSectionType {
   contact_us_emphasized_title: EmphasizedTitle | null
