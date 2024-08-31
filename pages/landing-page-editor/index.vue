@@ -63,8 +63,14 @@ definePageMeta({
       </client-only>
 
       <VDivider class="my-8" />
+      <client-only>
+        <BannerSectionEditor />
+      </client-only>
 
-      <BannerSectionEditor />
+      <VDivider class="my-8" />
+      <client-only>
+        <ContactUsSectionEditor />
+      </client-only>
     </form>
   </div>
 </template>

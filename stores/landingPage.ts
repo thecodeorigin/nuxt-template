@@ -43,7 +43,7 @@ watch(() => landingPageData.value, (data) => {
 
     faqData.value = pick(data, ['faq_data', 'faq_title', 'faq_title_desc', 'faq_emphasized_title']) as FAQSectionType
 
-    contactData.value = pick(data, ['contact_us_title', 'contact_us_emphasized_title', 'contact_us_title_desc', 'contact_us_card_heading', 'contact_us_card_emphasized_heading', 'contact_us_card_image', 'contact_us_card_content']) as ContactUsSectionType
+    contactData.value = pick(data, ['contact_us_title', 'contact_us_title_desc', 'contact_us_card_heading', 'contact_us_card_title', 'contact_us_card_image', 'contact_us_card_content']) as ContactUsSectionType
 
     bannerData.value = pick(data, 'banner_title', 'banner_title_desc', 'banner_button', 'banner_img') as BannerSectionType
   }

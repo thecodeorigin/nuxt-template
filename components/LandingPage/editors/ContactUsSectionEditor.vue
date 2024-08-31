@@ -1,0 +1,255 @@
+<script setup lang="ts">
+import { z } from 'zod'
+import { VForm, VTextField, VTextarea } from 'vuetify/components'
+import type { ContactUsSectionType } from '@/types/landing-page'
+
+const { contactData } = storeToRefs(useLandingPageStore())
+const formRef = ref<VForm>()
+const tiptapTitleInput = ref<string>('')
+const tiptapDescriptionInput = ref<string>('')
+const isLoading = ref(false)
+const imageFile = ref<File | null>(null)
+
+const contactUsForm = ref<ContactUsSectionType>({
+  contact_us_title: '',
+  contact_us_title_desc: '',
+  contact_us_card_content: '',
+  contact_us_card_title: '',
+  contact_us_card_heading: '',
+  contact_us_card_image: null,
+})
+type FormSchemaType = z.infer<typeof contactUsSchema>
+const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
+
+async function onSubmit() {
+  const validInput = contactUsSchema.safeParse(contactUsForm.value)
+
+  if (!validInput.success) {
+    error.value = validInput.error.format()
+    notify('Invalid input, please check and try again', {
+      type: 'error',
+      timeout: 2000,
+
+    })
+  }
+  else {
+    error.value = null
+    isLoading.value = true
+
+    try {
+      const res = await $api('/api/pages/landing-page/contact', {
+        method: 'PATCH',
+        body: contactUsForm.value,
+      })
+
+      if ('success' in res && res.success) {
+        notify('Successfully updated', {
+          type: 'success',
+          timeout: 3000,
+        })
+      }
+    }
+    catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log(error.errors.map(err => err.message).join('\n'))
+      }
+      else {
+        console.log('Unexpected error: ', error)
+        notify(error as string, {
+          type: 'error',
+          timeout: 3000,
+        })
+      }
+    }
+    finally {
+      isLoading.value = false
+    }
+  }
+}
+
+function onTitleUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
+  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+}
+
+function onDescriptionUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
+  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+}
+
+function handleImageUpdate(file: File | null) {
+  console.log('««««« file »»»»»', file)
+}
+
+watch(contactData, (value) => {
+  if (value) {
+    contactUsForm.value = { ...value }
+  }
+})
+</script>
+
+<template>
+  <VForm ref="formRef" @submit.prevent="onSubmit">
+    <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
+      About us Section
+    </VLabel>
+
+    <div class="d-flex flex-column gap-4 mb-4">
+      <VRow>
+        <VCol cols="12" md="6">
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              About us heading
+            </VCardTitle>
+
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                About us heading:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <TiptapEditor
+                v-model="contactUsForm.contact_us_title"
+                class="border rounded-lg title-content"
+                :class="{ 'border-error border-opacity-100': error?.contact_us_title && tiptapTitleInput.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onTitleUpdate"
+              />
+
+              <div v-if="error?.contact_us_title && tiptapTitleInput.length === 0">
+                <span v-for="(warn, index) in error?.contact_us_title?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Description:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <TiptapEditor
+                v-model="contactUsForm.contact_us_title_desc as string"
+                class="border rounded-lg"
+                :class="{ 'border-error border-opacity-100': error?.contact_us_title_desc && tiptapDescriptionInput.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onDescriptionUpdate"
+              />
+              <div v-if="error?.contact_us_title_desc && tiptapDescriptionInput.length === 0">
+                <span v-for="(warn, index) in error?.contact_us_title_desc?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
+            </div>
+          </VCard>
+        </VCol>
+
+        <VCol cols="12" md="6">
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              About us card heading
+            </VCardTitle>
+
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Card title:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <VTextField
+                v-model="contactUsForm.contact_us_card_title"
+                density="compact"
+                variant="outlined"
+                placeholder="Text here..."
+              />
+            </div>
+
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Card hheading:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <VTextField
+                v-model="contactUsForm.contact_us_card_heading"
+                density="compact"
+                variant="outlined"
+                placeholder="Text here..."
+              />
+            </div>
+
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Card description:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <VTextarea
+                v-model="contactUsForm.contact_us_card_content"
+                density="compact"
+                variant="outlined"
+                placeholder="Text here..."
+              />
+            </div>
+
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Card image:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <LandingPageImagePreview
+                id="image"
+                :model-value="contactUsForm.contact_us_card_image"
+                @update:model-value="handleImageUpdate"
+              />
+            </div>
+          </VCard>
+        </VCol>
+      </VRow>
+    </div>
+
+    <!-- 👉 Contact Us Button Submit -->
+    <div class="w-100 d-flex justify-center align-center">
+      <VBtn
+        v-if="isLoading === false"
+        class="mx-auto w-100"
+        type="submit"
+        color="primary"
+        variant="outlined"
+        @click="onSubmit"
+      >
+        Update About Us Section Content
+      </VBtn>
+
+      <VBtn
+        v-else
+        class="mx-auto w-100"
+        type="submit"
+        color="primary"
+        variant="outlined"
+      >
+        <VProgressCircular
+          indeterminate
+          color="primary"
+          size="24"
+        />
+      </VBtn>
+    </div>
+  </VForm>
+</template>
+
+<style lang="scss" scoped>
+.title-content {
+  :deep(.ProseMirror) {
+    min-block-size: 5vh;
+  }
+}
+
+.label {
+    line-height: 40px;
+  }
+</style>

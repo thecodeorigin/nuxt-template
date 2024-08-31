@@ -139,3 +139,13 @@ export const bannerSchema = z.object({
   banner_button: z.string(),
   banner_img: z.string().nullable(),
 })
+
+// 👉 About us Schema
+export const contactUsSchema = z.object({
+  contact_us_title: titleSchema,
+  contact_us_title_desc: descriptionSchema,
+  contact_us_card_title: titleSchema,
+  contact_us_card_heading: titleSchema,
+  contact_us_card_content: descriptionSchema,
+  contact_us_card_image: z.string().nullable(),
+})

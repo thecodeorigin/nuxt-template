@@ -134,12 +134,11 @@ export interface BannerSectionType {
 
 // Interface for about us section
 export interface ContactUsSectionType {
-  contact_us_emphasized_title: EmphasizedTitle | null
   contact_us_title: string
   contact_us_title_desc: string | string[]
+  contact_us_card_title: string
   contact_us_card_heading: string
-  contact_us_card_emphasized_heading?: EmphasizedTitle | null
-  contact_us_card_image: string
+  contact_us_card_image: string | null
   contact_us_card_content: string
 }
 
