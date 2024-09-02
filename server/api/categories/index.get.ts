@@ -1,12 +1,33 @@
 export default defineEventHandler(async (event) => {
   const { session } = await defineEventOptions(event, { auth: true })
 
-  const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1 } = getFilter(event)
+  const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, parent_id } = getFilter(event)
 
-  const { data, error } = await supabaseAdmin.from('categories')
+  let categoryQueryBuilder = supabaseAdmin.from('categories')
     .select('*', { count: 'exact' })
-    .match({ user_id: session.user!.id! })
-    .or(`name.ilike.${keyword || '%%'},name.ilike.${keywordLower || '%%'}`)
+
+  if (parent_id) {
+    categoryQueryBuilder = categoryQueryBuilder.match({
+      user_id: session.user!.id!,
+      parent_id,
+    })
+  }
+  else {
+    categoryQueryBuilder = categoryQueryBuilder
+      .match({
+        user_id: session.user!.id!,
+      })
+      .is('parent_id', null)
+  }
+
+  const { data, error } = await categoryQueryBuilder.or(
+    [
+      `name.ilike.%${keyword || ''}%`,
+      `name.ilike.%${keywordLower || ''}%`,
+      `description.ilike.%${keyword || ''}%`,
+      `description.ilike.%${keywordLower || ''}%`,
+    ].join(','),
+  )
     .order(sortBy, { ascending: sortAsc })
     .range(page - 1, (page - 1) + limit)
 

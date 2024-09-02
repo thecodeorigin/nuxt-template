@@ -7,7 +7,12 @@ import type { Tables } from '@/server/types/supabase'
 
 type Category = Tables<'categories'>
 
-type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>
+type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>
+
+const props = defineProps<{
+  parent?: Category
+  data: Category[]
+}>()
 
 const emit = defineEmits<{
   (e: 'submit', payload: FormData): void
@@ -20,11 +25,12 @@ const modelValue = defineModel('modelValue', {
 
 const vFormRef = ref<VForm>()
 
-const formData = ref<Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>>({
+const formData = ref<Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>>({
   name: '',
   slug: '',
   description: '',
   image_url: '',
+  parent_id: props.parent?.id || null,
 })
 
 const formFiles = ref<File[]>([])
@@ -40,23 +46,29 @@ function resetForm() {
     slug: '',
     description: '',
     image_url: '',
+    parent_id: props.parent?.id || null,
   }
 
-  vFormRef.value?.reset()
+  formFiles.value = []
 }
 
 async function handleSubmit() {
   const { valid } = await vFormRef.value!.validate()
   if (valid) {
-    const slug = formData.value.slug ?? kebabCase(formData.value.name || '')
-    const ext = formFiles.value[0].name.split('.').pop()
-    const filename = formFiles.value[0].name.replace(/\s/, '_')
-    const imageUrl = await uploadToS3(formFiles.value[0], `categories/${slug}/${filename || `${new Date().getTime()}.${ext}`}`)
+    let imageUrl = ''
+    const slug = `${kebabCase(formData.value.slug || formData.value.name || '')}-${new Date().getTime()}`
+
+    if (formFiles.value.length) {
+      const ext = formFiles.value[0].name.split('.').pop()
+      const filename = formFiles.value[0].name.replace(/\s/, '_')
+      imageUrl = await uploadToS3(formFiles.value[0], `categories/${slug}/${filename || `${new Date().getTime()}.${ext}`}`)
+    }
 
     emit('submit', {
       ...formData.value,
       image_url: imageUrl,
       slug,
+      parent_id: formData.value.parent_id || props.parent?.id || null,
     })
   }
 }
@@ -103,6 +115,22 @@ async function handleSubmit() {
                   label="Slug"
                   placeholder="Trends fashion"
                 />
+              </VCol>
+
+              <VCol cols="12">
+                <VSelect
+                  v-if="data.length > 0"
+                  v-model="formData.parent_id"
+                  :items="data"
+                  label="Parent Category"
+                  placeholder="Select Category"
+                  item-title="name"
+                  item-value="id"
+                  eager
+                />
+                <VLabel v-else>
+                  No parent category found
+                </VLabel>
               </VCol>
 
               <VCol cols="12">

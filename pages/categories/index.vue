@@ -3,7 +3,7 @@ import type { Tables } from '@/server/types/supabase'
 
 type Category = Tables<'categories'>
 
-type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>
+type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>
 
 definePageMeta({
   sidebar: {
@@ -15,12 +15,6 @@ definePageMeta({
 
 const categoryStore = useCategoryStore()
 
-const headers = [
-  { title: 'Categories', key: 'name' },
-  { title: 'Created at', key: 'created_at', align: 'end' as const },
-  { title: 'Action', key: 'actions', sortable: false },
-]
-
 const isCreatingCategory = ref(false)
 const isEditingCategory = ref(false)
 
@@ -28,22 +22,52 @@ const categoryQuery = ref({
   page: 1,
   limit: 10,
   keyword: '',
+  parent_id: null as string | null,
 })
+const categoryDebouncedQuery = useDebounce(categoryQuery, 500)
+
+const selectingParentCategory = ref<Category>()
+const { undo: backToPreviousParent, clear: clearParentHistory } = useRefHistory(selectingParentCategory)
 
 const selectingCategory = ref<Category>()
 
-const { data: categories, refresh: refreshCategories, error: categoriesError } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
+const categoryHeaders = computed(() => [
+  {
+    title: selectingParentCategory.value
+      ? `${selectingParentCategory.value.name}'s sub-categories`
+      : 'Name',
+    key: 'name',
+  },
+  {
+    title: '',
+    key: 'actions',
+    align: 'end' as const,
+    sortable: false,
+  },
+])
+
+const { data: categories, refresh: refreshCategories, error: categoriesError, status } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
   default: () => [] as Category[],
 })
 
 watchDebounced(categoriesError, (error) => {
   if (error)
     notify(getNuxtError(error).message, { type: 'error' })
-}, { immediate: true, debounce: 500 })
+}, { immediate: true, debounce: 300 })
 
-watchDebounced(categoryQuery, () => {
+watch(categoryQuery, () => {
   refreshCategories()
-}, { deep: true, debounce: 500 })
+}, { deep: true })
+
+watch(selectingParentCategory, () => {
+  categoryQuery.value.parent_id = selectingParentCategory.value?.id ?? null
+}, { deep: true })
+
+watch(() => categoryQuery.value.keyword, () => {
+  selectingParentCategory.value = undefined
+
+  clearParentHistory()
+})
 
 async function handleSubmitNewCategory(payload: FormData) {
   try {
@@ -96,6 +120,10 @@ async function handleSelectCategory(item: Category) {
 
   isEditingCategory.value = true
 }
+
+function handleSelectParentCategory(e: Event, context: any) {
+  selectingParentCategory.value = context.item
+}
 </script>
 
 <template>
@@ -103,19 +131,30 @@ async function handleSelectCategory(item: Category) {
     <VCard>
       <VCardText>
         <div class="d-flex justify-md-space-between flex-wrap gap-4 justify-center">
-          <VTextField
-            v-model="categoryQuery.keyword"
-            placeholder="Search"
-            density="compact"
-            style="max-inline-size: 280px; min-inline-size: 200px;"
-          />
+          <div class="d-flex align-center flex-wrap gap-4">
+            <VBtn v-if="selectingParentCategory" variant="outlined" color="secondary" @click="backToPreviousParent">
+              <VIcon size="28" icon="ri-arrow-drop-left-line" />
+              Go Back
+            </VBtn>
+
+            <VTextField
+              v-model="categoryDebouncedQuery.keyword"
+              placeholder="Search"
+              density="compact"
+              style="max-inline-size: 280px; min-inline-size: 200px;"
+            />
+          </div>
 
           <div class="d-flex align-center flex-wrap gap-4">
             <VBtn
               prepend-icon="ri-add-line"
               @click="isCreatingCategory = true"
             >
-              Add Category
+              {{
+                selectingParentCategory
+                  ? `Add ${selectingParentCategory.name}'s sub-categories`
+                  : 'Add Parent Category'
+              }}
             </VBtn>
           </div>
         </div>
@@ -125,80 +164,80 @@ async function handleSelectCategory(item: Category) {
         v-if="categories"
         v-model:items-per-page="categoryQuery.limit"
         v-model:page="categoryQuery.page"
-        :headers="headers"
+        :loading="status === 'pending'"
+        :headers="categoryHeaders"
         :items="categories"
         :search="categoryQuery.keyword"
         show-select
         item-value="name"
         class="text-no-wrap category-table"
+        @click:row="handleSelectParentCategory"
       >
         <template #item.actions="{ item }">
-          <IconBtn size="small" @click="handleSelectCategory(item)">
-            <VIcon icon="ri-edit-box-line" />
-          </IconBtn>
-          <IconBtn size="small" @click="handleDeleteCategory(item)">
-            <VIcon icon="ri-delete-bin-5-line" />
+          <IconBtn size="small">
+            <VIcon icon="ri-more-2-fill" />
+
+            <VMenu activator="parent">
+              <VList>
+                <VListItem
+                  value="duplicate"
+                  prepend-icon="ri-stack-line"
+                  @click="handleSelectCategory(item)"
+                >
+                  Edit
+                </VListItem>
+
+                <VListItem
+                  value="delete"
+                  prepend-icon="ri-delete-bin-line"
+                  @click="handleDeleteCategory(item)"
+                >
+                  Delete
+                </VListItem>
+              </VList>
+            </VMenu>
           </IconBtn>
         </template>
 
         <template #item.name="{ item }">
           <div class="d-flex gap-x-3">
-            <VAvatar
+            <VImg
               v-if="item.image_url"
-              variant="tonal"
+              :src="item.image_url"
+              :alt="item.name || ''"
+              width="40"
+              height="40"
+              max-width="40"
+              max-height="40"
               rounded
-              size="40"
-            >
-              <img
-                :src="item.image_url"
-                :alt="item.name || ''"
-                width="40"
-                height="40"
-              >
-            </VAvatar>
+              cover
+            />
             <div>
               <p class="text-high-emphasis font-weight-medium mb-0">
                 {{ item.name }}
               </p>
               <div class="text-body-2">
-                {{ item.description }}
+                {{ item.description || '-' }}
               </div>
             </div>
-          </div>
-        </template>
-
-        <template #item.created_at="{ item }">
-          <div class="text-end pe-4">
-            {{ (item.created_at).toLocaleString().split("T")[0] }}
           </div>
         </template>
       </VDataTable>
     </VCard>
 
-    <CategoryCreateDrawer v-model="isCreatingCategory" @submit="handleSubmitNewCategory" />
-    <CategoryEditDrawer v-model="isEditingCategory" v-model:form-data="selectingCategory" @submit="handleUpdateCategory" />
+    <CategoryCreateDrawer
+      v-model="isCreatingCategory"
+      :parent="selectingParentCategory"
+      :data="categories"
+      @submit="handleSubmitNewCategory"
+    />
+
+    <CategoryEditDrawer
+      v-model="isEditingCategory"
+      v-model:form-data="selectingCategory"
+      :parent="selectingParentCategory"
+      :data="categories"
+      @submit="handleUpdateCategory"
+    />
   </div>
 </template>
-
-<style lang="scss">
-.ProseMirror-focused {
-  border: none;
-}
-
-.category-table.v-table.v-data-table {
-  .v-table__wrapper {
-    table {
-      thead {
-        tr {
-          th.v-data-table-column--align-end {
-            .v-data-table-header__content {
-              flex-direction: row;
-              justify-content: end;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-</style>

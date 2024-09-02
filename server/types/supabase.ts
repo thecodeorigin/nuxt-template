@@ -13,6 +13,7 @@ export interface Database {
           id: string
           image_url: string | null
           name: string | null
+          parent_id: string | null
           slug: string
           updated_at: string | null
           user_id: string | null
@@ -23,6 +24,7 @@ export interface Database {
           id?: string
           image_url?: string | null
           name?: string | null
+          parent_id?: string | null
           slug: string
           updated_at?: string | null
           user_id?: string | null
@@ -33,11 +35,23 @@ export interface Database {
           id?: string
           image_url?: string | null
           name?: string | null
+          parent_id?: string | null
           slug?: string
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: 'public_categories_parent_id_fkey'
+            columns: [
+              'parent_id',
+            ]
+            isOneToOne: false
+            referencedRelation: 'categories'
+            referencedColumns: [
+              'id',
+            ]
+          },
           {
             foreignKeyName: 'public_categories_user_id_fkey'
             columns: [

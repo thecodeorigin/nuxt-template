@@ -9,7 +9,7 @@ export const useCategoryStore = defineStore('category', () => {
     })
   }
 
-  function createCategory(payload: Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>) {
+  function createCategory(payload: Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>) {
     return $api<Category[]>('/categories', {
       method: 'POST',
       body: payload,
@@ -20,7 +20,7 @@ export const useCategoryStore = defineStore('category', () => {
     return $api<Category>(`/categories/${id}`)
   }
 
-  function updateCategory(id: string, payload: Pick<Category, 'name' | 'slug' | 'description' | 'image_url'>) {
+  function updateCategory(id: string, payload: Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>) {
     return $api<Category>(`/categories/${id}`, {
       method: 'PATCH',
       body: payload,

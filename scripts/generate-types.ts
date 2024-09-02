@@ -6,7 +6,11 @@ import { $ } from 'execa'
 (async function () {
   const filePath = 'server/types/supabase.ts'
 
-  await $`supabase gen types typescript --local --schema public > ${filePath}`
+  await $({
+    stdout: {
+      file: filePath,
+    },
+  })`supabase gen types typescript --local --schema public`
 
   const generatedTypes = fs.readFileSync(filePath, 'utf-8')
 
