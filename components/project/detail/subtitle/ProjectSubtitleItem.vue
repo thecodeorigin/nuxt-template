@@ -47,7 +47,7 @@ function handleSaveSubtitle() {
     class="p-3"
     @click="() => $emit('video:seek', subtitle.start)"
   >
-    <ConfirmDialog v-bind="confirmationDialogData" v-model:isDialogVisible="confirmationDialogData.isDialogVisible" @confirm="handleDeleteSubtitle" />
+    <ConfirmDialog v-bind="confirmationDialogData" v-model="confirmationDialogData.isDialogVisible" @confirm="handleDeleteSubtitle" />
     <div
       v-if="!isEditVisible"
       class="card-list-item"
