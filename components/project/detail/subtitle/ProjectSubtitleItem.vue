@@ -17,23 +17,12 @@ const subtitleText = ref(subtitle.value.text)
 
 const isEditVisible = ref(false)
 
-const confirmationDialogData = ref({
-  isDialogVisible: false,
-  subtitleSelectedIndex: -1,
-  message: 'Are you sure you want to delete this subtitle?',
-})
+async function handleOpenDeleteDialog(index: number) {
+  const canDelete = await confirmation('Are you sure you want to delete this subtitle?')
 
-function handleOpenDeleteDialog(index: number) {
-  confirmationDialogData.value.subtitleSelectedIndex = index
-  confirmationDialogData.value.isDialogVisible = true
-}
-
-function handleDeleteSubtitle(value: boolean) {
-  confirmationDialogData.value.isDialogVisible = false
-  if (!value)
-    return
-  const id = confirmationDialogData.value.subtitleSelectedIndex
-  emit('delete-subtitle', Number(id))
+  if (canDelete) {
+    emit('delete-subtitle', Number(index))
+  }
 }
 
 function handleSaveSubtitle() {
@@ -47,7 +36,6 @@ function handleSaveSubtitle() {
     class="p-3"
     @click="() => $emit('video:seek', subtitle.start)"
   >
-    <ConfirmDialog v-bind="confirmationDialogData" v-model="confirmationDialogData.isDialogVisible" @confirm="handleDeleteSubtitle" />
     <div
       v-if="!isEditVisible"
       class="card-list-item"
