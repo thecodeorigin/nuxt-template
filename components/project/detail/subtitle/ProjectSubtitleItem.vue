@@ -21,7 +21,7 @@ async function handleOpenDeleteDialog(index: number) {
   const canDelete = await confirmation('Are you sure you want to delete this subtitle?')
 
   if (canDelete) {
-    emit('delete-subtitle', Number(index))
+    emit('delete-subtitle', index)
   }
 }
 
