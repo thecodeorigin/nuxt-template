@@ -1,29 +1,29 @@
+import type { Tables } from '@/server/types/supabase'
+
+type Project = Tables<'projects'>
 export const useProjectStore = defineStore('project', () => {
-  async function updateProject(id: string, project: any) {
-    await useApi(`/projects/${id}`, {
+  async function updateProject(id: string, payload: Partial<Project>) {
+    return $api<Project>(`/projects/${id}`, {
       method: 'PATCH',
-      body: project,
+      body: payload,
     })
   }
 
-  async function deleteProject(id: string) {
-    await useApi(`/projects/${id}`, {
+  function deleteProject(id: string) {
+    return $api<Project>(`/projects/${id}`, {
       method: 'DELETE',
     })
   }
 
-  async function getProject(id: string) {
-    try {
-      return await useApi(`/projects/${id}`)
-    }
-    catch (error) {
-      console.error(error)
-    }
+  function fetchProject(id: string) {
+    return $api<Project>(`/projects/${id}`, {
+      method: 'GET',
+    })
   }
 
   return {
     updateProject,
     deleteProject,
-    getProject,
+    fetchProject,
   }
 })

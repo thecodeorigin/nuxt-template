@@ -9,13 +9,16 @@ import type { Tables } from '@/server/types/supabase'
 type Project = Tables<'projects'>
 
 const project = ref<Project | null>(null)
+const projectSubtitle = ref<Subtitle[]>([])
 
+const projectStore = useProjectStore()
 const route = useRoute()
 
 async function fetchProject() {
   try {
-    const { data } = await useApi<Project>(`/projects/${route.params.id}`)
-    project.value = data.value
+    const data = await projectStore.fetchProject(route.params.id as string)
+    project.value = data
+    projectSubtitle.value = data.subtitle as Subtitle[] || []
   }
   catch (error) {
     console.error('error', error)
@@ -50,6 +53,8 @@ const downloadOptions: DownloadOption[] = [
 ]
 
 async function handleExport(type: typeof downloadOptions[0]['type']) {
+  if (!project.value)
+    return
   try {
     if (type === 'srt')
       downloadSRT(formSubtitle.value, project.value.title)
@@ -117,12 +122,12 @@ async function handleExport(type: typeof downloadOptions[0]['type']) {
             >
               <div class="px-2 pt-2">
                 <VideoPlayer
-                  :src="project.source_url"
+                  :src="project.source_url || ''"
                   controls
                   plays-inline
                   :height="$vuetify.display.mdAndUp ? 440 : 250"
                   class="w-100 rounded video-player"
-                  :poster="project.source_thumbnail"
+                  :poster="project.source_thumbnail || ''"
                   @mounted="onPlayerMounted"
                 />
               </div>
@@ -136,7 +141,7 @@ async function handleExport(type: typeof downloadOptions[0]['type']) {
         cols="12"
         md="4"
       >
-        <ProjectSubtitleGroup v-model="project.subtitle" :project="project" @video:seek="handleVideoSeek" />
+        <ProjectSubtitleGroup v-model="projectSubtitle" :project="project" @video:seek="handleVideoSeek" />
       </VCol>
     </VRow>
   </div>

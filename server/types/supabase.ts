@@ -130,7 +130,19 @@ export interface Database {
           created_at: string
           description: string | null
           id: string
-          title: string | null
+          is_voice_recognition: boolean | null
+          model: string | null
+          source_downloadable: string | null
+          source_duration: string | null
+          source_thumbnail: string | null
+          source_title: string | null
+          source_url: string | null
+          structure: Json | null
+          subtitle: Json[] | null
+          summarize: string | null
+          title: string
+          translate_from: string
+          translate_to: string
           user_id: string | null
         }
         Insert: {
@@ -138,7 +150,19 @@ export interface Database {
           created_at?: string
           description?: string | null
           id?: string
-          title?: string | null
+          is_voice_recognition?: boolean | null
+          model?: string | null
+          source_downloadable?: string | null
+          source_duration?: string | null
+          source_thumbnail?: string | null
+          source_title?: string | null
+          source_url?: string | null
+          structure?: Json | null
+          subtitle?: Json[] | null
+          summarize?: string | null
+          title: string
+          translate_from?: string
+          translate_to?: string
           user_id?: string | null
         }
         Update: {
@@ -146,7 +170,19 @@ export interface Database {
           created_at?: string
           description?: string | null
           id?: string
-          title?: string | null
+          is_voice_recognition?: boolean | null
+          model?: string | null
+          source_downloadable?: string | null
+          source_duration?: string | null
+          source_thumbnail?: string | null
+          source_title?: string | null
+          source_url?: string | null
+          structure?: Json | null
+          subtitle?: Json[] | null
+          summarize?: string | null
+          title?: string
+          translate_from?: string
+          translate_to?: string
           user_id?: string | null
         }
         Relationships: [

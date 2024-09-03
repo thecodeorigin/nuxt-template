@@ -18,9 +18,9 @@ const subtitleText = ref(subtitle.value.text)
 const isEditVisible = ref(false)
 
 const confirmationDialogData = ref({
-  confirmationQuestion: 'Are you sure you want to delete this subtitle?',
   isDialogVisible: false,
   subtitleSelectedIndex: -1,
+  message: 'Are you sure you want to delete this subtitle?',
 })
 
 function handleOpenDeleteDialog(index: number) {
