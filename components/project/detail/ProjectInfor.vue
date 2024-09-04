@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const project = defineModel<any>({ required: true })
+import type { Tables } from '@/server/types/supabase'
+
+type Project = Tables<'projects'>
+const project = defineModel<Project>({ required: true })
 
 const projectStore = useProjectStore()
 
@@ -45,7 +48,7 @@ async function handleUpdateProject(field: string, value: string) {
         name="description"
         auto-grow
         rows="1"
-        @blur="handleUpdateProject('description', project.description)"
+        @blur="handleUpdateProject('description', project.description || '')"
       />
     </div>
 
