@@ -7,6 +7,14 @@ interface FileData {
   url: string
 }
 
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  imageType: 'main',
+  imageTheme: 'light',
+})
+const emit = defineEmits<Emits>()
+
+const dropZoneRef = ref<HTMLDivElement>()
 const fileData = ref<FileData[]>([])
 const { open, onChange } = useFileDialog({ accept: 'image/*' })
 
@@ -40,6 +48,15 @@ onChange((selectedFiles: any) => {
 })
 
 useDropZone(dropZoneRef, onDrop)
+
+watch(() => props.modelValue, (newValue) => {
+  if (newValue) {
+    fileData.value = [{ file: null as any, url: newValue }]
+  }
+  else {
+    fileData.value = []
+  }
+}, { immediate: true })
 </script>
 
 <template>

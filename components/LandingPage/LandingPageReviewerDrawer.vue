@@ -56,17 +56,13 @@ function handleDrawerModelValueUpdate(val: boolean) {
 
 function checkActionSubmit() {
   formRef.value?.validate().then(async (valid) => {
-    const formData = { ...localReviewerData.value }
-
     if (valid.valid) {
-      formData.rating = Number(formData.rating)
-
       if (props.drawerConfig.type === 'edit') {
-        emit('update:modelValue', formData, 'edit')
+        emit('update:modelValue', localReviewerData.value, 'edit')
       }
       else {
-        formData.id = crypto.randomUUID()
-        emit('update:modelValue', formData, 'add')
+        localReviewerData.value.id = crypto.randomUUID()
+        emit('update:modelValue', localReviewerData.value, 'add')
       }
 
       emit('update:isDrawerOpen', false)
@@ -77,7 +73,6 @@ function checkActionSubmit() {
   })
 }
 
-// delete reviewer --------------------------------------
 function handleOpenConfirmation() {
   if (props.drawerConfig.type === 'add') {
     if (formRef.value) {
@@ -101,8 +96,18 @@ function handleOpenConfirmation() {
   }
 }
 
-function handleImageUpdate(file: File | null) {
-  console.log('««««« file »»»»»', file)
+async function handleMainLogoUpdate(file: string, imageType: 'main' | 'sub', theme: 'light' | 'dark') {
+  if (imageType === 'main') {
+    localReviewerData.value.main_logo = file
+  }
+  else {
+    if (theme === 'light') {
+      localReviewerData.value.logo_light = file
+    }
+    else {
+      localReviewerData.value.logo_dark = file
+    }
+  }
 }
 
 function onConfirmDialog(value: boolean) {
@@ -183,10 +188,44 @@ watch(() => props.drawerConfig.isVisible, (val) => {
             </VCol>
 
             <VCol cols="12">
+              <VLabel class="label">
+                Main Logo:
+              </VLabel>
+
               <LandingPageImagePreview
                 id="image"
+                image-type="main"
+                image-theme="light"
                 :model-value="localReviewerData.main_logo"
-                @update:model-value="handleImageUpdate"
+                @update:model-value="handleMainLogoUpdate"
+              />
+            </VCol>
+
+            <VCol cols="12">
+              <VLabel class="label">
+                Sub Logo Light:
+              </VLabel>
+
+              <LandingPageImagePreview
+                id="image"
+                image-type="sub"
+                image-theme="light"
+                :model-value="localReviewerData.logo_light"
+                @update:model-value="handleMainLogoUpdate"
+              />
+            </VCol>
+
+            <VCol cols="12">
+              <VLabel class="label">
+                Sub Logo Dark:
+              </VLabel>
+
+              <LandingPageImagePreview
+                id="image"
+                image-type="sub"
+                image-theme="dark"
+                :model-value="localReviewerData.logo_dark"
+                @update:model-value="handleMainLogoUpdate"
               />
             </VCol>
 

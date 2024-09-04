@@ -7,8 +7,10 @@ import { register } from 'swiper/element/bundle'
 
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
+import type { CustomerReview } from '@/types/landing-page'
 
 const { customerReviewData } = storeToRefs(useLandingPageStore())
+const reviewerList = computed<CustomerReview[]>(() => customerReviewData.value?.customer_review_data)
 
 register()
 
@@ -31,23 +33,19 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
         </div>
       </div>
 
-      <div class="mb-2 text-center text-h5">
-        {{ customerReviewData?.customer_review_title }}
-      </div>
+      <div class="mb-2 text-center text-h5" v-html="customerReviewData?.customer_review_title" />
 
-      <p class="text-body-1 font-weight-medium text-center">
-        {{ customerReviewData?.customer_review_title_desc }}
-      </p>
+      <p class="text-body-1 font-weight-medium text-center" v-html="customerReviewData?.customer_review_title_desc" />
     </div>
 
     <div class="swiper-reviews-carousel py-4 mb-6">
       <!-- eslint-disable vue/attribute-hyphenation -->
       <ClientOnly>
         <swiper-container
-          slides-per-view="1"
+          :slides-per-view="1"
           space-between="10"
           centered-slides="true"
-          loop="true"
+          :loop="reviewerList?.length > 3 ? true : false"
           autoplay-delay="3000"
           autoplay-disable-on-interaction="false"
           events-prefix="swiper-"
@@ -81,7 +79,7 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
           }"
         >
           <swiper-slide
-            v-for="(review, index) in customerReviewData?.customer_review_data"
+            v-for="(review, index) in reviewerList"
             :key="index"
           >
             <VCard class="h-100 d-flex align-stretch">
@@ -99,7 +97,6 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
                   <VRating
                     :model-value="review.rating"
                     :size="8"
-                    color="warning"
                   />
                 </div>
 
@@ -141,7 +138,7 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
           }"
         >
           <swiper-slide
-            v-for="(review, index) in customerReviewData?.customer_review_data"
+            v-for="(review, index) in reviewerList"
             :key="index"
           >
             <VImg

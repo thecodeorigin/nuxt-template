@@ -89,8 +89,8 @@ const translateMouse = computed(() => (speed: number) => {
               target="_blank"
             >
               <img
-                class="cursor-pointer"
-                :src="heroElementsImg"
+                class="cursor-pointer hero-image"
+                :src="heroMainImg.value"
                 :style="translateMouse(5)"
                 target="_blank"
               >
@@ -115,6 +115,10 @@ section {
   background-repeat: no-repeat;
   background-size: cover;
   padding-block-start: 5.5rem;
+}
+
+.hero-image {
+  object-fit: contain;
 }
 
 .hero-dashboard-img {
@@ -151,13 +155,15 @@ section {
 .landing-page-title {
   color: rgb(var(--v-theme-primary));
   font-size: 2.375rem;
-  font-weight: 800;
   line-height: 2.75rem;
+  word-wrap: break-word;
 }
 
 .hero-animation-img {
-  inset-block-start: 0;
-  margin-block-end: -16rem;
+  width: 100%;
+  max-height: 800px;
+  inset-block-start: 5rem;
+  margin-block-end: -8rem;
 }
 
 @media (max-width: 960px) {

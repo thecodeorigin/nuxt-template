@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { z } from 'zod'
+import { cloneDeep } from 'lodash-es'
+import type { VForm } from 'vuetify/components'
 
 import SelectSolid from '@images/svg/3d-select-solid.svg'
 import Edit from '@images/svg/edit.svg'
@@ -8,14 +10,12 @@ import LaptopCharging from '@images/svg/laptop-charging.svg'
 import Lifebelt from '@images/svg/lifebelt.svg'
 import TransitionUp from '@images/svg/transition-up.svg'
 
-import type { FeatureSectionType } from '@/types/landing-page'
+import type { Feature, FeatureSectionType } from '@/types/landing-page'
 
 const { featureData } = storeToRefs(useLandingPageStore())
 
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const isLoading = ref(false)
-
+const formRef = ref<VForm>()
 const featureForm = ref<FeatureSectionType>({
   feature_title: '',
   feature_title_desc: '',
@@ -27,35 +27,37 @@ const featureForm = ref<FeatureSectionType>({
     },
   ],
 })
+const imageMappings: { [key: string]: string | null } = {
+  '': null,
+  'Select Solid': SelectSolid,
+  'Edit': Edit,
+  'Google Docs': GoogleDocs,
+  'Laptop Charging': LaptopCharging,
+  'Life Belt': Lifebelt,
+  'Transition Up': TransitionUp,
+}
+
+const imageNameList = Object.keys(imageMappings)
+
+const featureArrayData = computed(() => featureForm.value?.feature_data as Feature[])
 
 type FormSchemaType = z.infer<typeof featureSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
-const iconMap: Record<string, any> = {
-  SelectSolid,
-  Edit,
-  GoogleDocs,
-  LaptopCharging,
-  Lifebelt,
-  TransitionUp,
-}
-
 function onTitleUpdate(editorValue: string) {
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return featureForm.value.feature_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return featureForm.value.feature_title_desc = removePTags(editorValue)
 }
 
 const isCurrentFeatureValid = computed(() => {
-  const featureDataArray = featureForm.value.feature_data || []
-
-  if (featureDataArray.length === 0) {
+  if (featureArrayData.value.length === 0) {
     return false
   }
 
-  const currentFeature = featureDataArray[featureDataArray.length - 1]
+  const currentFeature = featureArrayData.value[featureArrayData.value.length - 1]
 
   return currentFeature && currentFeature.name.trim() !== ''
     && currentFeature.desc.trim() !== ''
@@ -112,16 +114,8 @@ async function onFeatureSubmit() {
 }
 
 watch(featureData, (value) => {
-  featureForm.value = {
-    feature_title: value?.feature_title ? removeEmptyTags(value.feature_title) : '',
-    feature_title_desc: value?.feature_title_desc ? removeEmptyTags(value.feature_title_desc) : '',
-    feature_data: [
-      ...value?.feature_data || [],
-    ],
-  }
-  tiptapTitleInput.value = featureForm.value.feature_title
-
-  tiptapDescriptionInput.value = featureForm.value.feature_title_desc
+  if (value)
+    featureForm.value = cloneDeep(value)
 }, {
   deep: true,
   immediate: true,
@@ -129,122 +123,139 @@ watch(featureData, (value) => {
 </script>
 
 <template>
-  <form class="landing-page-feature" @submit.prevent="onFeatureSubmit">
+  <VForm ref="formRef" class="landing-page-feature" @submit.prevent="onFeatureSubmit">
     <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
       Feature Section
     </VLabel>
 
     <div class="d-flex flex-column gap-4">
-      <!-- 👉 Features Heading -->
-      <VCard class="pa-4">
-        <VCardTitle class="text-center mb-4">
-          Feature heading
-        </VCardTitle>
+      <VRow>
+        <VCol cols="12" md="4">
+          <!-- 👉 Features Heading -->
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              Feature heading
+            </VCardTitle>
 
-        <!-- 👉 Feature Main Title -->
-        <div class="mb-6 position-relative">
-          <VLabel class="mb-2 label">
-            Feature heading:
-            <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-          </VLabel>
+            <!-- 👉 Feature Main Title -->
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Feature heading:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
 
-          <TiptapEditor
-            v-model="featureForm.feature_title"
-            class="border rounded-lg title-content"
-            :class="{ 'border-error border-opacity-100': error?.feature_title && tiptapTitleInput.length === 0 }"
-            placeholder="Text here..."
-            @update:model-value="onTitleUpdate"
-          />
+              <TiptapEditor
+                v-model="featureForm.feature_title as string"
+                class="border rounded-lg title-content"
+                :class="{ 'border-error border-opacity-100': error?.feature_title && featureForm.feature_title?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onTitleUpdate"
+              />
 
-          <div v-if="error?.feature_title && tiptapTitleInput.length === 0">
-            <span v-for="(warn, index) in error?.feature_title?._errors" :key="index" class="text-error error-text">
-              {{ warn }}
-            </span>
-          </div>
-        </div>
+              <div v-if="error?.feature_title && featureForm.feature_title?.length === 0">
+                <span v-for="(warn, index) in error?.feature_title?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
+            </div>
 
-        <!-- 👉 Feature Main Description -->
-        <div class="mb-6 position-relative">
-          <VLabel class="mb-2 label">
-            Description:
-            <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-          </VLabel>
+            <!-- 👉 Feature Main Description -->
+            <div class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Description:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
 
-          <TiptapEditor
-            v-model="featureForm.feature_title_desc"
-            class="border rounded-lg"
-            :class="{ 'border-error border-opacity-100': error?.feature_title_desc && tiptapDescriptionInput.length === 0 }"
-            placeholder="Text here..."
-            @update:model-value="onDescriptionUpdate"
-          />
-          <div v-if="error?.feature_title && tiptapDescriptionInput.length === 0">
-            <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
-              {{ warn }}
-            </span>
-          </div>
-        </div>
-      </VCard>
+              <TiptapEditor
+                v-model="featureForm.feature_title_desc as string"
+                class="border rounded-lg"
+                :class="{ 'border-error border-opacity-100': error?.feature_title_desc && featureForm.feature_title_desc?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onDescriptionUpdate"
+              />
+              <div v-if="error?.feature_title && featureForm.feature_title_desc?.length === 0">
+                <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
+            </div>
+          </VCard>
+        </VCol>
 
-      <!-- 👉 Features -->
-      <VCard class="pa-4">
-        <VCardTitle class="text-center mb-4">
-          Feature content
-        </VCardTitle>
+        <VCol cols="12" md="8">
+          <!-- 👉 Features -->
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              Feature content
+            </VCardTitle>
 
-        <VLabel class="mb-3 label">
-          Feature:
-          <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-        </VLabel>
+            <VLabel class="mb-3 mr-2 label">
+              Feature:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-        <VRow v-for="(feature, index) in featureForm.feature_data" :key="index" class="feature-container">
-          <VCol cols="12" sm="4">
-            <VTextField
-              v-model="feature.name"
-              placeholder="Text here..."
-              label="Feature Name"
-              class="mb-4"
-            />
+            <VRow v-for="(feature, index) in featureArrayData" :key="index" class="feature-container">
+              <VCol cols="12" sm="4">
+                <VTextField
+                  v-model="feature.name"
+                  placeholder="Text here..."
+                  label="Feature Name"
+                  class="mb-4"
+                />
 
-            <VSelect
-              v-model="feature.icon"
-              label="Icon"
-              :items="['LaptopCharging', 'TransitionUp', 'Edit', 'SelectSolid', 'Lifebelt', 'GoogleDocs']"
-            />
-          </VCol>
+                <VSelect
+                  v-model="feature.icon"
+                  label="Icon"
+                  :items="imageNameList"
+                />
+              </VCol>
 
-          <VCol cols="12" sm="7">
-            <VTextarea
-              v-model="feature.desc"
-              label="Feature description"
-              placeholder="Text here..."
-              rows="4"
-            />
-          </VCol>
+              <VCol cols="12" sm="7">
+                <VTextarea
+                  v-model="feature.desc"
+                  label="Feature description"
+                  placeholder="Text here..."
+                  rows="4"
+                />
+              </VCol>
 
-          <VCol cols="12" sm="1" class="d-flex align-center">
+              <VCol cols="12" sm="1" class="d-flex align-center">
+                <VBtn
+                  icon
+                  variant="tonal"
+                  color="error"
+                  rounded="lg"
+                  class="w-100 h-100 d-flex align-center justify-center pa-2"
+                  @click="featureArrayData?.splice(index, 1)"
+                >
+                  <VIcon icon="ri-close-circle-line" />
+                </VBtn>
+              </VCol>
+            </VRow>
+
             <VBtn
-              icon
+              v-if="featureArrayData.length > 0"
+              class="mt-6"
+              prepend-icon="ri-add-line"
+              :disabled="!isCurrentFeatureValid"
               variant="tonal"
-              color="error"
-              rounded="lg"
-              class="w-100 h-100 d-flex align-center justify-center pa-2"
-              @click="featureForm.feature_data.splice(index, 1)"
+              @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
             >
-              <VIcon icon="ri-close-circle-line" />
+              Add another option
             </VBtn>
-          </VCol>
-        </VRow>
 
-        <VBtn
-          class="mt-6"
-          prepend-icon="ri-add-line"
-          :disabled="!isCurrentFeatureValid"
-          variant="tonal"
-          @click="featureForm?.feature_data?.push({ name: '', desc: '', icon: '' })"
-        >
-          Add another option
-        </VBtn>
-      </VCard>
+            <VBtn
+              v-if="featureArrayData.length === 0"
+              class="mt-6"
+              prepend-icon="ri-add-line"
+              variant="tonal"
+              @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
+            >
+              Add a new feature
+            </VBtn>
+          </VCard>
+        </VCol>
+      </VRow>
 
       <!-- 👉 Features review -->
       <VCard class="pa-4">
@@ -253,10 +264,10 @@ watch(featureData, (value) => {
         </VCardTitle>
 
         <VRow>
-          <VCol v-for="(feature, index) in featureForm.feature_data" :key="index" cols="12" sm="6" md="4">
+          <VCol v-for="(feature, index) in featureArrayData" :key="index" cols="12" sm="6" md="4">
             <div class="feature d-flex flex-column gap-y-2 align-center justify-center mt-2">
               <VAvatar variant="outlined" size="82" color="primary" class="mb-2">
-                <component :is="iconMap[feature.icon]" />
+                <component :is="imageMappings[feature.icon]" />
               </VAvatar>
               <h5 class="text-h5">
                 {{ feature.name }}
@@ -297,7 +308,7 @@ watch(featureData, (value) => {
         </VBtn>
       </div>
     </div>
-  </form>
+  </VForm>
 </template>
 
 <style lang="scss" scoped>

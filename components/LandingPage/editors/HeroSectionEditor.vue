@@ -33,21 +33,15 @@ type FormSchemaType = z.infer<typeof heroSchema> // validation.ts
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return heroForm.value.hero_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return heroForm.value.hero_title_desc = removePTags(editorValue)
 }
 
 async function onSubmit() {
-  const formData = {
-    ...heroForm.value,
-    hero_title: tiptapTitleInput.value,
-    hero_title_desc: tiptapDescriptionInput.value,
-  }
-
-  const validInput = heroSchema.safeParse(formData)
+  const validInput = heroSchema.safeParse(heroForm.value)
 
   if (!validInput.success) {
     error.value = validInput.error.format()
@@ -139,7 +133,7 @@ watch(heroData, (value) => {
               </VLabel>
 
               <TiptapEditor
-                v-model="heroForm.hero_title"
+                v-model="heroForm.hero_title as string"
                 class="border rounded-lg title-content"
                 :class="{ 'border-error border-opacity-100': error?.hero_title && tiptapTitleInput.length === 0 }"
                 placeholder="Text here..."
@@ -160,7 +154,7 @@ watch(heroData, (value) => {
                 <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
               </VLabel>
               <TiptapEditor
-                v-model="heroForm.hero_title_desc"
+                v-model="heroForm.hero_title_desc as string"
                 class="border rounded-lg "
                 :class="{ 'border-error border-opacity-100': error?.hero_title_desc && tiptapDescriptionInput.length === 0 }"
                 placeholder="Text here..."
@@ -240,15 +234,16 @@ watch(heroData, (value) => {
                 <VSelect
                   v-model="heroForm.hero_title_button.btn_prepend_icon"
                   label="Prepend icon"
-                  :items="['', 'ri-arrow-left-line', 'ri-arrow-right-line']"
+                  :item-value="(iconName: string) => getRemixIcon(iconName)"
                 />
               </VCol>
 
               <VCol cols="12" sm="6">
                 <VSelect
-                  v-model="heroForm.hero_title_button.btn_apend_icon"
-                  label="Append icon"
-                  :items="['', 'ri-arrow-right-line', 'ri-arrow-left-line']"
+                  v-model="heroButtonData.btn_apend_icon"
+                  :items="iconNameList"
+                  label="Prepend icon"
+                  :item-value="(iconName: string) => getRemixIcon(iconName)"
                 />
               </VCol>
             </vrow>

@@ -3,6 +3,7 @@ import { register } from 'swiper/element/bundle'
 import { z } from 'zod'
 
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { cloneDeep } from 'lodash-es'
 import type { CustomerReview, CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
 
 register()
@@ -17,8 +18,6 @@ const DRAWER_ACTION_TYPES = {
 
 export type DrawerActionTypes = typeof DRAWER_ACTION_TYPES[keyof typeof DRAWER_ACTION_TYPES] | undefined
 
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const reviewForm = ref<CustomerReviewSectionType>({
   customer_review_title: '',
   customer_review_title_desc: '',
@@ -60,7 +59,7 @@ function clearReviewerData() {
 }
 const isLoading = ref(false)
 
-const reviewerList = computed(() => reviewForm.value?.customer_review_data)
+const reviewerList = computed<CustomerReview[]>(() => reviewForm.value?.customer_review_data || [])
 
 const reviewerDrawerOption = ref<DrawerConfig>({
   isVisible: false,
@@ -71,11 +70,11 @@ type FormSchemaType = z.infer<typeof customerReviewSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return reviewForm.value.customer_review_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return reviewForm.value.customer_review_title_desc = removePTags(editorValue)
 }
 
 function handleOpenEditDrawer(ReviewId: string) {
@@ -102,7 +101,7 @@ function handleOpenAddDrawer() {
 
 function handleReviewerChange(value: CustomerReview, type: DrawerActionTypes) {
   if (reviewForm.value && type === DRAWER_ACTION_TYPES.EDIT) {
-    reviewForm.value.customer_review_data = reviewForm.value?.customer_review_data?.map(
+    reviewForm.value.customer_review_data = reviewerList.value.map(
       (reviewer: CustomerReview) => {
         if (reviewer.id === value.id) {
           return value
@@ -113,12 +112,12 @@ function handleReviewerChange(value: CustomerReview, type: DrawerActionTypes) {
   }
   else if (reviewForm.value && type === DRAWER_ACTION_TYPES.ADD) {
     reviewForm.value.customer_review_data = [
-      ...reviewForm.value?.customer_review_data || [],
+      ...reviewerList.value || [],
       value,
     ]
   }
   else if (reviewForm.value && type === DRAWER_ACTION_TYPES.DELETE) {
-    reviewForm.value.customer_review_data = reviewForm.value?.customer_review_data?.filter(
+    reviewForm.value.customer_review_data = reviewerList.value.filter(
       (reviewer: CustomerReview) => reviewer.id !== value.id,
     ) || []
   }
@@ -129,13 +128,7 @@ function handleToggleReviewerDrawer(val: boolean) {
 }
 
 async function onSubmit() {
-  const formData = {
-    ...reviewForm.value,
-    customer_review_title: tiptapTitleInput.value,
-    customer_review_title_desc: tiptapDescriptionInput.value,
-  }
-
-  const validInput = customerReviewSchema.safeParse(formData)
+  const validInput = customerReviewSchema.safeParse(reviewForm.value)
 
   if (!validInput.success) {
     error.value = validInput.error.format()
@@ -186,19 +179,9 @@ async function onSubmit() {
 }
 
 watch(customerReviewData, (value) => {
-  reviewForm.value = {
-    customer_review_title: value?.customer_review_title ? removeEmptyTags(value.customer_review_title) : '',
-    customer_review_title_desc: value?.customer_review_title_desc ? removeEmptyTags(value.customer_review_title_desc as string) : '',
-    customer_review_data: [
-      ...value?.customer_review_data?.map(review => ({
-        ...review,
-        rating: Number(review.rating),
-      })) || [],
-    ],
+  if (value) {
+    reviewForm.value = cloneDeep(value)
   }
-
-  tiptapTitleInput.value = reviewForm.value.customer_review_title
-  tiptapDescriptionInput.value = reviewForm.value.customer_review_title_desc as string
 }, {
   immediate: true,
   deep: true,
@@ -228,14 +211,14 @@ watch(customerReviewData, (value) => {
               </VLabel>
 
               <TiptapEditor
-                v-model="reviewForm.customer_review_title"
+                v-model="reviewForm.customer_review_title as string"
                 class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.customer_review_title && tiptapTitleInput.length === 0 }"
+                :class="{ 'border-error border-opacity-100': error?.customer_review_title && reviewForm.customer_review_title?.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
 
-              <div v-if="error?.customer_review_title && tiptapTitleInput.length === 0">
+              <div v-if="error?.customer_review_title && reviewForm.customer_review_title?.length === 0">
                 <span v-for="(warn, index) in error?.customer_review_title?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -251,12 +234,12 @@ watch(customerReviewData, (value) => {
               <TiptapEditor
                 v-model="reviewForm.customer_review_title_desc as string"
                 class="border rounded-lg "
-                :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && tiptapDescriptionInput.length === 0 }"
+                :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
 
-              <div v-if="error?.customer_review_title_desc && tiptapDescriptionInput.length === 0">
+              <div v-if="error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0">
                 <span v-for="(warn, index) in error?.customer_review_title_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -284,9 +267,9 @@ watch(customerReviewData, (value) => {
                   </VCard>
                 </VCol>
 
-                <VCol v-for="(review, index) in reviewForm.customer_review_data" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(review.id)">
-                  <VCard class="review-card d-flex flex-column align-center pa-2" hover min-width="100" max-height="200" ripple>
-                    <VCardTitle class="text-center mb-4 d-flex flex-column">
+                <VCol v-for="(review, index) in reviewerList" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(review.id)">
+                  <VCard class="review-card" hover min-width="100" max-height="200" ripple>
+                    <VCardTitle class="text-center d-flex flex-column align-center reviewer-name">
                       {{ review.name }}
 
                       <span class="text-body-2">
@@ -294,18 +277,12 @@ watch(customerReviewData, (value) => {
                       </span>
                     </VCardTitle>
 
-                    <VImg
-                      v-if="review.main_logo"
-                      :src="review.main_logo"
-                      class="rounded-circle"
-                      cover
-                    />
-
-                    <VAvatar
-                      variant="outlined"
-                      size="40"
-                      color="primary"
-                    />
+                    <div class="reviewer-logo-container">
+                      <VImg
+                        :src="review.main_logo"
+                        class="align-center reviewer-logo"
+                      />
+                    </div>
                   </VCard>
                 </VCol>
               </VRow>
@@ -352,8 +329,10 @@ watch(customerReviewData, (value) => {
 </template>
 
 <style lang="scss" scoped>
-.rating-container {
-  transform: scale(0.6);
+.title-content {
+  :deep(.ProseMirror) {
+    min-block-size: 5vh;
+  }
 }
 
 .label {
@@ -362,7 +341,12 @@ watch(customerReviewData, (value) => {
 
 .review-card {
   min-width: 30px;
-  min-height: 180px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
   cursor: pointer;
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
@@ -372,15 +356,36 @@ watch(customerReviewData, (value) => {
 .add-card{
   cursor: pointer;
   border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
-  min-height: 180px;
+  min-height: 200px;
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
   }
 }
 
-.title-content {
-  :deep(.ProseMirror) {
-    min-block-size: 5vh;
-  }
+.reviewer-name {
+  width: 100%;
+  flex: 1;
+  white-space: wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+.reviewer-logo-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100px;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reviewer-logo{
+  width: 100px;
+  height: auto;
 }
 </style>

@@ -32,15 +32,15 @@ export const heroSchema = z.object({
   hero_sub_img_light: z.string(),
   hero_sub_img_dark: z.string(),
   hero_title_button: z.object({
-    btn_link: z.string(),
+    btn_link: z.string().nullable(),
     btn_label: labelSchema,
-    btn_radius: z.union([z.string(), z.number()]),
+    btn_radius: z.union([z.string(), z.number()]).nullable(),
     btn_rippled: z.boolean(),
-    btn_variant: z.string(),
-    btn_apend_icon: z.string(),
-    btn_background: z.string(),
-    btn_prepend_icon: z.string(),
-  }),
+    btn_variant: z.string().nullable(),
+    btn_apend_icon: z.string().nullable(),
+    btn_background: z.string().nullable(),
+    btn_prepend_icon: z.string().nullable(),
+  }).optional(),
 })
 
 // 👉 Feature Schema
