@@ -3,7 +3,6 @@ export default defineEventHandler(async (event) => {
 
   const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1 } = getFilter(event)
 
-  console.log("user id", session.user!.id)
   const { data, error } = await supabaseAdmin.from('projects')
     .select('*', { count: 'exact' })
     .match({ user_id: session.user!.id! })

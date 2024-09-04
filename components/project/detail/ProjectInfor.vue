@@ -1,77 +1,51 @@
 <script setup lang="ts">
-import ProjectEditField from '../edit/ProjectEditField.vue'
-
 const project = defineModel<any>({ required: true })
 
-const isEditTitleVisible = ref(false)
-const isEditDescriptionVisible = ref(false)
+const projectStore = useProjectStore()
+
+async function handleUpdateProject(field: string, value: string) {
+  try {
+    await projectStore.updateProject(project.value.id, { [field]: value })
+  }
+  catch (error) {
+    console.error('error', error)
+  }
+}
 </script>
 
 <template>
   <VCardText>
-    <div v-if="!isEditTitleVisible">
-      <div>
-        <div class="d-flex justify-between items-center gap-4 label">
-          <h5 class="text-h5 mb-4">
-            Title
-          </h5>
-          <VChip
-            color="secondary"
-            size="small"
-            label
-            class="cursor-pointer edit-btn"
-            @click="isEditTitleVisible = true"
-          >
-            <v-icon icon="ri-edit-box-line" />
-            Edit
-          </VChip>
-        </div>
+    <div>
+      <div class="d-flex justify-between items-center gap-4 label">
+        <h5 class="text-h5 mb-4">
+          Title
+        </h5>
       </div>
-      <p>
-        {{ project?.title }}
-      </p>
-    </div>
 
-    <div v-else>
-      <ProjectEditField
+      <VTextarea
         v-model="project.title"
-        v-model:isEditVisible="isEditTitleVisible"
-        :project-id="project.id"
-        input-type="input"
-        label="Title"
-        field-name="title"
+        class="textarea-custom"
+        name="title"
+        auto-grow
+        rows="1"
+        @blur="handleUpdateProject('title', project.title)"
       />
     </div>
-    <VDivider class="my-6" />
 
-    <div v-if="!isEditDescriptionVisible">
-      <div class="d-flex justify-between items-center gap-4 label">
+    <div>
+      <div class="d-flex justify-between items-center gap-4 mt-5 label">
         <h5 class="text-h5 mb-4">
           Description
         </h5>
-        <VChip
-          color="secondary"
-          size="small"
-          label
-          class="cursor-pointer edit-btn"
-          @click="isEditDescriptionVisible = true"
-        >
-          <v-icon icon="ri-edit-box-line" />
-          Edit
-        </VChip>
       </div>
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-html="project?.description" />
-    </div>
 
-    <div v-else>
-      <ProjectEditField
+      <VTextarea
         v-model="project.description"
-        v-model:isEditVisible="isEditDescriptionVisible"
-        :project-id="project.id"
-        input-type="textarea"
-        label="Description"
-        field-name="description"
+        class="textarea-custom"
+        name="description"
+        auto-grow
+        rows="1"
+        @blur="handleUpdateProject('description', project.description)"
       />
     </div>
 

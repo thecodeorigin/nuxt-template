@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
+import type { Subtitle } from '@/utils/types/project'
 
 const prop = defineProps<{
   index: number
@@ -11,7 +11,7 @@ const emit = defineEmits<{
   (e: 'save-subtitle', index: number, value: string): void
 }>()
 
-const subtitle = defineModel<any>({ required: true })
+const subtitle = defineModel<Subtitle>({ required: true })
 
 const subtitleText = ref(subtitle.value.text)
 
@@ -41,8 +41,8 @@ function handleSaveSubtitle() {
       class="card-list-item"
     >
       <VCheckbox
+        v-model="subtitle.selected"
         class="checkbox"
-        :model-value="subtitle.isCompleted"
       />
       <div>
         <h6 class="text-h6">

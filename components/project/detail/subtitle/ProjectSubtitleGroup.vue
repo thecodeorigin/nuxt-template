@@ -17,6 +17,22 @@ const subtitles = defineModel<Subtitle[]>({ required: true })
 const panelStatus = ref(0)
 const projectStore = useProjectStore()
 
+async function handleDeleteSubtitles() {
+  try {
+    const canDelete = await confirmation('Are you sure you want to delete this subtitles?')
+
+    if (canDelete) {
+      await projectStore.updateProject(prop.project.id, {
+        subtitle: subtitles.value.filter(subtitle => !subtitle.selected),
+      })
+      subtitles.value = subtitles.value.filter(subtitle => !subtitle.selected)
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
 async function handleDeleteSubtitle(index: number) {
   const subtitlesToDel = subtitles.value.filter((_, i: number) => i !== index)
   try {
@@ -43,10 +59,32 @@ async function handleSaveSubtitle(index: number, value: string) {
     console.error(error)
   }
 }
+
+const subtitleSelected = computed(() => subtitles.value.filter(subtitle => subtitle.selected))
+
+function handleDeselectAll() {
+  subtitles.value.forEach(subtitle => subtitle.selected = false)
+}
 </script>
 
 <template>
   <div class="course-content">
+    <div v-if="subtitleSelected.length > 0" class="d-flex justify-end mb-3">
+      <VBtn
+        color="error"
+        @click="handleDeleteSubtitles"
+      >
+        Delete
+      </VBtn>
+
+      <VBtn
+        color="primary"
+        class="ml-2"
+        @click="handleDeselectAll"
+      >
+        Cancel
+      </VBtn>
+    </div>
     <VExpansionPanels
       v-model="panelStatus"
       variant="accordion"
