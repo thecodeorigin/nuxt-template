@@ -45,12 +45,6 @@ const userProfileList: Array<{
   { type: 'divider' },
   {
     type: 'navItem',
-    icon: 'ri-money-dollar-circle-line',
-    title: 'Pricing',
-    to: { name: 'pricing' },
-  },
-  {
-    type: 'navItem',
     icon: 'ri-question-line',
     title: 'FAQ',
     to: { name: 'faq' },

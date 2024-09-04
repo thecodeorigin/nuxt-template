@@ -18,6 +18,7 @@ export default antfu({
 
     'ts/ban-ts-comment': 'off',
     'ts/no-empty-object-type': 'off',
+    'ts/no-unused-expressions': ['error', { allowTaggedTemplates: true }],
 
     'vue/valid-v-slot': 'off',
     'vue/custom-event-name-casing': 'off',

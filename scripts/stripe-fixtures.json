@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "template_version": 0
+  },
+  "fixtures": [
+    {
+      "name": "nuxt_template_product",
+      "path": "/v1/products",
+      "method": "post",
+      "params": {
+        "name": "Nuxt Template",
+        "description": "The essentials for when you're just getting started.",
+        "metadata": {
+          "lookup_key": "${.env:STRIPE_PRODUCT_LOOKUP_KEY}"
+        }
+      }
+    },
+    {
+      "name": "nuxt_template_monthly_price_free",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${nuxt_template_product:id}",
+        "unit_amount": 0,
+        "recurring": {
+          "interval": "month"
+        },
+        "tax_behavior": "exclusive",
+        "transfer_lookup_key": true
+      }
+    },
+    {
+      "name": "nuxt_template_monthly_price_basic",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${nuxt_template_product:id}",
+        "unit_amount": 1000,
+        "recurring": {
+          "interval": "month"
+        },
+        "tax_behavior": "exclusive",
+        "transfer_lookup_key": true
+      }
+    }
+  ]
+}

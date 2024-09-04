@@ -1,3 +1,4 @@
+// TODO: remove this
 export function getStripeFreePrices(productId: string) {
   return stripeAdmin.prices.list({
     product: productId,

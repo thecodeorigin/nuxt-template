@@ -1,33 +1,21 @@
 <script setup lang="ts">
-interface Props {
-  isDialogVisible: boolean
-}
-
-interface Emit {
-  (e: 'update:isDialogVisible', val: boolean): void
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<Emit>()
-
-function dialogVisibleUpdate(val: boolean) {
-  emit('update:isDialogVisible', val)
-}
+const modelValue = defineModel('modelValue', {
+  type: Boolean,
+  default: false,
+})
 </script>
 
 <template>
   <VDialog
-    :model-value="props.isDialogVisible"
+    v-model="modelValue"
     max-width="1200"
-    @update:model-value="dialogVisibleUpdate"
   >
     <VCard class="pricing-dialog pa-2 pa-sm-11">
       <!-- 👉 dialog close btn -->
       <DialogCloseBtn
         variant="text"
         size="default"
-        @click="emit('update:isDialogVisible', false)"
+        @click="modelValue = false"
       />
 
       <VCardText class="pt-5">
