@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { z } from 'zod'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { cloneDeep } from 'lodash-es'
 
 import type { DrawerConfig, TeamData, TeamSectionType } from '@/types/landing-page'
 
@@ -46,8 +47,6 @@ const teamData = ref<TeamData>({
     linkedin: '',
   },
 })
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const memberDrawerOption = ref<DrawerConfig>({
   isVisible: false,
   type: DRAWER_ACTION_TYPES.ADD,
@@ -58,11 +57,11 @@ type TeamFormSchemaType = z.infer<typeof ourTeamSchema>
 const error = ref<z.ZodFormattedError<TeamFormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return ourTeamForm.value.our_team_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return ourTeamForm.value.our_team_desc = removePTags(editorValue)
 }
 
 function clearTeamData() {
@@ -81,7 +80,7 @@ function clearTeamData() {
   }
 }
 
-const teamList = computed(() => ourTeamForm.value?.our_team_data || [])
+const teamList = computed<TeamData[]>(() => ourTeamForm.value?.our_team_data || [])
 
 function handleOpenAddDrawer() {
   memberDrawerOption.value = {
@@ -112,7 +111,7 @@ function handleToggleReviewerDrawer(val: boolean) {
 
 function handleReviewerChange(value: TeamData, type: DrawerActionTypes) {
   if (ourTeamForm.value && type === DRAWER_ACTION_TYPES.EDIT) {
-    ourTeamForm.value.our_team_data = ourTeamForm.value?.our_team_data?.map(
+    ourTeamForm.value.our_team_data = teamList.value.map(
       (member: TeamData) => {
         if (member.id === value.id) {
           return value
@@ -123,32 +122,23 @@ function handleReviewerChange(value: TeamData, type: DrawerActionTypes) {
   }
   else if (ourTeamForm.value && type === DRAWER_ACTION_TYPES.ADD) {
     ourTeamForm.value.our_team_data = [
-      ...ourTeamForm.value?.our_team_data || [],
+      ...teamList.value || [],
       value,
     ]
   }
   else if (ourTeamForm.value && type === DRAWER_ACTION_TYPES.DELETE) {
-    ourTeamForm.value.our_team_data = ourTeamForm.value?.our_team_data?.filter(
+    ourTeamForm.value.our_team_data = teamList.value.filter(
       (member: TeamData) => member.id !== value.id,
     ) || []
   }
 }
 
 async function onSubmit() {
-  const formData = {
-    ...ourTeamForm.value,
-    our_team_title: tiptapTitleInput.value,
-    our_team_desc: tiptapDescriptionInput.value,
-    our_team_data: [
-      ...teamList.value || [],
-    ],
-  }
-
-  const validInput = ourTeamSchema.safeParse(formData)
+  const validInput = ourTeamSchema.safeParse(ourTeamForm.value)
 
   if (!validInput.success) {
     error.value = validInput.error.format()
-    console.log('««««« error »»»»»', error.value)
+
     notify('Invalid input, please check and try again', {
       type: 'error',
       timeout: 5000,
@@ -197,17 +187,8 @@ async function onSubmit() {
 
 watch(ourTeamData, (value) => {
   if (value) {
-    ourTeamForm.value = {
-      our_team_title: value.our_team_title,
-      our_team_desc: value.our_team_desc,
-      our_team_data: [
-        ...value.our_team_data || [],
-      ],
-    }
+    ourTeamForm.value = cloneDeep(value)
   }
-
-  tiptapTitleInput.value = ourTeamForm.value.our_team_title
-  tiptapDescriptionInput.value = ourTeamForm.value.our_team_desc as string
 }, {
   immediate: true,
   deep: true,
@@ -235,32 +216,36 @@ watch(ourTeamData, (value) => {
                 <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
               </VLabel>
               <TiptapEditor
-                v-model="ourTeamForm.our_team_title"
+                v-model="ourTeamForm.our_team_title as string"
                 class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.our_team_title && tiptapTitleInput.length === 0 }"
+                :class="{ 'border-error border-opacity-100': error?.our_team_title && ourTeamForm.our_team_title?.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
-              <div v-if="error?.our_team_title && tiptapTitleInput.length === 0">
+
+              <div v-if="error?.our_team_title && ourTeamForm.our_team_title?.length === 0">
                 <span v-for="(warn, index) in error?.our_team_title?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
               </div>
             </div>
+
             <!-- 👉 Our team Description -->
             <div class="mb-6 position-relative">
               <VLabel class="mb-2 label">
                 Review:
                 <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
               </VLabel>
+
               <TiptapEditor
                 v-model="ourTeamForm.our_team_desc as string"
                 class="border rounded-lg "
-                :class="{ 'border-error border-opacity-100': error?.our_team_desc && tiptapDescriptionInput.length === 0 }"
+                :class="{ 'border-error border-opacity-100': error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
-              <div v-if="error?.our_team_desc && tiptapDescriptionInput.length === 0">
+
+              <div v-if="error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0">
                 <span v-for="(warn, index) in error?.our_team_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -274,38 +259,32 @@ watch(ourTeamData, (value) => {
             <VCardTitle class="text-center mb-4">
               Our Team Members
             </VCardTitle>
+            <VRow class="memeber-list">
+              <VCol cols="12" sm="6" md="4" lg="6">
+                <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
+                  <VIcon icon="ri-add-circle-line" size="40" />
+                </VCard>
+              </VCol>
 
-            <PerfectScrollbar
-              :options="{ wheelPropagation: false, suppressScrollX: true }"
-              class="h-100"
-            >
-              <VRow>
-                <VCol cols="12" sm="6" md="4" lg="6">
-                  <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
-                    <VIcon icon="ri-add-circle-line" size="40" />
-                  </VCard>
-                </VCol>
+              <VCol v-for="(member, index) in teamList" :key="index" cols="12" sm="6" md="4" lg="6" @click="handleOpenEditDrawer(member.id)">
+                <VCard class="member-card d-flex flex-column align-center pa-2" hover height="100%" ripple>
+                  <VCardTitle class="text-center mb-4 d-flex flex-column member-name">
+                    {{ member.name }}
 
-                <VCol v-for="(member, index) in ourTeamForm.our_team_data" :key="index" cols="12" sm="6" md="4" lg="6" @click="handleOpenEditDrawer(member.id)">
-                  <VCard class="member-card d-flex flex-column align-center pa-2" hover height="100%" ripple>
-                    <VCardTitle class="text-center mb-4 d-flex flex-column">
-                      {{ member.name }}
+                    <span class="text-body-2">
+                      {{ member.position }}
+                    </span>
+                  </VCardTitle>
 
-                      <span class="text-body-2">
-                        {{ member.position }}
-                      </span>
-                    </VCardTitle>
-<!-- 
+                  <div class="member-image-container">
                     <VImg
-                      v-if="member.image"
                       :src="member.image"
-                      class="rounded-circle"
-                      cover
-                    /> -->
-                  </VCard>
-                </VCol>
-              </VRow>
-            </PerfectScrollbar>
+                      class="align-center member-image"
+                    />
+                  </div>
+                </VCard>
+              </VCol>
+            </VRow>
           </VCard>
         </VCol>
       </VRow>
@@ -352,6 +331,11 @@ watch(ourTeamData, (value) => {
   line-height: 40px;
 }
 
+.memeber-list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
 .member-card {
   min-width: 30px;
   min-height: 180px;
@@ -375,5 +359,32 @@ watch(ourTeamData, (value) => {
   :deep(.ProseMirror) {
     min-block-size: 5vh;
   }
+}
+
+.member-name {
+  width: 100%;
+  flex: 1;
+  white-space: wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+.member-image-container {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100px;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.member-image{
+  width: 100px;
+  height: auto;
 }
 </style>

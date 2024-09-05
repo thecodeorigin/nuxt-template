@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { VForm } from 'vuetify/components'
+import { cloneDeep } from 'lodash-es'
 import type { DrawerConfig, PlanData, PricingSectionType } from '@/types/landing-page'
 
 const { pricingPlansData } = storeToRefs(useLandingPageStore())
@@ -15,12 +16,9 @@ const pricingDrawerOption = ref<DrawerConfig>({
   isVisible: false,
   type: DRAWER_ACTION_TYPES.ADD,
 })
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const formRef = ref<VForm>()
 const isLoading = ref(false)
 const selectedPricingIndex = ref<number | null>(null)
-
 const pricingForm = ref<PricingSectionType>({
   pricing_title: '',
   pricing_title_desc: '',
@@ -36,7 +34,9 @@ const pricingForm = ref<PricingSectionType>({
   ],
 })
 
-const pricingData = ref<PlanData>({
+const pricingList = computed<PlanData[]>(() => pricingForm.value.pricing_data)
+
+const selectedPricingData = ref<PlanData>({
   title: '',
   price: 0,
   features: [],
@@ -55,7 +55,7 @@ function priceFormatted(price: number) {
 }
 
 function clearPricingData() {
-  pricingData.value = {
+  selectedPricingData.value = {
     title: '',
     price: 0,
     features: [],
@@ -71,13 +71,13 @@ const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 function onTitleUpdate(editorValue: string) {
   if (!editorValue)
     return ''
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return pricingForm.value.pricing_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
   if (!editorValue)
     return ''
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return pricingForm.value.pricing_title_desc = removePTags(editorValue)
 }
 
 function handleToggleDrawer(val: boolean) {
@@ -94,15 +94,15 @@ function handleOpenAddDrawer() {
 }
 
 function handleOpenEditDrawer(index: number) {
-  if (!pricingForm.value?.pricing_data)
+  if (!pricingList.value)
     return false
 
-  const foundPrice = pricingForm.value?.pricing_data[index]
+  const foundPrice = pricingList.value[index]
 
   if (!foundPrice)
     return false
 
-  pricingData.value = foundPrice
+  selectedPricingData.value = foundPrice
 
   selectedPricingIndex.value = index
 
@@ -113,22 +113,22 @@ function handleOpenEditDrawer(index: number) {
 }
 
 function handlePricingChange(value: PlanData, type: DrawerActionTypes) {
-  if (!pricingForm.value?.pricing_data || selectedPricingIndex.value === null)
-    return
-
   if (pricingForm.value && type === DRAWER_ACTION_TYPES.EDIT) {
-    pricingForm.value.pricing_data[selectedPricingIndex.value] = value
+    if (!selectedPricingIndex.value) {
+      return
+    }
+    pricingList.value[selectedPricingIndex.value] = value
 
     selectedPricingIndex.value = null
   }
   else if (pricingForm.value && type === DRAWER_ACTION_TYPES.ADD) {
     pricingForm.value.pricing_data = [
-      ...pricingForm.value?.pricing_data || [],
+      ...pricingForm.value.pricing_data as PlanData[] || [],
       value,
     ]
   }
   else if (pricingForm.value && type === DRAWER_ACTION_TYPES.DELETE) {
-    pricingForm.value.pricing_data = pricingForm.value?.pricing_data?.filter(
+    pricingForm.value.pricing_data = pricingList.value.filter(
       (price: PlanData) => price.title !== value.title,
     ) || []
   }
@@ -192,16 +192,7 @@ async function onSubmit() {
 
 watch(pricingPlansData, (value) => {
   if (value) {
-    pricingForm.value = {
-      pricing_title: value.pricing_title as string,
-      pricing_title_desc: value.pricing_title_desc as string,
-      pricing_data: [
-        ...value?.pricing_data || [],
-      ],
-    }
-
-    tiptapTitleInput.value = pricingForm.value?.pricing_title
-    tiptapDescriptionInput.value = pricingForm.value?.pricing_title_desc as string
+    pricingForm.value = cloneDeep(value)
   }
 }, { deep: true, immediate: true })
 </script>
@@ -223,14 +214,14 @@ watch(pricingPlansData, (value) => {
               </VLabel>
 
               <TiptapEditor
-                v-model="pricingForm.pricing_title"
+                v-model="pricingForm.pricing_title as string"
                 class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.pricing_title && tiptapTitleInput.length === 0 }"
+                :class="{ 'border-error border-opacity-100': error?.pricing_title && pricingForm.pricing_title?.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
 
-              <div v-if="error?.pricing_title && tiptapTitleInput.length === 0">
+              <div v-if="error?.pricing_title && pricingForm.pricing_title?.length === 0">
                 <span v-for="(warn, index) in error?.pricing_title?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -246,11 +237,11 @@ watch(pricingPlansData, (value) => {
               <TiptapEditor
                 v-model="pricingForm.pricing_title_desc as string"
                 class="border rounded-lg"
-                :class="{ 'border-error border-opacity-100': error?.pricing_title_desc && tiptapDescriptionInput.length === 0 }"
+                :class="{ 'border-error border-opacity-100': error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
-              <div v-if="error?.pricing_title_desc && tiptapDescriptionInput.length === 0">
+              <div v-if="error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0">
                 <span v-for="(warn, index) in error?.pricing_title_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -272,7 +263,7 @@ watch(pricingPlansData, (value) => {
                 </VCard>
               </VCol>
 
-              <VCol v-for="(priceCard, index) in pricingForm.pricing_data" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(index)">
+              <VCol v-for="(priceCard, index) in pricingList" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(index)">
                 <VCard class="price-card d-flex flex-column align-center pa-5" hover min-width="100" max-height="200" ripple>
                   <VCardTitle class="text-center d-flex flex-column">
                     {{ priceCard.title }}
@@ -318,7 +309,7 @@ watch(pricingPlansData, (value) => {
     </div>
   </VForm>
   <LandingPagePricingDrawer
-    v-model="pricingData"
+    v-model="selectedPricingData"
     :drawer-config="pricingDrawerOption" @update:is-drawer-open="handleToggleDrawer"
     @update:model-value="handlePricingChange"
   />

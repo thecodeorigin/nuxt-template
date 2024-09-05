@@ -11,8 +11,8 @@ interface Menu {
 }
 
 const menus: Menu[] = [
-  { name: 'Pricing', to: { name: 'pricing' } },
-  { name: 'Payment', to: { name: 'pricing' }, isNew: true }, // Check pages
+  { name: 'Pricing', to: { name: 'landing-page' } },
+  { name: 'Payment', to: { name: 'landing-page' }, isNew: true }, // Check pages
   { name: 'Maintenance', to: { name: 'under-maintenance' } },
   { name: 'Comming Soon', to: { name: 'coming-soon' } },
 ]

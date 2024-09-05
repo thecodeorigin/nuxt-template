@@ -173,6 +173,7 @@ watch(featureData, (value) => {
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
+
               <div v-if="error?.feature_title && featureForm.feature_title_desc?.length === 0">
                 <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}

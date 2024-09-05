@@ -79,7 +79,6 @@ function checkActionSubmit() {
   })
 }
 
-// delete reviewer --------------------------------------
 function handleOpenConfirmation() {
   if (props.drawerConfig.type === 'add') {
     if (formRef.value) {
@@ -103,8 +102,8 @@ function handleOpenConfirmation() {
   }
 }
 
-function handleImageUpdate(file: File | null) {
-  console.log('««««« file »»»»»', file)
+async function handleMemberImageUpdate(file: string, _: 'main' | 'sub', __: 'light' | 'dark') {
+  localMemberData.value.image = file
 }
 
 function onConfirmDialog(value: boolean) {
@@ -211,7 +210,9 @@ watch(() => props.drawerConfig.isVisible, (val) => {
               <LandingPageImagePreview
                 id="image"
                 :model-value="localMemberData.image"
-                @update:model-value="handleImageUpdate"
+                image-type="main"
+                image-theme="light"
+                @update:model-value="handleMemberImageUpdate"
               />
             </VCol>
 

@@ -104,7 +104,6 @@ export const pricingSchema = z.object({
       support_type: z.string(),
       support_medium: z.string(),
       respond_time: z.string(),
-      current: z.boolean(),
     }),
   ).refine((data) => {
     const titles = data.map(item => item.title)

@@ -39,10 +39,6 @@ export interface CustomerReview {
 }
 export type CustomerReviewSectionType = Pick<LandingPage, 'customer_review_title' | 'customer_review_title_desc' | 'customer_review_data'>
 
-// type TeamSectionType = Pick<LandingPage, 'our_team_emphasized_title' | 'our_team_title' | 'our_team_desc' | 'our_team_data'>
-
-// type PricingSectionType = Pick<LandingPage, 'pricing_emphasized_title' | 'pricing_title' | 'pricing_title_desc' | 'pricing_data'>
-
 // type ProductStatsSectionType = Pick<LandingPage, 'product_stats'>
 
 // type FAQSectionType = Pick<LandingPage, 'faq_emphasized_title' | 'faq_title' | 'faq_title_desc' | 'faq_data'>
@@ -52,6 +48,8 @@ export type CustomerReviewSectionType = Pick<LandingPage, 'customer_review_title
 // type BannerSectionType = Pick<LandingPage, 'banner_title' | 'banner_title_desc' | 'banner_button'>
 
 // Interface for our team section
+export type TeamSectionType = Pick<LandingPage, 'our_team_title' | 'our_team_desc' | 'our_team_data'>
+
 interface SocialLink {
   facebook: string | null
   twitterX: string | null
@@ -67,13 +65,6 @@ export interface TeamData {
   social_networks: SocialLink
 }
 
-export interface TeamSectionType {
-  our_team_emphasized_title?: EmphasizedTitle | null
-  our_team_title: string
-  our_team_desc: string | null
-  our_team_data: TeamData[] | null
-}
-
 // Interface for pricing section
 export interface PlanData {
   title: string
@@ -84,12 +75,7 @@ export interface PlanData {
   respond_time: string
 }
 
-export interface PricingSectionType {
-  pricing_emphasized_title?: EmphasizedTitle | null
-  pricing_title: string
-  pricing_title_desc: string | string[]
-  pricing_data: PlanData[] | null
-}
+export type PricingSectionType = Pick<LandingPage, 'pricing_title' | 'pricing_title_desc' | 'pricing_data'>
 
 // Interface for product stats
 export interface ProductStatType {

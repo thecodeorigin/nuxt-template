@@ -3,8 +3,33 @@ import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import frontPageVectorImg from '@images/svg/front-page-vector.svg'
 import ListArrowIcon from '@images/svg/list-arrow-icon.svg'
 import VectorIcon from '@images/svg/vector.svg'
+import type { PlanData } from '@/types/landing-page'
 
 const { pricingPlansData } = storeToRefs(useLandingPageStore())
+
+const pricingList = computed<PlanData[]>(() => {
+  return pricingPlansData.value?.pricing_data ?? []
+})
+const minPrice = computed(() => {
+  return pricingList.value.length > 0 ? Math.min(...pricingList.value.map(plan => plan.price)) : 0
+})
+
+const maxPrice = computed(() => {
+  return pricingList.value.length > 0 ? Math.max(...pricingList.value.map(plan => plan.price)) : 0
+})
+
+const sliderValue = ref(minPrice.value)
+
+const filteredPricingList = computed(() => {
+  return pricingList.value.filter(plan => plan.price <= sliderValue.value)
+})
+
+watch(
+  () => maxPrice.value,
+  (newMaxPrice) => {
+    sliderValue.value = newMaxPrice
+  },
+)
 </script>
 
 <template>
@@ -38,8 +63,9 @@ const { pricingPlansData } = storeToRefs(useLandingPageStore())
 
       <div class="w-75 mx-auto">
         <VSlider
-          model-value="458+"
-          max="1249"
+          v-model="sliderValue"
+          :max="maxPrice"
+          :min="minPrice"
           color="primary"
           thumb-label="always"
           class="mt-1"
@@ -48,7 +74,7 @@ const { pricingPlansData } = storeToRefs(useLandingPageStore())
 
       <VRow>
         <VCol
-          v-for="(plan, index) in pricingPlansData?.pricing_data"
+          v-for="(plan, index) in filteredPricingList"
           :key="index"
         >
           <VCard
@@ -132,7 +158,7 @@ const { pricingPlansData } = storeToRefs(useLandingPageStore())
                 <VBtn
                   block
                   :variant="plan.current ? 'elevated' : 'outlined'"
-                  :to="{ name: 'pricing' }"
+                  :to="{ name: 'landing-page' }"
                 >
                   Get Started
                 </VBtn>
