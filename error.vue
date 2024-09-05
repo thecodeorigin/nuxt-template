@@ -35,6 +35,8 @@ const errToShow = computed(() => {
       }
     default:
       if (isDev) {
+        console.error(props.error)
+
         return {
           status: 500,
           title: props.error?.statusMessage,
