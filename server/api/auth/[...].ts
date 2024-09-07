@@ -135,7 +135,7 @@ export default NuxtAuthHandler({
         if (data)
           Object.assign(session.user, data)
 
-        storage.setItem(session.user.email!, session)
+        storage.setItem(sessionKey, session)
       }
 
       return session
