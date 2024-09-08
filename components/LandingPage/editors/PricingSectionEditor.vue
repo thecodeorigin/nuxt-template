@@ -2,6 +2,8 @@
 import { z } from 'zod'
 import type { VForm } from 'vuetify/components'
 import { cloneDeep } from 'lodash-es'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+
 import type { DrawerConfig, PlanData, PricingSectionType } from '@/types/landing-page'
 
 const { pricingPlansData } = storeToRefs(useLandingPageStore())
@@ -198,130 +200,132 @@ watch(pricingPlansData, (value) => {
 </script>
 
 <template>
-  <VForm ref="formRef" @submit.prevent="onSubmit">
-    <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
-      Pricing Section
-    </VLabel>
+  <VContainer>
+    <VForm ref="formRef" @submit.prevent="onSubmit">
+      <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
+        Pricing Section
+      </VLabel>
 
-    <div class="d-flex flex-column gap-4">
-      <!-- 👉 Pricing Heading -->
-      <VCard class="pa-4">
-        <VCardTitle class="text-center mb-4">
-          Pricing heading
-        </VCardTitle>
+      <div class="d-flex flex-column gap-4">
+        <!-- 👉 Pricing Heading -->
+        <VCard class="pa-4">
+          <VCardTitle class="text-center mb-4">
+            Pricing heading
+          </VCardTitle>
 
-        <VRow>
-          <!-- 👉 Pricing Heading -->
-          <VCol cols="12" sm="6" class="mb-6 position-relative">
-            <VLabel class="mb-2 label">
-              Pricing heading:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-
-            <TiptapEditor
-              v-model="pricingForm.pricing_title as string"
-              class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.pricing_title && pricingForm.pricing_title?.length === 0 }"
-              placeholder="Text here..."
-              @update:model-value="onTitleUpdate"
-            />
-
-            <div v-if="error?.pricing_title && pricingForm.pricing_title?.length === 0">
-              <span v-for="(warn, index) in error?.pricing_title?._errors" :key="index" class="text-error error-text">
-                {{ warn }}
-              </span>
-            </div>
-          </VCol>
-
-          <!-- 👉 Pricing Description -->
-          <VCol cols="12" sm="6" class="mb-6 position-relative">
-            <VLabel class="mb-2 label">
-              Description:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-
-            <TiptapEditor
-              v-model="pricingForm.pricing_title_desc as string"
-              class="border rounded-lg"
-              :class="{ 'border-error border-opacity-100': error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0 }"
-              placeholder="Text here..."
-              @update:model-value="onDescriptionUpdate"
-            />
-            <div v-if="error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0">
-              <span v-for="(warn, index) in error?.pricing_title_desc?._errors" :key="index" class="text-error error-text">
-                {{ warn }}
-              </span>
-            </div>
-          </VCol>
-        </VRow>
-      </VCard>
-
-      <!-- 👉 Pricing Plans -->
-      <VCard class="pa-4 h-100">
-        <VCardTitle class="text-center mb-4">
-          Pricing Plans
-        </VCardTitle>
-        <PerfectScrollbar
-          :options="{ wheelPropagation: false }"
-          style="padding: 16px;
-                max-height: 500px;"
-        >
           <VRow>
-            <VCol cols="12" md="6" lg="4">
-              <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
-                <VIcon icon="ri-add-circle-line" size="40" />
-              </VCard>
+            <!-- 👉 Pricing Heading -->
+            <VCol cols="12" sm="6" class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Pricing heading:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <TiptapEditor
+                v-model="pricingForm.pricing_title as string"
+                class="border rounded-lg title-content"
+                :class="{ 'border-error border-opacity-100': error?.pricing_title && pricingForm.pricing_title?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onTitleUpdate"
+              />
+
+              <div v-if="error?.pricing_title && pricingForm.pricing_title?.length === 0">
+                <span v-for="(warn, index) in error?.pricing_title?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
             </VCol>
 
-            <VCol v-for="(priceCard, index) in pricingList" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(index)">
-              <VCard class="price-card d-flex flex-column align-center pa-5" hover min-width="100" max-height="200" ripple>
-                <VCardTitle class="text-center d-flex flex-column">
-                  {{ priceCard.title }}
+            <!-- 👉 Pricing Description -->
+            <VCol cols="12" sm="6" class="mb-6 position-relative">
+              <VLabel class="mb-2 label">
+                Description:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
 
-                  <span class="text-body-2">
-                    {{ priceFormatted(priceCard.price) }}
-                  </span>
-                </VCardTitle>
-              </VCard>
+              <TiptapEditor
+                v-model="pricingForm.pricing_title_desc as string"
+                class="border rounded-lg"
+                :class="{ 'border-error border-opacity-100': error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onDescriptionUpdate"
+              />
+              <div v-if="error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0">
+                <span v-for="(warn, index) in error?.pricing_title_desc?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
             </VCol>
           </VRow>
-        </PerfectScrollbar>
-      </VCard>
+        </VCard>
 
-      <!-- 👉 Pricing Button Submit -->
-      <div class="w-100 d-flex justify-center align-center">
-        <VBtn
-          v-if="isLoading === false"
-          class="mx-auto w-100"
-          type="submit"
-          color="primary"
-          variant="outlined"
-          @click="onSubmit"
-        >
-          Update Pricing Section Content
-        </VBtn>
+        <!-- 👉 Pricing Plans -->
+        <VCard class="pa-4 h-100">
+          <VCardTitle class="text-center mb-4">
+            Pricing Plans
+          </VCardTitle>
+          <PerfectScrollbar
+            :options="{ wheelPropagation: false }"
+            style="padding: 16px;
+                  max-height: 500px;"
+          >
+            <VRow>
+              <VCol cols="12" md="6" lg="4">
+                <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
+                  <VIcon icon="ri-add-circle-line" size="40" />
+                </VCard>
+              </VCol>
 
-        <VBtn
-          v-else
-          class="mx-auto w-100"
-          type="submit"
-          color="primary"
-          variant="outlined"
-        >
-          <VProgressCircular
-            indeterminate
+              <VCol v-for="(priceCard, index) in pricingList" :key="index" cols="12" md="6" lg="4" @click="handleOpenEditDrawer(index)">
+                <VCard class="price-card d-flex flex-column align-center pa-5" hover min-width="100" max-height="200" ripple>
+                  <VCardTitle class="text-center d-flex flex-column">
+                    {{ priceCard.title }}
+
+                    <span class="text-body-2">
+                      {{ priceFormatted(priceCard.price) }}
+                    </span>
+                  </VCardTitle>
+                </VCard>
+              </VCol>
+            </VRow>
+          </PerfectScrollbar>
+        </VCard>
+
+        <!-- 👉 Pricing Button Submit -->
+        <div class="w-100 d-flex justify-center align-center">
+          <VBtn
+            v-if="isLoading === false"
+            class="mx-auto w-100"
+            type="submit"
             color="primary"
-            size="24"
-          />
-        </VBtn>
+            variant="outlined"
+            @click="onSubmit"
+          >
+            Update Pricing Section Content
+          </VBtn>
+
+          <VBtn
+            v-else
+            class="mx-auto w-100"
+            type="submit"
+            color="primary"
+            variant="outlined"
+          >
+            <VProgressCircular
+              indeterminate
+              color="primary"
+              size="24"
+            />
+          </VBtn>
+        </div>
       </div>
-    </div>
-  </VForm>
-  <LandingPagePricingDrawer
-    v-model="selectedPricingData"
-    :drawer-config="pricingDrawerOption" @update:is-drawer-open="handleToggleDrawer"
-    @update:model-value="handlePricingChange"
-  />
+    </VForm>
+    <LandingPagePricingDrawer
+      v-model="selectedPricingData"
+      :drawer-config="pricingDrawerOption" @update:is-drawer-open="handleToggleDrawer"
+      @update:model-value="handlePricingChange"
+    />
+  </VContainer>
 </template>
 
 <style lang="scss" scoped>

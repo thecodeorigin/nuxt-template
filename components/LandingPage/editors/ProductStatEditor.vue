@@ -82,6 +82,7 @@ watch(productStatsData, (value) => {
 
 <template>
   <VForm @submit.prevent="onSubmit">
+    <!-- 👉 Product Stats Heading -->
     <div class="d-flex mb-4">
       <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4 d-block label">
         Product Stats Section
@@ -100,6 +101,8 @@ watch(productStatsData, (value) => {
         Add +
       </VBtn>
     </div>
+
+    <!-- 👉 Product Stats Content -->
     <VCard v-for="(stat, index) in productStatForm" :key="index" cols="12" sm="12" class="pa-4 mb-4">
       <VRow>
         <VCol cols="12" class="d-flex align-center">
@@ -154,6 +157,7 @@ watch(productStatsData, (value) => {
       </VRow>
     </VCard>
 
+    <!-- 👉 Product Stats Submit Button -->
     <VBtn
       v-if="isLoading === false"
       class="w-100"

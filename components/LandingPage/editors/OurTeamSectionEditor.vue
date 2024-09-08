@@ -196,139 +196,141 @@ watch(ourTeamData, (value) => {
 </script>
 
 <template>
-  <VForm @submit.prevent="onSubmit">
-    <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
-      Our Team Section
-    </VLabel>
+  <VContainer>
+    <VForm @submit.prevent="onSubmit">
+      <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
+        Our Team Section
+      </VLabel>
 
-    <div class="d-flex flex-column gap-4">
-      <!-- 👉 Our Team Heading -->
-      <VCard class="pa-4">
-        <VCardTitle class="text-center mb-4">
-          Our Team page heading
-        </VCardTitle>
+      <div class="d-flex flex-column gap-4">
+        <!-- 👉 Our Team Heading -->
+        <VCard class="pa-4">
+          <VCardTitle class="text-center mb-4">
+            Our Team page heading
+          </VCardTitle>
 
-        <VRow>
-          <VCol cols="12" sm="6" class="mb-6">
-            <!-- 👉 Our Team Main Title -->
-            <VLabel class="mb-2 label">
-              Our team title:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-            <TiptapEditor
-              v-model="ourTeamForm.our_team_title as string"
-              class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.our_team_title && ourTeamForm.our_team_title?.length === 0 }"
-              placeholder="Text here..."
-              @update:model-value="onTitleUpdate"
-            />
-
-            <div v-if="error?.our_team_title && ourTeamForm.our_team_title?.length === 0">
-              <span v-for="(warn, index) in error?.our_team_title?._errors" :key="index" class="text-error error-text">
-                {{ warn }}
-              </span>
-            </div>
-          </VCol>
-
-          <VCol cols="12" sm="6" class="mb-6">
-            <!-- 👉 Our team Description -->
-            <VLabel class="mb-2 label">
-              Description:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-
-            <TiptapEditor
-              v-model="ourTeamForm.our_team_desc as string"
-              class="border rounded-lg "
-              :class="{ 'border-error border-opacity-100': error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0 }"
-              placeholder="Text here..."
-              @update:model-value="onDescriptionUpdate"
-            />
-
-            <div v-if="error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0">
-              <span v-for="(warn, index) in error?.our_team_desc?._errors" :key="index" class="text-error error-text">
-                {{ warn }}
-              </span>
-            </div>
-          </VCol>
-        </VRow>
-      </VCard>
-
-      <!-- 👉 Our Team members -->
-      <VCard class="pa-4 h-100">
-        <VCardTitle class="text-center mb-4">
-          Our Team Members
-        </VCardTitle>
-
-        <PerfectScrollbar
-          :options="{ wheelPropagation: false }"
-          style="padding: 16px;
-                max-height: 500px;"
-        >
           <VRow>
-            <VCol cols="12" sm="6" md="4" lg="6">
-              <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
-                <VIcon icon="ri-add-circle-line" size="40" />
-              </VCard>
+            <VCol cols="12" sm="6" class="mb-6">
+              <!-- 👉 Our Team Main Title -->
+              <VLabel class="mb-2 label">
+                Our team title:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+              <TiptapEditor
+                v-model="ourTeamForm.our_team_title as string"
+                class="border rounded-lg title-content"
+                :class="{ 'border-error border-opacity-100': error?.our_team_title && ourTeamForm.our_team_title?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onTitleUpdate"
+              />
+
+              <div v-if="error?.our_team_title && ourTeamForm.our_team_title?.length === 0">
+                <span v-for="(warn, index) in error?.our_team_title?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
             </VCol>
 
-            <VCol v-for="(member, index) in teamList" :key="index" cols="12" sm="6" md="4" lg="6" @click="handleOpenEditDrawer(member.id)">
-              <VCard class="member-card d-flex flex-column align-center pa-2" hover height="100%" ripple>
-                <VCardTitle class="text-center mb-4 d-flex flex-column member-name">
-                  {{ member.name }}
+            <VCol cols="12" sm="6" class="mb-6">
+              <!-- 👉 Our team Description -->
+              <VLabel class="mb-2 label">
+                Description:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
 
-                  <span class="text-body-2">
-                    {{ member.position }}
-                  </span>
-                </VCardTitle>
+              <TiptapEditor
+                v-model="ourTeamForm.our_team_desc as string"
+                class="border rounded-lg "
+                :class="{ 'border-error border-opacity-100': error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onDescriptionUpdate"
+              />
 
-                <div class="member-image-container">
-                  <VImg
-                    :src="member.image"
-                    class="align-center member-image"
-                  />
-                </div>
-              </VCard>
+              <div v-if="error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0">
+                <span v-for="(warn, index) in error?.our_team_desc?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
             </VCol>
           </VRow>
-        </PerfectScrollbar>
-      </VCard>
+        </VCard>
 
-      <!-- 👉 Reviewer Button Submit -->
-      <div class="w-100 d-flex justify-center align-center">
-        <VBtn
-          v-if="isLoading === false"
-          class="mx-auto w-100"
-          type="submit"
-          color="primary"
-          variant="outlined"
-          @click="onSubmit"
-        >
-          Update Our Team Section Content
-        </VBtn>
+        <!-- 👉 Our Team members -->
+        <VCard class="pa-4 h-100">
+          <VCardTitle class="text-center mb-4">
+            Our Team Members
+          </VCardTitle>
 
-        <VBtn
-          v-else
-          class="mx-auto w-100"
-          type="submit"
-          color="primary"
-          variant="outlined"
-        >
-          <VProgressCircular
-            indeterminate
+          <PerfectScrollbar
+            :options="{ wheelPropagation: false }"
+            style="padding: 16px;
+                  max-height: 500px;"
+          >
+            <VRow>
+              <VCol cols="12" sm="6" md="4" lg="6">
+                <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
+                  <VIcon icon="ri-add-circle-line" size="40" />
+                </VCard>
+              </VCol>
+
+              <VCol v-for="(member, index) in teamList" :key="index" cols="12" sm="6" md="4" lg="6" @click="handleOpenEditDrawer(member.id)">
+                <VCard class="member-card d-flex flex-column align-center pa-2" hover height="100%" ripple>
+                  <VCardTitle class="text-center mb-4 d-flex flex-column member-name">
+                    {{ member.name }}
+
+                    <span class="text-body-2">
+                      {{ member.position }}
+                    </span>
+                  </VCardTitle>
+
+                  <div class="member-image-container">
+                    <VImg
+                      :src="member.image"
+                      class="align-center member-image"
+                    />
+                  </div>
+                </VCard>
+              </VCol>
+            </VRow>
+          </PerfectScrollbar>
+        </VCard>
+
+        <!-- 👉 Reviewer Button Submit -->
+        <div class="w-100 d-flex justify-center align-center">
+          <VBtn
+            v-if="isLoading === false"
+            class="mx-auto w-100"
+            type="submit"
             color="primary"
-            size="24"
-          />
-        </VBtn>
-      </div>
-    </div>
-  </VForm>
+            variant="outlined"
+            @click="onSubmit"
+          >
+            Update Our Team Section Content
+          </VBtn>
 
-  <LandingPageOurTeamDrawer
-    v-model="teamData"
-    :drawer-config="memberDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
-    @update:model-value="handleReviewerChange"
-  />
+          <VBtn
+            v-else
+            class="mx-auto w-100"
+            type="submit"
+            color="primary"
+            variant="outlined"
+          >
+            <VProgressCircular
+              indeterminate
+              color="primary"
+              size="24"
+            />
+          </VBtn>
+        </div>
+      </div>
+    </VForm>
+
+    <LandingPageOurTeamDrawer
+      v-model="teamData"
+      :drawer-config="memberDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
+      @update:model-value="handleReviewerChange"
+    />
+  </VContainer>
 </template>
 
 <style lang="scss" scoped>

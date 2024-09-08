@@ -2,6 +2,7 @@
 import { z } from 'zod'
 import { cloneDeep } from 'lodash-es'
 import type { VForm } from 'vuetify/components'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import SelectSolid from '@images/svg/3d-select-solid.svg'
 import Edit from '@images/svg/edit.svg'

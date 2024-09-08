@@ -189,139 +189,141 @@ watch(customerReviewData, (value) => {
 </script>
 
 <template>
-  <form class="customer-reviews" @submit.prevent="onSubmit">
-    <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
-      Customer Review Section
-    </VLabel>
+  <VContainer>
+    <form class="customer-reviews" @submit.prevent="onSubmit">
+      <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
+        Customer Review Section
+      </VLabel>
 
-    <div class="d-flex flex-column gap-4">
-      <!-- 👉 Review Heading -->
-      <VCard class="pa-4">
-        <VCardTitle class="text-center mb-4">
-          Customer heading
-        </VCardTitle>
+      <div class="d-flex flex-column gap-4">
+        <!-- 👉 Review Heading -->
+        <VCard class="pa-4">
+          <VCardTitle class="text-center mb-4">
+            Customer heading
+          </VCardTitle>
 
-        <VRow>
-          <VCol cols="12" sm="6" class="mb-6">
-            <!-- 👉 Review Main Title -->
-            <VLabel class="mb-2 label">
-              Review title:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-
-            <TiptapEditor
-              v-model="reviewForm.customer_review_title as string"
-              class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.customer_review_title && reviewForm.customer_review_title?.length === 0 }"
-              placeholder="Text here..."
-              @update:model-value="onTitleUpdate"
-            />
-
-            <div v-if="error?.customer_review_title && reviewForm.customer_review_title?.length === 0">
-              <span v-for="(warn, index) in error?.customer_review_title?._errors" :key="index" class="text-error error-text">
-                {{ warn }}
-              </span>
-            </div>
-          </VCol>
-
-          <VCol cols="12" sm="6" class="mb-6">
-            <!-- 👉 Review Main Description -->
-            <VLabel class="mb-2 label">
-              Description:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-            <TiptapEditor
-              v-model="reviewForm.customer_review_title_desc as string"
-              class="border rounded-lg "
-              :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0 }"
-              placeholder="Text here..."
-              @update:model-value="onDescriptionUpdate"
-            />
-
-            <div v-if="error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0">
-              <span v-for="(warn, index) in error?.customer_review_title_desc?._errors" :key="index" class="text-error error-text">
-                {{ warn }}
-              </span>
-            </div>
-          </VCol>
-        </VRow>
-      </VCard>
-
-      <!-- 👉 Reviewers -->
-      <VCard class="pa-4 h-100 customer-reviews-container">
-        <VCardTitle class="text-center mb-4">
-          Customer reviews
-        </VCardTitle>
-
-        <PerfectScrollbar
-          :options="{ wheelPropagation: false, suppressScrollX: true, swipeEasing: true }"
-          style="padding: 16px;
-                max-height: 490px;"
-        >
           <VRow>
-            <VCol cols="12" sm="6" lg="4">
-              <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
-                <VIcon icon="ri-add-circle-line" size="40" />
-              </VCard>
+            <VCol cols="12" sm="6" class="mb-6">
+              <!-- 👉 Review Main Title -->
+              <VLabel class="mb-2 label">
+                Review title:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <TiptapEditor
+                v-model="reviewForm.customer_review_title as string"
+                class="border rounded-lg title-content"
+                :class="{ 'border-error border-opacity-100': error?.customer_review_title && reviewForm.customer_review_title?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onTitleUpdate"
+              />
+
+              <div v-if="error?.customer_review_title && reviewForm.customer_review_title?.length === 0">
+                <span v-for="(warn, index) in error?.customer_review_title?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
             </VCol>
 
-            <VCol v-for="(review, index) in reviewerList" :key="index" cols="12" sm="6" lg="4" @click="handleOpenEditDrawer(review.id)">
-              <VCard class="review-card" hover min-width="100" max-height="200" ripple>
-                <VCardTitle class="text-center d-flex flex-column align-center reviewer-name">
-                  {{ review.name }}
+            <VCol cols="12" sm="6" class="mb-6">
+              <!-- 👉 Review Main Description -->
+              <VLabel class="mb-2 label">
+                Description:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+              <TiptapEditor
+                v-model="reviewForm.customer_review_title_desc as string"
+                class="border rounded-lg "
+                :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0 }"
+                placeholder="Text here..."
+                @update:model-value="onDescriptionUpdate"
+              />
 
-                  <span class="text-body-2">
-                    {{ review.position }}
-                  </span>
-                </VCardTitle>
-
-                <div class="reviewer-logo-container">
-                  <VImg
-                    :src="review.main_logo"
-                    class="align-center reviewer-logo"
-                  />
-                </div>
-              </VCard>
+              <div v-if="error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0">
+                <span v-for="(warn, index) in error?.customer_review_title_desc?._errors" :key="index" class="text-error error-text">
+                  {{ warn }}
+                </span>
+              </div>
             </VCol>
           </VRow>
-        </PerfectScrollbar>
-      </VCard>
+        </VCard>
 
-      <!-- 👉 Reviewer Button Submit -->
-      <div class="w-100 d-flex justify-center align-center">
-        <VBtn
-          v-if="isLoading === false"
-          class="mx-auto w-100"
-          type="submit"
-          color="primary"
-          variant="outlined"
-          @click="onSubmit"
-        >
-          Update Reviewer Section Content
-        </VBtn>
+        <!-- 👉 Reviewers -->
+        <VCard class="pa-4 h-100 customer-reviews-container">
+          <VCardTitle class="text-center mb-4">
+            Customer reviews
+          </VCardTitle>
 
-        <VBtn
-          v-else
-          class="mx-auto w-100"
-          type="submit"
-          color="primary"
-          variant="outlined"
-        >
-          <VProgressCircular
-            indeterminate
+          <PerfectScrollbar
+            :options="{ wheelPropagation: false, suppressScrollX: true, swipeEasing: true }"
+            style="padding: 16px;
+                  max-height: 490px;"
+          >
+            <VRow>
+              <VCol cols="12" sm="6" lg="4">
+                <VCard class="add-card d-flex justify-center align-center pa-2" hover height="100%" ripple @click="handleOpenAddDrawer">
+                  <VIcon icon="ri-add-circle-line" size="40" />
+                </VCard>
+              </VCol>
+
+              <VCol v-for="(review, index) in reviewerList" :key="index" cols="12" sm="6" lg="4" @click="handleOpenEditDrawer(review.id)">
+                <VCard class="review-card" hover min-width="100" max-height="200" ripple>
+                  <VCardTitle class="text-center d-flex flex-column align-center reviewer-name">
+                    {{ review.name }}
+
+                    <span class="text-body-2">
+                      {{ review.position }}
+                    </span>
+                  </VCardTitle>
+
+                  <div class="reviewer-logo-container">
+                    <VImg
+                      :src="review.main_logo"
+                      class="align-center reviewer-logo"
+                    />
+                  </div>
+                </VCard>
+              </VCol>
+            </VRow>
+          </PerfectScrollbar>
+        </VCard>
+
+        <!-- 👉 Reviewer Button Submit -->
+        <div class="w-100 d-flex justify-center align-center">
+          <VBtn
+            v-if="isLoading === false"
+            class="mx-auto w-100"
+            type="submit"
             color="primary"
-            size="24"
-          />
-        </VBtn>
-      </div>
-    </div>
-  </form>
+            variant="outlined"
+            @click="onSubmit"
+          >
+            Update Reviewer Section Content
+          </VBtn>
 
-  <LandingPageReviewerDrawer
-    v-model="reviewerData"
-    :drawer-config="reviewerDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
-    @update:model-value="handleReviewerChange"
-  />
+          <VBtn
+            v-else
+            class="mx-auto w-100"
+            type="submit"
+            color="primary"
+            variant="outlined"
+          >
+            <VProgressCircular
+              indeterminate
+              color="primary"
+              size="24"
+            />
+          </VBtn>
+        </div>
+      </div>
+    </form>
+
+    <LandingPageReviewerDrawer
+      v-model="reviewerData"
+      :drawer-config="reviewerDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
+      @update:model-value="handleReviewerChange"
+    />
+  </VContainer>
 </template>
 
 <style lang="scss" scoped>
