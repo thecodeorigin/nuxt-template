@@ -39,14 +39,6 @@ export interface CustomerReview {
 }
 export type CustomerReviewSectionType = Pick<LandingPage, 'customer_review_title' | 'customer_review_title_desc' | 'customer_review_data'>
 
-// type ProductStatsSectionType = Pick<LandingPage, 'product_stats'>
-
-// type FAQSectionType = Pick<LandingPage, 'faq_emphasized_title' | 'faq_title' | 'faq_title_desc' | 'faq_data'>
-
-// type ContactUsSectionType = Pick<LandingPage, 'contact_us_title' | 'contact_us_title_desc' | 'contact_us_card_content' | 'contact_us_card_heading' | 'contact_us_card_image' | 'contact_us_card_emphasized_heading'>
-
-// type BannerSectionType = Pick<LandingPage, 'banner_title' | 'banner_title_desc' | 'banner_button'>
-
 // Interface for our team section
 export type TeamSectionType = Pick<LandingPage, 'our_team_title' | 'our_team_desc' | 'our_team_data'>
 
@@ -85,12 +77,7 @@ export interface ProductStatType {
   color: string
   icon: IconList
 }
-
-export type IconList = 'Time Line' | 'Home' | 'Settings' | 'User' | 'Calendar' | 'Search' | 'Notification' | 'Camera' | 'Shopping Cart' | 'Heart' | 'Layout' | 'User Smile' | null
-
-export interface ProductStatsSectionType {
-  product_stats: ProductStatType[] | null
-}
+export type ProductStatsSectionType = Pick<LandingPage, 'product_stats'>
 
 // Interface for FAQ section
 export interface FAQ {
@@ -98,29 +85,13 @@ export interface FAQ {
   answer: string
 }
 
-export interface FAQSectionType {
-  faq_emphasized_title?: EmphasizedTitle | null
-  faq_title: string
-  faq_title_desc: string | string[]
-  faq_data: FAQ[] | null
-}
+export type FAQSectionType = Pick<LandingPage, 'faq_title' | 'faq_title_desc' | 'faq_data'>
 
-export interface BannerSectionType {
-  banner_title: string
-  banner_title_desc: string
-  banner_button: string
-  banner_img: string | null
-}
+// Interface for banner section
+export type BannerSectionType = Pick<LandingPage, 'banner_title' | 'banner_title_desc' | 'banner_button' | 'banner_image'>
 
 // Interface for about us section
-export interface ContactUsSectionType {
-  contact_us_title: string
-  contact_us_title_desc: string | string[]
-  contact_us_card_title: string
-  contact_us_card_heading: string
-  contact_us_card_image: string | null
-  contact_us_card_content: string
-}
+export type ContactUsSectionType = Pick<LandingPage, 'contact_us_title' | 'contact_us_title_desc' | 'contact_us_card_content' | 'contact_us_card_heading' | 'contact_us_card_image' | 'contact_us_card_title'>
 
 // Others
 export interface DrawerConfig {
@@ -134,3 +105,11 @@ export interface ImageType {
 }
 
 export type DrawerActionTypes = typeof DRAWER_ACTION_TYPES[keyof typeof DRAWER_ACTION_TYPES] | undefined
+
+export type IconList = 'Time Line' | 'Home' | 'Settings' | 'User' | 'Calendar' | 'Search' | 'Notification' | 'Camera' | 'Shopping Cart' | 'Heart' | 'Layout' | 'User Smile' | 'Right Arrow' | 'Left Arrow' | null
+
+export interface Icons {
+  name: IconList
+}
+
+export type LandingPageStatus = 'default' | 'success' | 'error' | 'loading'

@@ -1,7 +1,10 @@
+import { getLandingPageId } from '../landingPageID.get'
 import type { HeroSectionType } from '~/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const heroReqData = await readBody<HeroSectionType>(event)
+
+  const landingPageId = await getLandingPageId()
 
   const { error } = await supabaseAdmin
     .from('sys_landing_page')
@@ -14,7 +17,7 @@ export default defineEventHandler(async (event) => {
       hero_sub_img_light: heroReqData.hero_sub_img_light,
       hero_sub_img_dark: heroReqData.hero_sub_img_dark,
     })
-    .match({ id: 'df02f75c-afab-41ef-ab6d-e1aa04d7ec6d' })
+    .match({ id: landingPageId })
 
   if (error)
     setResponseStatus(event, 400, error.message)

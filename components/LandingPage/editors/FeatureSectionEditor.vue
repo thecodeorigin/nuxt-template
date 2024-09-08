@@ -129,156 +129,164 @@ watch(featureData, (value) => {
     </VLabel>
 
     <div class="d-flex flex-column gap-4">
-      <VRow>
-        <VCol cols="12" md="4">
-          <!-- 👉 Features Heading -->
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              Feature heading
-            </VCardTitle>
+      <!-- 👉 Features Heading -->
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          Feature heading
+        </VCardTitle>
 
-            <!-- 👉 Feature Main Title -->
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Feature heading:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
-
-              <TiptapEditor
-                v-model="featureForm.feature_title as string"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.feature_title && featureForm.feature_title?.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onTitleUpdate"
-              />
-
-              <div v-if="error?.feature_title && featureForm.feature_title?.length === 0">
-                <span v-for="(warn, index) in error?.feature_title?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
-            </div>
-
-            <!-- 👉 Feature Main Description -->
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Description:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
-
-              <TiptapEditor
-                v-model="featureForm.feature_title_desc as string"
-                class="border rounded-lg"
-                :class="{ 'border-error border-opacity-100': error?.feature_title_desc && featureForm.feature_title_desc?.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onDescriptionUpdate"
-              />
-
-              <div v-if="error?.feature_title && featureForm.feature_title_desc?.length === 0">
-                <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
-            </div>
-          </VCard>
-        </VCol>
-
-        <VCol cols="12" md="8">
-          <!-- 👉 Features -->
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              Feature content
-            </VCardTitle>
-
-            <VLabel class="mb-3 mr-2 label">
-              Feature:
+        <VRow>
+          <!-- 👉 Feature Main Title -->
+          <VCol class="mb-6 position-relative" cols="12" sm="6">
+            <VLabel class="mb-2 label">
+              Feature heading:
               <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
             </VLabel>
 
-            <VRow v-for="(feature, index) in featureArrayData" :key="index" class="feature-container">
-              <VCol cols="12" sm="4">
-                <VTextField
-                  v-model="feature.name"
-                  placeholder="Text here..."
-                  label="Feature Name"
-                  class="mb-4"
-                />
+            <TiptapEditor
+              v-model="featureForm.feature_title as string"
+              class="border rounded-lg title-content"
+              :class="{ 'border-error border-opacity-100': error?.feature_title && featureForm.feature_title?.length === 0 }"
+              placeholder="Text here..."
+              @update:model-value="onTitleUpdate"
+            />
 
-                <VSelect
-                  v-model="feature.icon"
-                  label="Icon"
-                  :items="imageNameList"
-                />
-              </VCol>
+            <div v-if="error?.feature_title && featureForm.feature_title?.length === 0">
+              <span v-for="(warn, index) in error?.feature_title?._errors" :key="index" class="text-error error-text">
+                {{ warn }}
+              </span>
+            </div>
+          </VCol>
 
-              <VCol cols="12" sm="7">
-                <VTextarea
-                  v-model="feature.desc"
-                  label="Feature description"
-                  placeholder="Text here..."
-                  rows="4"
-                />
-              </VCol>
+          <!-- 👉 Feature Main Description -->
+          <VCol class="mb-6 position-relative" cols="12" sm="6">
+            <VLabel class="mb-2 label">
+              Description:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <VCol cols="12" sm="1" class="d-flex align-center">
-                <VBtn
-                  icon
-                  variant="tonal"
-                  color="error"
-                  rounded="lg"
-                  class="w-100 h-100 d-flex align-center justify-center pa-2"
-                  @click="featureArrayData?.splice(index, 1)"
-                >
-                  <VIcon icon="ri-close-circle-line" />
-                </VBtn>
-              </VCol>
-            </VRow>
+            <TiptapEditor
+              v-model="featureForm.feature_title_desc as string"
+              class="border rounded-lg"
+              :class="{ 'border-error border-opacity-100': error?.feature_title_desc && featureForm.feature_title_desc?.length === 0 }"
+              placeholder="Text here..."
+              @update:model-value="onDescriptionUpdate"
+            />
 
-            <VBtn
-              v-if="featureArrayData.length > 0"
-              class="mt-6"
-              prepend-icon="ri-add-line"
-              :disabled="!isCurrentFeatureValid"
-              variant="tonal"
-              @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
-            >
-              Add another option
-            </VBtn>
+            <div v-if="error?.feature_title && featureForm.feature_title_desc?.length === 0">
+              <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
+                {{ warn }}
+              </span>
+            </div>
+          </VCol>
+        </VRow>
+      </VCard>
 
-            <VBtn
-              v-if="featureArrayData.length === 0"
-              class="mt-6"
-              prepend-icon="ri-add-line"
-              variant="tonal"
-              @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
-            >
-              Add a new feature
-            </VBtn>
-          </VCard>
-        </VCol>
-      </VRow>
-
-      <!-- 👉 Features review -->
-      <VCard class="pa-4">
+      <!-- 👉 Features -->
+      <VCard class="features-card pa-4">
         <VCardTitle class="text-center mb-4">
           Feature content
         </VCardTitle>
 
-        <VRow>
-          <VCol v-for="(feature, index) in featureArrayData" :key="index" cols="12" sm="6" md="4">
-            <div class="feature d-flex flex-column gap-y-2 align-center justify-center mt-2">
-              <VAvatar variant="outlined" size="82" color="primary" class="mb-2">
-                <component :is="imageMappings[feature.icon]" />
-              </VAvatar>
-              <h5 class="text-h5">
-                {{ feature.name }}
-              </h5>
-              <p class="text-center text-medium-emphasis" style="max-inline-size: 360px;">
-                {{ feature.desc }}
-              </p>
-            </div>
-          </VCol>
-        </VRow>
+        <VLabel class="mb-3 mr-2 label">
+          Features:
+          <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+        </VLabel>
+
+        <PerfectScrollbar
+          :options="{ wheelPropagation: false }"
+          style="padding: 16px;
+                max-height: 500px;"
+        >
+          <VRow v-for="(feature, index) in featureArrayData" :key="index">
+            <VCol cols="12" sm="4">
+              <VTextField
+                v-model="feature.name"
+                placeholder="Text here..."
+                label="Feature Name"
+                class="mb-4"
+              />
+
+              <VSelect
+                v-model="feature.icon"
+                label="Icon"
+                :items="imageNameList"
+              />
+            </VCol>
+
+            <VCol cols="12" sm="7">
+              <VTextarea
+                v-model="feature.desc"
+                label="Feature description"
+                placeholder="Text here..."
+                rows="4"
+              />
+            </VCol>
+
+            <VCol cols="12" sm="1" class="d-flex align-center">
+              <VBtn
+                icon
+                variant="tonal"
+                color="error"
+                rounded="lg"
+                class="w-100 h-100 d-flex align-center justify-center pa-2"
+                @click="featureArrayData?.splice(index, 1)"
+              >
+                <VIcon icon="ri-close-circle-line" />
+              </VBtn>
+            </VCol>
+          </VRow>
+        </PerfectScrollbar>
+
+        <VBtn
+          v-if="featureArrayData.length > 0"
+          class="mt-6"
+          prepend-icon="ri-add-line"
+          :disabled="!isCurrentFeatureValid"
+          variant="tonal"
+          @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
+        >
+          Add another option
+        </VBtn>
+
+        <VBtn
+          v-if="featureArrayData.length === 0"
+          class="mt-6"
+          prepend-icon="ri-add-line"
+          variant="tonal"
+          @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
+        >
+          Add a new feature
+        </VBtn>
+      </VCard>
+
+      <!-- 👉 Features review -->
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          Feature display
+        </VCardTitle>
+
+        <PerfectScrollbar
+          :options="{ wheelPropagation: false, suppressScrollX: true, swipeEasing: true }"
+          style="padding: 16px;
+                max-height: 500px;"
+        >
+          <VRow>
+            <VCol v-for="(feature, index) in featureArrayData" :key="index" cols="12" sm="6" md="4">
+              <div class="feature d-flex flex-column gap-y-2 align-center justify-center mt-2">
+                <VAvatar variant="outlined" size="82" color="primary" class="mb-2">
+                  <component :is="imageMappings[feature.icon]" />
+                </VAvatar>
+                <h5 class="text-h5">
+                  {{ feature.name }}
+                </h5>
+                <p class="text-center text-medium-emphasis" style="max-inline-size: 360px;">
+                  {{ feature.desc }}
+                </p>
+              </div>
+            </VCol>
+          </VRow>
+        </PerfectScrollbar>
       </VCard>
 
       <!-- 👉 Feature Button Submit -->
@@ -321,6 +329,8 @@ watch(featureData, (value) => {
 
 .feature-container {
   margin-bottom: 8px;
+  max-height: 400px;
+  overflow-y: auto;
 
   &:last-of-type {
     margin-bottom: 0;

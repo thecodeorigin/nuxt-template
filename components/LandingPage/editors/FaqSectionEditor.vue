@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { z } from 'zod'
-import type { FAQSectionType } from '@/types/landing-page'
+import { cloneDeep } from 'lodash-es'
+
+import type { FAQ, FAQSectionType } from '@/types/landing-page'
 
 const { faqData } = storeToRefs(useLandingPageStore())
 const faqForm = ref<FAQSectionType>({
@@ -13,25 +15,24 @@ const faqForm = ref<FAQSectionType>({
     },
   ],
 })
+const faqList = computed<FAQ[]>(() => faqForm.value.faq_data)
 
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const isLoading = ref(false)
 
 type FAQFormSchemaType = z.infer<typeof faqSchema>
 const error = ref<z.ZodFormattedError<FAQFormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return faqForm.value.faq_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return faqForm.value.faq_title_desc = removePTags(editorValue)
 }
 
 const isValidFaq = computed(() => {
-  if (faqForm.value.faq_data && faqForm.value.faq_data?.length >= 0) {
-    const currentFaq = faqForm.value.faq_data[faqForm.value.faq_data.length - 1]
+  if (faqForm.value.faq_data && faqList.value.length >= 0) {
+    const currentFaq = faqList.value[faqList.value.length - 1]
 
     return currentFaq && currentFaq.question.trim() !== '' && currentFaq.answer.trim() !== ''
   }
@@ -83,144 +84,131 @@ async function onSubmit() {
   }
 }
 
-function populateFaqForm() {
-  if (faqData.value) {
-    faqForm.value = {
-      faq_title: faqData.value?.faq_title as string,
-      faq_title_desc: faqData.value?.faq_title_desc as string,
-      faq_data: [
-        ...faqData.value?.faq_data || [],
-      ],
-    }
+watch(faqData, (val) => {
+  if (val) {
+    faqForm.value = cloneDeep(val)
   }
-}
-
-onMounted(() => {
-  populateFaqForm()
-})
-
-watch(faqData, () => {
-  populateFaqForm()
 })
 </script>
 
 <template>
   <VForm @submit.prevent="onSubmit">
     <div class="d-flex flex-column gap-4">
-      <VRow>
-        <VCol cols="12">
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              Customer heading
-            </VCardTitle>
+      <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4 d-block label">
+        FAQ Section
+      </VLabel>
+      <!-- 👉 FAQ Heading -->
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          FAQ heading
+        </VCardTitle>
 
-            <!-- 👉 Review Main Title -->
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Review title:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+        <VRow>
+          <!-- 👉 Faq Main Title -->
+          <VCol cols="12" sm="6" class="mb-6 position-relative">
+            <VLabel class="mb-2 label">
+              Faq title:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <TiptapEditor
-                v-model="faqForm.faq_title"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.faq_title && tiptapTitleInput.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onTitleUpdate"
-              />
+            <TiptapEditor
+              v-model="faqForm.faq_title as string"
+              class="border rounded-lg title-content"
+              :class="{ 'border-error border-opacity-100': error?.faq_title && faqForm.faq_title?.length === 0 }"
+              placeholder="Text here..."
+              @update:model-value="onTitleUpdate"
+            />
 
-              <div v-if="error?.faq_title && tiptapTitleInput.length === 0">
-                <span v-for="(warn, index) in error?.faq_title?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
+            <div v-if="error?.faq_title && faqForm.faq_title?.length === 0">
+              <span v-for="(warn, index) in error?.faq_title?._errors" :key="index" class="text-error error-text">
+                {{ warn }}
+              </span>
             </div>
+          </VCol>
 
-            <!-- 👉 Review Main Description -->
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Review:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
-              <TiptapEditor
-                v-model="faqForm.faq_title_desc as string"
-                class="border rounded-lg "
-                :class="{ 'border-error border-opacity-100': error?.faq_title_desc && tiptapDescriptionInput.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onDescriptionUpdate"
-              />
+          <!-- 👉 Faq Main Description -->
+          <VCol cols="12" sm="6" class="mb-6 position-relative">
+            <VLabel class="mb-2 label">
+              Description:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
+            <TiptapEditor
+              v-model="faqForm.faq_title_desc as string"
+              class="border rounded-lg "
+              :class="{ 'border-error border-opacity-100': error?.faq_title_desc }"
+              placeholder="Text here..."
+              @update:model-value="onDescriptionUpdate"
+            />
 
-              <div v-if="error?.faq_title_desc && tiptapDescriptionInput.length === 0">
-                <span v-for="(warn, index) in error?.faq_title_desc?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
+            <div v-if="error?.faq_title_desc">
+              <span v-for="(warn, index) in error?.faq_title_desc?._errors" :key="index" class="text-error error-text">
+                {{ warn }}
+              </span>
             </div>
-          </VCard>
-        </VCol>
+          </VCol>
+        </VRow>
+      </VCard>
 
-        <VCol cols="12">
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              FAQs
-            </VCardTitle>
+      <!-- 👉 FAQs -->
+      <VCard class="pa-4 h-100">
+        <VCardTitle class="text-center mb-4">
+          FAQs
+        </VCardTitle>
 
-            <VRow v-for="(faqItem, index) in faqForm.faq_data" :key="index" class="faqItem-container">
-              <VCol cols="12" sm="4">
-                <VTextField
-                  v-model="faqItem.question"
-                  placeholder="Text here..."
-                  label="Feature Name"
-                  class="mb-4"
-                />
-              </VCol>
+        <VRow v-for="(faqItem, index) in faqList" :key="index" class="faqItem-container">
+          <VCol cols="12" sm="4">
+            <VTextField
+              v-model="faqItem.question"
+              placeholder="Text here..."
+              label="Feature Name"
+              class="mb-4"
+            />
+          </VCol>
 
-              <VCol cols="12" sm="7">
-                <VTextarea
-                  v-model="faqItem.answer"
-                  label="Feature description"
-                  placeholder="Text here..."
-                  rows="4"
-                />
-              </VCol>
+          <VCol cols="12" sm="7">
+            <VTextarea
+              v-model="faqItem.answer"
+              label="Feature description"
+              placeholder="Text here..."
+              rows="4"
+            />
+          </VCol>
 
-              <VCol cols="12" sm="1" class="d-flex align-center">
-                <VBtn
-                  icon
-                  variant="tonal"
-                  color="error"
-                  rounded="lg"
-                  class="w-100 h-100 d-flex align-center justify-center pa-2"
-                  @click="faqForm.faq_data?.splice(index, 1)"
-                >
-                  <VIcon icon="ri-close-circle-line" />
-                </VBtn>
-              </VCol>
-            </VRow>
-
+          <VCol cols="12" sm="1" class="d-flex align-center">
             <VBtn
-              v-if="faqForm?.faq_data?.length === 0"
-              class="mt-6"
-              prepend-icon="ri-add-line"
+              icon
               variant="tonal"
-              @click="faqForm?.faq_data?.push({ question: '', answer: '' })"
+              color="error"
+              rounded="lg"
+              class="w-100 h-100 d-flex align-center justify-center pa-2"
+              @click="faqList.splice(index, 1)"
             >
-              Add a new faq
+              <VIcon icon="ri-close-circle-line" />
             </VBtn>
+          </VCol>
+        </VRow>
 
-            <VBtn
-              v-else
-              class="mt-6"
-              prepend-icon="ri-add-line"
-              :disabled="!isValidFaq"
-              variant="tonal"
-              @click="faqForm?.faq_data?.push({ question: '', answer: '' })"
-            >
-              Add another option
-            </VBtn>
-          </VCard>
-        </VCol>
-      </VRow>
+        <VBtn
+          v-if="faqList.length === 0"
+          class="mt-6"
+          prepend-icon="ri-add-line"
+          variant="tonal"
+          @click="faqList.push({ question: '', answer: '' })"
+        >
+          Add a new faq
+        </VBtn>
+
+        <VBtn
+          v-else
+          class="mt-6"
+          prepend-icon="ri-add-line"
+          :disabled="!isValidFaq"
+          variant="tonal"
+          @click="faqList.push({ question: '', answer: '' })"
+        >
+          Add another option
+        </VBtn>
+      </VCard>
 
       <!-- 👉 FAQ Button Submit -->
       <div class="w-100 d-flex justify-center align-center">

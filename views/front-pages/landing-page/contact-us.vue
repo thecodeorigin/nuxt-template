@@ -38,13 +38,9 @@ const message = ref('')
           </div>
         </div>
 
-        <div class="mb-2 text-center gap-1">
-          {{ contactData?.contact_us_title }}
-        </div>
+        <div class="mb-2 text-center gap-1" v-html="contactData?.contact_us_title" />
 
-        <p class="text-body-1 font-weight-medium text-center mb-0">
-          {{ contactData?.contact_us_title_desc }}
-        </p>
+        <p class="text-body-1 font-weight-medium text-center mb-0" v-html="contactData?.contact_us_title_desc" />
       </div>
       <div class="mb-15">
         <VRow class="match-height">

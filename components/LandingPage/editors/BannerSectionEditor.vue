@@ -1,19 +1,18 @@
 <script lang="ts" setup>
 import type { VForm } from 'vuetify/components'
 import { z } from 'zod'
+import { cloneDeep } from 'lodash-es'
 import type { BannerSectionType } from '@/types/landing-page'
 
 const { bannerData } = storeToRefs(useLandingPageStore())
 
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const isLoading = ref(false)
 const formRef = ref<VForm>()
 const bannerForm = ref<BannerSectionType>({
   banner_title: '',
   banner_title_desc: '',
   banner_button: '',
-  banner_img: null,
+  banner_image: null,
 })
 
 type BannerFormSchemaType = z.infer<typeof bannerSchema>
@@ -22,17 +21,17 @@ const error = ref<z.ZodFormattedError<BannerFormSchemaType> | null>(null)
 function onTitleUpdate(editorValue: string) {
   if (!editorValue)
     return ''
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return bannerForm.value.banner_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
   if (!editorValue)
     return ''
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return bannerForm.value.banner_title_desc = removePTags(editorValue)
 }
 
-function handleImageUpdate(file: File | null) {
-  console.log('««««« file »»»»»', file)
+async function handleImageUpdate(file: string, _: 'main' | 'sub', __: 'light' | 'dark') {
+  bannerForm.value.banner_image = file
 }
 
 async function onSubmit() {
@@ -82,15 +81,7 @@ async function onSubmit() {
 
 watch(bannerData, (val) => {
   if (val) {
-    bannerForm.value = {
-      banner_title: val.banner_title,
-      banner_title_desc: val.banner_title_desc,
-      banner_button: val.banner_button,
-      banner_img: val.banner_img,
-    }
-
-    tiptapTitleInput.value = val.banner_title
-    tiptapDescriptionInput.value = val.banner_title_desc
+    bannerForm.value = cloneDeep(val)
   }
 })
 </script>
@@ -101,31 +92,34 @@ watch(bannerData, (val) => {
       Banner Section
     </VLabel>
 
-    <VRow class="mb-4">
-      <VCol cols="12" md="6">
-        <VCard class="pa-4">
-          <div class="mb-6 position-relative">
+    <div class="d-flex flex-column gap-4">
+      <!-- 👉 Banner Heading -->
+      <VCard class="pa-4">
+        <VRow>
+          <!-- 👉 Banner Main Title -->
+          <VCol cols="12" sm="6" class="mb-6 position-relative">
             <VLabel class="mb-2 label">
-              Pricing heading:
+              Banner heading:
               <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
             </VLabel>
 
             <TiptapEditor
-              v-model="bannerForm.banner_title"
+              v-model="bannerForm.banner_title as string"
               class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.banner_title && tiptapTitleInput.length === 0 }"
+              :class="{ 'border-error border-opacity-100': error?.banner_title && bannerForm.banner_title?.length === 0 }"
               placeholder="Text here..."
               @update:model-value="onTitleUpdate"
             />
 
-            <div v-if="error?.banner_title && tiptapTitleInput.length === 0">
+            <div v-if="error?.banner_title && bannerForm.banner_title?.length === 0">
               <span v-for="(warn, index) in error?.banner_title?._errors" :key="index" class="text-error error-text">
                 {{ warn }}
               </span>
             </div>
-          </div>
+          </VCol>
 
-          <div class="mb-6 position-relative">
+          <!-- 👉 Banner Description -->
+          <VCol cols="12" sm="6" class="mb-6 position-relative">
             <VLabel class="mb-2 label">
               Description:
               <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
@@ -134,81 +128,81 @@ watch(bannerData, (val) => {
             <TiptapEditor
               v-model="bannerForm.banner_title_desc as string"
               class="border rounded-lg"
-              :class="{ 'border-error border-opacity-100': error?.banner_title_desc && tiptapDescriptionInput.length === 0 }"
+              :class="{ 'border-error border-opacity-100': error?.banner_title_desc && bannerForm.banner_title_desc?.length === 0 }"
               placeholder="Text here..."
               @update:model-value="onDescriptionUpdate"
             />
-            <div v-if="error?.banner_title_desc && tiptapDescriptionInput.length === 0">
+            <div v-if="error?.banner_title_desc && bannerForm.banner_title_desc?.length === 0">
               <span v-for="(warn, index) in error?.banner_title_desc?._errors" :key="index" class="text-error error-text">
                 {{ warn }}
               </span>
             </div>
-          </div>
-        </VCard>
-      </VCol>
+          </VCol>
+        </VRow>
+      </VCard>
 
       <!-- 👉 Banner Image -->
-      <VCol cols="12" md="6">
-        <VCard class="pa-4">
-          <VCardTitle class="text-center mb-4">
-            Upload image
-          </VCardTitle>
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          Upload image
+        </VCardTitle>
 
-          <VRow>
-            <VCol cols="12">
-              <VLabel class="mb-2 label">
-                Banner image:
-              </VLabel>
+        <VRow>
+          <VCol cols="12">
+            <VLabel class="mb-2 label">
+              Banner image:
+            </VLabel>
 
-              <LandingPageImagePreview
-                id="image"
-                :model-value="bannerForm.banner_img as string"
-                @update:model-value="handleImageUpdate"
-              />
-            </VCol>
+            <LandingPageImagePreview
+              id="image"
+              :model-value="bannerForm.banner_image"
+              image-theme="light"
+              image-type="main"
+              @update:model-value="handleImageUpdate"
+            />
+          </VCol>
 
-            <VCol cols="12">
-              <VLabel class="mb-2 label">
-                Button text:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+          <VCol cols="12">
+            <VLabel class="mb-2 label">
+              Button text:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <VTextField
-                v-model="bannerForm.banner_button"
-                :rules="[requiredValidator]"
-              />
-            </VCol>
-          </VRow>
-        </VCard>
-      </VCol>
-    </VRow>
+            <VTextField
+              v-model="bannerForm.banner_button"
+              :rules="[requiredValidator]"
+            />
+          </VCol>
+        </VRow>
+      </VCard>
 
-    <!-- 👉 Banner Button Submit -->
-    <div class="w-100 d-flex justify-center align-center">
-      <VBtn
-        v-if="isLoading === false"
-        class="mx-auto w-100"
-        type="submit"
-        color="primary"
-        variant="outlined"
-        @click="onSubmit"
-      >
-        Update Banner Section Content
-      </VBtn>
-
-      <VBtn
-        v-else
-        class="mx-auto w-100"
-        type="submit"
-        color="primary"
-        variant="outlined"
-      >
-        <VProgressCircular
-          indeterminate
+      <!-- 👉 Banner Button Submit -->
+      <div class="w-100 d-flex justify-center align-center">
+        <VBtn
+          v-if="isLoading === false"
+          class="mx-auto w-100"
+          type="submit"
           color="primary"
-          size="24"
-        />
-      </VBtn>
+          variant="outlined"
+          @click="onSubmit"
+        >
+          Update Banner Section Content
+        </VBtn>
+
+        <VBtn
+          v-else
+          class="mx-auto w-100"
+          type="submit"
+          color="primary"
+          variant="outlined"
+        >
+          <VProgressCircular
+            indeterminate
+            color="primary"
+            size="24"
+          />
+        </VBtn>
+      </div>
     </div>
   </VForm>
 </template>

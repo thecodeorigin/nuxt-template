@@ -130,19 +130,7 @@ export interface Database {
           created_at: string
           description: string | null
           id: string
-          is_voice_recognition: boolean | null
-          model: string | null
-          source_downloadable: string | null
-          source_duration: string | null
-          source_thumbnail: string | null
-          source_title: string | null
-          source_url: string | null
-          structure: Json | null
-          subtitle: Json[] | null
-          summarize: string | null
-          title: string
-          translate_from: string
-          translate_to: string
+          title: string | null
           user_id: string | null
         }
         Insert: {
@@ -150,19 +138,7 @@ export interface Database {
           created_at?: string
           description?: string | null
           id?: string
-          is_voice_recognition?: boolean | null
-          model?: string | null
-          source_downloadable?: string | null
-          source_duration?: string | null
-          source_thumbnail?: string | null
-          source_title?: string | null
-          source_url?: string | null
-          structure?: Json | null
-          subtitle?: Json[] | null
-          summarize?: string | null
-          title: string
-          translate_from?: string
-          translate_to?: string
+          title?: string | null
           user_id?: string | null
         }
         Update: {
@@ -170,19 +146,7 @@ export interface Database {
           created_at?: string
           description?: string | null
           id?: string
-          is_voice_recognition?: boolean | null
-          model?: string | null
-          source_downloadable?: string | null
-          source_duration?: string | null
-          source_thumbnail?: string | null
-          source_title?: string | null
-          source_url?: string | null
-          structure?: Json | null
-          subtitle?: Json[] | null
-          summarize?: string | null
-          title?: string
-          translate_from?: string
-          translate_to?: string
+          title?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -449,6 +413,10 @@ export interface Database {
       }
       sys_landing_page: {
         Row: {
+          banner_button: string | null
+          banner_image: string | null
+          banner_title: string | null
+          banner_title_desc: string | null
           contact_us_card_content: string | null
           contact_us_card_emphasized_heading: Json | null
           contact_us_card_heading: string | null
@@ -469,9 +437,13 @@ export interface Database {
           feature_emphasized_title: Json | null
           feature_title: string | null
           feature_title_desc: string | null
+          hero_main_img_dark: string | null
+          hero_main_img_light: string | null
+          hero_sub_img_dark: string | null
+          hero_sub_img_light: string | null
           hero_title: string
-          hero_title_button: Json | null
-          hero_title_desc: string | null
+          hero_title_button: Json
+          hero_title_desc: string
           id: string
           our_team_data: Json[] | null
           our_team_desc: string[] | null
@@ -484,6 +456,10 @@ export interface Database {
           product_stats: Json[] | null
         }
         Insert: {
+          banner_button?: string | null
+          banner_image?: string | null
+          banner_title?: string | null
+          banner_title_desc?: string | null
           contact_us_card_content?: string | null
           contact_us_card_emphasized_heading?: Json | null
           contact_us_card_heading?: string | null
@@ -504,13 +480,16 @@ export interface Database {
           feature_emphasized_title?: Json | null
           feature_title?: string | null
           feature_title_desc?: string | null
-          hero_title: string
-          hero_title_button?: Json | null
-          hero_title_desc?: string | null
-          id?: string
-          our_team_data?: Json[] | null
-          our_team_desc?: string[] | null
-          our_team_emphasized_title?: Json | null
+          hero_main_img_dark?: string | null
+          hero_main_img_light?: string | null
+          hero_sub_img_dark?: string | null
+          hero_sub_img_light?: string | null
+          hero_title?: string
+          hero_title_button?: Json
+          hero_title_desc?: string
+          id: string
+          our_team_data?: Json | null
+          our_team_desc?: string | null
           our_team_title?: string | null
           pricing_data?: Json[] | null
           pricing_emphasized_title?: Json | null
@@ -519,6 +498,10 @@ export interface Database {
           product_stats?: Json[] | null
         }
         Update: {
+          banner_button?: string | null
+          banner_image?: string | null
+          banner_title?: string | null
+          banner_title_desc?: string | null
           contact_us_card_content?: string | null
           contact_us_card_emphasized_heading?: Json | null
           contact_us_card_heading?: string | null
@@ -539,9 +522,13 @@ export interface Database {
           feature_emphasized_title?: Json | null
           feature_title?: string | null
           feature_title_desc?: string | null
+          hero_main_img_dark?: string | null
+          hero_main_img_light?: string | null
+          hero_sub_img_dark?: string | null
+          hero_sub_img_light?: string | null
           hero_title?: string
-          hero_title_button?: Json | null
-          hero_title_desc?: string | null
+          hero_title_button?: Json
+          hero_title_desc?: string
           id?: string
           our_team_data?: Json[] | null
           our_team_desc?: string[] | null

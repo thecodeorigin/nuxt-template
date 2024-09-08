@@ -5,10 +5,7 @@ import type { ContactUsSectionType } from '@/types/landing-page'
 
 const { contactData } = storeToRefs(useLandingPageStore())
 const formRef = ref<VForm>()
-const tiptapTitleInput = ref<string>('')
-const tiptapDescriptionInput = ref<string>('')
 const isLoading = ref(false)
-const imageFile = ref<File | null>(null)
 
 const contactUsForm = ref<ContactUsSectionType>({
   contact_us_title: '',
@@ -70,17 +67,17 @@ async function onSubmit() {
 function onTitleUpdate(editorValue: string) {
   if (!editorValue)
     return ''
-  return tiptapTitleInput.value = removeEmptyTags(editorValue)
+  return contactUsForm.value.contact_us_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
   if (!editorValue)
     return ''
-  return tiptapDescriptionInput.value = removeEmptyTags(editorValue)
+  return contactUsForm.value.contact_us_title_desc = removePTags(editorValue)
 }
 
-function handleImageUpdate(file: File | null) {
-  console.log('««««« file »»»»»', file)
+function handleImageUpdate(imageUrl: string, _: 'main' | 'sub', __: 'light' | 'dark') {
+  contactUsForm.value.contact_us_card_image = imageUrl
 }
 
 watch(contactData, (value) => {
@@ -93,123 +90,131 @@ watch(contactData, (value) => {
 <template>
   <VForm ref="formRef" @submit.prevent="onSubmit">
     <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
-      About us Section
+      Contact us Section
     </VLabel>
 
     <div class="d-flex flex-column gap-4 mb-4">
-      <VRow>
-        <VCol cols="12" md="6">
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              About us heading
-            </VCardTitle>
+      <!-- 👉 Contact Heading -->
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          Contact us heading
+        </VCardTitle>
 
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                About us heading:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+        <VRow>
+          <!-- 👉 Contact Main Title -->
+          <VCol cols="12" sm="6" class="mb-6">
+            <VLabel class="mb-2 label">
+              Contact us heading:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <TiptapEditor
-                v-model="contactUsForm.contact_us_title"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.contact_us_title && tiptapTitleInput.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onTitleUpdate"
-              />
+            <TiptapEditor
+              v-model="contactUsForm.contact_us_title as string"
+              class="border rounded-lg title-content"
+              :class="{ 'border-error border-opacity-100': error?.contact_us_title && contactUsForm.contact_us_title?.length === 0 }"
+              placeholder="Text here..."
+              @update:model-value="onTitleUpdate"
+            />
 
-              <div v-if="error?.contact_us_title && tiptapTitleInput.length === 0">
-                <span v-for="(warn, index) in error?.contact_us_title?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
+            <div v-if="error?.contact_us_title && contactUsForm.contact_us_title?.length === 0">
+              <span v-for="(warn, index) in error?.contact_us_title?._errors" :key="index" class="text-error error-text">
+                {{ warn }}
+              </span>
             </div>
+          </VCol>
 
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Description:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+          <!-- 👉 Contact Main Title -->
+          <VCol cols="12" sm="6" class="mb-6 position-relative">
+            <VLabel class="mb-2 label">
+              Description:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <TiptapEditor
-                v-model="contactUsForm.contact_us_title_desc as string"
-                class="border rounded-lg"
-                :class="{ 'border-error border-opacity-100': error?.contact_us_title_desc && tiptapDescriptionInput.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onDescriptionUpdate"
-              />
-              <div v-if="error?.contact_us_title_desc && tiptapDescriptionInput.length === 0">
-                <span v-for="(warn, index) in error?.contact_us_title_desc?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
+            <TiptapEditor
+              v-model="contactUsForm.contact_us_title_desc as string"
+              class="border rounded-lg"
+              :class="{ 'border-error border-opacity-100': error?.contact_us_title_desc && contactUsForm.contact_us_title_desc?.length === 0 }"
+              placeholder="Text here..."
+              @update:model-value="onDescriptionUpdate"
+            />
+            <div v-if="error?.contact_us_title_desc && contactUsForm.contact_us_title_desc?.length === 0">
+              <span v-for="(warn, index) in error?.contact_us_title_desc?._errors" :key="index" class="text-error error-text">
+                {{ warn }}
+              </span>
             </div>
-          </VCard>
-        </VCol>
+          </VCol>
+        </VRow>
+      </VCard>
 
-        <VCol cols="12" md="6">
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              About us card heading
-            </VCardTitle>
+      <!-- 👉 Contact Card -->
+      <VCard class="pa-4">
+        <VCardTitle class="text-center mb-4">
+          Contact us card
+        </VCardTitle>
 
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Card title:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+        <VRow>
+          <!-- 👉 Contact Card Title -->
+          <VCol cols="12" sm="6" class="mb-4 position-relative">
+            <VLabel class="mb-2 label">
+              Card title:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <VTextField
-                v-model="contactUsForm.contact_us_card_title"
-                density="compact"
-                variant="outlined"
-                placeholder="Text here..."
-              />
-            </div>
+            <VTextField
+              v-model="contactUsForm.contact_us_card_title"
+              density="compact"
+              variant="outlined"
+              placeholder="Text here..."
+            />
+          </VCol>
 
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Card hheading:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+          <!-- 👉 Contact Card Heading -->
+          <VCol cols="12" sm="6" class="mb-4 position-relative">
+            <VLabel class="mb-2 label">
+              Card heading:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <VTextField
-                v-model="contactUsForm.contact_us_card_heading"
-                density="compact"
-                variant="outlined"
-                placeholder="Text here..."
-              />
-            </div>
+            <VTextField
+              v-model="contactUsForm.contact_us_card_heading"
+              density="compact"
+              variant="outlined"
+              placeholder="Text here..."
+            />
+          </VCol>
 
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Card description:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+          <!-- 👉 Contact Card Description -->
+          <VCol cols="12" md="6" class="mb-4 position-relative">
+            <VLabel class="mb-2 label">
+              Card description:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <VTextarea
-                v-model="contactUsForm.contact_us_card_content"
-                density="compact"
-                variant="outlined"
-                placeholder="Text here..."
-              />
-            </div>
+            <VTextarea
+              v-model="contactUsForm.contact_us_card_content"
+              density="compact"
+              variant="outlined"
+              placeholder="Text here..."
+            />
+          </VCol>
 
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Card image:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
+          <!-- 👉 Contact Card Image -->
+          <VCol cols="12" md="6" class="mb-4 position-relative">
+            <VLabel class="mb-2 label">
+              Card image:
+              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+            </VLabel>
 
-              <LandingPageImagePreview
-                id="image"
-                :model-value="contactUsForm.contact_us_card_image"
-                @update:model-value="handleImageUpdate"
-              />
-            </div>
-          </VCard>
-        </VCol>
-      </VRow>
+            <LandingPageImagePreview
+              id="image"
+              image-theme="light"
+              image-type="main"
+              :model-value="contactUsForm.contact_us_card_image"
+              @update:model-value="handleImageUpdate"
+            />
+          </VCol>
+        </VRow>
+      </VCard>
     </div>
 
     <!-- 👉 Contact Us Button Submit -->

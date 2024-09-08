@@ -149,6 +149,7 @@ const contactUs = [
             <VExpansionPanels
               v-model="activeQuestion"
               multiple
+              class="w-100"
             >
               <VExpansionPanel
                 v-for="item in faq.questions"

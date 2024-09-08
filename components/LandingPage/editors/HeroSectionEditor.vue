@@ -40,11 +40,12 @@ function onDescriptionUpdate(editorValue: string) {
   return heroForm.value.hero_title_desc = removePTags(editorValue)
 }
 
-async function onSubmit() {
+async function onHeroSubmit() {
   const validInput = heroSchema.safeParse(heroForm.value)
 
   if (!validInput.success) {
     error.value = validInput.error.format()
+
     notify('Invalid input, please check and try again', {
       type: 'error',
       timeout: 2000,
@@ -84,6 +85,10 @@ async function onSubmit() {
   }
 }
 
+defineExpose({
+  onHeroSubmit,
+})
+
 watch(heroData, (value) => {
   heroForm.value = {
     hero_title: value?.hero_title ? removeEmptyTags(value.hero_title) : '',
@@ -111,7 +116,7 @@ watch(heroData, (value) => {
 </script>
 
 <template>
-  <form class="landing-page-hero" @submit.prevent="onSubmit">
+  <form class="landing-page-hero" @submit.prevent="onHeroSubmit">
     <VLabel v-if="heroData" class="text-h3 text-capitalize text-primary font-weight-bold mb-4 d-block label">
       Hero Section
     </VLabel>
@@ -119,187 +124,200 @@ watch(heroData, (value) => {
     <div class="d-flex flex-column gap-4">
       <VRow>
         <!-- 👉 Hero Heading -->
-        <VCol cols="12" md="8">
+        <VCol cols="12">
           <VCard class="pa-4">
             <VCardTitle class="text-center mb-4">
               Hero page heading
             </VCardTitle>
 
-            <!-- 👉 Hero Main Title -->
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Hero title:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
-
-              <TiptapEditor
-                v-model="heroForm.hero_title as string"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.hero_title && tiptapTitleInput.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onTitleUpdate"
-              />
-
-              <div v-if="error?.hero_title && tiptapTitleInput.length === 0">
-                <span v-for="(warn, index) in error?.hero_title?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
-            </div>
-
-            <!-- 👉 Hero Main Description -->
-            <div class="mb-6 position-relative">
-              <VLabel class="mb-2 label">
-                Description:
-                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-              </VLabel>
-              <TiptapEditor
-                v-model="heroForm.hero_title_desc as string"
-                class="border rounded-lg "
-                :class="{ 'border-error border-opacity-100': error?.hero_title_desc && tiptapDescriptionInput.length === 0 }"
-                placeholder="Text here..."
-                @update:model-value="onDescriptionUpdate"
-              />
-
-              <div v-if="error?.hero_title_desc && tiptapDescriptionInput.length === 0">
-                <span v-for="(warn, index) in error?.hero_title_desc?._errors" :key="index" class="text-error error-text">
-                  {{ warn }}
-                </span>
-              </div>
-            </div>
-          </VCard>
-        </VCol>
-
-        <!-- 👉 Hero Heading Button -->
-        <VCol cols="12" md="4">
-          <VCard class="pa-4">
-            <VCardTitle class="text-center mb-4">
-              Main page Button
-            </VCardTitle>
-
-            <VLabel class="mb-2 label">
-              Button settings:
-              <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
-            </VLabel>
-
             <VRow>
-              <VCol cols="12" sm="12" class="mb-2 position-relative">
-                <VTextField
-                  v-model="heroForm.hero_title_button.btn_label"
-                  label="Button label"
-                  placeholder="Placeholder Text"
-                  :color="error?.hero_title_button?.btn_label && heroForm.hero_title_button.btn_label.length === 0 ? 'error' : ''"
-                  :base-color="error?.hero_title_button?.btn_label && heroForm.hero_title_button.btn_label.length === 0 ? 'error' : ''"
+              <!-- 👉 Hero Main Title -->
+              <VCol cols="12" sm="6" class="mb-6">
+                <VLabel class="mb-2 label">
+                  Hero title:
+                  <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+                </VLabel>
+
+                <TiptapEditor
+                  v-model="heroForm.hero_title as string"
+                  class="border rounded-lg title-content"
+                  :class="{ 'border-error border-opacity-100': error?.hero_title }"
+                  placeholder="Text here..."
+                  @update:model-value="onTitleUpdate"
                 />
 
-                <div v-if="error?.hero_title_button?.btn_label && heroForm.hero_title_button.btn_label.length === 0">
-                  <span v-for="(warn, index) in error?.hero_title_button?.btn_label?._errors" :key="index" class="text-error error-text mb-3">
+                <div v-if="error?.hero_title">
+                  <span v-for="(warn, index) in error?.hero_title?._errors" :key="index" class="text-error error-text">
                     {{ warn }}
                   </span>
                 </div>
               </VCol>
 
-              <VCol cols="12" sm="12" class="mb-2">
-                <VSelect
-                  v-model="heroForm.hero_title_button.btn_variant"
-                  label="Button style"
-                  :items="['flat', 'contained', 'outlined', 'text']"
+              <!-- 👉 Hero Main Description -->
+              <VCol cols="12" sm="6" class="mb-6 position-relative">
+                <VLabel class="mb-2 label">
+                  Description:
+                  <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+                </VLabel>
+                <TiptapEditor
+                  v-model="heroForm.hero_title_desc as string"
+                  class="border rounded-lg "
+                  :class="{ 'border-error border-opacity-100': error?.hero_title_desc && heroForm.hero_title_desc?.length === 0 }"
+                  placeholder="Text here..."
+                  @update:model-value="onDescriptionUpdate"
                 />
-              </vcol>
 
-              <VCol cols="12" sm="12" class="mb-2">
-                <VSelect
-                  v-model="heroForm.hero_title_button.btn_background"
-                  label="Button style"
-                  :items="['primary', 'secondary', 'accent', 'error', 'warning', 'info', 'success']"
-                />
-              </vcol>
-
-              <VCol cols="12" sm="6" class="mb-2">
-                <VSelect
-                  v-model="heroForm.hero_title_button.btn_radius"
-                  label="Button radius"
-                  :items="['0', 'sx', 'sm', 'md', 'lg', 'xl']"
-                />
+                <div v-if="error?.hero_title_desc && heroForm.hero_title_desc?.length === 0">
+                  <span v-for="(warn, index) in error?.hero_title_desc?._errors" :key="index" class="text-error error-text">
+                    {{ warn }}
+                  </span>
+                </div>
               </VCol>
-
-              <VCol cols="12" sm="6">
-                <VSwitch
-                  v-model="heroForm.hero_title_button.btn_rippled"
-                  label="Ripple effect"
-                />
-              </VCol>
-
-              <VCol cols="12" sm="6">
-                <VSelect
-                  v-model="heroForm.hero_title_button.btn_prepend_icon"
-                  label="Prepend icon"
-                  :item-value="(iconName: string) => getRemixIcon(iconName)"
-                />
-              </VCol>
-
-              <VCol cols="12" sm="6">
-                <VSelect
-                  v-model="heroButtonData.btn_apend_icon"
-                  :items="iconNameList"
-                  label="Prepend icon"
-                  :item-value="(iconName: string) => getRemixIcon(iconName)"
-                />
-              </VCol>
-            </vrow>
+            </VRow>
           </VCard>
+        </VCol>
 
-          <VCard class="pa-4 mt-4 d-flex justify-center align-center flex-column">
-            <VCardTitle class="text-center mb-1">
-              Preview button
+        <!-- 👉 Hero Image -->
+        <VCol cols="12" md="6">
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              Upload image
             </VCardTitle>
-            <VBtn
-              v-bind="heroForm.hero_title_button"
-              :href="heroForm.hero_title_button.btn_link"
-              :prepend-icon="heroForm.hero_title_button.btn_prepend_icon"
-              :append-icon="heroForm.hero_title_button.btn_apend_icon"
-              :variant="heroForm.hero_title_button.btn_variant"
-              :color="heroForm.hero_title_button.btn_background"
-              :ripple="heroForm.hero_title_button.btn_rippled"
-              :rounded="heroForm.hero_title_button.btn_radius"
-            >
-              {{ heroForm.hero_title_button.btn_label }}
-            </vbtn>
+
+            <VRow class="mb-6">
+              <VCol cols="12" sm="6" md="12">
+                <VLabel class="mb-2 label">
+                  Main Hero image light (Optional):
+                </VLabel>
+
+                <LandingPageImagePreview
+                  id="image"
+                  :model-value="heroForm.hero_main_img_light"
+                  image-type="main"
+                  image-theme="light"
+                  @update:model-value="handleMainImageUpdate"
+                />
+              </VCol>
+
+              <VCol cols="12" sm="6" md="12">
+                <VLabel class="mb-2 label">
+                  Main Hero image dark (Optional):
+                </VLabel>
+                <LandingPageImagePreview
+                  id="image"
+                  :model-value="heroForm.hero_main_img_dark"
+                  image-type="main"
+                  image-theme="dark"
+                  @update:model-value="handleMainImageUpdate"
+                />
+              </VCol>
+            </VRow>
+          </VCard>
+        </VCol>
+
+        <!-- 👉 Hero Heading Button -->
+        <VCol cols="12" md="6">
+          <VCard class="pa-4">
+            <VCardTitle class="text-center mb-4">
+              Hero button
+            </VCardTitle>
+
+            <div class="mb-6">
+              <VLabel class="mb-2 label">
+                Button settings:
+                <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
+              </VLabel>
+
+              <VRow>
+                <VCol cols="12" sm="8" class="mb-2 position-relative">
+                  <VTextField
+                    v-model="heroButtonData.btn_label"
+                    label="Button label"
+                    placeholder="Placeholder Text"
+                    :color="error?.hero_title_button?.btn_label && heroButtonData.btn_label.length === 0 ? 'error' : ''"
+                    :base-color="error?.hero_title_button?.btn_label && heroButtonData.btn_label.length === 0 ? 'error' : ''"
+                  />
+
+                  <div v-if="error?.hero_title_button?.btn_label && heroButtonData.btn_label.length === 0">
+                    <span v-for="(warn, index) in error?.hero_title_button?.btn_label?._errors" :key="index" class="text-error error-text mb-3">
+                      {{ warn }}
+                    </span>
+                  </div>
+                </VCol>
+
+                <VCol cols="12" sm="4" class="mb-2">
+                  <VSelect
+                    v-model="heroButtonData.btn_variant"
+                    label="Button style"
+                    :items="['flat', 'contained', 'outlined', 'text']"
+                  />
+                </vcol>
+
+                <VCol cols="12" sm="12" class="mb-2">
+                  <VSelect
+                    v-model="heroButtonData.btn_background"
+                    label="Button style"
+                    :items="['primary', 'secondary', 'accent', 'error', 'warning', 'info', 'success']"
+                  />
+                </vcol>
+
+                <VCol cols="12" sm="6" class="mb-2">
+                  <VSelect
+                    v-model="heroButtonData.btn_radius"
+                    label="Button radius"
+                    :items="['0', 'sx', 'sm', 'md', 'lg', 'xl']"
+                  />
+                </VCol>
+
+                <VCol cols="12" sm="6">
+                  <VSwitch
+                    v-model="heroButtonData.btn_rippled"
+                    label="Ripple effect"
+                  />
+                </VCol>
+
+                <VCol cols="12" sm="6">
+                  <VSelect
+                    v-model="heroButtonData.btn_prepend_icon"
+                    :items="iconNameList"
+                    label="Prepend icon"
+                    :item-value="(iconName: string) => getRemixIcon(iconName)"
+                  />
+                </VCol>
+
+                <VCol cols="12" sm="6">
+                  <VSelect
+                    v-model="heroButtonData.btn_apend_icon"
+                    :items="iconNameList"
+                    label="Prepend icon"
+                    :item-value="(iconName: string) => getRemixIcon(iconName)"
+                  />
+                </VCol>
+              </vrow>
+            </div>
+
+            <div class="d-flex justify-center flex-column">
+              <VCardTitle class="text-center mb-1">
+                Preview button
+              </VCardTitle>
+
+              <VBtn
+                v-bind="heroButtonData"
+                :href="heroButtonData.btn_link"
+                :prepend-icon="heroButtonData.btn_prepend_icon"
+                :append-icon="heroButtonData.btn_apend_icon"
+                :variant="heroButtonData.btn_variant"
+                :color="heroButtonData.btn_background"
+                :ripple="heroButtonData.btn_rippled"
+                :rounded="heroButtonData.btn_radius"
+                class="mx-auto"
+              >
+                {{ heroButtonData.btn_label }}
+              </vbtn>
+            </div>
           </VCard>
         </VCol>
       </VRow>
-
-      <!-- 👉 Hero Image -->
-      <VCard class="pa-4">
-        <VCardTitle class="text-center mb-4">
-          Upload image
-        </VCardTitle>
-
-        <VRow class="mb-6">
-          <VCol cols="12" sm="6">
-            <VLabel class="mb-2 label">
-              Main Hero image light amd dark (Optional):
-            </VLabel>
-
-            <LandingPageImagePreview
-              id="image"
-              :model-value="imageFile"
-              @update:model-value="handleImageUpdate"
-            />
-          </VCol>
-
-          <VCol cols="12" sm="6">
-            <VLabel class="mb-2 label">
-              Sub Hero image light and dark (Optional):
-            </VLabel>
-            <LandingPageImagePreview
-              id="image"
-              :model-value="imageFile"
-              @update:model-value="handleImageUpdate"
-            />
-          </VCol>
-        </VRow>
-      </VCard>
 
       <!-- 👉 Hero Button Submit -->
       <div class="w-100 d-flex justify-center align-center">
@@ -309,7 +327,7 @@ watch(heroData, (value) => {
           type="submit"
           color="primary"
           variant="outlined"
-          @click="onSubmit"
+          @click="onHeroSubmit"
         >
           Update Hero Section Content
         </VBtn>

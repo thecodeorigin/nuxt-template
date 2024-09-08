@@ -48,7 +48,7 @@ const { faqData } = storeToRefs(useLandingPageStore())
           class="flip-in-rtl"
         />
 
-        <div>
+        <div class="flex-grow-1">
           <VExpansionPanels class="py-4">
             <VExpansionPanel
               v-for="(faq, key) in faqData?.faq_data"

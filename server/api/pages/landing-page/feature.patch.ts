@@ -1,7 +1,10 @@
+import { getLandingPageId } from './landingPageID.get'
 import type { FeatureSectionType } from '~/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const featureReqData = await readBody<FeatureSectionType>(event)
+
+  const landingPageId = await getLandingPageId()
 
   const { error } = await supabaseAdmin
     .from('sys_landing_page')
@@ -10,7 +13,7 @@ export default defineEventHandler(async (event) => {
       feature_title_desc: featureReqData.feature_title_desc,
       feature_data: featureReqData.feature_data,
     })
-    .match({ id: 'df02f75c-afab-41ef-ab6d-e1aa04d7ec6d' })
+    .match({ id: landingPageId })
 
   if (error)
     setResponseStatus(event, 400, error.message)

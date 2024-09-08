@@ -13,7 +13,7 @@ const emphasizedTitleSchema = z.object({
 
 const titleSchema = z.string()
   .min(2, { message: 'Title is 2 or more characters long' })
-  .max(100, { message: 'Title is 100 or less characters long' })
+  .max(300, { message: 'Title is 300 or less characters long' })
 
 const descriptionSchema = z.string()
   .min(2, { message: 'Description is 2 or more characters long' })
@@ -27,10 +27,10 @@ const labelSchema = z.string()
 export const heroSchema = z.object({
   hero_title: titleSchema,
   hero_title_desc: descriptionSchema,
-  hero_main_img_light: z.string(),
-  hero_main_img_dark: z.string(),
-  hero_sub_img_light: z.string(),
-  hero_sub_img_dark: z.string(),
+  hero_main_img_light: z.string().nullable(),
+  hero_main_img_dark: z.string().nullable(),
+  hero_sub_img_light: z.string().nullable(),
+  hero_sub_img_dark: z.string().nullable(),
   hero_title_button: z.object({
     btn_link: z.string().nullable(),
     btn_label: labelSchema,
@@ -136,7 +136,7 @@ export const bannerSchema = z.object({
   banner_title: titleSchema,
   banner_title_desc: descriptionSchema,
   banner_button: z.string(),
-  banner_img: z.string().nullable(),
+  banner_image: z.string().nullable(),
 })
 
 // 👉 About us Schema

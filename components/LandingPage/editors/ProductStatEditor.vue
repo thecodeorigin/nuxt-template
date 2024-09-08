@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { VIcon } from 'vuetify/components'
+import { cloneDeep } from 'lodash-es'
 import type { IconList, ProductStatType } from '@/types/landing-page'
 
 const { productStatsData } = storeToRefs(useLandingPageStore())
@@ -12,15 +13,10 @@ const productStatForm = ref<ProductStatType[]>([
     icon: null,
   },
 ])
+
 const isLoading = ref(false)
 
 const iconList: IconList[] = ['Time Line', 'Home', 'Settings', 'User', 'Calendar', 'Search', 'Notification', 'Camera', 'Shopping Cart', 'Heart', 'Layout', 'User Smile']
-
-function populateProductStatForm() {
-  if (productStatsData.value?.product_stats) {
-    productStatForm.value = [...productStatsData.value.product_stats]
-  }
-}
 
 function handleAddProductStat() {
   productStatForm.value.push({ id: crypto.randomUUID(), title: '', value: 0, color: 'primary', icon: null })
@@ -64,12 +60,23 @@ async function onSubmit() {
   }
 }
 
-onMounted(() => {
-  populateProductStatForm()
-})
-
-watch(productStatsData, () => {
-  populateProductStatForm()
+watch(productStatsData, (value) => {
+  if (value && value.product_stats) {
+    if (Array.isArray(value.product_stats)) {
+      productStatForm.value = cloneDeep(
+        value.product_stats.map(stat => ({
+          id: stat.id ?? crypto.randomUUID(),
+          title: stat.title ?? '',
+          value: stat.value ?? 0,
+          color: stat.color ?? 'primary',
+          icon: stat.icon ?? null,
+        })),
+      )
+    }
+  }
+  else {
+    productStatForm.value = []
+  }
 })
 </script>
 

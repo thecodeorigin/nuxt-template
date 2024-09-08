@@ -1,15 +1,16 @@
 <script setup lang="ts">
+import { kFormatter } from '@core/utils/formatters.js'
+import type { ProductStatType } from '@/types/landing-page'
+import { iconMappings } from '@/utils/landingPageUtils.js'
+
 const store = useLandingPageStore()
 const { productStatsData } = storeToRefs(store)
 
 const hoverState: Ref<boolean[]> = ref([])
 
-// Watch for changes in productStatsData and update hoverState accordingly
-watch(productStatsData, (newProductStatsData) => {
-  if (newProductStatsData?.product_stats) {
-    hoverState.value = Array(newProductStatsData.product_stats.length).fill(false)
-  }
-}, { immediate: true })
+const productStatList = computed<ProductStatType[]>(() => {
+  return productStatsData.value?.product_stats
+})
 
 function handleMouseEnter(index: number) {
   hoverState.value[index] = true
@@ -18,6 +19,12 @@ function handleMouseEnter(index: number) {
 function handleMouseLeave(index: number) {
   hoverState.value[index] = false
 }
+
+watch(productStatsData, (newProductStatsData) => {
+  if (newProductStatsData?.product_stats) {
+    hoverState.value = Array(productStatList.value.length).fill(false)
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -26,7 +33,7 @@ function handleMouseLeave(index: number) {
       <div class="py-12">
         <VRow>
           <VCol
-            v-for="(product, index) in productStatsData?.product_stats"
+            v-for="(product, index) in productStatList"
             :key="index"
           >
             <VCard flat>
@@ -40,7 +47,8 @@ function handleMouseLeave(index: number) {
                   @mouseleave="() => handleMouseLeave(index)"
                 >
                   <VIcon
-                    :icon="product.icon"
+                    v-if="product.icon"
+                    :icon="iconMappings[product.icon]"
                     size="42"
                   />
                 </VAvatar>

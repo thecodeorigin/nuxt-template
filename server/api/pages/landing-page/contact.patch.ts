@@ -1,7 +1,10 @@
+import { getLandingPageId } from './landingPageID.get'
 import type { ContactUsSectionType } from '~/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const contactUsReqData = await readBody<ContactUsSectionType>(event)
+
+  const landingPageId = await getLandingPageId()
 
   const { error } = await supabaseAdmin
     .from('sys_landing_page')
@@ -13,7 +16,7 @@ export default defineEventHandler(async (event) => {
       contact_us_title: contactUsReqData.contact_us_title,
       contact_us_title_desc: contactUsReqData.contact_us_title_desc as string,
     })
-    .match({ id: 'df02f75c-afab-41ef-ab6d-e1aa04d7ec6d' })
+    .match({ id: landingPageId })
 
   if (error)
     setResponseStatus(event, 400, error.message)
