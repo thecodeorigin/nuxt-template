@@ -1,16 +1,16 @@
 import { foreignKey, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { sysUsers } from './sys.schema'
-import { posts } from './post.schema'
-import { projects } from './project.schema'
+import { postSchema } from './post.schema'
+import { projectSchema } from './project.schema'
+import { sysUserSchema } from './sys_users.schema'
 
-export const categories = pgTable('categories', {
+export const categorySchema = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   name: text('name'),
   slug: text('slug').notNull(),
   description: text('description'),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
   imageUrl: text('image_url'),
   userId: uuid('user_id'),
   parentId: uuid('parent_id'),
@@ -18,7 +18,7 @@ export const categories = pgTable('categories', {
   return {
     publicCategoriesUserIdFkey: foreignKey({
       columns: [table.userId],
-      foreignColumns: [sysUsers.id],
+      foreignColumns: [sysUserSchema.id],
       name: 'public_categories_user_id_fkey',
     }),
     publicCategoriesParentIdFkey: foreignKey({
@@ -30,19 +30,19 @@ export const categories = pgTable('categories', {
   }
 })
 
-export const categoriesRelations = relations(categories, ({ one, many }) => ({
-  sysUser: one(sysUsers, {
-    fields: [categories.userId],
-    references: [sysUsers.id],
+export const categoriesRelations = relations(categorySchema, ({ one, many }) => ({
+  sysUser: one(sysUserSchema, {
+    fields: [categorySchema.userId],
+    references: [sysUserSchema.id],
   }),
-  category: one(categories, {
-    fields: [categories.parentId],
-    references: [categories.id],
+  category: one(categorySchema, {
+    fields: [categorySchema.parentId],
+    references: [categorySchema.id],
     relationName: 'categories_parentId_categories_id',
   }),
-  categories: many(categories, {
+  categorySchema: many(categorySchema, {
     relationName: 'categories_parentId_categories_id',
   }),
-  posts: many(posts),
-  projects: many(projects),
+  postSchema: many(postSchema),
+  projectSchema: many(projectSchema),
 }))

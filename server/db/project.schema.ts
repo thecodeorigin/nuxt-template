@@ -1,11 +1,11 @@
 import { foreignKey, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { sysUsers } from './sys.schema'
-import { categories } from './category.schema'
+import { categorySchema } from './category.schema'
+import { sysUserSchema } from './sys_users.schema'
 
-export const projects = pgTable('projects', {
+export const projectSchema = pgTable('projects', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   title: text('title'),
   description: text('description'),
   userId: uuid('user_id').defaultRandom(),
@@ -14,24 +14,24 @@ export const projects = pgTable('projects', {
   return {
     publicProjectsUserIdFkey: foreignKey({
       columns: [table.userId],
-      foreignColumns: [sysUsers.id],
+      foreignColumns: [sysUserSchema.id],
       name: 'public_projects_user_id_fkey',
     }).onUpdate('cascade').onDelete('cascade'),
     publicProjectsCategoryIdFkey: foreignKey({
       columns: [table.categoryId],
-      foreignColumns: [categories.id],
+      foreignColumns: [categorySchema.id],
       name: 'public_projects_category_id_fkey',
     }).onUpdate('cascade').onDelete('cascade'),
   }
 })
 
-export const projectsRelations = relations(projects, ({ one }) => ({
-  sysUser: one(sysUsers, {
-    fields: [projects.userId],
-    references: [sysUsers.id],
+export const projectsRelations = relations(projectSchema, ({ one }) => ({
+  sysUser: one(sysUserSchema, {
+    fields: [projectSchema.userId],
+    references: [sysUserSchema.id],
   }),
-  category: one(categories, {
-    fields: [projects.categoryId],
-    references: [categories.id],
+  category: one(categorySchema, {
+    fields: [projectSchema.categoryId],
+    references: [categorySchema.id],
   }),
 }))

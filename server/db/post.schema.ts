@@ -1,41 +1,41 @@
 import { foreignKey, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { categories } from './category.schema'
-import { sysUsers } from './sys.schema'
+import { categorySchema } from './category.schema'
+import { sysUserSchema } from './sys_users.schema'
 
-export const posts = pgTable('posts', {
+export const postSchema = pgTable('posts', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   title: text('title'),
   slug: text('slug').notNull(),
   description: text('description'),
   body: text('body'),
   categoryId: uuid('category_id'),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
   userId: uuid('user_id').defaultRandom(),
 }, (table) => {
   return {
     publicPostsCategoryIdFkey: foreignKey({
       columns: [table.categoryId],
-      foreignColumns: [categories.id],
+      foreignColumns: [categorySchema.id],
       name: 'public_posts_category_id_fkey',
     }),
     publicPostsUserIdFkey: foreignKey({
       columns: [table.userId],
-      foreignColumns: [sysUsers.id],
+      foreignColumns: [sysUserSchema.id],
       name: 'public_posts_user_id_fkey',
     }).onDelete('cascade'),
     postsSlugKey: unique('posts_slug_key').on(table.slug),
   }
 })
 
-export const postsRelations = relations(posts, ({ one }) => ({
-  category: one(categories, {
-    fields: [posts.categoryId],
-    references: [categories.id],
+export const postsRelations = relations(postSchema, ({ one }) => ({
+  category: one(categorySchema, {
+    fields: [postSchema.categoryId],
+    references: [categorySchema.id],
   }),
-  sysUser: one(sysUsers, {
-    fields: [posts.userId],
-    references: [sysUsers.id],
+  sysUser: one(sysUserSchema, {
+    fields: [postSchema.userId],
+    references: [sysUserSchema.id],
   }),
 }))
