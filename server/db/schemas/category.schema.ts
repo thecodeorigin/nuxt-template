@@ -1,10 +1,11 @@
 import { foreignKey, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { postSchema } from './post.schema'
-import { projectSchema } from './project.schema'
-import { sysUserSchema } from './sys_users.schema'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { postTable } from './post.schema'
+import { projectTable } from './project.schema'
+import { sysUserTable } from './sys_users.schema'
 
-export const categorySchema = pgTable('categories', {
+export const categoryTable = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   name: text('name'),
   slug: text('slug').notNull(),
@@ -18,7 +19,7 @@ export const categorySchema = pgTable('categories', {
   return {
     publicCategoriesUserIdFkey: foreignKey({
       columns: [table.userId],
-      foreignColumns: [sysUserSchema.id],
+      foreignColumns: [sysUserTable.id],
       name: 'public_categories_user_id_fkey',
     }),
     publicCategoriesParentIdFkey: foreignKey({
@@ -30,19 +31,23 @@ export const categorySchema = pgTable('categories', {
   }
 })
 
-export const categoriesRelations = relations(categorySchema, ({ one, many }) => ({
-  sysUser: one(sysUserSchema, {
-    fields: [categorySchema.userId],
-    references: [sysUserSchema.id],
+export const insertCategorySchema = createInsertSchema(categoryTable)
+
+export const selectCategorySchema = createSelectSchema(categoryTable)
+
+export const categoryRelations = relations(categoryTable, ({ one, many }) => ({
+  sysUser: one(sysUserTable, {
+    fields: [categoryTable.userId],
+    references: [sysUserTable.id],
   }),
-  category: one(categorySchema, {
-    fields: [categorySchema.parentId],
-    references: [categorySchema.id],
+  category: one(categoryTable, {
+    fields: [categoryTable.parentId],
+    references: [categoryTable.id],
     relationName: 'categories_parentId_categories_id',
   }),
-  categorySchema: many(categorySchema, {
+  categorySchema: many(categoryTable, {
     relationName: 'categories_parentId_categories_id',
   }),
-  postSchema: many(postSchema),
-  projectSchema: many(projectSchema),
+  postSchema: many(postTable),
+  projectSchema: many(projectTable),
 }))

@@ -1,4 +1,4 @@
-import { pgEnum, pgSchema } from 'drizzle-orm/pg-core'
+import { pgEnum } from 'drizzle-orm/pg-core'
 
 export const permissionAction = pgEnum('permission_action', ['create', 'read', 'update', 'delete', 'manage'])
 

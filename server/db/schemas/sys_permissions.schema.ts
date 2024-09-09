@@ -1,9 +1,10 @@
 import { foreignKey, pgTable, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { permissionAction, permissionSubject } from './enum.schema'
-import { sysRoleSchema } from './sys_roles.schema'
+import { sysRoleTable } from './sys_roles.schema'
 
-export const sysPermissionSchema = pgTable('sys_permissions', {
+export const sysPermissionTable = pgTable('sys_permissions', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   roleId: uuid('role_id'),
   action: permissionAction('action').default('read').notNull(),
@@ -12,15 +13,19 @@ export const sysPermissionSchema = pgTable('sys_permissions', {
   return {
     publicSysPermissionsRoleIdFkey: foreignKey({
       columns: [table.roleId],
-      foreignColumns: [sysRoleSchema.id],
+      foreignColumns: [sysRoleTable.id],
       name: 'public_sys_permissions_role_id_fkey',
     }).onDelete('cascade'),
   }
 })
 
-export const sysPermissionsRelations = relations(sysPermissionSchema, ({ one }) => ({
-  sysRole: one(sysRoleSchema, {
-    fields: [sysPermissionSchema.roleId],
-    references: [sysRoleSchema.id],
+export const insertSysPermissionSchema = createInsertSchema(sysPermissionTable)
+
+export const selectSysPermissionSchema = createSelectSchema(sysPermissionTable)
+
+export const sysPermissionRelations = relations(sysPermissionTable, ({ one }) => ({
+  sysRole: one(sysRoleTable, {
+    fields: [sysPermissionTable.roleId],
+    references: [sysRoleTable.id],
   }),
 }))

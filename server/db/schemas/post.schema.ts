@@ -1,9 +1,10 @@
 import { foreignKey, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { categorySchema } from './category.schema'
-import { sysUserSchema } from './sys_users.schema'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { categoryTable } from './category.schema'
+import { sysUserTable } from './sys_users.schema'
 
-export const postSchema = pgTable('posts', {
+export const postTable = pgTable('posts', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   title: text('title'),
   slug: text('slug').notNull(),
@@ -17,25 +18,29 @@ export const postSchema = pgTable('posts', {
   return {
     publicPostsCategoryIdFkey: foreignKey({
       columns: [table.categoryId],
-      foreignColumns: [categorySchema.id],
+      foreignColumns: [categoryTable.id],
       name: 'public_posts_category_id_fkey',
     }),
     publicPostsUserIdFkey: foreignKey({
       columns: [table.userId],
-      foreignColumns: [sysUserSchema.id],
+      foreignColumns: [sysUserTable.id],
       name: 'public_posts_user_id_fkey',
     }).onDelete('cascade'),
     postsSlugKey: unique('posts_slug_key').on(table.slug),
   }
 })
 
-export const postsRelations = relations(postSchema, ({ one }) => ({
-  category: one(categorySchema, {
-    fields: [postSchema.categoryId],
-    references: [categorySchema.id],
+export const insertPostSchema = createInsertSchema(postTable)
+
+export const selectPostSchema = createSelectSchema(postTable)
+
+export const postRelations = relations(postTable, ({ one }) => ({
+  category: one(categoryTable, {
+    fields: [postTable.categoryId],
+    references: [categoryTable.id],
   }),
-  sysUser: one(sysUserSchema, {
-    fields: [postSchema.userId],
-    references: [sysUserSchema.id],
+  sysUser: one(sysUserTable, {
+    fields: [postTable.userId],
+    references: [sysUserTable.id],
   }),
 }))

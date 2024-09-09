@@ -127,6 +127,7 @@
     "@vueuse/nuxt": "^10.11.0",
     "drizzle-kit": "^0.24.2",
     "drizzle-orm": "^0.33.0",
+    "drizzle-zod": "^0.5.1",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-import-resolver-typescript": "3.6.1",

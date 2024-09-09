@@ -1,8 +1,9 @@
 import { date, foreignKey, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { sysUserSchema } from './sys_users.schema'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { sysUserTable } from './sys_users.schema'
 
-export const userPaymentMethodSchema = pgTable('user_payment_methods', {
+export const userPaymentMethodTable = pgTable('user_payment_methods', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   number: text('number').notNull(),
   placeholder: text('placeholder').notNull(),
@@ -15,15 +16,19 @@ export const userPaymentMethodSchema = pgTable('user_payment_methods', {
   return {
     publicUserPaymentMethodsUserIdFkey: foreignKey({
       columns: [table.userId],
-      foreignColumns: [sysUserSchema.id],
+      foreignColumns: [sysUserTable.id],
       name: 'public_user_payment_methods_user_id_fkey',
     }).onDelete('cascade'),
   }
 })
 
-export const userPaymentMethodsRelations = relations(userPaymentMethodSchema, ({ one }) => ({
-  sysUser: one(sysUserSchema, {
-    fields: [userPaymentMethodSchema.userId],
-    references: [sysUserSchema.id],
+export const insertUserPaymentMethodSchema = createInsertSchema(userPaymentMethodTable)
+
+export const selectUserPaymentMethodSchema = createSelectSchema(userPaymentMethodTable)
+
+export const userPaymentMethodRelations = relations(userPaymentMethodTable, ({ one }) => ({
+  sysUser: one(sysUserTable, {
+    fields: [userPaymentMethodTable.userId],
+    references: [sysUserTable.id],
   }),
 }))
