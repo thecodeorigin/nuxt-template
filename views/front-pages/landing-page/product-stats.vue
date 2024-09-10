@@ -28,7 +28,7 @@ watch(productStatsData, (newProductStatsData) => {
 </script>
 
 <template>
-  <div :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
+  <div v-if="productStatList" :style="{ 'background-color': 'rgb(var(--v-theme-surface))' }">
     <VContainer>
       <div class="py-12">
         <VRow>

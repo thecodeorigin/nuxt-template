@@ -2,7 +2,9 @@
 import type { VForm } from 'vuetify/components'
 import { z } from 'zod'
 import { cloneDeep } from 'lodash-es'
-import type { BannerSectionType } from '@/types/landing-page'
+import type { BannerSectionType, LandingPageStatusEmit } from '@/types/landing-page'
+
+const emit = defineEmits<LandingPageStatusEmit>()
 
 const { bannerData } = storeToRefs(useLandingPageStore())
 
@@ -19,14 +21,16 @@ type BannerFormSchemaType = z.infer<typeof bannerSchema>
 const error = ref<z.ZodFormattedError<BannerFormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
-  if (!editorValue)
-    return ''
+  if (editorValue.trim().length > 0 && error.value?.banner_title) {
+    error.value.banner_title._errors = []
+  }
   return bannerForm.value.banner_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  if (!editorValue)
-    return ''
+  if (editorValue.trim().length > 0 && error.value?.banner_title_desc) {
+    error.value.banner_title_desc._errors = []
+  }
   return bannerForm.value.banner_title_desc = removePTags(editorValue)
 }
 
@@ -34,7 +38,7 @@ async function handleImageUpdate(file: string, _: 'main' | 'sub', __: 'light' | 
   bannerForm.value.banner_image = file
 }
 
-async function onSubmit() {
+async function onBannerSubmit() {
   const validInput = bannerSchema.safeParse(bannerForm.value)
 
   if (!validInput.success) {
@@ -43,10 +47,13 @@ async function onSubmit() {
       type: 'error',
       timeout: 5000,
     })
+
+    emit('update:sectionStatus', 'error')
   }
   else {
     error.value = null
     isLoading.value = true
+    emit('update:sectionStatus', 'loading')
 
     try {
       const res = await $api('/api/pages/landing-page/banner', {
@@ -59,6 +66,8 @@ async function onSubmit() {
           type: 'success',
           timeout: 3000,
         })
+
+        emit('update:sectionStatus', 'success')
       }
     }
     catch (error) {
@@ -72,12 +81,18 @@ async function onSubmit() {
           timeout: 3000,
         })
       }
+
+      emit('update:sectionStatus', 'error')
     }
     finally {
       isLoading.value = false
     }
   }
 }
+
+defineExpose({
+  onBannerSubmit,
+})
 
 watch(bannerData, (val) => {
   if (val) {
@@ -87,7 +102,7 @@ watch(bannerData, (val) => {
 </script>
 
 <template>
-  <VForm ref="formRef" @submit.prevent="onSubmit">
+  <VForm ref="formRef" @submit.prevent="onBannerSubmit">
     <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
       Banner Section
     </VLabel>
@@ -105,13 +120,13 @@ watch(bannerData, (val) => {
 
             <TiptapEditor
               v-model="bannerForm.banner_title as string"
-              class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.banner_title && bannerForm.banner_title?.length === 0 }"
+              class="border rounded-lg title-content mb-2"
+              :class="{ 'border-error border-opacity-100': error?.banner_title && error?.banner_title?._errors.length > 0 }"
               placeholder="Text here..."
               @update:model-value="onTitleUpdate"
             />
 
-            <div v-if="error?.banner_title && bannerForm.banner_title?.length === 0">
+            <div v-if="error?.banner_title">
               <span v-for="(warn, index) in error?.banner_title?._errors" :key="index" class="text-error error-text">
                 {{ warn }}
               </span>
@@ -127,12 +142,12 @@ watch(bannerData, (val) => {
 
             <TiptapEditor
               v-model="bannerForm.banner_title_desc as string"
-              class="border rounded-lg"
-              :class="{ 'border-error border-opacity-100': error?.banner_title_desc && bannerForm.banner_title_desc?.length === 0 }"
+              class="border rounded-lg mb-2"
+              :class="{ 'border-error border-opacity-100': error?.banner_title_desc && error?.banner_title_desc?._errors.length > 0 }"
               placeholder="Text here..."
               @update:model-value="onDescriptionUpdate"
             />
-            <div v-if="error?.banner_title_desc && bannerForm.banner_title_desc?.length === 0">
+            <div v-if="error?.banner_title_desc">
               <span v-for="(warn, index) in error?.banner_title_desc?._errors" :key="index" class="text-error error-text">
                 {{ warn }}
               </span>
@@ -184,7 +199,6 @@ watch(bannerData, (val) => {
           type="submit"
           color="primary"
           variant="outlined"
-          @click="onSubmit"
         >
           Update Banner Section Content
         </VBtn>
@@ -209,8 +223,16 @@ watch(bannerData, (val) => {
 
 <style lang="scss" scoped>
 .title-content {
-    :deep(.ProseMirror) {
-      min-block-size: 5vh;
-    }
+  :deep(.ProseMirror) {
+    min-block-size: 5vh;
   }
+}
+
+.error-text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
 </style>

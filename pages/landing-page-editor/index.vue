@@ -1,6 +1,11 @@
 <script lang="ts" setup>
 import type { LandingPageStatus } from '@/types/landing-page'
 
+ type SectionNames = 'hero' | 'feature' | 'review' | 'ourTeam' | 'pricing' | 'productStats' | 'faq' | 'banner' | 'contactUs'
+
+type SectionStatuses = Record<SectionNames, LandingPageStatus>
+type SectionLoadingStatuses = Record<SectionNames, boolean>
+
 definePageMeta({
   sidebar: {
     title: 'Landing Page Editor',
@@ -8,19 +13,69 @@ definePageMeta({
     icon: { icon: 'ri-file-text-line' },
   },
 })
-const heroSectionStatus = ref<LandingPageStatus>('default')
-const featureSectionStatus = ref<LandingPageStatus>('default')
-const reviewSectionStatus = ref<LandingPageStatus>('default')
-const ourTeamSectionStatus = ref<LandingPageStatus>('default')
-const pricingSectionStatus = ref<LandingPageStatus>('default')
-const productStatSectionStatus = ref<LandingPageStatus>('default')
-const faqSectionStatus = ref<LandingPageStatus>('default')
-const bannerSectionStatus = ref<LandingPageStatus>('default')
-const contactUsSectionStatus = ref<LandingPageStatus>('default')
+const sectionStatuses = ref<SectionStatuses>({
+  hero: 'default',
+  feature: 'default',
+  review: 'default',
+  ourTeam: 'default',
+  pricing: 'default',
+  productStats: 'default',
+  faq: 'default',
+  banner: 'default',
+  contactUs: 'default',
+})
 
-const heroRef = ref<HTMLElement | null>(null)
+const sectionLoadingStatuses = ref<SectionLoadingStatuses>({
+  hero: false,
+  feature: false,
+  review: false,
+  ourTeam: false,
+  pricing: false,
+  productStats: false,
+  faq: false,
+  banner: false,
+  contactUs: false,
+})
+const heroRef = ref()
+const featureRef = ref()
+const reviewRef = ref()
+const ourTeamRef = ref()
+const pricingRef = ref()
+const productStatsRef = ref()
+const faqRef = ref()
+const bannerRef = ref()
+const contactUsRef = ref()
 
-function handleSubmitAllSections() {
+const isAnySectionError = computed(() => {
+  return Object.values(sectionStatuses.value).includes('error')
+})
+async function handleSectionResponse(section: keyof SectionStatuses, status: LandingPageStatus) {
+  if (!status) {
+    notify('Failed to update, please try again', {
+      type: 'error',
+      timeout: 5000,
+    })
+    return
+  }
+  sectionLoadingStatuses.value[section] = false
+  sectionStatuses.value[section] = status
+}
+
+async function handleSubmitAllSections() {
+  // Set all loading statuses to true
+  Object.keys(sectionLoadingStatuses.value).forEach((key) => {
+    sectionLoadingStatuses.value[key as keyof SectionLoadingStatuses] = true
+  })
+
+  heroRef.value?.onHeroSubmit()
+  featureRef.value?.onFeatureSubmit()
+  reviewRef.value?.onReviewSubmit()
+  ourTeamRef.value?.onOurTeamSubmit()
+  pricingRef.value?.onPricingSubmit()
+  productStatsRef.value?.onProductStatsSubmit()
+  faqRef.value?.onFaqSubmit()
+  bannerRef.value?.onBannerSubmit()
+  contactUsRef.value?.onContactSubmit()
 }
 
 function handleNavigate() {
@@ -30,6 +85,20 @@ function handleNavigate() {
     },
   })
 }
+
+onMounted(() => {
+  sectionStatuses.value = {
+    hero: 'default',
+    feature: 'default',
+    review: 'default',
+    ourTeam: 'default',
+    pricing: 'default',
+    productStats: 'default',
+    faq: 'default',
+    banner: 'default',
+    contactUs: 'default',
+  }
+})
 </script>
 
 <template>
@@ -41,54 +110,104 @@ function handleNavigate() {
     </div>
 
     <VRow>
+      <!-- 👉 editors -->
       <VCol col="12" md="9">
         <form class="landing-page-editor">
+          <!-- Hero sections -->
           <client-only>
-            <HeroSectionEditor id="hero-section" ref="heroRef" />
-          </client-only>
-
-          <VDivider class="my-8" />
-          <client-only>
-            <FeatureSectionEditor id="feature-section" />
-          </client-only>
-
-          <VDivider class="my-8" />
-          <client-only>
-            <ReviewSectionEditor id="review-section" />
+            <HeroSectionEditor
+              id="hero-section"
+              ref="heroRef"
+              @update:section-status="(status) => handleSectionResponse('hero', status)"
+            />
           </client-only>
 
           <VDivider class="my-8" />
 
+          <!-- Feature sections -->
           <client-only>
-            <OurTeamSectionEditor id="our-team-section" />
+            <FeatureSectionEditor
+              id="feature-section"
+              ref="featureRef"
+              @update:section-status="(status) => handleSectionResponse('feature', status)"
+            />
           </client-only>
 
           <VDivider class="my-8" />
 
+          <!-- Review sections -->
           <client-only>
-            <PricingSectionEditor id="pricing-section" />
+            <ReviewSectionEditor
+              id="review-section"
+              ref="reviewRef"
+              @update:section-status="(status) => handleSectionResponse('review', status)"
+            />
           </client-only>
 
           <VDivider class="my-8" />
 
+          <!-- Our Team sections -->
           <client-only>
-            <ProductStatEditor id="product-stats-section" />
+            <OurTeamSectionEditor
+              id="our-team-section"
+              ref="ourTeamRef"
+              @update:section-status="(status) => handleSectionResponse('ourTeam', status)"
+            />
           </client-only>
 
           <VDivider class="my-8" />
 
+          <!-- Pricing sections -->
           <client-only>
-            <FaqSectionEditor id="faq-section" />
+            <PricingSectionEditor
+              id="pricing-section"
+              ref="pricingRef"
+              @update:section-status="(status) => handleSectionResponse('pricing', status)"
+            />
           </client-only>
 
           <VDivider class="my-8" />
+
+          <!-- Product Stats sections -->
           <client-only>
-            <BannerSectionEditor id="banner-section" />
+            <ProductStatEditor
+              id="product-stats-section"
+              ref="productStatsRef"
+              @update:section-status="(status) => handleSectionResponse('productStats', status)"
+            />
           </client-only>
 
           <VDivider class="my-8" />
+
+          <!-- FAQ sections -->
           <client-only>
-            <ContactUsSectionEditor id="contact-us-section" />
+            <FaqSectionEditor
+              id="faq-section"
+              ref="faqRef"
+              @update:section-status="(status) => handleSectionResponse('faq', status)"
+            />
+          </client-only>
+
+          <VDivider class="my-8" />
+
+          <!-- Banner sections -->
+          <client-only>
+            <BannerSectionEditor
+              id="banner-section"
+              ref="bannerRef"
+              @update:section-status="(status) => handleSectionResponse('banner', status)"
+            />
+          </client-only>
+
+          <VDivider class="my-8" />
+
+          <!-- Contact Us sections -->
+          <client-only>
+            <ContactUsSectionEditor
+              id="contact-us-section"
+              ref="contactUsRef"
+              @update:section-status="(status) => handleSectionResponse('contactUs', status)"
+            />
           </client-only>
         </form>
       </VCol>
@@ -133,15 +252,15 @@ function handleNavigate() {
               </span>
 
               <VProgressCircular
-                v-if="heroSectionStatus === 'loading'"
+                v-if="sectionStatuses.hero === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="heroSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.hero === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="heroSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.hero === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -156,15 +275,15 @@ function handleNavigate() {
               </span>
 
               <VProgressCircular
-                v-if="heroSectionStatus === 'loading'"
+                v-if="sectionStatuses.hero === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="featureSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.feature === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="featureSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.feature === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -179,15 +298,15 @@ function handleNavigate() {
               </span>
 
               <VProgressCircular
-                v-if="reviewSectionStatus === 'loading'"
+                v-if="sectionStatuses.review === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="reviewSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.review === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="reviewSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.review === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -203,15 +322,15 @@ function handleNavigate() {
 
               <VProgressCircular
 
-                v-if="ourTeamSectionStatus === 'loading'"
+                v-if="sectionStatuses.ourTeam === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="ourTeamSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.ourTeam === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="ourTeamSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.ourTeam === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -227,15 +346,15 @@ function handleNavigate() {
 
               <VProgressCircular
 
-                v-if="pricingSectionStatus === 'loading'"
+                v-if="sectionStatuses.pricing === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="pricingSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.pricing === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="pricingSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.pricing === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -251,15 +370,15 @@ function handleNavigate() {
 
               <VProgressCircular
 
-                v-if="productStatSectionStatus === 'loading'"
+                v-if="sectionStatuses.productStats === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="productStatSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.productStats === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="productStatSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.productStats === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -275,15 +394,15 @@ function handleNavigate() {
 
               <VProgressCircular
 
-                v-if="faqSectionStatus === 'loading'"
+                v-if="sectionStatuses.faq === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="faqSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.faq === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="faqSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.faq === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -299,15 +418,15 @@ function handleNavigate() {
 
               <VProgressCircular
 
-                v-if="bannerSectionStatus === 'loading'"
+                v-if="sectionStatuses.banner === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="bannerSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.banner === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="bannerSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.banner === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -323,15 +442,15 @@ function handleNavigate() {
 
               <VProgressCircular
 
-                v-if="contactUsSectionStatus === 'loading'"
+                v-if="sectionStatuses.contactUs === 'loading'"
                 indeterminate
                 color="primary"
                 size="20"
               />
 
-              <VIcon v-else-if="contactUsSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+              <VIcon v-else-if="sectionStatuses.contactUs === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-              <VIcon v-else-if="contactUsSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+              <VIcon v-else-if="sectionStatuses.contactUs === 'error'" icon="ri-close-circle-line" class="text-error" />
 
               <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
             </NuxtLink>
@@ -347,7 +466,7 @@ function handleNavigate() {
           <v-menu>
             <template #activator="{ props }">
               <v-btn
-                color="primary"
+                :color="isAnySectionError ? 'error' : 'primary'"
                 width="100%"
                 v-bind="props"
               >
@@ -365,15 +484,15 @@ function handleNavigate() {
                 </span>
 
                 <VProgressCircular
-                  v-if="heroSectionStatus === 'loading'"
+                  v-if="sectionStatuses.hero === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="heroSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.hero === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="heroSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.hero === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -388,15 +507,15 @@ function handleNavigate() {
                 </span>
 
                 <VProgressCircular
-                  v-if="heroSectionStatus === 'loading'"
+                  v-if="sectionStatuses.hero === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="featureSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.feature === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="featureSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.feature === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -411,15 +530,15 @@ function handleNavigate() {
                 </span>
 
                 <VProgressCircular
-                  v-if="reviewSectionStatus === 'loading'"
+                  v-if="sectionStatuses.review === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="reviewSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.review === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="reviewSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.review === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -435,15 +554,15 @@ function handleNavigate() {
 
                 <VProgressCircular
 
-                  v-if="ourTeamSectionStatus === 'loading'"
+                  v-if="sectionStatuses.ourTeam === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="ourTeamSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.ourTeam === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="ourTeamSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.ourTeam === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -459,15 +578,15 @@ function handleNavigate() {
 
                 <VProgressCircular
 
-                  v-if="pricingSectionStatus === 'loading'"
+                  v-if="sectionStatuses.pricing === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="pricingSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.pricing === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="pricingSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.pricing === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -483,15 +602,15 @@ function handleNavigate() {
 
                 <VProgressCircular
 
-                  v-if="productStatSectionStatus === 'loading'"
+                  v-if="sectionStatuses.productStats === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="productStatSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.productStats === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="productStatSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.productStats === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -507,15 +626,15 @@ function handleNavigate() {
 
                 <VProgressCircular
 
-                  v-if="faqSectionStatus === 'loading'"
+                  v-if="sectionStatuses.faq === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="faqSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.faq === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="faqSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.faq === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -531,15 +650,15 @@ function handleNavigate() {
 
                 <VProgressCircular
 
-                  v-if="bannerSectionStatus === 'loading'"
+                  v-if="sectionStatuses.banner === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="bannerSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.banner === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="bannerSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.banner === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>
@@ -555,15 +674,15 @@ function handleNavigate() {
 
                 <VProgressCircular
 
-                  v-if="contactUsSectionStatus === 'loading'"
+                  v-if="sectionStatuses.contactUs === 'loading'"
                   indeterminate
                   color="primary"
                   size="20"
                 />
 
-                <VIcon v-else-if="contactUsSectionStatus === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
+                <VIcon v-else-if="sectionStatuses.contactUs === 'success'" icon="ri-checkbox-circle-line" class="text-success" />
 
-                <VIcon v-else-if="contactUsSectionStatus === 'error'" icon="ri-close-circle-line" class="text-error" />
+                <VIcon v-else-if="sectionStatuses.contactUs === 'error'" icon="ri-close-circle-line" class="text-error" />
 
                 <VIcon v-else icon="ri-arrow-right-s-line" class="text-primary" />
               </NuxtLink>

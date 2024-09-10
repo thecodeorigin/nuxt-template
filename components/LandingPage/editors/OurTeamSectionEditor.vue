@@ -3,7 +3,9 @@ import { z } from 'zod'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { cloneDeep } from 'lodash-es'
 
-import type { DrawerConfig, TeamData, TeamSectionType } from '@/types/landing-page'
+import type { DrawerConfig, LandingPageStatusEmit, TeamData, TeamSectionType } from '@/types/landing-page'
+
+const emit = defineEmits<LandingPageStatusEmit>()
 
 const DRAWER_ACTION_TYPES = {
   ADD: 'add' as const,
@@ -57,10 +59,16 @@ type TeamFormSchemaType = z.infer<typeof ourTeamSchema>
 const error = ref<z.ZodFormattedError<TeamFormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
+  if (editorValue.trim().length > 0 && error.value?.our_team_title) {
+    error.value.our_team_title._errors = []
+  }
   return ourTeamForm.value.our_team_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
+  if (editorValue.trim().length > 0 && error.value?.our_team_desc) {
+    error.value.our_team_desc._errors = []
+  }
   return ourTeamForm.value.our_team_desc = removePTags(editorValue)
 }
 
@@ -133,7 +141,7 @@ function handleReviewerChange(value: TeamData, type: DrawerActionTypes) {
   }
 }
 
-async function onSubmit() {
+async function onOurTeamSubmit() {
   const validInput = ourTeamSchema.safeParse(ourTeamForm.value)
 
   if (!validInput.success) {
@@ -143,10 +151,13 @@ async function onSubmit() {
       type: 'error',
       timeout: 5000,
     })
+
+    emit('update:sectionStatus', 'error')
   }
   else {
     error.value = null
     isLoading.value = true
+    emit('update:sectionStatus', 'loading')
 
     try {
       const res = await $api('/api/pages/landing-page/our-team', {
@@ -159,12 +170,16 @@ async function onSubmit() {
           type: 'success',
           timeout: 3000,
         })
+
+        emit('update:sectionStatus', 'success')
       }
       else if ('error' in res && res.error) {
         notify(res.error, {
           type: 'error',
           timeout: 5000,
         })
+
+        emit('update:sectionStatus', 'error')
       }
     }
     catch (error) {
@@ -178,12 +193,18 @@ async function onSubmit() {
           timeout: 3000,
         })
       }
+
+      emit('update:sectionStatus', 'error')
     }
     finally {
       isLoading.value = false
     }
   }
 }
+
+defineExpose({
+  onOurTeamSubmit,
+})
 
 watch(ourTeamData, (value) => {
   if (value) {
@@ -196,8 +217,8 @@ watch(ourTeamData, (value) => {
 </script>
 
 <template>
-  <VContainer>
-    <VForm @submit.prevent="onSubmit">
+  <div>
+    <VForm @submit.prevent="onOurTeamSubmit">
       <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
         Our Team Section
       </VLabel>
@@ -218,13 +239,13 @@ watch(ourTeamData, (value) => {
               </VLabel>
               <TiptapEditor
                 v-model="ourTeamForm.our_team_title as string"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.our_team_title && ourTeamForm.our_team_title?.length === 0 }"
+                class="border rounded-lg title-content mb-2"
+                :class="{ 'border-error border-opacity-100': error?.our_team_title && error?.our_team_title?._errors.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
 
-              <div v-if="error?.our_team_title && ourTeamForm.our_team_title?.length === 0">
+              <div v-if="error?.our_team_title">
                 <span v-for="(warn, index) in error?.our_team_title?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -240,13 +261,13 @@ watch(ourTeamData, (value) => {
 
               <TiptapEditor
                 v-model="ourTeamForm.our_team_desc as string"
-                class="border rounded-lg "
-                :class="{ 'border-error border-opacity-100': error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0 }"
+                class="border rounded-lg mb-2"
+                :class="{ 'border-error border-opacity-100': error?.our_team_desc && error?.our_team_desc?._errors.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
 
-              <div v-if="error?.our_team_desc && ourTeamForm.our_team_desc?.length === 0">
+              <div v-if="error?.our_team_desc">
                 <span v-for="(warn, index) in error?.our_team_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -303,7 +324,7 @@ watch(ourTeamData, (value) => {
             type="submit"
             color="primary"
             variant="outlined"
-            @click="onSubmit"
+            @click="onOurTeamSubmit"
           >
             Update Our Team Section Content
           </VBtn>
@@ -330,7 +351,7 @@ watch(ourTeamData, (value) => {
       :drawer-config="memberDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
       @update:model-value="handleReviewerChange"
     />
-  </VContainer>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -361,6 +382,14 @@ watch(ourTeamData, (value) => {
   :deep(.ProseMirror) {
     min-block-size: 5vh;
   }
+}
+
+.error-text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
 }
 
 .member-name {

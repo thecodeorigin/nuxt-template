@@ -113,3 +113,7 @@ export interface Icons {
 }
 
 export type LandingPageStatus = 'default' | 'success' | 'error' | 'loading'
+
+export interface LandingPageStatusEmit {
+  (e: 'update:sectionStatus', value: LandingPageStatus): void
+}

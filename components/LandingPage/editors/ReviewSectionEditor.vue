@@ -4,7 +4,9 @@ import { z } from 'zod'
 
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { cloneDeep } from 'lodash-es'
-import type { CustomerReview, CustomerReviewSectionType, DrawerConfig } from '@/types/landing-page'
+import type { CustomerReview, CustomerReviewSectionType, DrawerConfig, LandingPageStatusEmit } from '@/types/landing-page'
+
+const emit = defineEmits<LandingPageStatusEmit>()
 
 register()
 
@@ -70,10 +72,16 @@ type FormSchemaType = z.infer<typeof customerReviewSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
+  if (editorValue.trim().length > 0 && error.value?.customer_review_title) {
+    error.value.customer_review_title._errors = []
+  }
   return reviewForm.value.customer_review_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
+  if (editorValue.trim().length > 0 && error.value?.customer_review_title_desc) {
+    error.value.customer_review_title_desc._errors = []
+  }
   return reviewForm.value.customer_review_title_desc = removePTags(editorValue)
 }
 
@@ -127,7 +135,7 @@ function handleToggleReviewerDrawer(val: boolean) {
   reviewerDrawerOption.value.isVisible = val
 }
 
-async function onSubmit() {
+async function onReviewSubmit() {
   const validInput = customerReviewSchema.safeParse(reviewForm.value)
 
   if (!validInput.success) {
@@ -136,10 +144,13 @@ async function onSubmit() {
       type: 'error',
       timeout: 5000,
     })
+
+    emit('update:sectionStatus', 'error')
   }
   else {
     error.value = null
     isLoading.value = true
+    emit('update:sectionStatus', 'loading')
 
     try {
       const res = await $api('/api/pages/landing-page/customer-review', {
@@ -152,12 +163,16 @@ async function onSubmit() {
           type: 'success',
           timeout: 3000,
         })
+
+        emit('update:sectionStatus', 'success')
       }
       else if ('error' in res && res.error) {
         notify(res.error, {
           type: 'error',
           timeout: 5000,
         })
+
+        emit('update:sectionStatus', 'error')
       }
     }
     catch (error) {
@@ -171,12 +186,18 @@ async function onSubmit() {
           timeout: 5000,
         })
       }
+
+      emit('update:sectionStatus', 'error')
     }
     finally {
       isLoading.value = false
     }
   }
 }
+
+defineExpose({
+  onReviewSubmit,
+})
 
 watch(customerReviewData, (value) => {
   if (value) {
@@ -189,8 +210,8 @@ watch(customerReviewData, (value) => {
 </script>
 
 <template>
-  <VContainer>
-    <form class="customer-reviews" @submit.prevent="onSubmit">
+  <div>
+    <form class="customer-reviews" @submit.prevent="onReviewSubmit">
       <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
         Customer Review Section
       </VLabel>
@@ -203,8 +224,8 @@ watch(customerReviewData, (value) => {
           </VCardTitle>
 
           <VRow>
+            <!-- 👉 Review Main Title -->
             <VCol cols="12" sm="6" class="mb-6">
-              <!-- 👉 Review Main Title -->
               <VLabel class="mb-2 label">
                 Review title:
                 <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
@@ -212,34 +233,34 @@ watch(customerReviewData, (value) => {
 
               <TiptapEditor
                 v-model="reviewForm.customer_review_title as string"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.customer_review_title && reviewForm.customer_review_title?.length === 0 }"
+                class="border rounded-lg title-content mb-2"
+                :class="{ 'border-error border-opacity-100': error?.customer_review_title && error?.customer_review_title?._errors.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
 
-              <div v-if="error?.customer_review_title && reviewForm.customer_review_title?.length === 0">
+              <div v-if="error?.customer_review_title">
                 <span v-for="(warn, index) in error?.customer_review_title?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
               </div>
             </VCol>
 
+            <!-- 👉 Review Main Description -->
             <VCol cols="12" sm="6" class="mb-6">
-              <!-- 👉 Review Main Description -->
               <VLabel class="mb-2 label">
                 Description:
                 <VIcon icon="ri-asterisk" class="text-error text-overline mb-2" />
               </VLabel>
               <TiptapEditor
                 v-model="reviewForm.customer_review_title_desc as string"
-                class="border rounded-lg "
-                :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0 }"
+                class="border rounded-lg mb-2"
+                :class="{ 'border-error border-opacity-100': error?.customer_review_title_desc && error?.customer_review_title_desc?._errors.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
 
-              <div v-if="error?.customer_review_title_desc && reviewForm.customer_review_title_desc?.length === 0">
+              <div v-if="error?.customer_review_title_desc">
                 <span v-for="(warn, index) in error?.customer_review_title_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -296,7 +317,6 @@ watch(customerReviewData, (value) => {
             type="submit"
             color="primary"
             variant="outlined"
-            @click="onSubmit"
           >
             Update Reviewer Section Content
           </VBtn>
@@ -323,7 +343,7 @@ watch(customerReviewData, (value) => {
       :drawer-config="reviewerDrawerOption" @update:is-drawer-open="handleToggleReviewerDrawer"
       @update:model-value="handleReviewerChange"
     />
-  </VContainer>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -332,6 +352,14 @@ watch(customerReviewData, (value) => {
     min-block-size: 5vh;
   }
 }
+
+.error-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+  }
 
 .label {
   line-height: 40px;

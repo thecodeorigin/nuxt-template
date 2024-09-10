@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { VIcon } from 'vuetify/components'
 import { cloneDeep } from 'lodash-es'
-import type { IconList, ProductStatType } from '@/types/landing-page'
+import type { IconList, LandingPageStatusEmit, ProductStatType } from '@/types/landing-page'
+
+const emit = defineEmits<LandingPageStatusEmit>()
 
 const { productStatsData } = storeToRefs(useLandingPageStore())
 const productStatForm = ref<ProductStatType[]>([
@@ -33,9 +35,11 @@ const isCurrentStatValid = computed(() => {
     && currentStat.icon !== null
 })
 
-async function onSubmit() {
+async function onProductStatsSubmit() {
+  isLoading.value = true
+  emit('update:sectionStatus', 'loading')
+
   try {
-    isLoading.value = true
     const res = await $api('/api/pages/landing-page/stat', {
       method: 'PATCH',
       body: productStatForm.value,
@@ -46,19 +50,26 @@ async function onSubmit() {
         type: 'success',
         timeout: 3000,
       })
+
+      emit('update:sectionStatus', 'success')
     }
   }
   catch (error) {
-    console.log('Unexpected error: ', error)
     notify(error as string, {
       type: 'error',
       timeout: 3000,
     })
+
+    emit('update:sectionStatus', 'error')
   }
   finally {
     isLoading.value = false
   }
 }
+
+defineExpose({
+  onProductStatsSubmit,
+})
 
 watch(productStatsData, (value) => {
   if (value && value.product_stats) {
@@ -81,7 +92,7 @@ watch(productStatsData, (value) => {
 </script>
 
 <template>
-  <VForm @submit.prevent="onSubmit">
+  <VForm @submit.prevent="onProductStatsSubmit">
     <!-- 👉 Product Stats Heading -->
     <div class="d-flex mb-4">
       <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4 d-block label">
@@ -91,6 +102,7 @@ watch(productStatsData, (value) => {
       <VSpacer />
 
       <VBtn
+        v-if="productStatForm.length > 0"
         class="text-capitalize"
         type="submit"
         color="primary"
@@ -99,6 +111,17 @@ watch(productStatsData, (value) => {
         @click="handleAddProductStat"
       >
         Add +
+      </VBtn>
+
+      <VBtn
+        v-else
+        class="text-capitalize"
+        type="submit"
+        color="primary"
+        variant="outlined"
+        @click="handleAddProductStat"
+      >
+        Add new
       </VBtn>
     </div>
 
@@ -165,7 +188,6 @@ watch(productStatsData, (value) => {
       color="primary"
       variant="outlined"
       :disabled="!isCurrentStatValid"
-      @click="onSubmit"
     >
       Update Product Stats
     </VBtn>

@@ -11,7 +11,9 @@ import LaptopCharging from '@images/svg/laptop-charging.svg'
 import Lifebelt from '@images/svg/lifebelt.svg'
 import TransitionUp from '@images/svg/transition-up.svg'
 
-import type { Feature, FeatureSectionType } from '@/types/landing-page'
+import type { Feature, FeatureSectionType, LandingPageStatusEmit } from '@/types/landing-page'
+
+const emit = defineEmits<LandingPageStatusEmit>()
 
 const { featureData } = storeToRefs(useLandingPageStore())
 
@@ -46,10 +48,16 @@ type FormSchemaType = z.infer<typeof featureSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
+  if (editorValue.trim().length > 0 && error.value?.feature_title) {
+    error.value.feature_title._errors = []
+  }
   return featureForm.value.feature_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
+  if (editorValue.trim().length > 0 && error.value?.feature_title_desc) {
+    error.value.feature_title_desc._errors = []
+  }
   return featureForm.value.feature_title_desc = removePTags(editorValue)
 }
 
@@ -75,14 +83,19 @@ async function onFeatureSubmit() {
 
   if (!validInput.success) {
     error.value = validInput.error.format()
+
     notify('Invalid input, please check and try again', {
       type: 'error',
       timeout: 2000,
     })
+
+    emit('update:sectionStatus', 'error')
   }
   else {
     error.value = null
     isLoading.value = true
+    emit('update:sectionStatus', 'loading')
+
     try {
       const res = await $api('/api/pages/landing-page/feature', {
         method: 'PATCH',
@@ -94,6 +107,8 @@ async function onFeatureSubmit() {
           type: 'success',
           timeout: 2000,
         })
+
+        emit('update:sectionStatus', 'success')
       }
     }
     catch (error) {
@@ -107,12 +122,17 @@ async function onFeatureSubmit() {
           timeout: 3000,
         })
       }
+      emit('update:sectionStatus', 'error')
     }
     finally {
       isLoading.value = false
     }
   }
 }
+
+defineExpose({
+  onFeatureSubmit,
+})
 
 watch(featureData, (value) => {
   if (value)
@@ -147,12 +167,12 @@ watch(featureData, (value) => {
             <TiptapEditor
               v-model="featureForm.feature_title as string"
               class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.feature_title && featureForm.feature_title?.length === 0 }"
+              :class="{ 'border-error border-opacity-100': error?.feature_title && error?.feature_title?._errors.length > 0 }"
               placeholder="Text here..."
               @update:model-value="onTitleUpdate"
             />
 
-            <div v-if="error?.feature_title && featureForm.feature_title?.length === 0">
+            <div v-if="error?.feature_title">
               <span v-for="(warn, index) in error?.feature_title?._errors" :key="index" class="text-error error-text">
                 {{ warn }}
               </span>
@@ -168,13 +188,13 @@ watch(featureData, (value) => {
 
             <TiptapEditor
               v-model="featureForm.feature_title_desc as string"
-              class="border rounded-lg"
-              :class="{ 'border-error border-opacity-100': error?.feature_title_desc && featureForm.feature_title_desc?.length === 0 }"
+              class="border rounded-lg mb-2"
+              :class="{ 'border-error border-opacity-100': error?.feature_title_desc && error?.feature_title_desc?._errors.length > 0 }"
               placeholder="Text here..."
               @update:model-value="onDescriptionUpdate"
             />
 
-            <div v-if="error?.feature_title && featureForm.feature_title_desc?.length === 0">
+            <div v-if="error?.feature_title_desc">
               <span v-for="(warn, index) in error?.feature_title_desc?._errors" :key="index" class="text-error error-text">
                 {{ warn }}
               </span>
@@ -205,6 +225,7 @@ watch(featureData, (value) => {
                 v-model="feature.name"
                 placeholder="Text here..."
                 label="Feature Name"
+                :rules="[requiredValidator]"
                 class="mb-4"
               />
 
@@ -221,6 +242,7 @@ watch(featureData, (value) => {
                 label="Feature description"
                 placeholder="Text here..."
                 rows="4"
+                :rules="[requiredValidator]"
               />
             </VCol>
 
@@ -322,11 +344,20 @@ watch(featureData, (value) => {
 </template>
 
 <style lang="scss" scoped>
-.title-content {
-  :deep(.ProseMirror) {
-    min-block-size: 5vh;
+  .title-content {
+    margin-bottom: 8px;
+    :deep(.ProseMirror) {
+      min-block-size: 5vh;
+    }
   }
-}
+
+  .error-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+  }
 
 .feature-container {
   margin-bottom: 8px;

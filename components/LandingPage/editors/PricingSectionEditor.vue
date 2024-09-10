@@ -4,7 +4,9 @@ import type { VForm } from 'vuetify/components'
 import { cloneDeep } from 'lodash-es'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
-import type { DrawerConfig, PlanData, PricingSectionType } from '@/types/landing-page'
+import type { DrawerConfig, LandingPageStatusEmit, PlanData, PricingSectionType } from '@/types/landing-page'
+
+const emit = defineEmits<LandingPageStatusEmit>()
 
 const { pricingPlansData } = storeToRefs(useLandingPageStore())
 const DRAWER_ACTION_TYPES = {
@@ -71,14 +73,16 @@ type FormSchemaType = z.infer<typeof pricingSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
-  if (!editorValue)
-    return ''
+  if (editorValue.trim().length > 0 && error.value?.pricing_title) {
+    error.value.pricing_title._errors = []
+  }
   return pricingForm.value.pricing_title = removePTags(editorValue)
 }
 
 function onDescriptionUpdate(editorValue: string) {
-  if (!editorValue)
-    return ''
+  if (editorValue.trim().length > 0 && error.value?.pricing_title_desc) {
+    error.value.pricing_title_desc._errors = []
+  }
   return pricingForm.value.pricing_title_desc = removePTags(editorValue)
 }
 
@@ -136,25 +140,24 @@ function handlePricingChange(value: PlanData, type: DrawerActionTypes) {
   }
 }
 
-async function onSubmit() {
-  const formData = {
-    ...pricingForm.value,
-  }
-
-  const validInput = pricingSchema.safeParse(formData)
+async function onPricingSubmit() {
+  const validInput = pricingSchema.safeParse(pricingForm.value)
 
   if (!validInput.success) {
     error.value = validInput.error.format()
-    console.log('««««« error.value »»»»»', error.value)
 
     notify('Invalid input, please check and try again', {
       type: 'error',
       timeout: 2000,
     })
+
+    emit('update:sectionStatus', 'error')
   }
   else {
     error.value = null
     isLoading.value = true
+    emit('update:sectionStatus', 'loading')
+
     try {
       const res = await $api('/api/pages/landing-page/pricing', {
         method: 'PATCH',
@@ -166,12 +169,16 @@ async function onSubmit() {
           type: 'success',
           timeout: 3000,
         })
+
+        emit('update:sectionStatus', 'success')
       }
       else if ('error' in res && res.error) {
         notify(res.error, {
           type: 'error',
           timeout: 5000,
         })
+
+        emit('update:sectionStatus', 'error')
       }
     }
     catch (error) {
@@ -185,12 +192,18 @@ async function onSubmit() {
           timeout: 3000,
         })
       }
+
+      emit('update:sectionStatus', 'error')
     }
     finally {
       isLoading.value = false
     }
   }
 }
+
+defineExpose({
+  onPricingSubmit,
+})
 
 watch(pricingPlansData, (value) => {
   if (value) {
@@ -200,8 +213,8 @@ watch(pricingPlansData, (value) => {
 </script>
 
 <template>
-  <VContainer>
-    <VForm ref="formRef" @submit.prevent="onSubmit">
+  <div>
+    <VForm ref="formRef" @submit.prevent="onPricingSubmit">
       <VLabel class="text-h3 text-capitalize text-primary font-weight-bold mb-4  d-block label">
         Pricing Section
       </VLabel>
@@ -214,7 +227,7 @@ watch(pricingPlansData, (value) => {
           </VCardTitle>
 
           <VRow>
-            <!-- 👉 Pricing Heading -->
+            <!-- 👉 Pricing Title -->
             <VCol cols="12" sm="6" class="mb-6 position-relative">
               <VLabel class="mb-2 label">
                 Pricing heading:
@@ -223,13 +236,13 @@ watch(pricingPlansData, (value) => {
 
               <TiptapEditor
                 v-model="pricingForm.pricing_title as string"
-                class="border rounded-lg title-content"
-                :class="{ 'border-error border-opacity-100': error?.pricing_title && pricingForm.pricing_title?.length === 0 }"
+                class="border rounded-lg title-content mb-2"
+                :class="{ 'border-error border-opacity-100': error?.pricing_title && error?.pricing_title?._errors.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
 
-              <div v-if="error?.pricing_title && pricingForm.pricing_title?.length === 0">
+              <div v-if="error?.pricing_title">
                 <span v-for="(warn, index) in error?.pricing_title?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -245,12 +258,12 @@ watch(pricingPlansData, (value) => {
 
               <TiptapEditor
                 v-model="pricingForm.pricing_title_desc as string"
-                class="border rounded-lg"
-                :class="{ 'border-error border-opacity-100': error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0 }"
+                class="border rounded-lg mb-2"
+                :class="{ 'border-error border-opacity-100': error?.pricing_title_desc && error?.pricing_title_desc?._errors.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
-              <div v-if="error?.pricing_title_desc && pricingForm.pricing_title_desc?.length === 0">
+              <div v-if="error?.pricing_title_desc">
                 <span v-for="(warn, index) in error?.pricing_title_desc?._errors" :key="index" class="text-error error-text">
                   {{ warn }}
                 </span>
@@ -299,7 +312,6 @@ watch(pricingPlansData, (value) => {
             type="submit"
             color="primary"
             variant="outlined"
-            @click="onSubmit"
           >
             Update Pricing Section Content
           </VBtn>
@@ -325,7 +337,7 @@ watch(pricingPlansData, (value) => {
       :drawer-config="pricingDrawerOption" @update:is-drawer-open="handleToggleDrawer"
       @update:model-value="handlePricingChange"
     />
-  </VContainer>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -355,5 +367,13 @@ watch(pricingPlansData, (value) => {
   :deep(.ProseMirror) {
     min-block-size: 5vh;
   }
+}
+
+.error-text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
 }
 </style>

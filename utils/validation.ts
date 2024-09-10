@@ -23,6 +23,9 @@ const labelSchema = z.string()
   .min(2, { message: 'Label is 2 or more characters long' })
   .max(20, { message: 'Label is 20 or less characters long' })
 
+const contentSchema = z.string()
+  .min(2, { message: 'Content is 2 or more characters long' })
+
 // 👉 Hero Schema
 export const heroSchema = z.object({
   hero_title: titleSchema,
@@ -94,8 +97,8 @@ export const ourTeamSchema = z.object({
 
 // 👉 Pricing Schema
 export const pricingSchema = z.object({
-  pricing_title: z.string(),
-  pricing_title_desc: z.string(),
+  pricing_title: titleSchema,
+  pricing_title_desc: descriptionSchema,
   pricing_data: z.array(
     z.object({
       title: z.string(),
@@ -126,8 +129,8 @@ export const faqSchema = z.object({
   faq_title: titleSchema,
   faq_title_desc: descriptionSchema,
   faq_data: z.array(z.object({
-    question: z.string(),
-    answer: z.string(),
+    question: contentSchema,
+    answer: contentSchema,
   })),
 })
 
