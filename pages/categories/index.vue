@@ -46,8 +46,8 @@ const categoryHeaders = computed(() => [
   },
 ])
 
-const { data: categories, refresh: refreshCategories, error: categoriesError, status } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
-  default: () => [] as Category[],
+const { data: categoryData, refresh: refreshCategories, error: categoriesError, status } = await useLazyAsyncData(() => categoryStore.fetchCategories(categoryQuery.value), {
+  default: () => ({ data: [] as Category[], total: 0 }),
 })
 
 watchDebounced(categoriesError, (error) => {
@@ -161,12 +161,12 @@ function handleSelectParentCategory(e: Event, context: any) {
       </VCardText>
 
       <VDataTable
-        v-if="categories"
+        v-if="categoryData"
         v-model:items-per-page="categoryQuery.limit"
         v-model:page="categoryQuery.page"
         :loading="status === 'pending'"
         :headers="categoryHeaders"
-        :items="categories"
+        :items="categoryData.data"
         :search="categoryQuery.keyword"
         show-select
         item-value="name"
@@ -228,7 +228,7 @@ function handleSelectParentCategory(e: Event, context: any) {
     <CategoryCreateDrawer
       v-model="isCreatingCategory"
       :parent="selectingParentCategory"
-      :data="categories"
+      :data="categoryData.data"
       @submit="handleSubmitNewCategory"
     />
 
@@ -236,7 +236,7 @@ function handleSelectParentCategory(e: Event, context: any) {
       v-model="isEditingCategory"
       v-model:form-data="selectingCategory"
       :parent="selectingParentCategory"
-      :data="categories"
+      :data="categoryData.data"
       @submit="handleUpdateCategory"
     />
   </div>

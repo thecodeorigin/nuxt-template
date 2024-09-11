@@ -4,7 +4,7 @@ type Category = Tables<'categories'>
 
 export const useCategoryStore = defineStore('category', () => {
   async function fetchCategories(query: { page: number, limit: number, keyword: string }) {
-    return $api<Category[]>('/categories', {
+    return $api<{ total: number, data: Category[] }>('/categories', {
       query,
     })
   }

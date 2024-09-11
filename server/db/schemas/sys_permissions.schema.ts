@@ -6,13 +6,13 @@ import { sysRoleTable } from './sys_roles.schema'
 
 export const sysPermissionTable = pgTable('sys_permissions', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  roleId: uuid('role_id'),
+  role_id: uuid('role_id'),
   action: permissionAction('action').default('read').notNull(),
   subject: permissionSubject('subject').notNull(),
 }, (table) => {
   return {
     publicSysPermissionsRoleIdFkey: foreignKey({
-      columns: [table.roleId],
+      columns: [table.role_id],
       foreignColumns: [sysRoleTable.id],
       name: 'public_sys_permissions_role_id_fkey',
     }).onDelete('cascade'),
@@ -25,7 +25,7 @@ export const selectSysPermissionSchema = createSelectSchema(sysPermissionTable)
 
 export const sysPermissionRelations = relations(sysPermissionTable, ({ one }) => ({
   sysRole: one(sysRoleTable, {
-    fields: [sysPermissionTable.roleId],
+    fields: [sysPermissionTable.role_id],
     references: [sysRoleTable.id],
   }),
 }))

@@ -1,42 +1,61 @@
+import { and, asc, count, desc, eq, ilike, isNull, or, sql } from 'drizzle-orm'
+import { categoryTable } from '@/server/db/schemas/category.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, parent_id } = getFilter(event)
+    const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, parent_id } = getFilter(event)
 
-  let categoryQueryBuilder = supabaseAdmin.from('categories')
-    .select('*', { count: 'exact' })
+    const categorySubquery = db.select().from(categoryTable)
 
-  if (parent_id) {
-    categoryQueryBuilder = categoryQueryBuilder.match({
-      user_id: session.user!.id!,
-      parent_id,
-    })
+    if (parent_id) {
+      categorySubquery
+        .where(
+          and(
+            eq(categoryTable.user_id, session.user!.id!),
+            eq(categoryTable.parent_id, parent_id),
+          ),
+        )
+    }
+    else {
+      categorySubquery
+        .where(
+          and(
+            eq(categoryTable.user_id, session.user!.id!),
+            isNull(categoryTable.parent_id),
+          ),
+        )
+    }
+
+    categorySubquery
+      .where(
+        or(
+          ilike(categoryTable.name, `%${keyword || ''}%`),
+          ilike(categoryTable.name, `%${keywordLower || ''}%`),
+          ilike(categoryTable.description, `%${keyword || ''}%`),
+          ilike(categoryTable.description, `%${keywordLower || ''}%`),
+        ),
+      )
+
+    const total = await db.select({ count: count() }).from(categorySubquery.as('count'))
+
+    const categories = await categorySubquery
+      .orderBy(
+        sortAsc ? asc((categoryTable as any)[sortBy]) : desc((categoryTable as any)[sortBy]),
+      )
+      .offset((page - 1) * limit)
+      .limit(limit)
+
+    return {
+      data: categories,
+      total,
+    }
   }
-  else {
-    categoryQueryBuilder = categoryQueryBuilder
-      .match({
-        user_id: session.user!.id!,
-      })
-      .is('parent_id', null)
-  }
-
-  const { data, error } = await categoryQueryBuilder.or(
-    [
-      `name.ilike.%${keyword || ''}%`,
-      `name.ilike.%${keywordLower || ''}%`,
-      `description.ilike.%${keyword || ''}%`,
-      `description.ilike.%${keywordLower || ''}%`,
-    ].join(','),
-  )
-    .order(sortBy, { ascending: sortAsc })
-    .range(page - 1, (page - 1) + limit)
-
-  if (error) {
+  catch (error: any) {
     throw createError({
       statusCode: 500,
       statusMessage: error.message,
     })
   }
-
-  return data
 })

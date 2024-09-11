@@ -6,11 +6,11 @@ import { sysUserTable } from './sys_users.schema'
 export const sysShortcutTable = pgTable('sys_shortcuts', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   item: text('item'),
-  userId: uuid('user_id').notNull(),
+  user_id: uuid('user_id').notNull(),
 }, (table) => {
   return {
     sysShortcutsUserIdFkey: foreignKey({
-      columns: [table.userId],
+      columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
       name: 'sys_shortcuts_user_id_fkey',
     }),
@@ -23,7 +23,7 @@ export const selectSysShortcutSchema = createSelectSchema(sysShortcutTable)
 
 export const sysShortcutRelations = relations(sysShortcutTable, ({ one }) => ({
   sysUser: one(sysUserTable, {
-    fields: [sysShortcutTable.userId],
+    fields: [sysShortcutTable.user_id],
     references: [sysUserTable.id],
   }),
 }))

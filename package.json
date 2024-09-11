@@ -16,7 +16,7 @@
     "prepare": "nuxt prepare",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "supabase migration up",
+    "db:migrate": "drizzle-kit migrate",
     "db:start": "supabase start --exclude realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor",
     "db:stop": "supabase stop",
     "db:status": "supabase status",

@@ -8,14 +8,14 @@ export const userPaymentMethodTable = pgTable('user_payment_methods', {
   number: text('number').notNull(),
   placeholder: text('placeholder').notNull(),
   cvv: numeric('cvv').notNull(),
-  expiresAt: date('expires_at').notNull(),
-  userId: uuid('user_id').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
+  expires_at: date('expires_at').notNull(),
+  user_id: uuid('user_id').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 }, (table) => {
   return {
     publicUserPaymentMethodsUserIdFkey: foreignKey({
-      columns: [table.userId],
+      columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
       name: 'public_user_payment_methods_user_id_fkey',
     }).onDelete('cascade'),
@@ -28,7 +28,7 @@ export const selectUserPaymentMethodSchema = createSelectSchema(userPaymentMetho
 
 export const userPaymentMethodRelations = relations(userPaymentMethodTable, ({ one }) => ({
   sysUser: one(sysUserTable, {
-    fields: [userPaymentMethodTable.userId],
+    fields: [userPaymentMethodTable.user_id],
     references: [sysUserTable.id],
   }),
 }))

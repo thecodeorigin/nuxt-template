@@ -5,16 +5,16 @@ import { sysUserTable } from './sys_users.schema'
 
 export const sysNotificationTable = pgTable('sys_notifications', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   title: text('title'),
   message: text('message'),
   action: jsonb('action'),
-  readAt: timestamp('read_at', { withTimezone: true }),
-  userId: uuid('user_id').defaultRandom(),
+  read_at: timestamp('read_at', { withTimezone: true }),
+  user_id: uuid('user_id').defaultRandom(),
 }, (table) => {
   return {
     publicSysNotificationsUserIdFkey: foreignKey({
-      columns: [table.userId],
+      columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
       name: 'public_sys_notifications_user_id_fkey',
     }).onUpdate('cascade').onDelete('cascade'),
@@ -27,7 +27,7 @@ export const selectSysNotificationSchema = createSelectSchema(sysNotificationTab
 
 export const sysNotificationRelations = relations(sysNotificationTable, ({ one }) => ({
   sysUser: one(sysUserTable, {
-    fields: [sysNotificationTable.userId],
+    fields: [sysNotificationTable.user_id],
     references: [sysUserTable.id],
   }),
 }))

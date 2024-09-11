@@ -16,11 +16,11 @@ export const sysUserTable = pgTable('sys_users', {
   id: uuid('id').primaryKey().notNull(),
   email: text('email'),
   phone: text('phone'),
-  fullName: text('full_name'),
-  avatarUrl: text('avatar_url'),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }),
-  roleId: uuid('role_id'),
+  full_name: text('full_name'),
+  avatar_url: text('avatar_url'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  deleted_at: timestamp('deleted_at', { withTimezone: true }),
+  role_id: uuid('role_id'),
   country: varchar('country'),
   language: varchar('language').default('en'),
   organization: text('organization'),
@@ -31,7 +31,7 @@ export const sysUserTable = pgTable('sys_users', {
 }, (table) => {
   return {
     publicSysUsersRoleIdFkey: foreignKey({
-      columns: [table.roleId],
+      columns: [table.role_id],
       foreignColumns: [sysRoleTable.id],
       name: 'public_sys_users_role_id_fkey',
     }),
@@ -45,7 +45,7 @@ export const selectSysUserSchema = createSelectSchema(sysUserTable)
 export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
   sysShortcutSchema: many(sysShortcutTable),
   sysRole: one(sysRoleTable, {
-    fields: [sysUserTable.roleId],
+    fields: [sysUserTable.role_id],
     references: [sysRoleTable.id],
   }),
   categorySchema: many(categoryTable),

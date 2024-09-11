@@ -10,20 +10,20 @@ export const categoryTable = pgTable('categories', {
   name: text('name'),
   slug: text('slug').notNull(),
   description: text('description'),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
-  imageUrl: text('image_url'),
-  userId: uuid('user_id'),
-  parentId: uuid('parent_id'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
+  image_url: text('image_url'),
+  user_id: uuid('user_id'),
+  parent_id: uuid('parent_id'),
 }, (table) => {
   return {
     publicCategoriesUserIdFkey: foreignKey({
-      columns: [table.userId],
+      columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
       name: 'public_categories_user_id_fkey',
     }),
     publicCategoriesParentIdFkey: foreignKey({
-      columns: [table.parentId],
+      columns: [table.parent_id],
       foreignColumns: [table.id],
       name: 'public_categories_parent_id_fkey',
     }).onDelete('cascade'),
@@ -37,11 +37,11 @@ export const selectCategorySchema = createSelectSchema(categoryTable)
 
 export const categoryRelations = relations(categoryTable, ({ one, many }) => ({
   sysUser: one(sysUserTable, {
-    fields: [categoryTable.userId],
+    fields: [categoryTable.user_id],
     references: [sysUserTable.id],
   }),
   category: one(categoryTable, {
-    fields: [categoryTable.parentId],
+    fields: [categoryTable.parent_id],
     references: [categoryTable.id],
     relationName: 'categories_parentId_categories_id',
   }),
