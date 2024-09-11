@@ -8,6 +8,7 @@ import heroDashboardImgLight from '@images/front-pages/landing-page/hero-dashboa
 import heroElementsImgDark from '@images/front-pages/landing-page/hero-elements-dark.png'
 import heroElementsImgLight from '@images/front-pages/landing-page/hero-elements-light.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
+import type { HeroButtonType } from '~/utils/types/landing-page'
 
 const { heroData } = storeToRefs(useLandingPageStore())
 

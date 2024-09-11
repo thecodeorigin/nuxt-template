@@ -1,4 +1,4 @@
-import { getLandingPageId } from '../landingPageID.get'
+import { getLandingPageId } from './landingPageID.get'
 import type { Tables } from '@/server/types/supabase'
 
 type Team = Tables<'sys_landing_page'>

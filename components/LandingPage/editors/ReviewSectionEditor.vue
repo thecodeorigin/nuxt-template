@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { cloneDeep } from 'lodash-es'
-import type { CustomerReview, CustomerReviewSectionType, DrawerConfig, LandingPageStatusEmit } from '@/types/landing-page'
+import type { CustomerReview, CustomerReviewSectionType, DrawerConfig, LandingPageStatusEmit } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

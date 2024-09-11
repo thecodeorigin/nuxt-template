@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { cloneDeep } from 'lodash-es'
 
-import type { DrawerConfig, LandingPageStatusEmit, TeamData, TeamSectionType } from '@/types/landing-page'
+import type { DrawerConfig, LandingPageStatusEmit, TeamData, TeamSectionType } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

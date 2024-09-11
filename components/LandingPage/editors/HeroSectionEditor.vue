@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { z } from 'zod'
 
-import type { HeroButtonType, HeroSectionType, LandingPageStatus, LandingPageStatusEmit } from '@/types/landing-page'
+import type { HeroButtonType, HeroSectionType, LandingPageStatus, LandingPageStatusEmit } from '~/utils/types/landing-page'
 import { getRemixIcon, iconNameList } from '@/utils/landingPageUtils.js'
 
 const emit = defineEmits<LandingPageStatusEmit>()

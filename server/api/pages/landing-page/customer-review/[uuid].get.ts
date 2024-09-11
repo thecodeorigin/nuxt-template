@@ -1,10 +1,11 @@
 export default defineEventHandler(async (event) => {
   const { uuid } = await defineEventOptions(event, { auth: true })
 
-  const { data, error } = await supabase.from('sys_landing_page')
+  const { data, error } = await supabase
+    .from('sys_landing_page')
     .select('customer_review_data')
-    .eq('id: id->> uuid', uuid)
-    .single()
+    .filter('customer_review_data->>id', 'eq', uuid)
+    .maybeSingle()
 
   if (error) {
     setResponseStatus(event, 400, error.message)
@@ -16,6 +17,9 @@ export default defineEventHandler(async (event) => {
     return { error: 'Data not found' }
   }
 
-  setResponseStatus(event, 200)
+  // If you want to return all matching reviews:
+  // return { data: data.map(row => row.customer_review_data) };
+
+  // If you want to return the first matching review (assuming unique IDs):
   return { data }
 })

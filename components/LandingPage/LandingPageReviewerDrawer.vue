@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
-import type { CustomerReview, DrawerConfig } from '@/types/landing-page'
+import type { CustomerReview, DrawerConfig } from '~/utils/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void

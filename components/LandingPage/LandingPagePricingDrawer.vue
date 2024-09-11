@@ -2,7 +2,7 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
 import { cloneDeep } from 'lodash-es'
-import type { DrawerConfig, PlanData } from '@/types/landing-page'
+import type { DrawerConfig, PlanData } from '~/utils/types/landing-page'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void

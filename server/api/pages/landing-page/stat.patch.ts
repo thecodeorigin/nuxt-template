@@ -1,5 +1,5 @@
 import { getLandingPageId } from './landingPageID.get'
-import type { FeatureSectionType, ProductStatType } from '~/types/landing-page'
+import type { FeatureSectionType, ProductStatType } from '~/utils/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const productStatSectionData = await readBody<ProductStatType[]>(event)

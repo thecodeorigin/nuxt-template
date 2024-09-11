@@ -2,7 +2,7 @@
 import type { VForm } from 'vuetify/components'
 import { z } from 'zod'
 import { cloneDeep } from 'lodash-es'
-import type { BannerSectionType, LandingPageStatusEmit } from '@/types/landing-page'
+import type { BannerSectionType, LandingPageStatusEmit } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

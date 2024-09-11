@@ -1,5 +1,5 @@
 import { getLandingPageId } from './landingPageID.get'
-import type { FAQSectionType } from '~/types/landing-page'
+import type { FAQSectionType } from '~/utils/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const faqReqBody = await readBody<FAQSectionType>(event)

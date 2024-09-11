@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { VIcon } from 'vuetify/components'
 import { cloneDeep } from 'lodash-es'
-import type { IconList, LandingPageStatusEmit, ProductStatType } from '@/types/landing-page'
+import type { IconList, LandingPageStatusEmit, ProductStatType } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

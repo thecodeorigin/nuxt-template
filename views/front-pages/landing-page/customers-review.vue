@@ -7,7 +7,7 @@ import { register } from 'swiper/element/bundle'
 
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
-import type { CustomerReview } from '@/types/landing-page'
+import type { CustomerReview } from '~/utils/types/landing-page'
 
 const { customerReviewData } = storeToRefs(useLandingPageStore())
 const reviewerList = computed<CustomerReview[]>(() => customerReviewData.value?.customer_review_data)

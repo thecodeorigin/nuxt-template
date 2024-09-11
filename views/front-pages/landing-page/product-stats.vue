@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { kFormatter } from '@core/utils/formatters.js'
-import type { ProductStatType } from '@/types/landing-page'
+import type { ProductStatType } from '~/utils/types/landing-page'
 import { iconMappings } from '@/utils/landingPageUtils.js'
 
 const store = useLandingPageStore()

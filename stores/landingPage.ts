@@ -1,7 +1,7 @@
 import { pick } from 'lodash-es'
 import type { Tables } from '@/server/types/supabase'
 
-import type { BannerSectionType, ContactUsSectionType, CustomerReviewSectionType, FAQSectionType, FeatureSectionType, HeroSectionType, PricingSectionType, ProductStatsSectionType, TeamSectionType } from '@/types/landing-page'
+import type { BannerSectionType, ContactUsSectionType, CustomerReviewSectionType, FAQSectionType, FeatureSectionType, HeroSectionType, LandingPage, PricingSectionType, ProductStatsSectionType, TeamSectionType } from '~/utils/types/landing-page'
 
 export const useLandingPageStore = defineStore('landing-page', () => {
 type LandingPage = Tables<'sys_landing_page'>
@@ -45,9 +45,9 @@ watch(() => landingPageData.value, (data) => {
 
     contactData.value = pick(data, ['contact_us_title', 'contact_us_title_desc', 'contact_us_card_heading', 'contact_us_card_title', 'contact_us_card_image', 'contact_us_card_content']) as ContactUsSectionType
 
-      bannerData.value = pick(data, 'banner_title', 'banner_title_desc', 'banner_button', 'banner_image') as BannerSectionType
-    }
-  })
+    bannerData.value = pick(data, 'banner_title', 'banner_title_desc', 'banner_button', 'banner_image') as BannerSectionType
+  }
+})
 
 onBeforeMount(fetchLandingPageData)
 

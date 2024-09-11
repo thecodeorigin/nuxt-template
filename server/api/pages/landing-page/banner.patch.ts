@@ -1,5 +1,5 @@
 import { getLandingPageId } from './landingPageID.get'
-import type { BannerSectionType } from '~/types/landing-page'
+import type { BannerSectionType } from '~/utils/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const bannerReqBody = await readBody<BannerSectionType>(event)

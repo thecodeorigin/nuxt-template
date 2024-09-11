@@ -11,7 +11,7 @@ import LaptopCharging from '@images/svg/laptop-charging.svg'
 import Lifebelt from '@images/svg/lifebelt.svg'
 import TransitionUp from '@images/svg/transition-up.svg'
 
-import type { Feature, FeatureSectionType, LandingPageStatusEmit } from '@/types/landing-page'
+import type { Feature, FeatureSectionType, LandingPageStatusEmit } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

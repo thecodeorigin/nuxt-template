@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import { cloneDeep } from 'lodash-es'
 
-import type { FAQ, FAQSectionType, LandingPageStatusEmit } from '@/types/landing-page'
+import type { FAQ, FAQSectionType, LandingPageStatusEmit } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

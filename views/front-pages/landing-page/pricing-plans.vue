@@ -3,7 +3,7 @@ import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import frontPageVectorImg from '@images/svg/front-page-vector.svg'
 import ListArrowIcon from '@images/svg/list-arrow-icon.svg'
 import VectorIcon from '@images/svg/vector.svg'
-import type { PlanData } from '@/types/landing-page'
+import type { PlanData } from '~/utils/types/landing-page'
 
 const { pricingPlansData } = storeToRefs(useLandingPageStore())
 

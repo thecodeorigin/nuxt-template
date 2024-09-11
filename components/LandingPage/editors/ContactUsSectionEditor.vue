@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import { VForm, VTextField, VTextarea } from 'vuetify/components'
 import { cloneDeep } from 'lodash-es'
-import type { ContactUsSectionType, LandingPageStatusEmit } from '@/types/landing-page'
+import type { ContactUsSectionType, LandingPageStatusEmit } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { LandingPageStatus } from '@/types/landing-page'
+import type { LandingPageStatus } from '~/utils/types/landing-page'
 
  type SectionNames = 'hero' | 'feature' | 'review' | 'ourTeam' | 'pricing' | 'productStats' | 'faq' | 'banner' | 'contactUs'
 

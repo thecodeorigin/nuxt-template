@@ -4,7 +4,7 @@ import type { VForm } from 'vuetify/components'
 import { cloneDeep } from 'lodash-es'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
-import type { DrawerConfig, LandingPageStatusEmit, PlanData, PricingSectionType } from '@/types/landing-page'
+import type { DrawerConfig, LandingPageStatusEmit, PlanData, PricingSectionType } from '~/utils/types/landing-page'
 
 const emit = defineEmits<LandingPageStatusEmit>()
 
