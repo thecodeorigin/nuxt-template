@@ -1,1 +1,0 @@
-ALTER TABLE "sys_landing_page" ALTER COLUMN "hero_title_button" DROP NOT NULL;

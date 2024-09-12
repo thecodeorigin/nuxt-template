@@ -1,19 +1,24 @@
+import { and, eq } from 'drizzle-orm'
+import { categoryTable } from '~/server/db/schemas/category.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data, error } = await supabaseAdmin.from('categories')
-    .delete()
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const category = await db.delete(categoryTable)
+      .where(
+        and(
+          eq(categoryTable.user_id, session.user!.id!),
+          eq(categoryTable.id, uuid),
+        ),
+      )
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: category[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

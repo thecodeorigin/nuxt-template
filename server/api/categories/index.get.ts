@@ -8,33 +8,20 @@ export default defineEventHandler(async (event) => {
     const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, parent_id } = getFilter(event)
 
     const categorySubquery = db.select().from(categoryTable)
-
-    if (parent_id) {
-      categorySubquery
-        .where(
-          and(
-            eq(categoryTable.user_id, session.user!.id!),
-            eq(categoryTable.parent_id, parent_id),
-          ),
-        )
-    }
-    else {
-      categorySubquery
-        .where(
-          and(
-            eq(categoryTable.user_id, session.user!.id!),
-            isNull(categoryTable.parent_id),
-          ),
-        )
-    }
-
-    categorySubquery
       .where(
-        or(
-          ilike(categoryTable.name, `%${keyword || ''}%`),
-          ilike(categoryTable.name, `%${keywordLower || ''}%`),
-          ilike(categoryTable.description, `%${keyword || ''}%`),
-          ilike(categoryTable.description, `%${keywordLower || ''}%`),
+        and(
+          eq(categoryTable.user_id, session.user!.id!),
+          parent_id
+            ? eq(categoryTable.parent_id, parent_id)
+            : isNull(categoryTable.parent_id),
+          or(
+            ilike(categoryTable.name, `%${keyword || ''}%`),
+            ...[
+              categoryTable.name && ilike(categoryTable.name, `%${keywordLower || ''}%`),
+              categoryTable.description && ilike(categoryTable.description, `%${keyword || ''}%`),
+              categoryTable.description && ilike(categoryTable.description, `%${keywordLower || ''}%`),
+            ].filter(Boolean),
+          ),
         ),
       )
 

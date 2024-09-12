@@ -5,7 +5,7 @@ config({ path: '.env' })
 
 export default defineConfig({
   schema: './server/db/schemas/*.schema.ts',
-  out: './supabase/migrations',
+  out: './server/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.SUPABASE_CONNECTION_STRING!,

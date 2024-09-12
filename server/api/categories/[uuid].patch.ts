@@ -1,25 +1,22 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Category = Tables<'categories'>
+import { eq } from 'drizzle-orm'
+import { categoryTable } from '~/server/db/schemas/category.schema'
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const category = await readBody<Category>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabaseAdmin.from('categories')
-    .update(category)
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const category = await db.update(categoryTable)
+      .set({ ...body, user_id: session.user!.id! })
+      .where(eq(categoryTable.id, uuid))
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: category }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

@@ -1,24 +1,20 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Category = Tables<'categories'>
+import { categoryTable } from '@/server/db/schemas/category.schema'
 
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const category = await readBody<Category>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabaseAdmin.from('categories')
-    .insert({
-      ...category,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const category = await db.insert(categoryTable)
+      .values({ ...body, user_id: session.user!.id! })
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: category[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

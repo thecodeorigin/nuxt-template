@@ -1,1 +1,0 @@
-ALTER TABLE "sys_landing_page" ALTER COLUMN "feature_title_desc" SET NOT NULL;
