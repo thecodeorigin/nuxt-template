@@ -52,3 +52,5 @@ public/mockServiceWorker.js
 
 # Ignore the build directory
 public/firebase-config.json
+
+docker/postgres

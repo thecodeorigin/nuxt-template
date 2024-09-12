@@ -16,18 +16,9 @@
     "prepare": "nuxt prepare",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "supabase db migrate",
-    "db:start": "supabase start -x realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor",
-    "db:stop": "supabase stop",
-    "db:status": "supabase status",
-    "db:restart": "supabase stop && supabase start -x realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor",
-    "db:reset": "supabase db reset",
-    "db:link": "supabase link",
-    "db:generate-types": "jiti ./scripts/generate-types.ts --esmResolve",
-    "db:generate-migration": "supabase db diff | supabase migration new",
-    "db:generate-seed": "supabase db dump --data-only --local --schema public -f supabase/seed.sql",
-    "db:push": "supabase db push",
-    "db:pull": "supabase db pull"
+    "db:migrate": "drizzle-kit migrate",
+    "db:start": "docker compose up -d",
+    "db:stop": "docker-compose down"
   },
   "dependencies": {
     "@casl/ability": "6.7.1",

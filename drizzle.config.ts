@@ -8,6 +8,10 @@ export default defineConfig({
   out: './server/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.SUPABASE_CONNECTION_STRING!,
+    host: process.env.POSTGRES_HOSTNAME!,
+    port: Number(process.env.POSTGRES_PORT),
+    user: process.env.POSTGRES_USER!,
+    password: process.env.POSTGRES_PASSWORD!,
+    database: process.env.POSTGRES_DB!,
   },
 })
