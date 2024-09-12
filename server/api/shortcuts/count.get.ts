@@ -1,16 +1,16 @@
 import { count, eq } from 'drizzle-orm'
-import { postTable } from '~/server/db/schemas/post.schema'
+import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
 
-    const postSubquery = db.select().from(postTable)
+    const userShortcutSubquery = db.select().from(userShortcutTable)
       .where(
-        eq(postTable.user_id, session.user!.id!),
+        eq(userShortcutTable.user_id, session.user!.id!),
       )
 
-    const total = await db.select({ count: count() }).from(postSubquery.as('count'))
+    const total = await db.select({ count: count() }).from(userShortcutSubquery.as('count'))
 
     return {
       total,

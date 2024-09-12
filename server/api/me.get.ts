@@ -1,14 +1,21 @@
+import { eq } from 'drizzle-orm'
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const { data } = await supabaseAdmin.from('sys_users').select().eq('email', session.user!.email!).maybeSingle()
+    const sysUser = await db.select().from(sysUserTable)
+      .where(
+        eq(sysUserTable.id, session.user!.id!),
+      )
+      .limit(1)
 
-  if (!data) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: `User with email "${session.user?.email}" not found in records.`,
-    })
+    setResponseStatus(event, 201)
+
+    return { data: sysUser[0] }
   }
-
-  return data
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

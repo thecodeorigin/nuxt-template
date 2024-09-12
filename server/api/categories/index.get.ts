@@ -10,18 +10,20 @@ export default defineEventHandler(async (event) => {
     const categorySubquery = db.select().from(categoryTable)
       .where(
         and(
-          eq(categoryTable.user_id, session.user!.id!),
-          parent_id
-            ? eq(categoryTable.parent_id, parent_id)
-            : isNull(categoryTable.parent_id),
-          or(
-            ilike(categoryTable.name, `%${keyword || ''}%`),
-            ...[
-              categoryTable.name && ilike(categoryTable.name, `%${keywordLower || ''}%`),
-              categoryTable.description && ilike(categoryTable.description, `%${keyword || ''}%`),
-              categoryTable.description && ilike(categoryTable.description, `%${keywordLower || ''}%`),
-            ].filter(Boolean),
-          ),
+          ...[
+            eq(categoryTable.user_id, session.user!.id!),
+            parent_id
+              ? eq(categoryTable.parent_id, parent_id)
+              : isNull(categoryTable.parent_id),
+            (categoryTable.name || categoryTable.description) && or(
+              ...[
+                categoryTable.name && ilike(categoryTable.name, `%${keyword || ''}%`),
+                categoryTable.name && ilike(categoryTable.name, `%${keywordLower || ''}%`),
+                categoryTable.description && ilike(categoryTable.description, `%${keyword || ''}%`),
+                categoryTable.description && ilike(categoryTable.description, `%${keywordLower || ''}%`),
+              ].filter(Boolean),
+            ),
+          ].filter(Boolean),
         ),
       )
 

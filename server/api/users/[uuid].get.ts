@@ -1,14 +1,21 @@
+import { eq } from 'drizzle-orm'
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+
 export default defineEventHandler(async (event) => {
-  const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data: user } = await supabase.from('sys_users').select().eq('id', uuid).maybeSingle()
+    const sysUser = await db.select().from(sysUserTable)
+      .where(
+        eq(sysUserTable.id, uuid),
+      )
+      .limit(1)
 
-  if (!user) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not found',
-    })
+    setResponseStatus(event, 201)
+
+    return { data: sysUser[0] }
   }
-
-  return user
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

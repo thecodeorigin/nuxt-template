@@ -1,24 +1,20 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Post = Tables<'posts'>
+import { postTable } from '@/server/db/schemas/post.schema'
 
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const post = await readBody<Post>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabase.from('posts')
-    .insert({
-      ...post,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const post = await db.insert(postTable)
+      .values({ ...body, user_id: session.user!.id! })
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: post[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

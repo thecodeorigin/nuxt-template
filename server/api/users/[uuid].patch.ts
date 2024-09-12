@@ -1,25 +1,22 @@
-import type { Tables } from '@/server/types/supabase'
-
-type User = Tables<'sys_users'>
+import { eq } from 'drizzle-orm'
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  if (session.user.id !== uuid)
-    return setResponseStatus(event, 403, 'You are not allowed to update other users')
+    const body = await readBody(event)
 
-  const body = await readBody<User>(event)
+    const sysUser = await db.update(sysUserTable)
+      .set(body)
+      .where(eq(sysUserTable.id, uuid))
+      .returning()
 
-  const { data, error } = await supabaseAdmin.from('sys_users')
-    .update(body)
-    .eq('id', uuid)
-    .select()
-    .maybeSingle()
-
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: sysUser }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

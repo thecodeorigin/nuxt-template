@@ -1,20 +1,20 @@
 import { eq } from 'drizzle-orm'
-import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { session } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
     const body = await readBody(event)
 
-    const sysRole = await db.update(sysRoleTable)
+    const sysUser = await db.update(sysUserTable)
       .set(body)
-      .where(eq(sysRoleTable.id, uuid))
+      .where(eq(sysUserTable.id, session.user!.id!))
       .returning()
 
     setResponseStatus(event, 201)
 
-    return { data: sysRole }
+    return { data: sysUser }
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

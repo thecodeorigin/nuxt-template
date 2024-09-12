@@ -1,14 +1,24 @@
+import { and, eq } from 'drizzle-orm'
+import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
+
 export default defineEventHandler(async (event) => {
-  const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data: shortcut } = await supabase.from('user_shortcuts').select().eq('id', uuid).maybeSingle()
+    const userShortcut = await db.select().from(userShortcutTable)
+      .where(
+        and(
+          eq(userShortcutTable.user_id, session.user!.id!),
+          eq(userShortcutTable.id, uuid),
+        ),
+      )
+      .limit(1)
 
-  if (!shortcut) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Not found',
-    })
+    setResponseStatus(event, 201)
+
+    return { data: userShortcut[0] }
   }
-
-  return shortcut
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

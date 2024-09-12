@@ -1,22 +1,24 @@
-// get project by uuid
+import { and, eq } from 'drizzle-orm'
+import { projectTable } from '~/server/db/schemas/project.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data, error } = await supabaseAdmin
-    .from('projects')
-    .select()
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .maybeSingle()
+    const project = await db.select().from(projectTable)
+      .where(
+        and(
+          eq(projectTable.user_id, session.user!.id!),
+          eq(projectTable.id, uuid),
+        ),
+      )
+      .limit(1)
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else if (!data)
-    setResponseStatus(event, 404)
-  else
-    setResponseStatus(event, 200)
+    setResponseStatus(event, 201)
 
-  return data
+    return { data: project[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

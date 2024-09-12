@@ -1,18 +1,20 @@
-import type { Tables } from '@/server/types/supabase'
-
-type User = Tables<'sys_users'>
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
-  await defineEventOptions(event, { auth: true })
+  try {
+    await defineEventOptions(event, { auth: true })
 
-  const user = await readBody<User>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabase.from('sys_users').insert(user).select().maybeSingle()
+    const sysUser = await db.insert(sysUserTable)
+      .values(body)
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: sysUser[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

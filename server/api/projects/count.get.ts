@@ -1,16 +1,16 @@
 import { count, eq } from 'drizzle-orm'
-import { postTable } from '~/server/db/schemas/post.schema'
+import { projectTable } from '~/server/db/schemas/project.schema'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
 
-    const postSubquery = db.select().from(postTable)
+    const projectSubquery = db.select().from(projectTable)
       .where(
-        eq(postTable.user_id, session.user!.id!),
+        eq(projectTable.user_id, session.user!.id!),
       )
 
-    const total = await db.select({ count: count() }).from(postSubquery.as('count'))
+    const total = await db.select({ count: count() }).from(projectSubquery.as('count'))
 
     return {
       total,

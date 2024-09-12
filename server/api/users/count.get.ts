@@ -1,13 +1,13 @@
 import { count } from 'drizzle-orm'
-import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const sysRoleSubquery = db.select().from(sysRoleTable)
+    const sysUserSubquery = db.select().from(sysUserTable)
 
-    const total = await db.select({ count: count() }).from(sysRoleSubquery.as('count'))
+    const total = await db.select({ count: count() }).from(sysUserSubquery.as('count'))
 
     return {
       total,

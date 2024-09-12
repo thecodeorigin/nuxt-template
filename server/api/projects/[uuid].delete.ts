@@ -1,19 +1,24 @@
+import { and, eq } from 'drizzle-orm'
+import { projectTable } from '@/server/db/schemas/project.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data, error } = await supabaseAdmin.from('projects')
-    .delete()
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const project = await db.delete(projectTable)
+      .where(
+        and(
+          eq(projectTable.user_id, session.user!.id!),
+          eq(projectTable.id, uuid),
+        ),
+      )
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: project[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

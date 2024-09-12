@@ -1,25 +1,22 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Shortcut = Tables<'user_shortcuts'>
+import { eq } from 'drizzle-orm'
+import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const post = await readBody<Shortcut>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabase.from('user_shortcuts')
-    .update(post)
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const userShortcut = await db.update(userShortcutTable)
+      .set({ ...body, user_id: session.user!.id! })
+      .where(eq(userShortcutTable.id, uuid))
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: userShortcut }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

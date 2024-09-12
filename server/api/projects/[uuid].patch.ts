@@ -1,25 +1,22 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Project = Tables<'projects'>
+import { eq } from 'drizzle-orm'
+import { projectTable } from '~/server/db/schemas/project.schema'
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const project = await readBody<Project>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabaseAdmin.from('projects')
-    .update(project)
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select('*')
-    .maybeSingle()
+    const project = await db.update(projectTable)
+      .set({ ...body, user_id: session.user!.id! })
+      .where(eq(projectTable.id, uuid))
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: project }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

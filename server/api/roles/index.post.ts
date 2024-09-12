@@ -1,21 +1,20 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Role = Tables<'sys_roles'>
+import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
 
 export default defineEventHandler(async (event) => {
-  await defineEventOptions(event, { auth: true })
+  try {
+    await defineEventOptions(event, { auth: true })
 
-  const post = await readBody<Role>(event)
+    const body = await readBody(event)
 
-  const { data, error } = await supabase.from('sys_roles')
-    .insert(post)
-    .select()
-    .maybeSingle()
+    const sysRole = await db.insert(sysRoleTable)
+      .values(body)
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: sysRole[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

@@ -1,19 +1,24 @@
+import { and, eq } from 'drizzle-orm'
+import { postTable } from '@/server/db/schemas/post.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data, error } = await supabase.from('posts')
-    .delete()
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const post = await db.delete(postTable)
+      .where(
+        and(
+          eq(postTable.user_id, session.user!.id!),
+          eq(postTable.id, uuid),
+        ),
+      )
+      .returning()
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: post[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 404, error.message)
+  }
 })

@@ -1,21 +1,20 @@
+import { projectTable } from '@/server/db/schemas/project.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
-  const { category_id, title, description } = await readBody(event)
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const { data, error } = await supabaseAdmin.from('projects')
-    .insert({
-      category_id,
-      title,
-      description,
-      user_id: session.user!.id!,
-    })
-    .select('*,category:categories(*)')
-    .maybeSingle()
+    const body = await readBody(event)
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
+    const project = await db.insert(projectTable)
+      .values({ ...body, user_id: session.user!.id! })
+      .returning()
+
     setResponseStatus(event, 201)
 
-  return { data }
+    return { data: project[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })

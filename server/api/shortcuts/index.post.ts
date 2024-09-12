@@ -1,17 +1,20 @@
+import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
+
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const { data, error } = await supabaseAdmin.from('user_shortcuts')
-    .select('*')
-    .match({
-      user_id: session.user.id,
-    })
+    const body = await readBody(event)
 
-  if (error) {
-    setResponseStatus(event, 400, error.message)
+    const userShortcut = await db.insert(userShortcutTable)
+      .values({ ...body, user_id: session.user!.id! })
+      .returning()
 
-    return error
+    setResponseStatus(event, 201)
+
+    return { data: userShortcut[0] }
   }
-
-  return data || []
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
+  }
 })
