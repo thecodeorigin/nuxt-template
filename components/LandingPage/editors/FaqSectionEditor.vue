@@ -17,7 +17,7 @@ const faqForm = ref<FAQSectionType>({
     },
   ],
 })
-const faqList = computed<FAQ[]>(() => faqForm.value.faq_data)
+const faqList = computed<FAQ[]>(() => faqForm.value.faq_data || [])
 
 const isLoading = ref(false)
 
@@ -25,6 +25,9 @@ type FAQFormSchemaType = z.infer<typeof faqSchema>
 const error = ref<z.ZodFormattedError<FAQFormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
+
   if (editorValue.trim().length > 0 && error.value?.faq_title) {
     error.value.faq_title._errors = []
   }
@@ -32,6 +35,9 @@ function onTitleUpdate(editorValue: string) {
 }
 
 function onDescriptionUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
+
   if (editorValue.trim().length > 0 && error.value?.faq_title_desc) {
     error.value.faq_title_desc._errors = []
   }
@@ -40,12 +46,23 @@ function onDescriptionUpdate(editorValue: string) {
 
 const isValidFaq = computed(() => {
   if (faqForm.value.faq_data && faqList.value.length >= 0) {
-    const currentFaq = faqList.value[faqList.value.length - 1]
+    const currentFaq = faqForm.value.faq_data[faqForm.value.faq_data.length - 1]
 
     return currentFaq && currentFaq.question.trim() !== '' && currentFaq.answer.trim() !== ''
   }
   return false
 })
+
+function handleAddFaq() {
+  faqForm.value?.faq_data?.push({
+    question: '',
+    answer: '',
+  })
+}
+
+function handleRemoveFaq(index: number) {
+  faqForm.value?.faq_data?.splice(index, 1)
+}
 
 async function onFaqSubmit() {
   const validInput = faqSchema.safeParse(faqForm.value)
@@ -103,9 +120,13 @@ defineExpose({
   onFaqSubmit,
 })
 
-watch(faqData, (val) => {
-  if (val) {
-    faqForm.value = cloneDeep(val)
+watch(faqData, (value) => {
+  if (value) {
+    faqForm.value = {
+      faq_title: value.faq_title,
+      faq_title_desc: value.faq_title_desc,
+      faq_data: cloneDeep(value.faq_data as FAQ[] ?? []),
+    }
   }
 })
 </script>
@@ -134,7 +155,7 @@ watch(faqData, (val) => {
               <TiptapEditor
                 v-model="faqForm.faq_title as string"
                 class="border rounded-lg title-content mb-2"
-                :class="{ 'border-error border-opacity-100': error?.faq_title && error?.faq_title?._errors.length > 0 }"
+                :class="{ 'border-error border-opacity-100': error?.faq_title && error?.faq_title?._errors?.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onTitleUpdate"
               />
@@ -155,7 +176,7 @@ watch(faqData, (val) => {
               <TiptapEditor
                 v-model="faqForm.faq_title_desc as string"
                 class="border rounded-lg mb-2"
-                :class="{ 'border-error border-opacity-100': error?.faq_title_desc && error?.faq_title_desc?._errors.length > 0 }"
+                :class="{ 'border-error border-opacity-100': error?.faq_title_desc && error?.faq_title_desc?._errors?.length > 0 }"
                 placeholder="Text here..."
                 @update:model-value="onDescriptionUpdate"
               />
@@ -203,7 +224,7 @@ watch(faqData, (val) => {
                 color="error"
                 rounded="lg"
                 class="w-100 h-100 d-flex align-center justify-center pa-2"
-                @click="faqList.splice(index, 1)"
+                @click="handleRemoveFaq(index)"
               >
                 <VIcon icon="ri-close-circle-line" />
               </VBtn>
@@ -211,11 +232,11 @@ watch(faqData, (val) => {
           </VRow>
 
           <VBtn
-            v-if="faqList.length === 0"
+            v-if="faqForm.faq_data?.length === 0"
             class="mt-6"
             prepend-icon="ri-add-line"
             variant="tonal"
-            @click="faqList.push({ question: '', answer: '' })"
+            @click="handleAddFaq"
           >
             Add a new faq
           </VBtn>
@@ -226,7 +247,7 @@ watch(faqData, (val) => {
             prepend-icon="ri-add-line"
             :disabled="!isValidFaq"
             variant="tonal"
-            @click="faqList.push({ question: '', answer: '' })"
+            @click="handleAddFaq"
           >
             Add another option
           </VBtn>

@@ -1,15 +1,18 @@
 <script setup lang="ts">
+import { register } from 'swiper/element/bundle'
+import sectionTitleIcon from '@images/pages/section-title-icon.png'
+import { useTheme } from 'vuetify'
+
 import logo2dark from '@images/front-pages/branding/logo-2-dark.png'
 import logo2light from '@images/front-pages/branding/logo-2-light.png'
 import logo2 from '@images/front-pages/branding/logo-2.png'
 
-import { register } from 'swiper/element/bundle'
-
-import sectionTitleIcon from '@images/pages/section-title-icon.png'
-import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import type { CustomerReview } from '~/utils/types/landing-page'
+import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 
 const { customerReviewData } = storeToRefs(useLandingPageStore())
+const { global } = useTheme()
+
 const reviewerList = computed<CustomerReview[]>(() => customerReviewData.value?.customer_review_data)
 
 register()
@@ -120,20 +123,37 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
     <div class="swiper-brands-carousel mt-4">
       <ClientOnly>
         <swiper-container
-          slides-per-view="1"
-          loop="true"
+          :slides-per-view="3"
+          space-between="10"
+          centered-slides="true"
+          :loop="reviewerList?.length > 3 ? true : false"
+          autoplay-delay="3000"
+          autoplay-disable-on-interaction="false"
           events-prefix="swiper-"
+          class="brand-logo-swiper"
+          :injectStyles="[
+            `
+          .swiper-pagination{
+            position: static;
+            margin-block: 1rem;
+          },
+          .swiper-pagination-bullet-active{
+            width: 1rem;
+          }
+
+      `]"
           :breakpoints="{
+            1400: {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
             992: {
-              slidesPerView: 5,
+              slidesPerView: 3,
+              spaceBetween: 20,
             },
             768: {
-              centeredSlides: true,
-              slidesPerView: 3,
-            },
-            580: {
-              centeredSlides: true,
               slidesPerView: 2,
+              spaceBetween: 20,
             },
           }"
         >
@@ -142,7 +162,14 @@ const brandLogo2 = useGenerateImageVariant(logo2light, logo2dark)
             :key="index"
           >
             <VImg
-              :src="review.logo_light && review.logo_dark ? useGenerateImageVariant(review.logo_light, review.logo_dark) : logo2"
+              v-if="global.name.value === 'light'"
+              :src="review.logo_light as string"
+              height="28"
+            />
+
+            <VImg
+              v-else
+              :src="review.logo_dark as string"
               height="28"
             />
           </swiper-slide>
@@ -202,5 +229,11 @@ swiper-container::part(pagination) {
 <style lang="scss" scoped>
 .customer-reviews {
   margin-block: 6.25rem;
+}
+
+.brand-logo-swiper {
+  :deep(.swiper-pagination) {
+    display: none;
+  }
 }
 </style>

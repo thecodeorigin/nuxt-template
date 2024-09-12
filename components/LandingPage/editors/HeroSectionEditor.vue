@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { z } from 'zod'
+import { cloneDeep } from 'lodash-es'
 
 import type { HeroButtonType, HeroSectionType, LandingPageStatus, LandingPageStatusEmit } from '~/utils/types/landing-page'
 import { getRemixIcon, iconNameList } from '@/utils/landingPageUtils.js'
@@ -11,10 +12,14 @@ const { heroData } = storeToRefs(useLandingPageStore())
 const heroForm = ref<HeroSectionType>({
   hero_title: '',
   hero_title_desc: '',
+  hero_main_img_light: null,
+  hero_main_img_dark: null,
+  hero_sub_img_light: null,
+  hero_sub_img_dark: null,
   hero_title_button: {
     btn_link: '',
     btn_label: '',
-    btn_radius: 0,
+    btn_radius: '',
     btn_rippled: false,
     btn_variant: 'flat',
     btn_apend_icon: '',
@@ -121,28 +126,9 @@ defineExpose({
 })
 
 watch(heroData, (value) => {
-  heroForm.value = {
-    hero_title: value?.hero_title ? removeEmptyTags(value.hero_title) : '',
-    hero_title_desc: value?.hero_title_desc ? removeEmptyTags(value.hero_title_desc) : '',
-    hero_main_img_light: value?.hero_main_img_light || '',
-    hero_main_img_dark: value?.hero_main_img_dark || '',
-    hero_sub_img_light: value?.hero_sub_img_light || '',
-    hero_sub_img_dark: value?.hero_sub_img_dark || '',
-    hero_title_button: {
-      btn_link: value?.hero_title_button?.btn_link || '',
-      btn_label: value?.hero_title_button?.btn_label || '',
-      btn_radius: value?.hero_title_button?.btn_radius || '',
-      btn_rippled: value?.hero_title_button?.btn_rippled || false,
-      btn_variant: value?.hero_title_button?.btn_variant || 'flat',
-      btn_apend_icon: value?.hero_title_button?.btn_apend_icon || '',
-      btn_background: value?.hero_title_button?.btn_background || '',
-      btn_prepend_icon: value?.hero_title_button?.btn_prepend_icon || '',
-    },
+  if (value) {
+    heroForm.value = cloneDeep(value)
   }
-
-  tiptapTitleInput.value = heroForm.value.hero_title
-
-  tiptapDescriptionInput.value = heroForm.value.hero_title_desc
 }, { deep: true, immediate: true })
 </script>
 
@@ -371,15 +357,6 @@ watch(heroData, (value) => {
         </VBtn>
       </div>
     </div>
-
-    <VBtn
-      class="text-capitalize mt-6"
-      type="submit"
-      color="primary"
-      @click="onSubmit"
-    >
-      Save
-    </VBtn>
   </form>
 </template>
 

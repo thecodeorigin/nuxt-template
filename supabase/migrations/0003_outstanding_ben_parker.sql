@@ -1,0 +1,2 @@
+ALTER TABLE "sys_landing_page" ALTER COLUMN "feature_data" SET DEFAULT '[{"name":"","desc":"","icon":""}]'::jsonb;--> statement-breakpoint
+ALTER TABLE "sys_landing_page" ALTER COLUMN "feature_data" SET NOT NULL;

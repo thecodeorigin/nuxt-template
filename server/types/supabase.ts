@@ -174,187 +174,6 @@ export interface Database {
           },
         ]
       }
-      stripe_customers: {
-        Row: {
-          created_at: string
-          id: string
-          stripe_customer_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          stripe_customer_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          stripe_customer_id?: string | null
-        }
-        Relationships: [
-        ]
-      }
-      stripe_prices: {
-        Row: {
-          active: boolean | null
-          currency: string | null
-          description: string | null
-          id: string
-          interval: Database["public"]["Enums"]["pricing_plan_interval"] | null
-          interval_count: number | null
-          metadata: Json | null
-          product_id: string | null
-          trial_period_days: number | null
-          type: Database["public"]["Enums"]["pricing_type"] | null
-          unit_amount: number | null
-        }
-        Insert: {
-          active?: boolean | null
-          currency?: string | null
-          description?: string | null
-          id: string
-          interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
-          interval_count?: number | null
-          metadata?: Json | null
-          product_id?: string | null
-          trial_period_days?: number | null
-          type?: Database["public"]["Enums"]["pricing_type"] | null
-          unit_amount?: number | null
-        }
-        Update: {
-          active?: boolean | null
-          currency?: string | null
-          description?: string | null
-          id?: string
-          interval?: Database["public"]["Enums"]["pricing_plan_interval"] | null
-          interval_count?: number | null
-          metadata?: Json | null
-          product_id?: string | null
-          trial_period_days?: number | null
-          type?: Database["public"]["Enums"]["pricing_type"] | null
-          unit_amount?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'stripe_prices_product_id_fkey'
-            columns: [
-              'product_id',
-            ]
-            isOneToOne: false
-            referencedRelation: 'stripe_products'
-            referencedColumns: [
-              'id',
-            ]
-          },
-        ]
-      }
-      stripe_products: {
-        Row: {
-          active: boolean | null
-          description: string | null
-          id: string
-          image: string | null
-          marketing_features: Json[] | null
-          metadata: Json | null
-          name: string | null
-        }
-        Insert: {
-          active?: boolean | null
-          description?: string | null
-          id: string
-          image?: string | null
-          marketing_features?: Json[] | null
-          metadata?: Json | null
-          name?: string | null
-        }
-        Update: {
-          active?: boolean | null
-          description?: string | null
-          id?: string
-          image?: string | null
-          marketing_features?: Json[] | null
-          metadata?: Json | null
-          name?: string | null
-        }
-        Relationships: [
-        ]
-      }
-      stripe_subscriptions: {
-        Row: {
-          cancel_at: string | null
-          cancel_at_period_end: boolean | null
-          canceled_at: string | null
-          created: string
-          current_period_end: string
-          current_period_start: string
-          ended_at: string | null
-          id: string
-          metadata: Json | null
-          price_id: string | null
-          quantity: number | null
-          status: Database["public"]["Enums"]["subscription_status"] | null
-          trial_end: string | null
-          trial_start: string | null
-          user_id: string
-        }
-        Insert: {
-          cancel_at?: string | null
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created?: string
-          current_period_end?: string
-          current_period_start?: string
-          ended_at?: string | null
-          id: string
-          metadata?: Json | null
-          price_id?: string | null
-          quantity?: number | null
-          status?: Database["public"]["Enums"]["subscription_status"] | null
-          trial_end?: string | null
-          trial_start?: string | null
-          user_id: string
-        }
-        Update: {
-          cancel_at?: string | null
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created?: string
-          current_period_end?: string
-          current_period_start?: string
-          ended_at?: string | null
-          id?: string
-          metadata?: Json | null
-          price_id?: string | null
-          quantity?: number | null
-          status?: Database["public"]["Enums"]["subscription_status"] | null
-          trial_end?: string | null
-          trial_start?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'stripe_subscriptions_price_id_fkey'
-            columns: [
-              'price_id',
-            ]
-            isOneToOne: false
-            referencedRelation: 'stripe_prices'
-            referencedColumns: [
-              'id',
-            ]
-          },
-          {
-            foreignKeyName: 'stripe_subscriptions_user_id_fkey'
-            columns: [
-              'user_id',
-            ]
-            isOneToOne: false
-            referencedRelation: 'sys_users'
-            referencedColumns: [
-              'id',
-            ]
-          },
-        ]
-      }
       sys_faq_categories: {
         Row: {
           icon: string | null
@@ -409,33 +228,28 @@ export interface Database {
             ]
           },
         ]
-
       }
       sys_landing_page: {
         Row: {
-          banner_button: string | null
+          banner_button: string
           banner_image: string | null
-          banner_title: string | null
-          banner_title_desc: string | null
-          contact_us_card_content: string | null
-          contact_us_card_emphasized_heading: Json | null
-          contact_us_card_heading: string | null
+          banner_title: string
+          banner_title_desc: string
+          contact_us_card_content: string
+          contact_us_card_heading: string
           contact_us_card_image: string | null
-          contact_us_emphasized_title: Json | null
-          contact_us_title: string | null
-          contact_us_title_desc: string[] | null
+          contact_us_card_title: string
+          contact_us_title: string
+          contact_us_title_desc: string | null
           created_at: string
-          customer_review_data: Json[] | null
-          customer_review_emphasized_title: Json | null
-          customer_review_title: string | null
-          customer_review_title_desc: string[] | null
-          faq_data: Json[] | null
-          faq_emphasized_title: Json | null
-          faq_title: string | null
-          faq_title_desc: string[] | null
-          feature_data: Json[] | null
-          feature_emphasized_title: Json | null
-          feature_title: string | null
+          customer_review_data: Json | null
+          customer_review_title: string
+          customer_review_title_desc: string | null
+          faq_data: Json | null
+          faq_title: string
+          faq_title_desc: string
+          feature_data: Json | null
+          feature_title: string
           feature_title_desc: string | null
           hero_main_img_dark: string | null
           hero_main_img_light: string | null
@@ -445,82 +259,71 @@ export interface Database {
           hero_title_button: Json
           hero_title_desc: string
           id: string
-          our_team_data: Json[] | null
-          our_team_desc: string[] | null
-          our_team_emphasized_title: Json | null
-          our_team_title: string | null
-          pricing_data: Json[] | null
-          pricing_emphasized_title: Json | null
-          pricing_title: string | null
-          pricing_title_desc: string[] | null
-          product_stats: Json[] | null
+          our_team_data: Json | null
+          our_team_desc: string
+          our_team_title: string
+          pricing_data: Json | null
+          pricing_title: string
+          pricing_title_desc: string
+          product_stats: Json | null
         }
         Insert: {
-          banner_button?: string | null
+          banner_button: string
           banner_image?: string | null
-          banner_title?: string | null
-          banner_title_desc?: string | null
-          contact_us_card_content?: string | null
-          contact_us_card_emphasized_heading?: Json | null
-          contact_us_card_heading?: string | null
+          banner_title: string
+          banner_title_desc: string
+          contact_us_card_content: string
+          contact_us_card_heading: string
           contact_us_card_image?: string | null
-          contact_us_emphasized_title?: Json | null
-          contact_us_title?: string | null
-          contact_us_title_desc?: string[] | null
+          contact_us_card_title: string
+          contact_us_title: string
+          contact_us_title_desc?: string | null
           created_at?: string
-          customer_review_data?: Json[] | null
-          customer_review_emphasized_title?: Json | null
-          customer_review_title?: string | null
-          customer_review_title_desc?: string[] | null
-          faq_data?: Json[] | null
-          faq_emphasized_title?: Json | null
-          faq_title?: string | null
-          faq_title_desc?: string[] | null
-          feature_data?: Json[] | null
-          feature_emphasized_title?: Json | null
-          feature_title?: string | null
+          customer_review_data?: Json | null
+          customer_review_title: string
+          customer_review_title_desc?: string | null
+          faq_data?: Json | null
+          faq_title: string
+          faq_title_desc: string
+          feature_data?: Json | null
+          feature_title: string
           feature_title_desc?: string | null
           hero_main_img_dark?: string | null
           hero_main_img_light?: string | null
           hero_sub_img_dark?: string | null
           hero_sub_img_light?: string | null
-          hero_title?: string
-          hero_title_button?: Json
-          hero_title_desc?: string
-          id: string
+          hero_title: string
+          hero_title_button: Json
+          hero_title_desc: string
+          id?: string
           our_team_data?: Json | null
-          our_team_desc?: string | null
-          our_team_title?: string | null
-          pricing_data?: Json[] | null
-          pricing_emphasized_title?: Json | null
-          pricing_title?: string | null
-          pricing_title_desc?: string[] | null
-          product_stats?: Json[] | null
+          our_team_desc: string
+          our_team_title: string
+          pricing_data?: Json | null
+          pricing_title: string
+          pricing_title_desc: string
+          product_stats?: Json | null
         }
         Update: {
-          banner_button?: string | null
+          banner_button?: string
           banner_image?: string | null
-          banner_title?: string | null
-          banner_title_desc?: string | null
-          contact_us_card_content?: string | null
-          contact_us_card_emphasized_heading?: Json | null
-          contact_us_card_heading?: string | null
+          banner_title?: string
+          banner_title_desc?: string
+          contact_us_card_content?: string
+          contact_us_card_heading?: string
           contact_us_card_image?: string | null
-          contact_us_emphasized_title?: Json | null
-          contact_us_title?: string | null
-          contact_us_title_desc?: string[] | null
+          contact_us_card_title?: string
+          contact_us_title?: string
+          contact_us_title_desc?: string | null
           created_at?: string
-          customer_review_data?: Json[] | null
-          customer_review_emphasized_title?: Json | null
-          customer_review_title?: string | null
-          customer_review_title_desc?: string[] | null
-          faq_data?: Json[] | null
-          faq_emphasized_title?: Json | null
-          faq_title?: string | null
-          faq_title_desc?: string[] | null
-          feature_data?: Json[] | null
-          feature_emphasized_title?: Json | null
-          feature_title?: string | null
+          customer_review_data?: Json | null
+          customer_review_title?: string
+          customer_review_title_desc?: string | null
+          faq_data?: Json | null
+          faq_title?: string
+          faq_title_desc?: string
+          feature_data?: Json | null
+          feature_title?: string
           feature_title_desc?: string | null
           hero_main_img_dark?: string | null
           hero_main_img_light?: string | null
@@ -530,17 +333,16 @@ export interface Database {
           hero_title_button?: Json
           hero_title_desc?: string
           id?: string
-          our_team_data?: Json[] | null
-          our_team_desc?: string[] | null
-          our_team_emphasized_title?: Json | null
-          our_team_title?: string | null
-          pricing_data?: Json[] | null
-          pricing_emphasized_title?: Json | null
-          pricing_title?: string | null
-          pricing_title_desc?: string[] | null
-          product_stats?: Json[] | null
+          our_team_data?: Json | null
+          our_team_desc?: string
+          our_team_title?: string
+          pricing_data?: Json | null
+          pricing_title?: string
+          pricing_title_desc?: string
+          product_stats?: Json | null
         }
-        Relationships: []
+        Relationships: [
+        ]
       }
       sys_notifications: {
         Row: {
@@ -586,22 +388,22 @@ export interface Database {
       }
       sys_permissions: {
         Row: {
-          action: Database["public"]["Enums"]["permission_action"]
+          action: Database['public']['Enums']['permission_action']
           id: string
           role_id: string | null
-          subject: Database["public"]["Enums"]["permission_subject"]
+          subject: Database['public']['Enums']['permission_subject']
         }
         Insert: {
-          action?: Database["public"]["Enums"]["permission_action"]
+          action?: Database['public']['Enums']['permission_action']
           id?: string
           role_id?: string | null
-          subject: Database["public"]["Enums"]["permission_subject"]
+          subject: Database['public']['Enums']['permission_subject']
         }
         Update: {
-          action?: Database["public"]["Enums"]["permission_action"]
+          action?: Database['public']['Enums']['permission_action']
           id?: string
           role_id?: string | null
-          subject?: Database["public"]["Enums"]["permission_subject"]
+          subject?: Database['public']['Enums']['permission_subject']
         }
         Relationships: [
           {
@@ -679,7 +481,7 @@ export interface Database {
           phone: string | null
           postcode: string | null
           role_id: string | null
-          status: Database["public"]["Enums"]["user_status"] | null
+          status: Database['public']['Enums']['user_status'] | null
         }
         Insert: {
           address?: string | null
@@ -696,7 +498,7 @@ export interface Database {
           phone?: string | null
           postcode?: string | null
           role_id?: string | null
-          status?: Database["public"]["Enums"]["user_status"] | null
+          status?: Database['public']['Enums']['user_status'] | null
         }
         Update: {
           address?: string | null
@@ -713,7 +515,7 @@ export interface Database {
           phone?: string | null
           postcode?: string | null
           role_id?: string | null
-          status?: Database["public"]["Enums"]["user_status"] | null
+          status?: Database['public']['Enums']['user_status'] | null
         }
         Relationships: [
           {
@@ -727,33 +529,7 @@ export interface Database {
               'id',
             ]
           },
-          {
-            foreignKeyName: 'sys_users_id_fkey'
-            columns: [
-              'id',
-            ]
-            isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: [
-              'id',
-            ]
-          },
         ]
-      }
-      team_members: {
-        Row: {
-          id: string
-          team_data: Json | null
-        }
-        Insert: {
-          id?: string
-          team_data?: Json | null
-        }
-        Update: {
-          id?: string
-          team_data?: Json | null
-        }
-        Relationships: []
       }
       user_devices: {
         Row: {

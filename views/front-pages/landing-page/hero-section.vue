@@ -15,6 +15,10 @@ const { heroData } = storeToRefs(useLandingPageStore())
 const theme = useTheme()
 const isDark = ref(theme.name)
 
+const heroButtonData = computed<HeroButtonType | null>(() => {
+  return heroData.value?.hero_title_button as HeroButtonType | null
+})
+
 const heroBgUrl = computed(() => {
   if (isDark.value === 'dark')
     return darkBg
@@ -22,8 +26,23 @@ const heroBgUrl = computed(() => {
     return lightBg
 })
 
-const heroElementsImg = useGenerateImageVariant(heroElementsImgLight, heroElementsImgDark)
-const heroDashboardImg = useGenerateImageVariant(heroDashboardImgLight, heroDashboardImgDark)
+const heroMainImg = computed(() => {
+  if (!heroData.value?.hero_main_img_dark && heroData.value?.hero_main_img_light) {
+    return useGenerateImageVariant(heroDashboardImgLight, heroDashboardImgDark)
+  }
+  else {
+    return useGenerateImageVariant(heroData.value?.hero_main_img_light as string, heroData.value?.hero_main_img_dark as string)
+  }
+})
+
+const heroSubImg = computed(() => {
+  if (!heroData.value?.hero_sub_img_dark && heroData.value?.hero_sub_img_light) {
+    return useGenerateImageVariant(heroElementsImgLight, heroElementsImgDark)
+  }
+  else {
+    return useGenerateImageVariant(heroData.value?.hero_sub_img_light as string, heroData.value?.hero_sub_img_dark as string)
+  }
+})
 
 const { x, y } = useMouse({ touch: false })
 
@@ -49,24 +68,22 @@ const translateMouse = computed(() => (speed: number) => {
     >
       <VContainer>
         <div class="text-center pt-6 pb-16">
-          <div class="mb-4 landing-page-title">
-            {{ heroData?.hero_title }}
-          </div>
-          <div class="text-body-1 font-weight-medium text-high-emphasis pb-8">
-            {{ heroData?.hero_title_desc }}
-          </div>
+          <div class="mb-4 landing-page-title" v-html="heroData?.hero_title" />
+
+          <div class="text-body-1 font-weight-medium text-high-emphasis pb-8" v-html="heroData?.hero_title_desc" />
+
           <VBtn
-            :color="heroData?.hero_title_button?.btn_background"
-            :prepend-icon="heroData?.hero_title_button?.btn_prepend_icon"
-            :append-icon="heroData?.hero_title_button?.btn_apend_icon"
-            :to="heroData?.hero_title_button?.btn_link"
-            :variant="heroData?.hero_title_button?.btn_variant"
-            :ripple="heroData?.hero_title_button?.btn_rippled"
+            :color="heroButtonData?.btn_background"
+            :prepend-icon="heroButtonData?.btn_prepend_icon"
+            :append-icon="heroButtonData?.btn_apend_icon"
+            :to="heroButtonData?.btn_link"
+            :variant="heroButtonData?.btn_variant"
+            :ripple="heroButtonData?.btn_rippled"
             class="mt-6"
             size="large"
-            rounded="rounded"
+            :rounded="heroButtonData?.btn_radius"
           >
-            {{ heroData?.hero_title_button?.btn_label }}
+            {{ heroButtonData?.btn_label }}
           </VBtn>
         </div>
 
@@ -77,7 +94,7 @@ const translateMouse = computed(() => (speed: number) => {
               target="_blank"
             >
               <img
-                :src="heroDashboardImg"
+                :src="heroSubImg.value"
                 class="mx-auto cursor-pointer"
                 :style="translateMouse(3)"
               >

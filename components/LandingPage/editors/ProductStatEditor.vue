@@ -40,7 +40,7 @@ async function onProductStatsSubmit() {
   emit('update:sectionStatus', 'loading')
 
   try {
-    const res = await $api('/api/pages/landing-page/stat', {
+    const res = await $api('/pages/landing-page/stat', {
       method: 'PATCH',
       body: productStatForm.value,
     })
@@ -72,21 +72,8 @@ defineExpose({
 })
 
 watch(productStatsData, (value) => {
-  if (value && value.product_stats) {
-    if (Array.isArray(value.product_stats)) {
-      productStatForm.value = cloneDeep(
-        value.product_stats.map(stat => ({
-          id: stat.id ?? crypto.randomUUID(),
-          title: stat.title ?? '',
-          value: stat.value ?? 0,
-          color: stat.color ?? 'primary',
-          icon: stat.icon ?? null,
-        })),
-      )
-    }
-  }
-  else {
-    productStatForm.value = []
+  if (value?.product_stats) {
+    productStatForm.value = JSON.parse(JSON.stringify(value.product_stats)) ?? []
   }
 })
 </script>
@@ -126,59 +113,61 @@ watch(productStatsData, (value) => {
     </div>
 
     <!-- 👉 Product Stats Content -->
-    <VCard v-for="(stat, index) in productStatForm" :key="index" cols="12" sm="12" class="pa-4 mb-4">
-      <VRow>
-        <VCol cols="12" class="d-flex align-center">
-          <VLabel
-            :text="index <= 9 ? `0${index + 1}` : index + 1"
-          />
+    <div v-if="productStatForm?.length > 0">
+      <VCard v-for="(stat, index) in productStatForm" :key="index" cols="12" sm="12" class="pa-4 mb-4">
+        <VRow>
+          <VCol cols="12" class="d-flex align-center">
+            <VLabel
+              :text="index <= 9 ? `0${index + 1}` : index + 1"
+            />
 
-          <VSpacer />
+            <VSpacer />
 
-          <VBtn
-            icon
-            variant="text"
-            color="error"
-            @click="productStatForm.splice(index, 1)"
-          >
-            <VIcon icon="ri-close-circle-line" />
-          </VBtn>
-        </VCol>
+            <VBtn
+              icon
+              variant="text"
+              color="error"
+              @click="productStatForm.splice(index, 1)"
+            >
+              <VIcon icon="ri-close-circle-line" />
+            </VBtn>
+          </VCol>
 
-        <VCol cols="12" sm="6" md="3">
-          <VTextField
-            v-model="stat.title"
-            placeholder="Text here..."
-            label=" Product stat title"
-          />
-        </VCol>
+          <VCol cols="12" sm="6" md="3">
+            <VTextField
+              v-model="stat.title"
+              placeholder="Text here..."
+              label=" Product stat title"
+            />
+          </VCol>
 
-        <VCol cols="12" sm="6" md="3">
-          <VSelect
-            v-model="stat.icon"
-            label="Icon"
-            :items="iconList"
-          />
-        </VCol>
+          <VCol cols="12" sm="6" md="3">
+            <VSelect
+              v-model="stat.icon"
+              label="Icon"
+              :items="iconList"
+            />
+          </VCol>
 
-        <VCol cols="12" sm="6" md="3">
-          <VTextField
-            v-model="stat.value"
-            type="number"
-            placeholder="Text here..."
-            label="Product stat value"
-          />
-        </VCol>
+          <VCol cols="12" sm="6" md="3">
+            <VTextField
+              v-model="stat.value"
+              type="number"
+              placeholder="Text here..."
+              label="Product stat value"
+            />
+          </VCol>
 
-        <VCol cols="12" sm="6" md="3">
-          <VSelect
-            v-model="stat.color"
-            label="Icon color"
-            :items="['primary', 'secondary', 'accent', 'error', 'warning', 'info', 'success']"
-          />
-        </VCol>
-      </VRow>
-    </VCard>
+          <VCol cols="12" sm="6" md="3">
+            <VSelect
+              v-model="stat.color"
+              label="Icon color"
+              :items="['primary', 'secondary', 'accent', 'error', 'warning', 'info', 'success']"
+            />
+          </VCol>
+        </VRow>
+      </VCard>
+    </div>
 
     <!-- 👉 Product Stats Submit Button -->
     <VBtn

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import teamPerson1 from '@images/front-pages/landing-page/team-member-1.png'
-import teamPerson2 from '@images/front-pages/landing-page/team-member-2.png'
-import teamPerson3 from '@images/front-pages/landing-page/team-member-3.png'
-import teamPerson4 from '@images/front-pages/landing-page/team-member-4.png'
 import sectionTitleIcon from '@images/pages/section-title-icon.png'
 import frontPageElement from '@images/svg/front-page-element.svg'
+import type { TeamData } from '@/utils/types/landing-page'
 
 const { ourTeamData } = storeToRefs(useLandingPageStore())
 
@@ -14,7 +11,7 @@ function getIcon(iconName: string) {
       return 'ri-facebook-circle-line'
     case 'twitterX':
       return 'ri-twitter-line'
-    case 'linkein':
+    case 'linkedin':
       return 'ri-linkedin-box-line'
     default:
       return 'ri-facebook-circle-line'
@@ -24,28 +21,13 @@ function getIcon(iconName: string) {
 function getIconColor(iconName: string) {
   switch (iconName) {
     case 'facebook':
-      return 'primary'
+      return 'white'
     case 'twitterX':
-      return 'primary'
+      return 'white'
     case 'linkein':
-      return 'primary'
+      return 'white'
     default:
-      return 'primary'
-  }
-}
-
-function getImage(imageName: string) {
-  switch (imageName) {
-    case 'teamPerson1':
-      return teamPerson1
-    case 'teamPerson2':
-      return teamPerson2
-    case 'teamPerson3':
-      return teamPerson3
-    case 'teamPerson4':
-      return teamPerson4
-    default:
-      return teamPerson1
+      return 'white'
   }
 }
 
@@ -85,13 +67,11 @@ function openLink(url: string) {
         />
       </div>
 
-      <VRow>
-        <VCol
-          v-for="(member, index) in ourTeamData?.our_team_data"
+      <div class="our-team-members-wrapper">
+        <div
+          v-for="(member, index) in ourTeamData?.our_team_data as TeamData[]"
           :key="index"
-          cols="12"
-          lg="3"
-          sm="6"
+          class="our-team-members"
         >
           <VCard
             flat
@@ -103,10 +83,11 @@ function openLink(url: string) {
             }"
           >
             <VImg
-              :src="getImage(member.image as string)"
+              :src="member.image as string"
               height="240px"
               class="team-image"
             />
+  
             <div :style="{ 'maxHeight': '185px', 'minHeight': '185px', 'backgroundColor': member.background_color, 'border-top-left-radius': '0.625rem', 'border-top-right-radius': '0.625rem' }" />
             <VCardText class="text-center">
               <div class="mb-3">
@@ -117,7 +98,7 @@ function openLink(url: string) {
                   {{ member.position }}
                 </div>
               </div>
-
+  
               <div class="d-flex gap-x-2 align-center justify-center">
                 <template
                   v-for=" (link, key) in member.social_networks"
@@ -134,8 +115,8 @@ function openLink(url: string) {
               </div>
             </VCardText>
           </VCard>
-        </VCol>
-      </VRow>
+        </div>
+      </div>
     </div>
   </VContainer>
 </template>
@@ -170,5 +151,16 @@ function openLink(url: string) {
   &:hover {
     color: var(--hover-border-color) !important;
   }
+}
+
+.our-team-members-wrapper {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.our-team-members {
+  flex: 1;
 }
 </style>

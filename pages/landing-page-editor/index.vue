@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import type { LandingPageStatus } from '~/utils/types/landing-page'
 
- type SectionNames = 'hero' | 'feature' | 'review' | 'ourTeam' | 'pricing' | 'productStats' | 'faq' | 'banner' | 'contactUs'
-
+type SectionNames = 'hero' | 'feature' | 'review' | 'ourTeam' | 'pricing' | 'productStats' | 'faq' | 'banner' | 'contactUs'
 type SectionStatuses = Record<SectionNames, LandingPageStatus>
 type SectionLoadingStatuses = Record<SectionNames, boolean>
 
@@ -55,7 +54,9 @@ async function handleSectionResponse(section: keyof SectionStatuses, status: Lan
       type: 'error',
       timeout: 5000,
     })
-    return
+
+    sectionLoadingStatuses.value[section] = false
+    sectionStatuses.value[section] = 'default'
   }
   sectionLoadingStatuses.value[section] = false
   sectionStatuses.value[section] = status

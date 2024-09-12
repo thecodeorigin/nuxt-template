@@ -1,7 +1,19 @@
 <script setup lang="ts">
 import { useDropZone, useFileDialog, useObjectUrl } from '@vueuse/core'
 
-const dropZoneRef = ref<HTMLDivElement>()
+type ImageType = 'main' | 'sub'
+type ImageTheme = 'light' | 'dark'
+
+interface Props {
+  modelValue: string | null
+  imageType: 'main' | 'sub'
+  imageTheme: 'light' | 'dark'
+}
+
+interface Emits {
+  (e: 'update:modelValue', value: string, imageType: ImageType, imageTheme: ImageTheme): void
+}
+
 interface FileData {
   file: File
   url: string
@@ -17,6 +29,10 @@ const emit = defineEmits<Emits>()
 const dropZoneRef = ref<HTMLDivElement>()
 const fileData = ref<FileData[]>([])
 const { open, onChange } = useFileDialog({ accept: 'image/*' })
+
+const imageName = computed(() => {
+  return props?.modelValue?.split('/').pop()
+})
 
 function onDrop(DroppedFiles: File[] | null) {
   DroppedFiles?.forEach((file) => {
@@ -35,7 +51,7 @@ function onDrop(DroppedFiles: File[] | null) {
   )
 }
 
-onChange((selectedFiles: any) => {
+onChange(async (selectedFiles: any) => {
   if (!selectedFiles)
     return
 
@@ -45,6 +61,12 @@ onChange((selectedFiles: any) => {
       url: useObjectUrl(file).value ?? '',
     })
   }
+  let imageUrl = ''
+  const ext = selectedFiles[0].name.split('.').pop()
+  const filename = selectedFiles[0].name.replace(/\s/, '_')
+  imageUrl = await uploadToS3(selectedFiles[0], `landing-page/${filename || `${new Date().getTime()}.${ext}`}`)
+
+  emit('update:modelValue', imageUrl, props.imageType, props.imageTheme)
 })
 
 useDropZone(dropZoneRef, onDrop)
@@ -100,7 +122,7 @@ watch(() => props.modelValue, (newValue) => {
         >
           <VCol
             cols="12"
-            sm="4"
+            sm="12"
           >
             <VCard :ripple="false">
               <VCardText
@@ -115,10 +137,7 @@ watch(() => props.modelValue, (newValue) => {
                 />
                 <div class="mt-2">
                   <span class="clamp-text text-wrap">
-                    {{ item.file.name }}
-                  </span>
-                  <span>
-                    {{ item.file.size / 1000 }} KB
+                    {{ imageName }}
                   </span>
                 </div>
               </VCardText>

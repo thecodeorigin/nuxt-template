@@ -42,12 +42,14 @@ const imageMappings: { [key: string]: string | null } = {
 
 const imageNameList = Object.keys(imageMappings)
 
-const featureArrayData = computed(() => featureForm.value?.feature_data as Feature[])
-
+const featureArrayData = computed<Feature[]>(() => featureForm.value.feature_data ?? [])
 type FormSchemaType = z.infer<typeof featureSchema>
 const error = ref<z.ZodFormattedError<FormSchemaType> | null>(null)
 
 function onTitleUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
+
   if (editorValue.trim().length > 0 && error.value?.feature_title) {
     error.value.feature_title._errors = []
   }
@@ -55,6 +57,9 @@ function onTitleUpdate(editorValue: string) {
 }
 
 function onDescriptionUpdate(editorValue: string) {
+  if (!editorValue)
+    return ''
+
   if (editorValue.trim().length > 0 && error.value?.feature_title_desc) {
     error.value.feature_title_desc._errors = []
   }
@@ -62,10 +67,6 @@ function onDescriptionUpdate(editorValue: string) {
 }
 
 const isCurrentFeatureValid = computed(() => {
-  if (featureArrayData.value.length === 0) {
-    return false
-  }
-
   const currentFeature = featureArrayData.value[featureArrayData.value.length - 1]
 
   return currentFeature && currentFeature.name.trim() !== ''
@@ -73,13 +74,16 @@ const isCurrentFeatureValid = computed(() => {
     && currentFeature.icon !== ''
 })
 
+function handleAddFeature() {
+  featureForm.value?.feature_data?.push({ name: '', desc: '', icon: '' })
+}
+
+function handleRemoveFeature(index: number) {
+  featureForm.value.feature_data?.splice(index, 1)
+}
+
 async function onFeatureSubmit() {
-  const formData = {
-    ...featureForm.value,
-    feature_title: tiptapTitleInput.value,
-    feature_title_desc: tiptapDescriptionInput.value,
-  }
-  const validInput = featureSchema.safeParse(formData)
+  const validInput = featureSchema.safeParse(featureForm.value)
 
   if (!validInput.success) {
     error.value = validInput.error.format()
@@ -135,8 +139,13 @@ defineExpose({
 })
 
 watch(featureData, (value) => {
-  if (value)
-    featureForm.value = cloneDeep(value)
+  if (value) {
+    featureForm.value = {
+      feature_title: value.feature_title,
+      feature_title_desc: value.feature_title_desc,
+      feature_data: cloneDeep(value.feature_data as Feature[] ?? []),
+    }
+  }
 }, {
   deep: true,
   immediate: true,
@@ -167,7 +176,7 @@ watch(featureData, (value) => {
             <TiptapEditor
               v-model="featureForm.feature_title as string"
               class="border rounded-lg title-content"
-              :class="{ 'border-error border-opacity-100': error?.feature_title && error?.feature_title?._errors.length > 0 }"
+              :class="{ 'border-error border-opacity-100': error?.feature_title && error?.feature_title?._errors?.length > 0 }"
               placeholder="Text here..."
               @update:model-value="onTitleUpdate"
             />
@@ -189,7 +198,7 @@ watch(featureData, (value) => {
             <TiptapEditor
               v-model="featureForm.feature_title_desc as string"
               class="border rounded-lg mb-2"
-              :class="{ 'border-error border-opacity-100': error?.feature_title_desc && error?.feature_title_desc?._errors.length > 0 }"
+              :class="{ 'border-error border-opacity-100': error?.feature_title_desc && error?.feature_title_desc?._errors?.length > 0 }"
               placeholder="Text here..."
               @update:model-value="onDescriptionUpdate"
             />
@@ -253,7 +262,7 @@ watch(featureData, (value) => {
                 color="error"
                 rounded="lg"
                 class="w-100 h-100 d-flex align-center justify-center pa-2"
-                @click="featureArrayData?.splice(index, 1)"
+                @click="handleRemoveFeature(index)"
               >
                 <VIcon icon="ri-close-circle-line" />
               </VBtn>
@@ -262,22 +271,22 @@ watch(featureData, (value) => {
         </PerfectScrollbar>
 
         <VBtn
-          v-if="featureArrayData.length > 0"
+          v-if="featureArrayData && featureArrayData?.length > 0"
           class="mt-6"
           prepend-icon="ri-add-line"
           :disabled="!isCurrentFeatureValid"
           variant="tonal"
-          @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
+          @click="handleAddFeature"
         >
           Add another option
         </VBtn>
 
         <VBtn
-          v-if="featureArrayData.length === 0"
+          v-else
           class="mt-6"
           prepend-icon="ri-add-line"
           variant="tonal"
-          @click="featureArrayData?.push({ name: '', desc: '', icon: '' })"
+          @click="handleAddFeature"
         >
           Add a new feature
         </VBtn>

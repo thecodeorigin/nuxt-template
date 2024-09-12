@@ -32,8 +32,6 @@ export const heroSchema = z.object({
   hero_title_desc: descriptionSchema,
   hero_main_img_light: z.string().nullable(),
   hero_main_img_dark: z.string().nullable(),
-  hero_sub_img_light: z.string().nullable(),
-  hero_sub_img_dark: z.string().nullable(),
   hero_title_button: z.object({
     btn_link: z.string().nullable(),
     btn_label: labelSchema,

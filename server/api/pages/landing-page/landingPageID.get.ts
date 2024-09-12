@@ -7,6 +7,5 @@ export async function getLandingPageId() {
   if (landingPageError || !landingPageData || landingPageData.length === 0) {
     throw new Error('Landing page not found or an error occurred')
   }
-
   return landingPageData[0].id
 }
