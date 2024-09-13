@@ -13,9 +13,12 @@ import { userDeviceTable } from './user_devices.schema'
 import { userPaymentMethodTable } from './user_payment_methods.schema'
 
 export const sysUserTable = pgTable('sys_users', {
-  id: uuid('id').primaryKey().notNull(),
+  id: uuid('id').primaryKey().defaultRandom(),
   email: text('email'),
   phone: text('phone'),
+  password: text('password'),
+  provider: varchar('provider'),
+  provider_id: varchar('provider_id'),
   full_name: text('full_name'),
   avatar_url: text('avatar_url'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),

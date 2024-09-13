@@ -1,51 +1,55 @@
+import bcrypt from 'bcrypt'
+import { eq } from 'drizzle-orm'
+import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
+import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+
 export default defineEventHandler(async (event) => {
-  const { email, password } = await readBody(event)
+  try {
+    const { email, phone, password } = await readBody(event)
 
-  if (!email || !password) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Email and Password is required to signup',
-      data: {
-        email: ['Email and Password is required to signup'],
-      },
-    })
-  }
+    if (!(email || phone) || !password) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Email or Phone and Password is required to signup',
+        data: {
+          email: ['Email or Phone and Password is required to signup'],
+        },
+      })
+    }
 
-  const { data: signedUpData, error: signedUpError } = await supabase.auth.signUp({
-    email,
-    password,
-  })
+    const editorRole = (await db.select().from(sysRoleTable)
+      .where(
+        eq(sysRoleTable.name, 'Editor'),
+      )
+      .limit(1))[0]
 
-  if (signedUpError) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: signedUpError.message,
-    })
-  }
-
-  if (signedUpData.user) {
-    const { data: editorRole } = await supabaseAdmin.from('sys_roles').select().eq('name', 'Editor').maybeSingle()
-
-    if (!editorRole) {
+    if (!editorRole?.id) {
       throw createError({
         statusCode: 403,
         statusMessage: 'Cannot sign up user!',
       })
     }
 
-    await supabaseAdmin.from('sys_users').upsert({
-      id: signedUpData.user.id,
-      email: signedUpData.user.email!,
-      phone: '',
-      full_name: signedUpData.user?.user_metadata.name,
-      avatar_url: signedUpData.user?.user_metadata.avatar_url,
-      language: '',
-      country: '',
-      city: '',
-      postcode: '',
-      address: '',
-      organization: '',
-      role_id: editorRole.id,
-    })
+    const sysUser = await db.insert(sysUserTable)
+      .values({
+        email,
+        phone,
+        password: await bcrypt.hash(password, 10),
+        language: '',
+        country: '',
+        city: '',
+        postcode: '',
+        address: '',
+        organization: '',
+        role_id: editorRole.id,
+      })
+      .returning()
+
+    setResponseStatus(event, 201)
+
+    return { data: sysUser[0] }
+  }
+  catch (error: any) {
+    setResponseStatus(event, 400, error.message)
   }
 })

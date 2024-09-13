@@ -1,45 +1,9 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 // import GithubProvider from 'next-auth/providers/github'
-import type { NuxtError } from 'nuxt/app'
-import { AuthError, type User as SupabaseUser } from '@supabase/supabase-js'
-import type { Session } from 'next-auth'
 import { NuxtAuthHandler } from '#auth'
-import type { Tables } from '~/server/types/supabase'
-
-type User = Tables<'sys_users'>
 
 const runtimeConfig = useRuntimeConfig()
-
-async function createOrUpdateUser(user: SupabaseUser) {
-  const { data: editorRole } = await supabaseAdmin.from('sys_roles').select().eq('name', 'Editor').maybeSingle()
-
-  if (!editorRole)
-    return false
-
-  const { error } = await supabaseAdmin.from('sys_users').upsert({
-    id: user.id,
-    email: user.email!,
-    phone: '',
-    full_name: user?.user_metadata.name,
-    avatar_url: user?.user_metadata.avatar_url,
-    language: '',
-    country: '',
-    city: '',
-    postcode: '',
-    address: '',
-    organization: '',
-    role_id: editorRole.id,
-  })
-
-  if (error) {
-    console.error(error)
-
-    return false
-  }
-
-  return true
-}
 
 export default NuxtAuthHandler({
   secret: runtimeConfig.AUTH_SECRET,
@@ -50,27 +14,18 @@ export default NuxtAuthHandler({
       credentials: {}, // Object is required but can be left empty.
       async authorize(credentials: any) {
         try {
-          const response = await $fetch<User>(`${process.env.NUXT_PUBLIC_API_BASE_URL}/auth/login/`, {
+          const response = await $fetch(`${process.env.NUXT_PUBLIC_API_BASE_URL}/auth/login/`, {
             method: 'POST',
             body: JSON.stringify(credentials),
           })
 
-          return {
-            ...response,
-            verified: true,
-          }
+          return response
         }
         catch (error: any) {
-          if (error.message.includes('Invalid login credentials'))
-            return new AuthError('Wrong email or password, please try again', 400, '')
-          if (error.message.includes('Email not confirmed')) {
-            return {
-              email: credentials.email,
-              verified: false,
-            }
-          }
-
-          return new AuthError('An error has occured, please try again later!', 500)
+          throw createError({
+            statusCode: error.statusCode || 403,
+            statusMessage: JSON.stringify(error.data),
+          })
         }
       },
     }),
@@ -85,72 +40,33 @@ export default NuxtAuthHandler({
     error: '/error/not-authorized',
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (profile && account?.provider === 'google') {
-        const { data } = await supabase.auth.signInWithIdToken({
-          provider: 'google',
-          token: account.id_token!,
-          access_token: account.access_token!,
-        })
+    jwt({ token, user }) {
+      /*
+       * For adding custom parameters to user in session, we first need to add those parameters
+       * in token which then will be available in the `session()` callback
+       */
+      if (user?.email || user?.phone)
+        Object.assign(token, user)
 
-        if (data.user)
-          return await createOrUpdateUser(data.user)
-
-        return false
-      }
-      else if (account?.provider === 'credentials') {
-        if (user?.verified === true) {
-          return true
-        }
-        if (user?.verified === false && user.email) {
-          return `${process.env.NUXT_PUBLIC_APP_BASE_URL}/auth/confirmation?email=${user?.email}`
-        }
-        else if (user instanceof AuthError) {
-          throw user
-        }
-        else {
-          return false
-        }
-      }
-
-      return true // Do different verification for other providers that don't have `email_verified`
+      return token
     },
-    async session({ session }) {
-      const storage = useStorage('redis')
-
-      const sessionKey = getStorageSessionKey(session.user.id)
-
-      // TODO: invalidate cache on change user, permissions, etc.
-      const cachedSession = await storage.getItem<Session | null>(sessionKey)
-
-      if (cachedSession)
-        return cachedSession
-
-      if (session.user) {
-        const { data } = await supabaseAdmin.from('sys_users')
-          .select('*, role:sys_roles(*,permissions:sys_permissions(*))')
-          .eq('email', session.user.email!)
-          .maybeSingle()
-
-        if (data)
-          Object.assign(session.user, data)
-
-        storage.setItem(sessionKey, session)
-      }
+    async session({ session, token }) {
+      if (session.user)
+        Object.assign(session.user, token)
 
       return session
     },
-    jwt({ token }) {
-      return token
-    },
   },
-  events: {
-    async signOut({ token }) {
-      const storage = useStorage('redis')
-      const sessionKey = getStorageSessionKey(token.id)
+  // events: {
+  //   async signOut({ token }) {
+  //     const storage = useStorage('redis')
+  //     const sessionKey = getStorageSessionKey(token.id)
 
-      await storage.removeItem(sessionKey)
-    },
+  //     await storage.removeItem(sessionKey)
+  //   },
+  // },
+  session: {
+    strategy: 'jwt',
   },
   cookies: {
     sessionToken: {

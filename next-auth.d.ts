@@ -1,12 +1,8 @@
 import type { DefaultSession } from 'next-auth'
-import type { AuthError } from '@supabase/supabase-js'
-import type { Tables } from './server/types/supabase'
+import type * as z from 'zod'
+import type { selectSysUserSchema } from './server/db/schemas/sys_users.schema'
 
-export type LoggedInUser = Tables<'sys_users'> & {
-  role: Tables<'sys_roles'> & {
-    permissions: Tables<'sys_permissions'>[]
-  }
-}
+type LoggedInUser = z.infer<typeof selectSysUserSchema>
 
 declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */

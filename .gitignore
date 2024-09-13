@@ -54,3 +54,4 @@ public/mockServiceWorker.js
 public/firebase-config.json
 
 docker/postgres
+docker/pgadmin
