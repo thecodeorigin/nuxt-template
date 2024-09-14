@@ -12,36 +12,8 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1726069921441,
-      "tag": "0001_living_wasp",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726148994604,
-      "tag": "0002_young_morg",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1726153615545,
-      "tag": "0003_outstanding_ben_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1726154079756,
-      "tag": "0004_gigantic_victor_mancha",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1726161973727,
-      "tag": "0005_demonic_scarecrow",
+      "when": 1726289454038,
+      "tag": "0001_fine_mandarin",
       "breakpoints": true
     }
   ]

@@ -19,18 +19,21 @@ services:
   pgadmin:
     container_name: nuxt-pgadmin
     image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    volumes:
+       - ./docker/pgadmin:/var/lib/pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@gmail.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-       - ./docker/pgadmin:/var/lib/pgadmin
-
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
 
 
 volumes:
-    postgres:
-    pgadmin:
+  postgres:
+    driver: local
+  pgadmin:
+    driver: local

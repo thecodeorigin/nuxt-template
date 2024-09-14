@@ -5,7 +5,7 @@ import { permissionAction, permissionSubject } from './enum.schema'
 import { sysRoleTable } from './sys_roles.schema'
 
 export const sysPermissionTable = pgTable('sys_permissions', {
-  id: uuid('id').defaultRandom().primaryKey().notNull(),
+  id: uuid('id').defaultRandom().primaryKey(),
   role_id: uuid('role_id'),
   action: permissionAction('action').default('read').notNull(),
   subject: permissionSubject('subject').notNull(),
