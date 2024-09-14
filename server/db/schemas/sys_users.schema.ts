@@ -18,7 +18,6 @@ export const sysUserTable = pgTable('sys_users', {
   phone: text('phone'),
   password: text('password'),
   provider: varchar('provider'),
-  provider_id: varchar('provider_id'),
   full_name: text('full_name'),
   avatar_url: text('avatar_url'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),

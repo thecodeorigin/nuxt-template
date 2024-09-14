@@ -14,12 +14,12 @@ const authProviders = [
   //   colorInDark: '#497CE2',
   //   provider: 'google',
   // },
-  // {
-  //   icon: 'bxl-github',
-  //   color: '#272727',
-  //   colorInDark: '#fff',
-  //   provider: 'github',
-  // },
+  {
+    icon: 'bxl-github',
+    color: '#272727',
+    colorInDark: '#fff',
+    provider: 'github',
+  },
   {
     icon: 'bxl-google',
     color: '#db4437',

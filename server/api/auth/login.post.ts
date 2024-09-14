@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import { eq, or } from 'drizzle-orm'
+import { omit } from 'lodash-es'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
@@ -16,8 +17,6 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    await defineEventOptions(event, { auth: true })
-
     const sysUser = (await db.select().from(sysUserTable)
       .where(
         or(
@@ -33,7 +32,7 @@ export default defineEventHandler(async (event) => {
     if (isValid) {
       setResponseStatus(event, 201)
 
-      return { data: sysUser }
+      return { data: omit(sysUser, ['password']) }
     }
 
     setResponseStatus(event, 401, 'Invalid credentials!')

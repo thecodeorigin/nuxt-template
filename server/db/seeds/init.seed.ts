@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { rand, randCountryCode, randEmail, randFullName, randLanguage, randPhoneNumber, randRecentDate } from '@ngneat/falso'
+import { rand, randAvatar, randCountryCode, randEmail, randFullName, randLanguage, randPhoneNumber, randRecentDate } from '@ngneat/falso'
 import { sysUserTable } from '../schemas/sys_users.schema'
 import { db } from '../../utils/db'
 import { sysRoleTable } from '../schemas/sys_roles.schema'
@@ -42,6 +42,7 @@ export async function seed() {
         password: await bcrypt.hash('123456', 10),
         language: randLanguage(),
         country: randCountryCode(),
+        avatar_url: randAvatar(),
         city: '',
         postcode: '',
         address: '',

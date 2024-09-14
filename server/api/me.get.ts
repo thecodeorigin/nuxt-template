@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm'
+import { omit } from 'lodash-es'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
@@ -13,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
     setResponseStatus(event, 201)
 
-    return { data: sysUser[0] }
+    return { data: omit(sysUser[0], ['password']) }
   }
   catch (error: any) {
     setResponseStatus(event, 404, error.message)

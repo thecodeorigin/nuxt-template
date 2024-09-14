@@ -1,11 +1,12 @@
 import bcrypt from 'bcrypt'
 import { eq } from 'drizzle-orm'
+import { omit } from 'lodash-es'
 import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { email, phone, password } = await readBody(event)
+    const { email, phone, password, provider = 'credentials' } = await readBody(event)
 
     if (!(email || phone) || !password) {
       throw createError({
@@ -41,13 +42,14 @@ export default defineEventHandler(async (event) => {
         postcode: '',
         address: '',
         organization: '',
+        provider,
         role_id: editorRole.id,
       })
       .returning()
 
     setResponseStatus(event, 201)
 
-    return { data: sysUser[0] }
+    return { data: omit(sysUser[0], ['password']) }
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)
