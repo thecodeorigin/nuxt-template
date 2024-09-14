@@ -8,12 +8,12 @@ defineEmits<{
 const { global } = useTheme()
 
 const authProviders = [
-  // {
-  //   icon: 'bxl-facebook',
-  //   color: '#497CE2',
-  //   colorInDark: '#497CE2',
-  //   provider: 'google',
-  // },
+  {
+    icon: 'bxl-facebook',
+    color: '#497CE2',
+    colorInDark: '#497CE2',
+    provider: 'facebook',
+  },
   {
     icon: 'bxl-github',
     color: '#272727',

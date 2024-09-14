@@ -1,6 +1,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
+import FacebookProvider from 'next-auth/providers/facebook'
 import { eq, or } from 'drizzle-orm'
 import { omit } from 'lodash-es'
 import type { Session } from 'next-auth'
@@ -99,6 +100,11 @@ export default NuxtAuthHandler({
     GithubProvider.default({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    // @ts-expect-error
+    FacebookProvider.default({
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
   ],
   pages: {
