@@ -1,17 +1,16 @@
-import { count } from 'drizzle-orm'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import { useUserCrud } from '~/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const sysUserSubquery = db.select().from(sysUserTable)
+    const { countUsers } = useUserCrud()
 
-    const total = await db.select({ count: count() }).from(sysUserSubquery.as('count'))
+    const response = await countUsers()
 
-    return {
-      total,
-    }
+    setResponseStatus(event, 200)
+
+    return response
   }
   catch (error: any) {
     throw createError({

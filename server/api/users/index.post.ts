@@ -1,4 +1,4 @@
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import { useUserCrud } from '~/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,13 +6,13 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysUser = await db.insert(sysUserTable)
-      .values(body)
-      .returning()
+    const { createUser } = useUserCrud()
+
+    const response = await createUser(body)
 
     setResponseStatus(event, 201)
 
-    return { data: sysUser[0] }
+    return response
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

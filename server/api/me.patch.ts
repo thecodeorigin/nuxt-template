@@ -1,20 +1,26 @@
-import { eq } from 'drizzle-orm'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import { useUserCrud } from '../composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { session } = await defineEventOptions(event, { auth: true })
 
     const body = await readBody(event)
 
-    const sysUser = await db.update(sysUserTable)
-      .set(body)
-      .where(eq(sysUserTable.id, session.user!.id!))
-      .returning()
+    const { updateUserById } = useUserCrud()
+
+    const sysUser = await updateUserById(session.user!.id!, body)
+
+    const storage = useStorage('redis')
+    const sessionKey = getStorageSessionKey(sysUser.data.email!)
+
+    storage.setItem(sessionKey, {
+      ...session,
+      user: sysUser.data,
+    })
 
     setResponseStatus(event, 201)
 
-    return { data: sysUser }
+    return sysUser
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

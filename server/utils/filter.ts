@@ -1,6 +1,16 @@
 import type { H3Event } from 'h3'
 import { destr } from 'destr'
 
+export interface ParsedFilterQuery {
+  [key: string]: any
+  keyword: string
+  keywordLower: string
+  sortBy: string
+  sortAsc: boolean
+  limit: number
+  page: number
+}
+
 export function getFilter(event: H3Event) {
   const query = getQuery(event)
 
@@ -20,13 +30,5 @@ export function getFilter(event: H3Event) {
     sortAsc: parsedSortAscending,
     limit: parsedLimit,
     page: parsedPage,
-  } as {
-    [key: string]: any
-    keyword: string
-    keywordLower: string
-    sortBy: string
-    sortAsc: boolean
-    limit: number
-    page: number
-  }
+  } as ParsedFilterQuery
 }

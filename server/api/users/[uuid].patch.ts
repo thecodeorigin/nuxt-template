@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm'
+import { useUserCrud } from '~/server/composables/useUserCrud'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
@@ -7,14 +8,13 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysUser = await db.update(sysUserTable)
-      .set(body)
-      .where(eq(sysUserTable.id, uuid))
-      .returning()
+    const { updateUserById } = useUserCrud()
+
+    const response = await updateUserById(uuid, body)
 
     setResponseStatus(event, 201)
 
-    return { data: sysUser }
+    return response
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

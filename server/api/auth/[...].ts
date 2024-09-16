@@ -129,11 +129,11 @@ export default NuxtAuthHandler({
     },
     async session({ session, token }) {
       const storage = useStorage('redis')
-      const sessionKey = getStorageSessionKey(token.id)
+      const sessionKey = getStorageSessionKey(token.email)
 
       let cachedSession = await storage.getItem<Session | null>(sessionKey)
 
-      if (!cachedSession?.user.id) {
+      if (!cachedSession?.user?.id) {
         let loggedInUser = await getUser(token)
 
         if (!loggedInUser)
@@ -153,7 +153,7 @@ export default NuxtAuthHandler({
   events: {
     async signOut({ token }) {
       const storage = useStorage('redis')
-      const sessionKey = getStorageSessionKey(token.id)
+      const sessionKey = getStorageSessionKey(token.email)
 
       await storage.removeItem(sessionKey)
     },

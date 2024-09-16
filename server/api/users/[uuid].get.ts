@@ -1,19 +1,18 @@
 import { eq } from 'drizzle-orm'
+import { useUserCrud } from '~/server/composables/useUserCrud'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
   try {
     const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-    const sysUser = await db.select().from(sysUserTable)
-      .where(
-        eq(sysUserTable.id, uuid),
-      )
-      .limit(1)
+    const { getUserById } = useUserCrud()
 
-    setResponseStatus(event, 201)
+    const response = await getUserById(uuid)
 
-    return { data: sysUser[0] }
+    setResponseStatus(event, 200)
+
+    return response
   }
   catch (error: any) {
     setResponseStatus(event, 404, error.message)

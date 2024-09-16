@@ -1,20 +1,16 @@
-import { eq } from 'drizzle-orm'
-import { omit } from 'lodash-es'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import { useUserCrud } from '../composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
 
-    const sysUser = await db.select().from(sysUserTable)
-      .where(
-        eq(sysUserTable.id, session.user!.id!),
-      )
-      .limit(1)
+    const { getUserById } = useUserCrud()
+
+    const sysUser = await getUserById(session.user!.id!)
 
     setResponseStatus(event, 201)
 
-    return { data: omit(sysUser[0], ['password']) }
+    return sysUser
   }
   catch (error: any) {
     setResponseStatus(event, 404, error.message)

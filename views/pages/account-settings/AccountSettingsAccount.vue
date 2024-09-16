@@ -1,49 +1,53 @@
 <script lang="ts" setup>
 const inputFileRef = ref<HTMLElement>()
 
-const { currentUser } = useAuthStore()
+const authStore = useAuthStore()
+
+const formFile = ref<File | null>(null)
 
 const formData = ref({
-  avatar_url: currentUser?.avatar_url || '',
-  full_name: currentUser?.full_name || '',
-  email: currentUser?.email || '',
-  organization: currentUser?.organization || '',
-  phone: currentUser?.phone || '',
-  address: currentUser?.address || '',
-  city: currentUser?.city || '',
-  postcode: currentUser?.postcode || '',
-  country: currentUser?.country || null,
-  language: currentUser?.language || null,
+  avatar_url: authStore.currentUser?.avatar_url || '',
+  full_name: authStore.currentUser?.full_name || '',
+  email: authStore.currentUser?.email || '',
+  organization: authStore.currentUser?.organization || '',
+  phone: authStore.currentUser?.phone || '',
+  address: authStore.currentUser?.address || '',
+  city: authStore.currentUser?.city || '',
+  postcode: authStore.currentUser?.postcode || '',
+  country: authStore.currentUser?.country || null,
+  language: authStore.currentUser?.language || null,
 })
 
 function resetForm() {
-  formData.value.avatar_url = currentUser?.avatar_url || ''
-  formData.value.full_name = currentUser?.full_name || ''
-  formData.value.email = currentUser?.email || ''
-  formData.value.organization = currentUser?.organization || ''
-  formData.value.phone = currentUser?.phone || ''
-  formData.value.address = currentUser?.address || ''
-  formData.value.city = currentUser?.city || ''
-  formData.value.postcode = currentUser?.postcode || ''
-  formData.value.country = currentUser?.country || null
-  formData.value.language = currentUser?.language || null
+  formData.value.avatar_url = authStore.currentUser?.avatar_url || ''
+  formData.value.full_name = authStore.currentUser?.full_name || ''
+  formData.value.email = authStore.currentUser?.email || ''
+  formData.value.organization = authStore.currentUser?.organization || ''
+  formData.value.phone = authStore.currentUser?.phone || ''
+  formData.value.address = authStore.currentUser?.address || ''
+  formData.value.city = authStore.currentUser?.city || ''
+  formData.value.postcode = authStore.currentUser?.postcode || ''
+  formData.value.country = authStore.currentUser?.country || null
+  formData.value.language = authStore.currentUser?.language || null
 }
 
 function changeAvatar(file: Event) {
   const fileReader = new FileReader()
   const { files } = file.target as HTMLInputElement
 
+  fileReader.onload = () => {
+    if (typeof fileReader.result === 'string')
+      formData.value.avatar_url = fileReader.result
+  }
+
   if (files && files.length) {
-    fileReader.readAsDataURL(files[0])
-    fileReader.onload = () => {
-      if (typeof fileReader.result === 'string')
-        formData.value.avatar_url = fileReader.result
-    }
+    formFile.value = files[0]
+    fileReader.readAsDataURL(formFile.value)
   }
 }
 
 function resetAvatar() {
-  formData.value.avatar_url = currentUser?.avatar_url || ''
+  formData.value.avatar_url = authStore.currentUser?.avatar_url || ''
 }
 interface Country {
   name: string
@@ -80,10 +84,23 @@ watch(() => formData.value.country, (value) => {
 }, { immediate: true })
 
 async function handleSubmit() {
-  await $api(`/users/${currentUser?.id}`, {
-    method: 'PATCH',
-    body: formData.value,
-  })
+  try {
+    let avatarUrl = authStore.currentUser?.avatar_url
+
+    if (formFile.value && authStore.currentUser)
+      avatarUrl = await uploadToS3(formFile.value, authStore.currentUser.id)
+
+    await $api(`/me`, {
+      method: 'PATCH',
+      body: {
+        ...formData.value,
+        avatar_url: avatarUrl,
+      },
+    })
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
