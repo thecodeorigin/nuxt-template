@@ -12,5 +12,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return sendRedirect(event, url)
+  return {
+    url,
+  }
 })

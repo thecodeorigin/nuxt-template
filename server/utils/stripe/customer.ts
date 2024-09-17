@@ -30,3 +30,7 @@ export function createStripeCustomer(payload: {
 export function updateStripeCustomer(customerId: string, customer: Stripe.CustomerUpdateParams) {
   return stripeAdmin.customers.update(customerId, customer)
 }
+
+export function upsertCustomer(customer: Stripe.CustomerCreateParams) {
+  return stripeAdmin.customers.create(customer)
+}

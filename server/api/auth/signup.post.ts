@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { omit } from 'lodash-es'
 import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import { customerTable } from '~/server/db/schemas/customer.schema'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -47,11 +48,26 @@ export default defineEventHandler(async (event) => {
       })
       .returning()
 
+    const stripeCustomer = await createStripeCustomer({ email })
+
+    const freePrice = await getFreePrice()
+
+    await createStripeSubscription(stripeCustomer.id, freePrice.data[0].id!)
+
+    // insert stripe customer id to table customer
+    await db.insert(customerTable)
+      .values({
+        user_id: sysUser[0].id,
+        stripe_customer_id: stripeCustomer.id,
+      })
+      .returning()
+
     setResponseStatus(event, 201)
 
     return { data: omit(sysUser[0], ['password']) }
   }
   catch (error: any) {
+    console.error(error)
     setResponseStatus(event, 400, error.message)
   }
 })

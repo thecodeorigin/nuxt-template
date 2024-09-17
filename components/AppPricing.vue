@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import pricingIllustration1 from '@images/misc/pricing-illustration-1.png'
-import pricingIllustration2 from '@images/misc/pricing-illustration-2.png'
-import pricingIllustration3 from '@images/misc/pricing-illustration-3.png'
+const props = defineProps<Pricing>()
+
+const stripeStore = useStripeStore()
+const subscriptionStore = useSubscriptionStore()
+
+subscriptionStore.fetchSubscriptions()
+stripeStore.fetchStripeProductPrices()
 
 interface Pricing {
   title?: string
@@ -12,60 +16,30 @@ interface Pricing {
   xl?: string | number
 }
 
-const props = defineProps<Pricing>()
+const pricingComputed = computed(() => {
+  if (!stripeStore.stripePrices)
+    return []
 
-const annualMonthlyPlanPriceToggler = ref(true)
+  const newArrayOfPrices = Object.values(stripeStore.stripePrices)[0]?.map((price) => {
+    const isCurrentPlan = subscriptionStore.subscriptions.some(sub => sub.plan.id === price.id)
+    return {
+      ...price,
+      current: isCurrentPlan,
+    }
+  })
+  return newArrayOfPrices
+})
 
-const pricingPlans = [
-  {
-    name: 'Basic',
-    tagLine: 'A simple start for everyone',
-    logo: pricingIllustration1,
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    isPopular: false,
-    current: true,
-    features: [
-      '100 responses a month',
-      'Unlimited forms and surveys',
-      'Unlimited fields',
-      'Basic form creation tools',
-      'Up to 2 subdomains',
-    ],
-  },
-  {
-    name: 'Standard',
-    tagLine: 'For small to medium businesses',
-    logo: pricingIllustration2,
-    monthlyPrice: 42,
-    yearlyPrice: 460,
-    isPopular: true,
-    current: false,
-    features: [
-      'Unlimited responses',
-      'Unlimited forms and surveys',
-      'Instagram profile page',
-      'Google Docs integration',
-      'Custom “Thank you” page',
-    ],
-  },
-  {
-    name: 'Enterprise',
-    tagLine: 'Solution for big organizations',
-    logo: pricingIllustration3,
-    monthlyPrice: 84,
-    yearlyPrice: 690,
-    isPopular: false,
-    current: false,
-    features: [
-      'PayPal payments',
-      'Logic Jumps',
-      'File upload with 5GB storage',
-      'Custom domain support',
-      'Stripe integration',
-    ],
-  },
-]
+async function handleSubscribe(priceId: string, subscribed = false) {
+  if (subscribed) {
+    window.open(import.meta.env.VITE_APP_STRIPE_CUSTOMER_PORTAL, '_self')
+  }
+  else {
+    const { url } = await subscriptionStore.createSubscriptionCheckoutUrl(subscriptionStore.customer!.id, priceId)
+
+    window.open(url, '_self')
+  }
+}
 </script>
 
 <template>
@@ -78,64 +52,22 @@ const pricingPlans = [
     </slot>
     <slot name="subtitle">
       <p class="mb-0">
-        All plans include 40+ advanced tools and features to boost your product.
-        <br>
-        Choose the best plan to fit your needs.
+        Choose the plan that fits your needs
       </p>
     </slot>
   </div>
-
-  <!-- 👉 Annual and monthly price toggler -->
-  <div class="d-flex align-center justify-center mx-auto pt-sm-7 pb-sm-6 py-4">
-    <VLabel
-      for="pricing-plan-toggle"
-      class="me-2 font-weight-medium cursor-pointer"
-    >
-      Monthly
-    </VLabel>
-
-    <div class="position-relative">
-      <div class="pricing-save-chip position-absolute d-sm-block d-none">
-        <VIcon
-          start
-          icon="ri-corner-left-down-fill"
-          size="24"
-          class="text-disabled flip-in-rtl mt-1 me-1"
-        />
-        <VChip
-          size="small"
-          color="primary"
-          class="mt-n2"
-        >
-          Save up to 10%
-        </VChip>
-      </div>
-
-      <VSwitch
-        id="pricing-plan-toggle"
-        v-model="annualMonthlyPlanPriceToggler"
-      >
-        <template #label>
-          <div class="text-body-1 font-weight-medium">
-            Annually
-          </div>
-        </template>
-      </VSwitch>
-    </div>
-  </div>
-
   <!-- SECTION pricing plans -->
   <VRow>
     <VCol
-      v-for="plan in pricingPlans"
-      :key="plan.logo"
+      v-for="plan in pricingComputed"
+      :key="plan.id"
       v-bind="props"
     >
       <!-- 👉  Card -->
       <VCard
         flat
         border
-        :class="plan.isPopular ? 'border-primary border-opacity-100' : ''"
+        :class="plan.unit_amount === 200 ? 'border-primary border-opacity-100' : ''"
       >
         <VCardText
           class="text-end pt-4"
@@ -143,7 +75,7 @@ const pricingPlans = [
         >
           <!-- 👉 Popular -->
           <VChip
-            v-show="plan.isPopular"
+            v-show="plan.unit_amount === 200"
             color="primary"
             size="small"
           >
@@ -151,49 +83,25 @@ const pricingPlans = [
           </VChip>
         </VCardText>
 
-        <!-- 👉 Plan logo -->
-        <VCardText class="text-center">
-          <VImg
-            :height="120"
-            :src="plan.logo"
-            class="mx-auto mb-5"
-          />
-
-          <!-- 👉 Plan name -->
-          <h4 class="text-h4 mb-2">
-            {{ plan.name }}
-          </h4>
-          <p class="mb-0 text-body-1">
-            {{ plan.tagLine }}
-          </p>
-        </VCardText>
-
-        <!-- 👉 Plan price  -->
         <VCardText class="position-relative text-center">
           <div>
             <div class="d-flex justify-center align-center">
               <span class="text-body-1 font-weight-medium align-self-start">$</span>
-              <h1 class="text-h1 font-weight-medium text-primary">
-                {{ annualMonthlyPlanPriceToggler ? Math.floor(Number(plan.yearlyPrice) / 12) : plan.monthlyPrice }}
+              <h1 class="text-h3 font-weight-medium text-primary">
+                {{ new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: (plan.currency || 'usd').toUpperCase(),
+                }).format(plan.unit_amount || 0) }}
               </h1>
               <span class="text-body-1 font-weight-medium align-self-end">/month</span>
             </div>
-
-            <!-- 👉 Annual Price -->
-            <div
-              v-show="annualMonthlyPlanPriceToggler"
-              class="text-caption"
-            >
-              {{ plan.yearlyPrice === 0 ? 'free' : `USD ${plan.yearlyPrice}/Year` }}
-            </div>
           </div>
         </VCardText>
-
         <!-- 👉 Plan features -->
         <VCardText class="pt-2">
           <VList class="card-list pb-5">
             <VListItem
-              v-for="feature in plan.features"
+              v-for="feature in stripeStore.stripeProducts[0]?.marketing_features"
               :key="feature"
             >
               <template #prepend />
@@ -205,7 +113,7 @@ const pricingPlans = [
                   class="me-2"
                 />
                 <div class="text-truncate">
-                  {{ feature }}
+                  {{ feature.name }}
                 </div>
               </VListItemTitle>
             </VListItem>
@@ -216,9 +124,10 @@ const pricingPlans = [
             :active="false"
             block
             :color="plan.current ? 'success' : 'primary'"
-            :variant="plan.isPopular ? 'elevated' : 'outlined'"
+            :variant="plan.unit_amount === 200 ? 'elevated' : 'outlined'"
+            @click="handleSubscribe(plan.id, plan.current)"
           >
-            {{ plan.yearlyPrice === 0 ? 'Your Current Plan' : 'Upgrade' }}
+            {{ plan.current ? 'Your Current Plan' : 'Upgrade' }}
           </VBtn>
         </VCardText>
       </VCard>
