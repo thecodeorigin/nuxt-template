@@ -9,6 +9,10 @@ useLazyAsyncData(() => subscriptionStore.fetchSubscriptions())
 const subscriptions = computed(() => subscriptionStore.subscriptions)
 
 useLazyAsyncData(() => stripeStore.fetchStripeProductPrices())
+
+function handleOpenStripePortal() {
+  window.open(import.meta.env.STRIPE_CUSTOMER_PORTAL_URL, '_self')
+}
 </script>
 
 <template>
@@ -79,6 +83,7 @@ useLazyAsyncData(() => stripeStore.fetchStripeProductPrices())
                 <VBtn
                   color="error"
                   variant="outlined"
+                  @click="handleOpenStripePortal"
                 >
                   Cancel Subscription
                 </VBtn>

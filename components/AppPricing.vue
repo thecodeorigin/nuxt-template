@@ -32,7 +32,7 @@ const pricingComputed = computed(() => {
 
 async function handleSubscribe(priceId: string, subscribed = false) {
   if (subscribed) {
-    window.open(import.meta.env.VITE_APP_STRIPE_CUSTOMER_PORTAL, '_self')
+    window.open(import.meta.env.STRIPE_CUSTOMER_PORTAL_URL, '_self')
   }
   else {
     const { url } = await subscriptionStore.createSubscriptionCheckoutUrl(subscriptionStore.customer!.id, priceId)
