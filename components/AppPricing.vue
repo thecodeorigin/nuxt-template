@@ -4,7 +4,7 @@ const props = defineProps<Pricing>()
 const stripeStore = useStripeStore()
 const subscriptionStore = useSubscriptionStore()
 
-subscriptionStore.fetchSubscriptions()
+// subscriptionStore.fetchSubscriptions()
 stripeStore.fetchStripeProductPrices()
 
 interface Pricing {
@@ -91,7 +91,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
                 {{ new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: (plan.currency || 'usd').toUpperCase(),
-                }).format(plan.unit_amount || 0) }}
+                }).format((plan.unit_amount || 0) / 100) }}
               </h1>
               <span class="text-body-1 font-weight-medium align-self-end">/month</span>
             </div>

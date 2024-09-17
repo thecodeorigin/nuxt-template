@@ -36,7 +36,7 @@ function handleOpenStripePortal() {
                       {{ new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: (subscription.currency || 'usd').toUpperCase(),
-                      }).format(subscription.plan?.amount || 0) }} Per Month
+                      }).format((subscription.plan?.amount || 0) / 100) }} Per Month
                     </h6>
                   </div>
                 </div>
