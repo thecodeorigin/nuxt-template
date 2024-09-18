@@ -2,7 +2,7 @@ import { useRoleCrud } from '@/server/composables/useRoleCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    await defineEventOptions(event, { auth: true })
+    await defineEventOptions(event, { auth: false })
 
     const { getRolesPaginated } = useRoleCrud()
 
