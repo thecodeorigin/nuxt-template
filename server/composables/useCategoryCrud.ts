@@ -1,8 +1,13 @@
+import { and, eq, isNull } from 'drizzle-orm'
 import { categoryTable } from '../db/schemas/category.schema'
 import { useCrud } from './useCrud'
 import type { ParsedFilterQuery } from '~/server/utils/filter'
 
-export function useCategoryCrud() {
+export function useCategoryCrud(queryRestrict:
+{
+  user_id: string
+  parent_id?: string
+}) {
   const {
     getRecordsPaginated,
     getRecordByKey,
@@ -11,7 +16,15 @@ export function useCategoryCrud() {
     deleteRecordByKey,
     countRecords,
   } = useCrud(categoryTable, {
-    searchBy: ['name'],
+    searchBy: ['name', 'description'],
+    queryRestrict: () => and(
+      ...[
+        eq(categoryTable.user_id, queryRestrict.user_id),
+        queryRestrict.parent_id
+          ? eq(categoryTable.parent_id, queryRestrict.parent_id)
+          : isNull(categoryTable.parent_id),
+      ],
+    ),
   })
 
   async function getCategorysPaginated(options: ParsedFilterQuery) {

@@ -1,20 +1,15 @@
-import { count, eq } from 'drizzle-orm'
-import { categoryTable } from '@/server/db/schemas/category.schema'
+import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
 
-    const categorySubquery = db.select().from(categoryTable)
-      .where(
-        eq(categoryTable.user_id, session.user!.id!),
-      )
+    const user_id = session.user!.id!
+    const { countCategorys } = useCategoryCrud({ user_id })
 
-    const total = await db.select({ count: count() }).from(categorySubquery.as('count'))
+    const total = await countCategorys()
 
-    return {
-      total,
-    }
+    return total
   }
   catch (error: any) {
     throw createError({

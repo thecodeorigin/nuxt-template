@@ -1,40 +1,15 @@
-import { and, asc, count, desc, eq, ilike, isNull, or, sql } from 'drizzle-orm'
-import { projectTable } from '@/server/db/schemas/project.schema'
+import { useProjectCrud } from '@/server/composables/useProjectCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
-
-    const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1 } = getFilter(event)
-
-    const projectSubquery = db.select().from(projectTable)
-      .where(
-        and(
-          ...[
-            eq(projectTable.user_id, session.user!.id!),
-            projectTable.title && projectTable.description && or(
-              ilike(projectTable.title, `%${keyword || ''}%`),
-              ...[
-                projectTable.title && ilike(projectTable.title, `%${keywordLower || ''}%`),
-                projectTable.description && ilike(projectTable.description, `%${keyword || ''}%`),
-                projectTable.description && ilike(projectTable.description, `%${keywordLower || ''}%`),
-              ].filter(Boolean),
-            ),
-          ].filter(Boolean),
-        ),
-      )
-
-    const total = await db.select({ count: count() }).from(projectSubquery.as('count'))
-
-    const projects = await projectSubquery
-      .orderBy(
-        sortAsc ? asc((projectTable as any)[sortBy]) : desc((projectTable as any)[sortBy]),
-      )
-      .offset((page - 1) * limit)
-      .limit(limit)
+    const queryRestrict = { user_id: session.user!.id! }
+    const { getProjectsPaginated, countProjects } = useProjectCrud(queryRestrict)
+    const projects = await getProjectsPaginated(getFilter(event))
+    const total = await countProjects()
 
     return {
-      data: projects,
+      data: projects.data,
       total,
     }
   }

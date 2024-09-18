@@ -1,43 +1,18 @@
-import { and, asc, count, desc, eq, ilike, isNull, or, sql } from 'drizzle-orm'
-import { categoryTable } from '@/server/db/schemas/category.schema'
+import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
+    const { parent_id } = getFilter(event)
 
-    const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, parent_id } = getFilter(event)
-
-    const categorySubquery = db.select().from(categoryTable)
-      .where(
-        and(
-          ...[
-            eq(categoryTable.user_id, session.user!.id!),
-            parent_id
-              ? eq(categoryTable.parent_id, parent_id)
-              : isNull(categoryTable.parent_id),
-            (categoryTable.name || categoryTable.description) && or(
-              ...[
-                categoryTable.name && ilike(categoryTable.name, `%${keyword || ''}%`),
-                categoryTable.name && ilike(categoryTable.name, `%${keywordLower || ''}%`),
-                categoryTable.description && ilike(categoryTable.description, `%${keyword || ''}%`),
-                categoryTable.description && ilike(categoryTable.description, `%${keywordLower || ''}%`),
-              ].filter(Boolean),
-            ),
-          ].filter(Boolean),
-        ),
-      )
-
-    const total = await db.select({ count: count() }).from(categorySubquery.as('count'))
-
-    const categories = await categorySubquery
-      .orderBy(
-        sortAsc ? asc((categoryTable as any)[sortBy]) : desc((categoryTable as any)[sortBy]),
-      )
-      .offset((page - 1) * limit)
-      .limit(limit)
+    const queryRestrict = { user_id: session.user!.id!, parent_id }
+    const { getCategorysPaginated, countCategorys } = useCategoryCrud(queryRestrict)
+    const response = await getCategorysPaginated(getFilter(event))
+    console.log('response:', response)
+    const total = await countCategorys()
 
     return {
-      data: categories,
+      data: response.data,
       total,
     }
   }

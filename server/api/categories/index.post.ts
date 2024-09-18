@@ -1,18 +1,17 @@
-import { categoryTable } from '@/server/db/schemas/category.schema'
+import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
 
     const body = await readBody(event)
-
-    const category = await db.insert(categoryTable)
-      .values({ ...body, user_id: session.user!.id! })
-      .returning()
+    const user_id = session.user!.id!
+    const { createCategory } = useCategoryCrud({ user_id })
+    const response = await createCategory({ ...body, user_id })
 
     setResponseStatus(event, 201)
 
-    return { data: category[0] }
+    return { data: response.data }
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

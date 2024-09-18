@@ -1,16 +1,11 @@
-import { count, eq } from 'drizzle-orm'
-import { projectTable } from '~/server/db/schemas/project.schema'
+import { useProjectCrud } from '@/server/composables/useProjectCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
-
-    const projectSubquery = db.select().from(projectTable)
-      .where(
-        eq(projectTable.user_id, session.user!.id!),
-      )
-
-    const total = await db.select({ count: count() }).from(projectSubquery.as('count'))
+    const queryRestrict = { user_id: session.user!.id! }
+    const { countProjects } = useProjectCrud(queryRestrict)
+    const total = await countProjects()
 
     return {
       total,

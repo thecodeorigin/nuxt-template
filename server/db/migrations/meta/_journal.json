@@ -15,6 +15,13 @@
       "when": 1726321087154,
       "tag": "0001_yielding_silvermane",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1726643005218,
+      "tag": "0002_late_bishop",
+      "breakpoints": true
     }
   ]
 }

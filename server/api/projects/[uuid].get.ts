@@ -1,22 +1,16 @@
-import { and, eq } from 'drizzle-orm'
-import { projectTable } from '~/server/db/schemas/project.schema'
+import { useProjectCrud } from '@/server/composables/useProjectCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-    const project = await db.select().from(projectTable)
-      .where(
-        and(
-          eq(projectTable.user_id, session.user!.id!),
-          eq(projectTable.id, uuid),
-        ),
-      )
-      .limit(1)
+    const user_id = session.user!.id!
+    const { getProjectById } = useProjectCrud({ user_id })
+    const response = await getProjectById(uuid)
 
     setResponseStatus(event, 201)
 
-    return { data: project[0] }
+    return { data: response.data }
   }
   catch (error: any) {
     setResponseStatus(event, 404, error.message)

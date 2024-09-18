@@ -1,22 +1,16 @@
-import { and, eq } from 'drizzle-orm'
-import { categoryTable } from '~/server/db/schemas/category.schema'
+import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-    const category = await db.select().from(categoryTable)
-      .where(
-        and(
-          eq(categoryTable.user_id, session.user!.id!),
-          eq(categoryTable.id, uuid),
-        ),
-      )
-      .limit(1)
+    const user_id = session.user!.id!
+    const { getCategoryById } = useCategoryCrud({ user_id })
+    const response = await getCategoryById(uuid)
 
     setResponseStatus(event, 201)
 
-    return { data: category[0] }
+    return { data: response.data }
   }
   catch (error: any) {
     setResponseStatus(event, 404, error.message)

@@ -1,8 +1,12 @@
+import { and, eq, isNull } from 'drizzle-orm'
 import { projectTable } from '../db/schemas/project.schema'
 import { useCrud } from './useCrud'
 import type { ParsedFilterQuery } from '~/server/utils/filter'
 
-export function useProjectCrud() {
+export function useProjectCrud(queryRestrict:
+{
+  user_id: string
+}) {
   const {
     getRecordsPaginated,
     getRecordByKey,
@@ -12,6 +16,9 @@ export function useProjectCrud() {
     countRecords,
   } = useCrud(projectTable, {
     searchBy: ['title', 'description'],
+    queryRestrict: () => and(...[
+      eq(projectTable.user_id, queryRestrict.user_id),
+    ]),
   })
 
   async function getProjectsPaginated(options: ParsedFilterQuery) {
