@@ -129,6 +129,26 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
       total: response.count,
     }
   }
+  async function updateManyRecords(body: InferInsertModel<T>) {
+    if (!options?.queryRestrict) {
+      throw new Error('Query restrict option is required for updating many records.')
+    }
+
+    const sysRecord = (
+      await db.update(sourceTable)
+        .set(body)
+        .where(
+          and(
+            ...[
+              options?.queryRestrict?.(),
+            ].filter(Boolean),
+          ),
+        )
+        .returning()
+    )
+
+    return { data: sysRecord as InferSelectModel<T>[] }
+  }
 
   return {
     getRecordsPaginated,
@@ -137,5 +157,6 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
     updateRecordByKey,
     deleteRecordByKey,
     countRecords,
+    updateManyRecords,
   }
 }

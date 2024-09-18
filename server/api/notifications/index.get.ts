@@ -1,20 +1,22 @@
+import { useNotificationCrud } from '@/server/composables/useNotificationCrud'
+
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  const { limit = 10, page = 1 } = getFilter(event)
+    const queryRestrict = { user_id: session.user!.id! }
+    const { getNotificationsPaginated } = useNotificationCrud(queryRestrict)
 
-  const { data, error } = await supabaseAdmin.from('sys_notifications')
-    .select()
-    .eq('user_id', session.user.id)
-    .order('created_at', { ascending: false })
-    .range((page - 1) * limit, page * limit - 1)
+    const notifications = await getNotificationsPaginated(getFilter(event))
 
-  if (error) {
-    setResponseStatus(event, 400, error.message)
+    setResponseStatus(event, 200)
+
+    return notifications.data
   }
-  else {
-    setResponseStatus(event, 201)
+  catch (error: any) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: error.message,
+    })
   }
-
-  return data
 })

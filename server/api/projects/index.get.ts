@@ -4,14 +4,10 @@ export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
     const queryRestrict = { user_id: session.user!.id! }
-    const { getProjectsPaginated, countProjects } = useProjectCrud(queryRestrict)
+    const { getProjectsPaginated } = useProjectCrud(queryRestrict)
     const projects = await getProjectsPaginated(getFilter(event))
-    const total = await countProjects()
 
-    return {
-      data: projects.data,
-      total,
-    }
+    return projects
   }
   catch (error: any) {
     throw createError({

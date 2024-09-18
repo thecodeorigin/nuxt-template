@@ -3,12 +3,12 @@ import { useUserDeviceCrud } from '@/server/composables/useUserDeviceCrud'
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })
-    const { token } = await readBody(event)
 
-    const { deleteUserDeviceToken } = useUserDeviceCrud({ user_id: session.user.id })
-    await deleteUserDeviceToken(token)
+    const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id: session.user.id })
+
+    const tokens = await getUserDeviceAllTokens({} as ParsedFilterQuery)
     setResponseStatus(event, 200)
-    return { message: 'Token unregistration successful' }
+    return tokens
   }
   catch (error: any) {
     throw createError(

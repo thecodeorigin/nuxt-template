@@ -1,13 +1,22 @@
+import { useNotificationCrud } from '@/server/composables/useNotificationCrud'
+
 export default defineEventHandler(async (event) => {
-  const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const { data, error } = await supabaseAdmin.from('sys_notifications')
-    .delete().eq('id', uuid).maybeSingle()
+    const queryRestrict = { user_id: session.user!.id! }
+    const { deleteNotificationById } = useNotificationCrud(queryRestrict)
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
+    const data = await deleteNotificationById(uuid)
+
     setResponseStatus(event, 200)
 
-  return { data }
+    return data
+  }
+  catch (error: any) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: error.message,
+    })
+  }
 })

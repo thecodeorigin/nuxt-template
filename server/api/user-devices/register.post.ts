@@ -1,25 +1,28 @@
+import { useUserDeviceCrud } from '@/server/composables/useUserDeviceCrud'
+
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
-  const { token } = await readBody(event)
-  const { data, error } = await supabaseAdmin.from('user_devices').select().match({
-    user_id: session.user.id,
-    token_device: token,
-  })
-  if (error) {
-    setResponseStatus(event, 500)
-    return { error: error.message }
-  }
-  else if (data.length === 0) {
-    const { data: res, error } = await supabaseAdmin.from('user_devices').insert({
-      user_id: session.user.id,
-      token_device: token,
-    }).select()
-    if (error) {
-      setResponseStatus(event, 500)
-      return { error: error.message,
-      }
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
+    const { token } = await readBody(event)
+
+    const { getUserDeviceToken, createUserDeviceToken } = useUserDeviceCrud({ user_id: session.user.id })
+    const dataTokenExists = await getUserDeviceToken(token)
+
+    if (!dataTokenExists?.data) {
+      const tokenRegistered = await createUserDeviceToken({
+        user_id: session.user.id,
+        token_device: token,
+      })
+      return { message: 'Token registration successful', token: tokenRegistered.data.token_device }
     }
-    return { message: 'Token registration successful', token: res }
+    return { message: 'Token registration successful' }
   }
-  return { message: 'Token registration successful' }
+  catch (error: any) {
+    throw createError(
+      {
+        statusCode: 500,
+        statusMessage: error.message,
+      },
+    )
+  }
 })

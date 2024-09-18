@@ -1,21 +1,19 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Notification = Tables<'sys_notifications'>
+import { useNotificationCrud } from '@/server/composables/useNotificationCrud'
 
 export default defineEventHandler(async (event) => {
-  const { session } = await defineEventOptions(event, { auth: true })
-  const notification = await readBody<Notification>(event)
-  const { data, error } = await supabaseAdmin.from('sys_notifications')
-    .update(notification)
-    .eq('user_id', session.user.id)
-    .is('read_at', null)
+  try {
+    const { session } = await defineEventOptions(event, { auth: true })
 
-  if (error) {
-    setResponseStatus(event, 400, error.message)
-  }
-  else {
-    setResponseStatus(event, 200)
-  }
+    const queryRestrict = { user_id: session.user!.id!, markAllRead: true }
+    const { markAllRead } = useNotificationCrud(queryRestrict)
+    const response = await markAllRead()
 
-  return { data }
+    return response
+  }
+  catch (error: any) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: error.message,
+    })
+  }
 })

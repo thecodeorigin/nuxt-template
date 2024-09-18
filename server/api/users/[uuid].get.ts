@@ -1,6 +1,4 @@
-import { eq } from 'drizzle-orm'
 import { useUserCrud } from '~/server/composables/useUserCrud'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
   try {

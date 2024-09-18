@@ -1,24 +1,29 @@
 import admin from 'firebase-admin'
+import { useUserDeviceCrud } from '@/server/composables/useUserDeviceCrud'
 
 export default defineEventHandler(async (event) => {
   const { user_id } = await readBody(event)
+
   if (!user_id)
     return { message: 'User id is required' }
 
   const service = getFirebaseServiceAccount()
+
   if (admin.apps.length === 0) {
     admin.initializeApp({
       credential: admin.credential.cert(service as admin.ServiceAccount),
     })
   }
 
-  const { data } = await supabaseAdmin.from('user_devices').select().match({ user_id })
-  if (data && data.length === 0) {
+  const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id })
+  const response = await getUserDeviceAllTokens({} as ParsedFilterQuery)
+
+  if (response && response.total === 0) {
     setResponseStatus(event, 200)
     return { message: 'No device found' }
   }
   else {
-    const tokens = data!.map((item: any) => item.token_device)
+    const tokens = response.data!.map<string>((item: any) => item.token_device)
     const body = {
       tokens,
       notification: {
@@ -28,6 +33,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const res = await admin.messaging().sendEachForMulticast(body)
+
     if (res) {
       setResponseStatus(event, 200)
       return { message: 'Notification sent successfully' }

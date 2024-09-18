@@ -1,25 +1,24 @@
-import type { Tables } from '@/server/types/supabase'
-
-type Notification = Tables<'sys_notifications'>
+import { useNotificationCrud } from '@/server/composables/useNotificationCrud'
 
 export default defineEventHandler(async (event) => {
-  const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+  try {
+    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
 
-  const notification = await readBody<Notification>(event)
+    const queryRestrict = { user_id: session.user!.id! }
+    const { updateNotificationById } = useNotificationCrud(queryRestrict)
 
-  const { data, error } = await supabaseAdmin.from('sys_notifications')
-    .update(notification)
-    .match({
-      id: uuid,
-      user_id: session.user!.id!,
-    })
-    .select()
-    .maybeSingle()
+    const body = await readBody(event)
 
-  if (error)
-    setResponseStatus(event, 400, error.message)
-  else
+    const data = await updateNotificationById(uuid, body)
+
     setResponseStatus(event, 200)
 
-  return { data }
+    return data
+  }
+  catch (error: any) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: error.message,
+    })
+  }
 })

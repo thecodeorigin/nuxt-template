@@ -1,12 +1,12 @@
-import is from '@sindresorhus/is'
+import { useUserDeviceCrud } from '../composables/useFaqCrud.ts'
 
 export default defineEventHandler(async (event) => {
-  const { q = '' } = getQuery(event)
-  const searchQuery = is.string(q) ? q : undefined
-  const queryLowered = (searchQuery ?? '').toString().toLowerCase()
+  const { category_id, ...body } = getFilter(event)
 
-  const { data: categories } = await supabase.from('sys_faq_categories').select('*,questions:sys_faqs(*)').ilike('sys_faqs.question', `%${queryLowered}%`)
+  const { getFaqQuestions } = useUserDeviceCrud({ category_id })
+
+  const faqs = await getFaqQuestions(body)
   setResponseStatus(event, 200)
 
-  return categories
+  return faqs.data
 })

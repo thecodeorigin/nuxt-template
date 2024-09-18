@@ -6,15 +6,10 @@ export default defineEventHandler(async (event) => {
     const { parent_id } = getFilter(event)
 
     const queryRestrict = { user_id: session.user!.id!, parent_id }
-    const { getCategorysPaginated, countCategorys } = useCategoryCrud(queryRestrict)
+    const { getCategorysPaginated } = useCategoryCrud(queryRestrict)
     const response = await getCategorysPaginated(getFilter(event))
-    console.log('response:', response)
-    const total = await countCategorys()
 
-    return {
-      data: response.data,
-      total,
-    }
+    return response
   }
   catch (error: any) {
     throw createError({
