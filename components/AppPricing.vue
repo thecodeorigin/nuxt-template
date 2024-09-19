@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { StripePricingMetadata } from '@/utils/types/stripe'
+
 const props = defineProps<Pricing>()
 
 const stripeStore = useStripeStore()
@@ -21,10 +23,11 @@ const pricingComputed = computed(() => {
     return []
 
   const newArrayOfPrices = Object.values(stripeStore.stripePrices)[0]?.map((price) => {
-    const isCurrentPlan = subscriptionStore.subscriptions.some(sub => sub.plan.id === price.id)
+    const isCurrentPlan = subscriptionStore.subscriptions.some(sub => sub.items.data[0].plan.id === price.id)
     return {
       ...price,
       current: isCurrentPlan,
+      features: (price.metadata as any as StripePricingMetadata)?.marketing_features ? JSON.parse(price.metadata?.marketing_features.replace(/'/g, '"')) : [], // set metadata in stripe pricing like marketing_features: "['feature1', 'feature2']"
     }
   })
   return newArrayOfPrices
@@ -67,27 +70,11 @@ async function handleSubscribe(priceId: string, subscribed = false) {
       <VCard
         flat
         border
-        :class="plan.unit_amount === 200 ? 'border-primary border-opacity-100' : ''"
       >
-        <VCardText
-          class="text-end pt-4"
-          style="block-size: 3.75rem;"
-        >
-          <!-- 👉 Popular -->
-          <VChip
-            v-show="plan.unit_amount === 200"
-            color="primary"
-            size="small"
-          >
-            Popular
-          </VChip>
-        </VCardText>
-
         <VCardText class="position-relative text-center">
           <div>
-            <div class="d-flex justify-center align-center">
-              <span class="text-body-1 font-weight-medium align-self-start">$</span>
-              <h1 class="text-h3 font-weight-medium text-primary">
+            <div class="d-flex align-center">
+              <h1 class="text-h3 text-primary font-weight-bold">
                 {{ new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: (plan.currency || 'usd').toUpperCase(),
@@ -96,12 +83,28 @@ async function handleSubscribe(priceId: string, subscribed = false) {
               <span class="text-body-1 font-weight-medium align-self-end">/month</span>
             </div>
           </div>
+
+          <!-- 👉 Plan actions -->
+          <VBtn
+            :active="false"
+            block
+            :disabled="plan.current"
+            color="primary"
+            class="mt-4"
+            @click="handleSubscribe(plan.id, plan.current)"
+          >
+            {{ plan.current ? 'Your Current Plan' : 'Upgrade' }}
+          </VBtn>
         </VCardText>
         <!-- 👉 Plan features -->
         <VCardText class="pt-2">
           <VList class="card-list pb-5">
+            <!-- title package includes color black -->
+            <VListItemTitle class="mb-3 font-weight-medium">
+              Package Includes
+            </VListItemTitle>
             <VListItem
-              v-for="feature in stripeStore.stripeProducts[0]?.marketing_features"
+              v-for="feature in plan.features"
               :key="feature"
             >
               <template #prepend />
@@ -109,26 +112,15 @@ async function handleSubscribe(priceId: string, subscribed = false) {
               <VListItemTitle class="text-body-1 d-flex align-center">
                 <VIcon
                   :size="14"
-                  icon="ri-circle-line"
-                  class="me-2"
+                  icon="mdi-check"
+                  class="me-2 icon-check"
                 />
                 <div class="text-truncate">
-                  {{ feature.name }}
+                  {{ feature }}
                 </div>
               </VListItemTitle>
             </VListItem>
           </VList>
-
-          <!-- 👉 Plan actions -->
-          <VBtn
-            :active="false"
-            block
-            :color="plan.current ? 'success' : 'primary'"
-            :variant="plan.unit_amount === 200 ? 'elevated' : 'outlined'"
-            @click="handleSubscribe(plan.id, plan.current)"
-          >
-            {{ plan.current ? 'Your Current Plan' : 'Upgrade' }}
-          </VBtn>
         </VCardText>
       </VCard>
     </VCol>
@@ -145,5 +137,9 @@ async function handleSubscribe(priceId: string, subscribed = false) {
   display: flex;
   inset-block-start: -2.125rem;
   inset-inline-end: -6.5rem;
+}
+
+.icon-check {
+  fill: #10b981;
 }
 </style>

@@ -1,13 +1,9 @@
 import type Stripe from 'stripe'
-import { maxBy } from 'lodash-es'
 
 export const useSubscriptionStore = defineStore('subscription', () => {
+  const currentSubscription = ref<Stripe.Subscription>()
   const subscriptions = ref<Stripe.Subscription[]>([])
   const customer = ref<Stripe.Customer>()
-
-  const currentSubscription = computed(() => {
-    return maxBy(subscriptions.value, s => s.plan?.amount)
-  })
 
   const isSubscriptionValid = computed(() => currentSubscription.value
     && (
@@ -18,8 +14,9 @@ export const useSubscriptionStore = defineStore('subscription', () => {
 
   async function fetchSubscriptions() {
     try {
-      const data = await $api<{ customer: Stripe.Customer, subscriptions: Stripe.Subscription[] }>('/payments/stripe/me')
+      const data = await $api<{ customer: Stripe.Customer, subscription: Stripe.Subscription, subscriptions: Stripe.Subscription[] }>('/payments/stripe/me')
       customer.value = data.customer
+      currentSubscription.value = data.subscription
       subscriptions.value = data.subscriptions
     }
     catch (error) {

@@ -22,6 +22,13 @@
       "when": 1726643005218,
       "tag": "0002_late_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1726772257372,
+      "tag": "0003_rich_siren",
+      "breakpoints": true
     }
   ]
 }

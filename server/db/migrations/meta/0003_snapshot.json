@@ -1,6 +1,6 @@
 {
-  "id": "d28cb9bd-f011-42ce-b1e6-241ba61e5528",
-  "prevId": "d2d0a664-8e00-45b6-978c-a98d067fad51",
+  "id": "aae9d879-185d-4821-aabc-e8a2cc51d17b",
+  "prevId": "eaaa6511-c25c-43dd-8f38-dc8d44f24258",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -310,6 +310,87 @@
           "primaryKey": false,
           "notNull": false,
           "default": "gen_random_uuid()"
+        },
+        "is_voice_recognition": {
+          "name": "is_voice_recognition",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model": {
+          "name": "model",
+          "type": "model",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_downloadable": {
+          "name": "source_downloadable",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_duration": {
+          "name": "source_duration",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_thumbnail": {
+          "name": "source_thumbnail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_title": {
+          "name": "source_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "structure": {
+          "name": "structure",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subtitle": {
+          "name": "subtitle",
+          "type": "jsonb[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "summarize": {
+          "name": "summarize",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "translate_from": {
+          "name": "translate_from",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "translate_to": {
+          "name": "translate_to",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'processing'"
         }
       },
       "indexes": {},
@@ -998,6 +1079,23 @@
         "active",
         "deactivated",
         "pending"
+      ]
+    },
+    "public.model": {
+      "name": "model",
+      "schema": "public",
+      "values": [
+        "tiny",
+        "medium",
+        "large-v3"
+      ]
+    },
+    "public.status": {
+      "name": "status",
+      "schema": "public",
+      "values": [
+        "processing",
+        "succeeded"
       ]
     }
   },

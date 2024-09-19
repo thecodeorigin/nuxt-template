@@ -1,10 +1,10 @@
 import type { IconAliases, IconProps } from 'vuetify'
-
 import checkboxChecked from '@images/svg/checkbox-checked.svg'
 import checkboxIndeterminate from '@images/svg/checkbox-indeterminate.svg'
 import checkboxUnchecked from '@images/svg/checkbox-unchecked.svg'
 import radioChecked from '@images/svg/radio-checked.svg'
 import radioUnchecked from '@images/svg/radio-unchecked.svg'
+import check from '@images/svg/check.svg'
 
 const customIcons: Record<string, unknown> = {
   'mdi-checkbox-blank-outline': checkboxUnchecked,
@@ -12,6 +12,7 @@ const customIcons: Record<string, unknown> = {
   'mdi-minus-box': checkboxIndeterminate,
   'mdi-radiobox-marked': radioChecked,
   'mdi-radiobox-blank': radioUnchecked,
+  'mdi-check': check,
 }
 
 const aliases: Partial<IconAliases> = {
