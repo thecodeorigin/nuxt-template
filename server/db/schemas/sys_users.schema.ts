@@ -3,7 +3,6 @@ import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { userStatus } from './enum.schema'
 import { sysRoleTable } from './sys_roles.schema'
-import { sysShortcutTable } from './sys_shortcuts.schema'
 import { categoryTable } from './category.schema'
 import { postTable } from './post.schema'
 import { projectTable } from './project.schema'
@@ -45,7 +44,6 @@ export const insertSysUserSchema = createInsertSchema(sysUserTable)
 export const selectSysUserSchema = createSelectSchema(sysUserTable)
 
 export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
-  sysShortcutSchema: many(sysShortcutTable),
   sysRole: one(sysRoleTable, {
     fields: [sysUserTable.role_id],
     references: [sysRoleTable.id],

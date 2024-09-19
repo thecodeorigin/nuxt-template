@@ -3,13 +3,16 @@ import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
 import FacebookProvider from 'next-auth/providers/facebook'
 import { eq, or } from 'drizzle-orm'
-import { omit } from 'lodash-es'
 import type { Session } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 import { NuxtAuthHandler } from '#auth'
 import type { LoggedInUser } from '@/next-auth'
 import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
 import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
+import { useRoleCrud } from '~/server/composables/useRoleCrud'
+import { useUserCrud } from '~/server/composables/useUserCrud'
+import { useCategoryCrud } from '~/server/composables/useCategoryCrud'
+import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
 
 const runtimeConfig = useRuntimeConfig()
 
@@ -34,35 +37,52 @@ async function getUser(token: JWT) {
   return null
 }
 
-async function createUser(token: JWT) {
-  const editorRole = (await db.select().from(sysRoleTable)
-    .where(
-      eq(sysRoleTable.name, 'Editor'),
-    )
-    .limit(1))[0]
+async function createSysUser(token: JWT) {
+  const { getRoleByName } = useRoleCrud()
 
-  if (!editorRole?.id) {
+  const editorRole = await getRoleByName('Editor')
+
+  if (!editorRole.data?.id) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Cannot sign up user!',
     })
   }
 
-  const sysUser = (await db.insert(sysUserTable)
-    .values({
-      ...omit(token, ['id']),
-      password: '',
-      language: '',
-      country: '',
-      city: '',
-      postcode: '',
-      address: '',
-      organization: '',
-      role_id: editorRole.id,
-    })
-    .returning())[0]
+  const { createUser } = useUserCrud()
 
-  return omit(sysUser, ['password'])
+  const sysUser = await createUser({
+    ...omit(token, ['id']),
+    password: '',
+    language: '',
+    country: '',
+    city: '',
+    postcode: '',
+    address: '',
+    organization: '',
+    role_id: editorRole.data.id,
+  })
+
+  const { createCategory } = useCategoryCrud({ user_id: sysUser.data.id })
+
+  const { createShortcut } = useShortcutCrud(sysUser.data.id)
+
+  await Promise.all([
+    createCategory({
+      name: 'Uncategorized',
+      slug: `uncategorized-${Date.now()}`,
+    }),
+    createShortcut({
+      route: '/projects',
+      user_id: sysUser.data.id,
+    }),
+    createShortcut({
+      route: '/dashboard',
+      user_id: sysUser.data.id,
+    }),
+  ])
+
+  return sysUser.data
 }
 
 export default NuxtAuthHandler({
@@ -79,9 +99,7 @@ export default NuxtAuthHandler({
             body: JSON.stringify(credentials),
           })
 
-          return {
-            id: response.data.id,
-          }
+          return response.data
         }
         catch (error: any) {
           throw createError({
@@ -129,6 +147,7 @@ export default NuxtAuthHandler({
     },
     async session({ session, token }) {
       const storage = useStorage('redis')
+
       const sessionKey = getStorageSessionKey(token.email)
 
       let cachedSession = await storage.getItem<Session | null>(sessionKey)
@@ -137,7 +156,7 @@ export default NuxtAuthHandler({
         let loggedInUser = await getUser(token)
 
         if (!loggedInUser)
-          loggedInUser = await createUser(token)
+          loggedInUser = await createSysUser(token)
 
         cachedSession = {
           ...session,

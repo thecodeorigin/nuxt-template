@@ -1,8 +1,9 @@
-import { sysShortcutTable } from '../db/schemas/sys_shortcuts.schema'
+import { eq } from 'drizzle-orm'
 import { useCrud } from './useCrud'
 import type { ParsedFilterQuery } from '~/server/utils/filter'
+import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
 
-export function useShortcutCrud() {
+export function useShortcutCrud(userId: string) {
   const {
     getRecordsPaginated,
     getRecordByKey,
@@ -10,8 +11,9 @@ export function useShortcutCrud() {
     updateRecordByKey,
     deleteRecordByKey,
     countRecords,
-  } = useCrud(sysShortcutTable, {
-    searchBy: ['item'],
+  } = useCrud(userShortcutTable, {
+    searchBy: ['route'],
+    queryRestrict: () => eq(userShortcutTable.user_id, userId),
   })
 
   async function getShortcutsPaginated(options: ParsedFilterQuery) {

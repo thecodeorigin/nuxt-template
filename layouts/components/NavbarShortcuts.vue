@@ -1,45 +1,25 @@
 <script setup lang="ts">
-const shortcuts = [
-  {
-    icon: 'ri-calendar-line',
-    title: 'Calendar',
-    subtitle: 'Appointments',
-    to: { name: 'apps-calendar' },
-  },
-  {
-    icon: 'ri-file-list-3-line',
-    title: 'Invoice App',
-    subtitle: 'Manage Accounts',
-    to: { name: 'apps-invoice-list' },
-  },
-  {
-    icon: 'ri-user-line',
-    title: 'Users',
-    subtitle: 'Manage Users',
-    to: { name: 'apps-user-list' },
-  },
-  {
-    icon: 'ri-computer-line',
-    title: 'Role Management',
-    subtitle: 'Permissions',
-    to: { name: 'roles' },
-  },
-  {
-    icon: 'ri-pie-chart-2-line',
-    title: 'Dashboard',
-    subtitle: 'User Dashboard',
-    to: { name: 'dashboards-analytics' },
-  },
-  {
-    icon: 'ri-settings-4-line',
-    title: 'Settings',
-    subtitle: 'Account Settings',
-    to: { name: 'settings-tab', params: { tab: 'account' } },
-  },
+import type { RouteRecordNormalized } from 'vue-router'
 
-]
+const router = useRouter()
+
+const shortcutStore = useShortcutStore()
+
+const shortCutsRoutes = computed(() => createRouteTree(shortcutStore.userShortcuts.map(shortcut => router.resolve(shortcut.route) as any as RouteRecordNormalized)))
+
+function handleMenuChange(visible: boolean) {
+  if (visible) {
+    shortcutStore.getUserShortcuts()
+  }
+}
+
+const route = useRoute()
+
+function handleAddShortcut() {
+  shortcutStore.postUserShortcut(route.path)
+}
 </script>
 
 <template>
-  <Shortcuts :shortcuts="shortcuts" />
+  <Shortcuts :shortcuts="shortCutsRoutes" @change="handleMenuChange" @add="handleAddShortcut" />
 </template>

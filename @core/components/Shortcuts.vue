@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-
-interface Shortcut {
-  icon: string
-  title: string
-  subtitle: string
-  to: object | string
-}
+import type { NavItem } from '@/@layouts/types'
 
 interface Props {
   togglerIcon?: string
-  shortcuts: Shortcut[]
+  shortcuts: NavItem[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   togglerIcon: 'ri-star-smile-line',
 })
 
-const router = useRouter()
+const emit = defineEmits<{
+  (e: 'add'): void
+  (e: 'change', payload: boolean): void
+}>()
+
+function handleAddShortcut() {
+  emit('add')
+}
 </script>
 
 <template>
@@ -28,9 +29,10 @@ const router = useRouter()
       activator="parent"
       offset="15px"
       location="bottom end"
+      @update:model-value="$emit('change', $event)"
     >
       <VCard
-        max-width="380"
+        width="300"
         max-height="560"
         class="d-flex flex-column"
       >
@@ -40,7 +42,7 @@ const router = useRouter()
           </h6>
 
           <template #append>
-            <IconBtn size="small">
+            <IconBtn size="small" @click="handleAddShortcut">
               <VIcon
                 icon="ri-add-line"
                 color="high-emphasis"
@@ -49,7 +51,7 @@ const router = useRouter()
                 activator="parent"
                 location="start"
               >
-                Add Shortcut
+                Add current page to shortcut
               </VTooltip>
             </IconBtn>
           </template>
@@ -65,7 +67,7 @@ const router = useRouter()
               cols="6"
               class="text-center border-t cursor-pointer pa-6 shortcut-icon"
               :class="(index + 1) % 2 ? 'border-e' : ''"
-              @click="router.push(shortcut.to)"
+              @click="navigateTo(shortcut.to)"
             >
               <VAvatar
                 variant="tonal"
@@ -74,16 +76,13 @@ const router = useRouter()
                 <VIcon
                   color="high-emphasis"
                   size="26"
-                  :icon="shortcut.icon"
+                  :icon="shortcut.icon?.icon || 'ri-star-smile-line'"
                 />
               </VAvatar>
 
               <h6 class="text-h6 mt-3">
                 {{ shortcut.title }}
               </h6>
-              <p class="text-sm text-medium-emphasis mb-0">
-                {{ shortcut.subtitle }}
-              </p>
             </VCol>
           </VRow>
         </PerfectScrollbar>

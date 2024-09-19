@@ -26,6 +26,12 @@ export function useRoleCrud() {
     return { data }
   }
 
+  async function getRoleByName(name: string) {
+    const { data } = await getRecordByKey('name', name)
+
+    return { data }
+  }
+
   async function updateRoleById(id: string, body: any) {
     const { data } = await updateRecordByKey('id', id, body)
 
@@ -51,6 +57,7 @@ export function useRoleCrud() {
   return {
     getRolesPaginated,
     getRoleById,
+    getRoleByName,
     createRole,
     updateRoleById,
     deleteRoleById,

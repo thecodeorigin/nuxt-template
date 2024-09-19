@@ -1,4 +1,4 @@
-import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
+import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,13 +6,13 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const userShortcut = await db.insert(userShortcutTable)
-      .values({ ...body, user_id: session.user!.id! })
-      .returning()
+    const { createShortcut } = useShortcutCrud(session.user!.id!)
+
+    const userShortcut = await createShortcut(body)
 
     setResponseStatus(event, 201)
 
-    return { data: userShortcut[0] }
+    return userShortcut
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

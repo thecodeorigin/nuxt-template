@@ -16,10 +16,12 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
 
     if (Array.isArray(options?.searchBy)) {
       for (const field of options.searchBy) {
-        searchConditions.push(...[
-          sourceTable[field] && ilike(sourceTable[field] as any, `%${keyword || ''}%`),
-          sourceTable[field] && ilike(sourceTable[field] as any, `%${keywordLower || ''}%`),
-        ])
+        if (keyword || keywordLower) {
+          searchConditions.push(...[
+            sourceTable[field] && ilike(sourceTable[field] as any, `%${keyword || ''}%`),
+            sourceTable[field] && ilike(sourceTable[field] as any, `%${keywordLower || ''}%`),
+          ])
+        }
       }
     }
 
@@ -27,11 +29,13 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
       .where(
         and(...[
           options?.queryRestrict?.(),
-          or(
+          searchConditions.length && or(
             ...searchConditions.filter(Boolean),
           ),
         ].filter(Boolean)),
       )
+
+    console.log('sysRecordSubquery', sysRecordSubquery.toSQL())
 
     const sysRecordCount = (
       await db.select({ count: count() }).from(sysRecordSubquery.as('count'))

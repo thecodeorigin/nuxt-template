@@ -5,6 +5,7 @@ import { db } from '../../utils/db'
 import { sysRoleTable } from '../schemas/sys_roles.schema'
 import { categoryTable } from '../schemas/category.schema'
 import { sysPermissionTable } from '../schemas/sys_permissions.schema'
+import { userShortcutTable } from '../schemas/user_shortcuts.schema'
 
 export async function seed() {
   console.log('Seeding database...')
@@ -60,4 +61,15 @@ export async function seed() {
     slug: `uncategorized-${randRecentDate({ days: 365 }).getTime()}`,
     user_id: user.id,
   })))
+
+  await db.insert(userShortcutTable).values([
+    ...sysUsers.map(user => ({
+      route: '/projects',
+      user_id: user.id,
+    })),
+    ...sysUsers.map(user => ({
+      route: '/dashboard',
+      user_id: user.id,
+    })),
+  ])
 }
