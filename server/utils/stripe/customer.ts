@@ -5,6 +5,9 @@ export async function getStripeCustomerByEmail(email: string) {
     email,
   })
 
+  if (customers.length === 0)
+    return
+
   return customers[0]
 }
 
@@ -25,6 +28,17 @@ export function createStripeCustomer(payload: {
     phone: payload.phone,
     name: payload.name,
   })
+}
+
+export async function createStripeCustomerOnSignup(email: string) {
+  const stripeCustomer = await createStripeCustomer({ email })
+
+  const freePrice = await getFreePrice()
+
+  return {
+    customer: stripeCustomer,
+    subscription: await createStripeSubscription(stripeCustomer.id, freePrice.data[0].id!),
+  }
 }
 
 export function updateStripeCustomer(customerId: string, customer: Stripe.CustomerUpdateParams) {

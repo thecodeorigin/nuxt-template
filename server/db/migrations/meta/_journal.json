@@ -29,6 +29,13 @@
       "when": 1726772257372,
       "tag": "0003_rich_siren",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1726935264800,
+      "tag": "0004_majestic_hercules",
+      "breakpoints": true
     }
   ]
 }

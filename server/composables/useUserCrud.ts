@@ -47,6 +47,8 @@ export function useUserCrud() {
   async function createUser(body: any) {
     const { data } = await createRecord(body)
 
+    await createStripeCustomerOnSignup(body.email)
+
     return { data: omit(data, ['password']) }
   }
 

@@ -1,11 +1,24 @@
+import type Stripe from 'stripe'
 import { filter, maxBy } from 'lodash-es'
 
 export default defineEventHandler(async (event) => {
   const { session } = await defineEventOptions(event, { auth: true })
 
-  const customer = await getStripeCustomerByEmail(session.user.email as string)
+  let subscriptions: Stripe.Subscription[] = []
 
-  const { data: subscriptions } = await getStripeCustomerSubscriptions(customer.id)
+  let customer = await getStripeCustomerByEmail(session.user.email as string)
+
+  if (!customer) {
+    const { subscription, customer: newCustomer } = await createStripeCustomerOnSignup(session.user.email as string)
+
+    customer = newCustomer
+
+    if (subscription)
+      subscriptions.push(subscription)
+  }
+  else {
+    subscriptions = (await getStripeCustomerSubscriptions(customer.id)).data
+  }
 
   const activeSubscriptions = filter(subscriptions, { status: 'active' })
 

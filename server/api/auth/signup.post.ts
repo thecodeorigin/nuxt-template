@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt'
-import { customerTable } from '~/server/db/schemas/customer.schema'
 import { useCategoryCrud } from '~/server/composables/useCategoryCrud'
 import { useRoleCrud } from '~/server/composables/useRoleCrud'
 import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
@@ -64,20 +63,6 @@ export default defineEventHandler(async (event) => {
         user_id: sysUser.data.id,
       }),
     ])
-
-    const stripeCustomer = await createStripeCustomer({ email })
-
-    const freePrice = await getFreePrice()
-
-    await createStripeSubscription(stripeCustomer.id, freePrice.data[0].id!)
-
-    // insert stripe customer id to table customer
-    await db.insert(customerTable)
-      .values({
-        user_id: sysUser.data.id,
-        stripe_customer_id: stripeCustomer.id,
-      })
-      .returning()
 
     setResponseStatus(event, 201)
 
