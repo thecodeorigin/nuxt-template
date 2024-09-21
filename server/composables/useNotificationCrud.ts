@@ -7,24 +7,10 @@ import { useCrud } from '@/server/composables/useCrud'
 
 interface QueryRestrict {
   user_id: string
-  markAllRead?: boolean
-  markAllUnread?: boolean
+  markAllRead?: any
+  markAllUnread?: any
 }
 export function useNotificationCrud(queryRestrict: QueryRestrict) {
-  const conditionsMap = [
-    { field: 'user_id', condition: eq(sysNotificationTable.user_id, queryRestrict.user_id) },
-    { field: 'markAllRead', condition: isNull(sysNotificationTable.read_at) },
-    { field: 'markAllUnread', condition: isNotNull(sysNotificationTable.read_at) },
-  ]
-
-  const conditionsArray: SQL<unknown>[] = []
-
-  for (const condition of conditionsMap) {
-    if (queryRestrict[condition.field as keyof QueryRestrict]) {
-      conditionsArray.push(condition.condition)
-    }
-  }
-
   const {
     countRecords,
     createRecord,
@@ -34,7 +20,11 @@ export function useNotificationCrud(queryRestrict: QueryRestrict) {
     updateRecordByKey,
     updateManyRecords,
   } = useCrud(sysNotificationTable, {
-    queryRestrict: () => and(...conditionsArray),
+    queryRestrict: () => and(...[
+      queryRestrict.user_id && eq(sysNotificationTable.user_id, queryRestrict.user_id),
+      queryRestrict.markAllRead && isNull(sysNotificationTable.read_at),
+      queryRestrict.markAllUnread && isNotNull(sysNotificationTable.read_at),
+    ].filter(Boolean)),
   })
   async function getNotificationsPaginated(options: ParsedFilterQuery) {
     const { data, total } = await getRecordsPaginated(options)

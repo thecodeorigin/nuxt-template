@@ -1,33 +1,23 @@
 <script setup lang="ts">
 import faqIllustration from '@images/illustrations/faq-illustration.png'
 import { debounce } from 'lodash-es'
-import type { Tables } from '@/server/types/supabase'
 
-type FaqCategory = Tables<'sys_faq_categories'>
-type Faq = Tables<'sys_faqs'>
-
-type Faqs = FaqCategory & {
-  questions: Faq[]
-}
-
+const faqStore = useFaqStore()
 const faqSearchQuery = ref('')
-const faqs = ref<Faqs[]>([])
 
-async function fetchFaqs() {
-  const data = await $api('/faq', {
-    query: {
-      q: faqSearchQuery.value,
-    },
-  }).catch(err => console.log(err))
-
-  faqs.value = data as Faqs[]
-}
-
+const { data: faqs, refresh: fetchFaqs } = await useLazyAsyncData(() => faqStore.fetchFaqs({
+  keyword: faqSearchQuery.value,
+  keywordLower: '',
+  sortAsc: true,
+  limit: 100,
+  page: 1,
+}), {
+  default: () => ([]),
+})
 const activeTab = ref('Payment')
 const activeQuestion = ref(1)
-onBeforeMount(fetchFaqs)
 watch(activeTab, () => activeQuestion.value = 0)
-watch(faqSearchQuery, debounce(fetchFaqs, 1000))
+watch(faqSearchQuery, () => debounce(() => fetchFaqs(), 1000)())
 
 const contactUs = [
   {

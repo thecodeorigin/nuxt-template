@@ -1,37 +1,30 @@
 <script lang="ts" setup>
 import type { Tables } from '@/server/types/supabase.js'
 
+const systemNotificationStore = useSystemNotificationStore()
 type Notification = Tables<'sys_notifications'>
 
 const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})
-const notifications = ref<Notification[]>([])
 const notificationQuery = ref({
   page: 1,
-  limit: 10,
+  limit: 5,
+  keyword: '',
+  sortAsc: false,
+  sortBy: 'created_at',
 })
+const notifications = ref<Notification[]>([])
 const notificationVisible = ref(false)
 
-async function fetchNotifications() {
-  try {
-    return await $api<Notification[]>('/notifications', {
-      method: 'GET',
-      query: notificationQuery.value,
-    })
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
+const { data, refresh: fetchNotifications } = await useLazyAsyncData(() => systemNotificationStore.fetchNotifications(notificationQuery.value), {
+  default: () => ([] as Notification[]),
+})
+notifications.value.push(...data.value)
 
 watch(notificationVisible, async (visible) => {
   if (visible) {
     notificationQuery.value.page = 1
-
-    const response = await fetchNotifications()
-
-    if (response)
-      notifications.value = response
+    await fetchNotifications()
   }
 })
 
@@ -42,12 +35,11 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
 
     notificationQuery.value.page++
 
-    const nextNotifications = await fetchNotifications()
+    await fetchNotifications()
+    notifications.value.push(...data.value)
 
-    if (!nextNotifications || nextNotifications?.length === 0)
+    if (!data || data.value?.length === 0)
       return done('empty')
-
-    notifications.value.push(...nextNotifications)
 
     return done('ok')
   }
@@ -58,7 +50,9 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
 
 async function removeNotification(notificationId: string) {
   try {
-    await $api(`/notifications/${notificationId}`, { method: 'DELETE' })
+    await useLazyAsyncData(() => systemNotificationStore.deleteNotification(notificationId), {
+      default: () => (Notification),
+    })
     notifications.value.forEach((item, index) => {
       if (notificationId === item.id) {
         notifications.value.splice(index, 1)
@@ -70,47 +64,54 @@ async function removeNotification(notificationId: string) {
   }
 }
 
-async function markReadOrUnread(notificationId: string, type: 'read' | 'unread') {
+async function handleNotificationClick(notification: Notification) {
   try {
-    await $api(`/notifications/${notificationId}`, { method: 'PATCH', body: { read_at: type === 'read' ? new Date() : null } })
-    notifications.value.forEach((item) => {
-      if (notificationId === item.id) {
-        item.read_at = type === 'read' ? new Date().toDateString() : null
-      }
-    })
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
-async function markAllReadOrUnread(type: 'read' | 'unread') {
-  try {
-    const read = type === 'read'
-    await $api(`/notifications/${read ? 'mark-all-read' : 'mark-all-unread'}`, { method: 'PATCH', body: { read_at: read ? new Date() : null },
-    })
-    notifications.value.forEach((item) => {
-      item.read_at = read ? new Date().toDateString() : null
-    })
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
+    if (!notification.read_at) {
+      await useLazyAsyncData(() => systemNotificationStore.markRead(notification.id), {
+        default: () => (Notification),
+      })
+    }
+    else {
+      await useLazyAsyncData(() => systemNotificationStore.markUnread(notification.id), {
+        default: () => (Notification),
+      })
+    }
 
-function handleNotificationClick(notification: Notification) {
-  if (!notification.read_at)
-    markReadOrUnread(notification.id, 'read')
-  else
-    markReadOrUnread(notification.id, 'unread')
+    for (const item of notifications.value) {
+      if (notification.id === item.id) {
+        item.read_at = !notification.read_at ? new Date().toDateString() : null
+        break
+      }
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 
 const isAllMarkRead = computed(() => notifications.value.every(item => item.read_at))
 
-function handleMarkAllReadOrUnread() {
-  if (isAllMarkRead.value)
-    markAllReadOrUnread('unread')
-  else
-    markAllReadOrUnread('read')
+async function handleMarkAllReadOrUnread() {
+  try {
+    if (isAllMarkRead.value) {
+    // mark all as unread
+      await useLazyAsyncData(() => systemNotificationStore.markAllUnread(), {
+        default: () => (Notification),
+      })
+    }
+    else {
+    // mark all as read
+      await useLazyAsyncData(() => systemNotificationStore.markAllRead(), {
+        default: () => (Notification),
+      })
+    }
+    notifications.value.forEach((item) => {
+      item.read_at = !isAllMarkRead.value ? new Date().toDateString() : null
+    })
+  }
+  catch (error) {
+    console.error(error)
+  }
 }
 </script>
 

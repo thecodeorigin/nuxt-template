@@ -1,4 +1,4 @@
-import { foreignKey, pgTable, smallint, text, uuid } from 'drizzle-orm/pg-core'
+import { foreignKey, pgTable, smallint, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { sysFaqCategoryTable } from './sys_faq_categories.schema'
@@ -8,6 +8,7 @@ export const sysFaqTable = pgTable('sys_faqs', {
   answer: text('answer'),
   category_id: smallint('category_id'),
   question: text('question'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => {
   return {
     publicSysFaqsCategoryIdFkey: foreignKey({

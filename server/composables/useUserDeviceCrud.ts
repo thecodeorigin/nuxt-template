@@ -1,25 +1,14 @@
-import type { SQL } from 'drizzle-orm'
 import { and, eq } from 'drizzle-orm'
 import { userDeviceTable } from '../db/schemas/user_devices.schema'
 import { useCrud } from './useCrud'
 
 interface QueryRestrict {
-  user_id: string
+  user_id: string | any
 }
 export function useUserDeviceCrud(queryRestrict: QueryRestrict) {
-  const conditionsMap = [
-    { field: 'user_id', condition: eq(userDeviceTable.user_id, queryRestrict.user_id) },
-  ]
-  const conditionsArray = [] as SQL<unknown>[]
-
-  for (const condition of conditionsMap) {
-    if (queryRestrict[condition.field as keyof QueryRestrict]) {
-      conditionsArray.push(condition.condition)
-    }
-  }
   const { getRecordsPaginated, getRecordByKey, createRecord, deleteRecordByKey } = useCrud(userDeviceTable, {
     queryRestrict: () => and(
-      ...conditionsArray,
+      ...[queryRestrict.user_id && eq(userDeviceTable.user_id, queryRestrict.user_id)].filter(Boolean),
     ),
   })
   async function getUserDeviceAllTokens(options: ParsedFilterQuery) {

@@ -1,4 +1,4 @@
-import { pgTable, smallint, text } from 'drizzle-orm/pg-core'
+import { pgTable, smallint, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { sysFaqTable } from './sys_faqs.schema'
@@ -8,6 +8,7 @@ export const sysFaqCategoryTable = pgTable('sys_faq_categories', {
   title: text('title'),
   icon: text('icon'),
   subtitle: text('subtitle'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const insertSysFaqCategorySchema = createInsertSchema(sysFaqCategoryTable)

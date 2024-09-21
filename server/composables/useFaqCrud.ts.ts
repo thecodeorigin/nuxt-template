@@ -1,32 +1,29 @@
-import type { SQL } from 'drizzle-orm'
 import { and, eq } from 'drizzle-orm'
 import { sysFaqTable } from '../db/schemas/sys_faqs.schema'
+import { sysFaqCategoryTable } from '../db/schemas/sys_faq_categories.schema'
 import { useCrud } from './useCrud'
 
-interface QueryRestrict {
-  category_id: number
-}
-export function useUserDeviceCrud(queryRestrict: QueryRestrict) {
-  const conditionsMap = [
-    { field: 'category_id', condition: eq(sysFaqTable.category_id, queryRestrict.category_id) },
-  ]
-  const conditionsArray = [] as SQL<unknown>[]
+export function useFaqCrud() {
+  const { getRecordsPaginated: getRecordsFaqCategories } = useCrud(sysFaqCategoryTable)
 
-  for (const condition of conditionsMap) {
-    if (queryRestrict[condition.field as keyof QueryRestrict]) {
-      conditionsArray.push(condition.condition)
-    }
-  }
   const { getRecordsPaginated } = useCrud(sysFaqTable, {
     searchBy: ['question'],
-    queryRestrict: () => and(
-      ...conditionsArray,
-    ),
   })
 
   async function getFaqQuestions(options: ParsedFilterQuery) {
-    const { data, total } = await getRecordsPaginated(options)
-    return { data, total }
+    const { data: categories } = await getRecordsFaqCategories({})
+
+    const { data: faqs } = await getRecordsPaginated(options)
+
+    const faqCategories = categories.map(category => ({ ...category, questions: [] as typeof faqs }))
+
+    for (const faq of faqs) {
+      const category = faqCategories.find(item => item.id === faq.category_id)
+      if (category) {
+        category.questions.push(faq)
+      }
+    }
+    return faqCategories
   }
 
   return {
