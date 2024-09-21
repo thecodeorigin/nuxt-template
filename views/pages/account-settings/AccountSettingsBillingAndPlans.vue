@@ -133,11 +133,10 @@ const isSubscriptionDue = computed(() => {
                 </VBtn>
 
                 <VBtn
-                  color="error"
                   variant="outlined"
                   @click="handleOpenStripePortal"
                 >
-                  Cancel Subscription
+                  Manage Subscription
                 </VBtn>
               </div>
             </VCol>

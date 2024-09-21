@@ -29,7 +29,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
       method: 'POST',
       body: {
         priceId,
-        redirectPath: '/pricing?success=true',
+        redirectPath: '/settings/billing-plans',
       },
     })
   }

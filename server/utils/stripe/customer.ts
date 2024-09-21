@@ -1,4 +1,5 @@
 import type Stripe from 'stripe'
+import { minBy } from 'lodash-es'
 
 export async function getStripeCustomerByEmail(email: string) {
   const { data: customers } = await stripeAdmin.customers.list({
@@ -33,11 +34,19 @@ export function createStripeCustomer(payload: {
 export async function createStripeCustomerOnSignup(email: string) {
   const stripeCustomer = await createStripeCustomer({ email })
 
-  const freePrice = await getFreePrice()
+  const { data } = await getStripeAllProducts()
+
+  const prices = await getStripeAllPrices(data[0].id!)
+
+  const freePrice = minBy(prices.data, 'unit_amount')
+
+  if (!freePrice) {
+    throw new Error('No prices found')
+  }
 
   return {
     customer: stripeCustomer,
-    subscription: await createStripeSubscription(stripeCustomer.id, freePrice.data[0].id!),
+    subscription: await createStripeSubscription(stripeCustomer.id, freePrice.id!),
   }
 }
 

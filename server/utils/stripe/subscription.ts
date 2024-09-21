@@ -37,9 +37,3 @@ export function resumeStripeSubscription(subscriptionId: string) {
 export function getStripeSubscriptionById(subscriptionId: string) {
   return stripeAdmin.subscriptions.retrieve(subscriptionId)
 }
-
-export function getFreePrice() {
-  return stripeAdmin.prices.list({
-    lookup_keys: ['free'],
-  })
-}

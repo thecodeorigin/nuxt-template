@@ -60,9 +60,10 @@ async function handleSubscribe(priceId: string, subscribed = false) {
     </slot>
   </div>
   <!-- SECTION pricing plans -->
-  <VRow>
+
+  <VRow class="justify-center">
     <VCol
-      v-for="plan in pricingComputed"
+      v-for="plan in pricingComputed?.reverse()"
       :key="plan.id"
       v-bind="props"
     >
