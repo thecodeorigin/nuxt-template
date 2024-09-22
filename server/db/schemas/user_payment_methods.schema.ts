@@ -27,7 +27,7 @@ export const insertUserPaymentMethodSchema = createInsertSchema(userPaymentMetho
 export const selectUserPaymentMethodSchema = createSelectSchema(userPaymentMethodTable)
 
 export const userPaymentMethodRelations = relations(userPaymentMethodTable, ({ one }) => ({
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [userPaymentMethodTable.user_id],
     references: [sysUserTable.id],
   }),

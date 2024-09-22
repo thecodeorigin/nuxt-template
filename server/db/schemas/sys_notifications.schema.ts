@@ -26,7 +26,7 @@ export const insertSysNotificationSchema = createInsertSchema(sysNotificationTab
 export const selectSysNotificationSchema = createSelectSchema(sysNotificationTable)
 
 export const sysNotificationRelations = relations(sysNotificationTable, ({ one }) => ({
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [sysNotificationTable.user_id],
     references: [sysUserTable.id],
   }),

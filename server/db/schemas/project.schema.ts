@@ -47,7 +47,7 @@ export const insertProjectSchema = createInsertSchema(projectTable)
 export const selectProjectSchema = createSelectSchema(projectTable)
 
 export const projectRelations = relations(projectTable, ({ one }) => ({
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [projectTable.user_id],
     references: [sysUserTable.id],
   }),

@@ -36,18 +36,18 @@ export const insertCategorySchema = createInsertSchema(categoryTable)
 export const selectCategorySchema = createSelectSchema(categoryTable)
 
 export const categoryRelations = relations(categoryTable, ({ one, many }) => ({
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [categoryTable.user_id],
     references: [sysUserTable.id],
   }),
-  category: one(categoryTable, {
+  parent: one(categoryTable, {
     fields: [categoryTable.parent_id],
     references: [categoryTable.id],
     relationName: 'categories_parentId_categories_id',
   }),
-  categorySchema: many(categoryTable, {
+  children: many(categoryTable, {
     relationName: 'categories_parentId_categories_id',
   }),
-  postSchema: many(postTable),
-  projectSchema: many(projectTable),
+  posts: many(postTable),
+  projects: many(projectTable),
 }))

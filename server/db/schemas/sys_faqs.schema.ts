@@ -23,7 +23,7 @@ export const insertSysFaqSchema = createInsertSchema(sysFaqTable)
 export const selectSysFaqSchema = createSelectSchema(sysFaqTable)
 
 export const sysFaqRelations = relations(sysFaqTable, ({ one }) => ({
-  sysFaqCategory: one(sysFaqCategoryTable, {
+  category: one(sysFaqCategoryTable, {
     fields: [sysFaqTable.category_id],
     references: [sysFaqCategoryTable.id],
   }),

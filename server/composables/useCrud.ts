@@ -10,7 +10,7 @@ interface CrudOptions<T> {
 
 export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions<T>) {
   async function getRecordsPaginated(opts: ParsedFilterQuery) {
-    const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1 } = opts
+    const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, withCount = false } = opts
 
     const searchConditions = []
 
@@ -35,12 +35,6 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
         ].filter(Boolean)),
       )
 
-    console.log('sysRecordSubquery', sysRecordSubquery.toSQL())
-
-    const sysRecordCount = (
-      await db.select({ count: count() }).from(sysRecordSubquery.as('count'))
-    )[0]
-
     const sysRecords = await sysRecordSubquery
       .orderBy(
         sortAsc ? asc((sourceTable as any)[sortBy]) : desc((sourceTable as any)[sortBy]),
@@ -48,9 +42,17 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
       .offset((page - 1) * limit)
       .limit(limit)
 
+    let total = sysRecords.length
+
+    if (withCount) {
+      total = (
+        await db.select({ count: count() }).from(sysRecordSubquery.as('count'))
+      )[0].count
+    }
+
     return {
       data: sysRecords as InferSelectModel<T>[],
-      total: sysRecordCount.count,
+      total,
     }
   }
 

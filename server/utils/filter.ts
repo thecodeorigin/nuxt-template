@@ -9,6 +9,7 @@ export interface ParsedFilterQuery {
   sortAsc: boolean
   limit: number
   page: number
+  withCount: boolean
 }
 
 export function getFilter(event: H3Event) {
@@ -19,6 +20,7 @@ export function getFilter(event: H3Event) {
 
   const parsedSortBy = destr<string>(query.sortBy)
   const parsedSortAscending = destr<boolean>(query.sortAscending)
+  const parsedWithCount = destr<boolean>(query.withCount)
   const parsedLimit = destr<number>(query.limit)
   const parsedPage = destr<number>(query.page)
 
@@ -30,5 +32,6 @@ export function getFilter(event: H3Event) {
     sortAsc: parsedSortAscending,
     limit: parsedLimit,
     page: parsedPage,
+    withCount: parsedWithCount,
   } as ParsedFilterQuery
 }

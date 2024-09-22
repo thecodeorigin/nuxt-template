@@ -15,5 +15,5 @@ export const insertSysFaqCategorySchema = createInsertSchema(sysFaqCategoryTable
 export const selectSysFaqCategorySchema = createSelectSchema(sysFaqCategoryTable)
 
 export const sysFaqCategoryRelations = relations(sysFaqCategoryTable, ({ many }) => ({
-  sysFaqSchema: many(sysFaqTable),
+  faqs: many(sysFaqTable),
 }))

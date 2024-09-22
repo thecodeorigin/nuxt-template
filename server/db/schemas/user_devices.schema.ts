@@ -24,7 +24,7 @@ export const insertUserDeviceSchema = createInsertSchema(userDeviceTable)
 export const selectUserDeviceSchema = createSelectSchema(userDeviceTable)
 
 export const userDeviceRelations = relations(userDeviceTable, ({ one }) => ({
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [userDeviceTable.user_id],
     references: [sysUserTable.id],
   }),

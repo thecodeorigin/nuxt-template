@@ -4,9 +4,9 @@ export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const { countUsers } = useUserCrud()
+    const { getUsersCount } = useUserCrud()
 
-    const response = await countUsers()
+    const response = await getUsersCount()
 
     setResponseStatus(event, 200)
 

@@ -14,6 +14,6 @@ export const insertSysRoleSchema = createInsertSchema(sysRoleTable)
 export const selectSysRoleSchema = createSelectSchema(sysRoleTable)
 
 export const sysRoleRelations = relations(sysRoleTable, ({ many }) => ({
-  sysUserSchema: many(sysUserTable),
-  sysPermissionSchema: many(sysPermissionTable),
+  users: many(sysUserTable),
+  permissions: many(sysPermissionTable),
 }))

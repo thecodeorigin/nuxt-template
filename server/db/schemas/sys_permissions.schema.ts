@@ -24,7 +24,7 @@ export const insertSysPermissionSchema = createInsertSchema(sysPermissionTable)
 export const selectSysPermissionSchema = createSelectSchema(sysPermissionTable)
 
 export const sysPermissionRelations = relations(sysPermissionTable, ({ one }) => ({
-  sysRole: one(sysRoleTable, {
+  role: one(sysRoleTable, {
     fields: [sysPermissionTable.role_id],
     references: [sysRoleTable.id],
   }),

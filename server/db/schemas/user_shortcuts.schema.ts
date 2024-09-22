@@ -22,7 +22,7 @@ export const insertUserShortcutSchema = createInsertSchema(userShortcutTable)
 export const selectUserShortcutSchema = createSelectSchema(userShortcutTable)
 
 export const userShortcutRelations = relations(userShortcutTable, ({ one }) => ({
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [userShortcutTable.user_id],
     references: [sysUserTable.id],
   }),

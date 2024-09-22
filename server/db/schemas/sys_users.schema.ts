@@ -44,15 +44,15 @@ export const insertSysUserSchema = createInsertSchema(sysUserTable)
 export const selectSysUserSchema = createSelectSchema(sysUserTable)
 
 export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
-  sysRole: one(sysRoleTable, {
+  role: one(sysRoleTable, {
     fields: [sysUserTable.role_id],
     references: [sysRoleTable.id],
   }),
-  categorySchema: many(categoryTable),
-  postSchema: many(postTable),
-  userShortcutSchema: many(userShortcutTable),
-  userPaymentMethodSchema: many(userPaymentMethodTable),
-  userDeviceSchema: many(userDeviceTable),
-  sysNotificationSchema: many(sysNotificationTable),
-  projectSchema: many(projectTable),
+  categories: many(categoryTable),
+  posts: many(postTable),
+  userShortcuts: many(userShortcutTable),
+  userPaymentMethods: many(userPaymentMethodTable),
+  userDevices: many(userDeviceTable),
+  notifications: many(sysNotificationTable),
+  projects: many(projectTable),
 }))

@@ -39,7 +39,7 @@ export const postRelations = relations(postTable, ({ one }) => ({
     fields: [postTable.category_id],
     references: [categoryTable.id],
   }),
-  sysUser: one(sysUserTable, {
+  owner: one(sysUserTable, {
     fields: [postTable.user_id],
     references: [sysUserTable.id],
   }),
