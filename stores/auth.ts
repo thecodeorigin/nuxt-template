@@ -1,7 +1,7 @@
 import type { Actions, Rule } from '@/plugins/casl/ability'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { data, signOut } = useAuth()
+  const { status, data, signOut } = useAuth()
 
   function normalizeRules(rules: Rule[]) {
     const results: Rule[] = []
@@ -23,6 +23,8 @@ export const useAuthStore = defineStore('auth', () => {
     return results
   }
 
+  const isAuthenticated = computed(() => Boolean(status.value === 'authenticated' && data.value?.user.id))
+
   const currentUser = computed(() => data.value?.user || null)
 
   const currentRole = computed(() => currentUser.value?.role || null)
@@ -35,6 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
+    isAuthenticated,
     currentUser,
     currentRole,
     currentPermissions,

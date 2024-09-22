@@ -3,17 +3,18 @@ import type { RouteLocationRaw } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 const { signOut } = useAuth()
-const { currentUser } = useAuthStore()
+const authStore = useAuthStore()
 const tokenDeviceStore = useTokenDeviceStore()
-const userEmail = computed(() => currentUser?.email)
-const userAvatar = computed(() => currentUser?.avatar_url || currentUser?.image)
-const userFullname = computed(() => currentUser?.full_name || currentUser?.name)
-const userRole = computed(() => currentUser?.role?.name || currentUser?.role || 'User')
+const userEmail = computed(() => authStore.currentUser?.email)
+const userAvatar = computed(() => authStore.currentUser?.avatar_url)
+const userFullname = computed(() => authStore.currentUser?.full_name)
+const userRole = computed(() => authStore.currentUser?.role?.name || 'User')
 
 async function logout() {
   try {
-    tokenDeviceStore.clearTokenDevice()
-    await signOut({ redirect: false })
+    await signOut({ redirect: false, callbackUrl: '/' })
+    await tokenDeviceStore.clearTokenDevice()
+
     navigateTo({ name: 'auth-login' })
   }
   catch (error: any) {
@@ -60,7 +61,7 @@ const userProfileList: Array<{
 
 <template>
   <VBadge
-    v-if="currentUser"
+    v-if="authStore.currentUser"
     dot
     bordered
     location="bottom right"
