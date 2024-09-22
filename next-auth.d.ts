@@ -29,7 +29,7 @@ declare module 'next-auth' {
     user: Omit<LoggedInUser, 'password'>
   }
 
-  interface User extends LoggedInUser {
+  interface User extends Omit<LoggedInUser, 'password'> {
     verified?: boolean
   }
 }

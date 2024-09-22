@@ -79,7 +79,7 @@ export function useUserCrud() {
       },
     })
 
-    return { data: sysUser }
+    return { data: sysUser! }
   }
 
   function getUserById(id: string) {

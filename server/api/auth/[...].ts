@@ -2,13 +2,10 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
 import FacebookProvider from 'next-auth/providers/facebook'
-import { eq, or } from 'drizzle-orm'
 import type { Session } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 import { NuxtAuthHandler } from '#auth'
 import type { LoggedInUser } from '@/next-auth'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
-import { sysRoleTable } from '~/server/db/schemas/sys_roles.schema'
 import { useRoleCrud } from '~/server/composables/useRoleCrud'
 import { useUserCrud } from '~/server/composables/useUserCrud'
 import { useCategoryCrud } from '~/server/composables/useCategoryCrud'
@@ -17,23 +14,15 @@ import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
 const runtimeConfig = useRuntimeConfig()
 
 async function getUser(token: JWT) {
-  const conditions = []
+  const { getUser: getUserByKey } = useUserCrud()
 
   if (token.email)
-    conditions.push(eq(sysUserTable.email, token.email))
+    return (await getUserByKey('email', token.email)).data
   else if (token.phone)
-    conditions.push(eq(sysUserTable.phone, token.phone))
+    return (await getUserByKey('phone', token.phone)).data
   else if (token.id)
-    conditions.push(eq(sysUserTable.id, token.id))
+    return (await getUserByKey('id', token.id)).data
 
-  const sysUser = (await db.select().from(sysUserTable)
-    .where(
-      or(...conditions),
-    )
-    .limit(1))[0]
-
-  if (sysUser)
-    return omit(sysUser, ['password'])
   return null
 }
 
@@ -155,12 +144,15 @@ export default NuxtAuthHandler({
       if (!cachedSession?.user?.id) {
         let loggedInUser = await getUser(token)
 
-        if (!loggedInUser)
-          loggedInUser = await createSysUser(token)
+        if (!loggedInUser) {
+          await createSysUser(token)
+
+          loggedInUser = await getUser(token)
+        }
 
         cachedSession = {
           ...session,
-          user: loggedInUser,
+          user: loggedInUser as any,
         }
 
         storage.setItem(sessionKey, cachedSession)
