@@ -1,4 +1,5 @@
-import { useAbility as useCaslAbility } from '@casl/vue'
-import type { ability } from '@/plugins/casl/ability'
+export function useAbility() {
+  const caslStore = useCaslStore()
 
-export const useAbility = () => useCaslAbility<typeof ability>()
+  return caslStore.ability
+}

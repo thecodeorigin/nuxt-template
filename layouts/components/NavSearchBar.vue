@@ -29,7 +29,7 @@ const isAppSearchBarVisible = ref(false)
 
 // 👉 Default suggestions
 
-const { layoutItems } = useLayoutStore()
+const layoutStore = useLayoutStore()
 
 const suggestionGroups = computed(() => {
   const results: SuggestionGroup[] = [
@@ -38,7 +38,7 @@ const suggestionGroups = computed(() => {
     { title: 'Settings', content: [] } as SuggestionGroup,
   ]
 
-  for (const layoutItem of layoutItems) {
+  for (const layoutItem of layoutStore.layoutItems) {
     const item = {
       icon: 'icon' in layoutItem ? layoutItem.icon?.icon : '',
       title: 'title' in layoutItem ? layoutItem.title : '',

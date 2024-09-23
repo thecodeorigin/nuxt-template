@@ -83,7 +83,6 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    '@/plugins/casl/index.ts',
     '@/plugins/vuetify/index.ts',
     '@/plugins/i18n/index.ts',
     '@/plugins/iconify/index.ts',

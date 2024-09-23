@@ -1,22 +1,29 @@
-import type { Actions, Rule } from '@/plugins/casl/ability'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { Actions, Rule, Subjects } from '@/stores/casl'
+import type { sysPermissionTable } from '@/server/db/schemas'
+
+type Permission = InferSelectModel<typeof sysPermissionTable>
 
 export const useAuthStore = defineStore('auth', () => {
   const { status, data, signOut } = useAuth()
 
-  function normalizeRules(rules: Rule[]) {
+  function normalizeRules(permissions: Permission[]) {
     const results: Rule[] = []
 
-    for (const rule of rules) {
-      if (rule.action === 'manage') {
+    for (const permission of permissions) {
+      if (permission.action === 'manage') {
         results.push(
           ...new Array<Actions>('create', 'read', 'update', 'delete', 'manage').map(action => ({
-            ...rule,
+            subject: permission.subject as Subjects,
             action,
           })),
         )
       }
       else {
-        results.push(rule)
+        results.push({
+          action: permission.action as Actions,
+          subject: permission.subject as Subjects,
+        })
       }
     }
 

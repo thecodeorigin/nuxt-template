@@ -2,7 +2,7 @@ import type { OffsetOptions } from '@floating-ui/dom'
 import type { RouteLocationRaw, RouteRecordNormalized } from 'vue-router'
 import type { AppContentLayoutNav, ContentWidth, FooterType, HorizontalNavType, NavbarType } from '@layouts/enums'
 import type { Component } from 'vue'
-import type { Actions, Subjects } from '@/plugins/casl/ability'
+import type { Actions, Subjects } from '@/stores/casl'
 
 export interface LayoutConfig {
   app: {

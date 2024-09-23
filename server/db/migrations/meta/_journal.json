@@ -43,6 +43,13 @@
       "when": 1727004013331,
       "tag": "0005_easy_hellcat",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1727108035392,
+      "tag": "0006_real_korvac",
+      "breakpoints": true
     }
   ]
 }

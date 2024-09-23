@@ -6,6 +6,8 @@ type SectionStatuses = Record<SectionNames, LandingPageStatus>
 type SectionLoadingStatuses = Record<SectionNames, boolean>
 
 definePageMeta({
+  action: 'manage',
+  subject: 'Landing',
   sidebar: {
     title: 'Landing Page Editor',
     to: { name: 'landing-page-editor' },
@@ -721,49 +723,50 @@ onMounted(() => {
   position: relative;
 }
 
-.editor-right{
+.editor-right {
   position: sticky;
-  top: 70px;
+  inset-block-start: 70px;
 }
+
 .status-container {
   display: flex;
   justify-content: space-between;
-  cursor: pointer;
   padding: 8px;
   border-radius: 8px;
+  cursor: pointer;
 
   &:hover {
-    color: var(--v-primary-base);
     background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+    color: var(--v-primary-base);
   }
 }
 
 .editor-mobile-right {
-  margin-top: 16px;
-  padding: 16px;
   position: sticky;
   z-index: 999;
-  bottom: 0;
-  right: 0;
+  padding: 16px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  width: 100%;
+  inline-size: 100%;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  margin-block-start: 16px;
 }
 
 .mobile-menu-status {
   display: flex;
   justify-content: center;
-  width: 100%;
+  inline-size: 100%;
 }
 
 .mobile-submit-container {
   display: flex;
   justify-content: center;
-  width: 100%;
+  inline-size: 100%;
 }
 
 .mobile-preview-container {
   display: flex;
   justify-content: center;
-  width: 100%;
+  inline-size: 100%;
 }
 </style>
