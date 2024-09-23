@@ -5,7 +5,8 @@ import type { ParsedFilterQuery } from '~/server/utils/filter'
 
 export function useProjectCrud(queryRestrict:
 {
-  user_id: string
+  user_id?: string
+  category_id?: string | any
 }) {
   const {
     getRecordsPaginated,
@@ -17,8 +18,9 @@ export function useProjectCrud(queryRestrict:
   } = useCrud(projectTable, {
     searchBy: ['title', 'description'],
     queryRestrict: () => and(...[
-      eq(projectTable.user_id, queryRestrict.user_id),
-    ]),
+      queryRestrict.user_id && eq(projectTable.user_id, queryRestrict.user_id),
+      queryRestrict.category_id && eq(projectTable.category_id, queryRestrict.category_id),
+    ].filter(Boolean)),
   })
 
   async function getProjectsPaginated(options: ParsedFilterQuery) {

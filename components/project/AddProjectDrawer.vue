@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { projectTable } from '@/server/db/schemas/project.schema.js'
+import type { categoryTable } from '@/server/db/schemas/category.schema.js'
 
-type Category = Tables<'categories'>
-
-interface Project extends Tables<'projects'> {
-  category: Category
+type ProjectInterface = InferSelectModel<typeof projectTable>
+type Category = InferSelectModel<typeof categoryTable>
+interface Project extends ProjectInterface {
+  category: Partial<Category>
 }
 
 interface Props {
@@ -30,17 +32,15 @@ function handleDrawerModelValueUpdate(val: boolean) {
 
 const vFormRef = ref<VForm>()
 
-const projectData = ref<Project>({
+const projectData = ref<Partial<Project>>({
   id: '',
   category_id: null,
-  created_at: '',
   description: null,
   title: null,
   user_id: null,
   category: {
     name: '',
     id: '',
-    created_at: '',
     description: null,
     image_url: null,
     slug: '',
@@ -58,14 +58,12 @@ watch(() => projectData.value, (val) => {
   projectData.value.category = props.categories.find(item => item.id === val.category_id) || {
     name: '',
     id: '',
-    created_at: '',
     description: null,
     image_url: null,
     slug: '',
     updated_at: null,
     user_id: null,
   }
-  projectData.value.created_at = new Date().toISOString()
   emit('update:modelValue', val)
 })
 

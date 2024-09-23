@@ -6,11 +6,11 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const queryRestrict = { user_id: session.user!.id! }
     const { createProject } = useProjectCrud(queryRestrict)
-    const projects = await createProject({ ...body, user_id: session.user!.id! })
+    const respnose = await createProject({ ...body, user_id: session.user!.id! })
 
     setResponseStatus(event, 201)
 
-    return { data: projects.data }
+    return respnose.data
   }
   catch (error: any) {
     setResponseStatus(event, 400, error.message)

@@ -90,6 +90,8 @@ export async function seed() {
         user_id: user.id,
         category_id: categories.find(category => category.user_id === user.id)?.id,
         description: `Project description just for testing by ${user.full_name}`,
+        status: 'succeeded',
+        model: 'medium',
       }))
       return acc.concat(projects)
     }, []))

@@ -19,7 +19,7 @@ export function getFilter(event: H3Event) {
   const parsedQueryLower = (parsedQuery ?? '').toString().toLowerCase()
 
   const parsedSortBy = destr<string>(query.sortBy)
-  const parsedSortAscending = destr<boolean>(query.sortAscending)
+  const parsedSortAscending = destr<boolean>(query.sortAsc)
   const parsedWithCount = destr<boolean>(query.withCount)
   const parsedLimit = destr<number>(query.limit)
   const parsedPage = destr<number>(query.page)

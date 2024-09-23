@@ -1,5 +1,3 @@
-import { defineStore } from 'pinia'
-
 export const useTokenDeviceStore = defineStore('token-device', {
   state: () => ({
     tokenDevice: null as string | null,

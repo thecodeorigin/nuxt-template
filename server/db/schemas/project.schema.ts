@@ -1,11 +1,10 @@
-import { boolean, foreignKey, jsonb, numeric, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, foreignKey, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { categoryTable } from './category.schema'
 import { sysUserTable } from './sys_users.schema'
+import { modelProjectEnum, statusProjectEnum } from './enum.schema'
 
-export const modelEnum = pgEnum('model', ['tiny', 'medium', 'large-v3'])
-export const statusEnum = pgEnum('status', ['processing', 'succeeded'])
 export const projectTable = pgTable('projects', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -14,10 +13,10 @@ export const projectTable = pgTable('projects', {
   user_id: uuid('user_id').defaultRandom(),
   category_id: uuid('category_id').defaultRandom(),
   is_voice_recognition: boolean('is_voice_recognition'),
-  model: modelEnum('model'),
+  model: modelProjectEnum('model'),
   source_downloadable: text('source_downloadable'),
-  source_duration: numeric('source_duration'),
   source_thumbnail: text('source_thumbnail'),
+  source_duration: integer('source_duration').default(0),
   source_title: text('source_title'),
   source_url: text('source_url'),
   structure: jsonb('structure'),
@@ -25,7 +24,7 @@ export const projectTable = pgTable('projects', {
   summarize: text('summarize'),
   translate_from: text('translate_from'),
   translate_to: text('translate_to'),
-  status: statusEnum('status').default('processing'),
+  status: statusProjectEnum('status').default('processing'),
 
 }, (table) => {
   return {

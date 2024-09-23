@@ -11,3 +11,7 @@ export const pricingType = pgEnum('pricing_type', ['one_time', 'recurring'])
 export const subscriptionStatus = pgEnum('subscription_status', ['trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired', 'past_due', 'unpaid', 'paused'])
 
 export const userStatus = pgEnum('user_status', ['active', 'deactivated', 'pending'])
+
+export const modelProjectEnum = pgEnum('model', ['tiny', 'medium', 'large-v3'])
+
+export const statusProjectEnum = pgEnum('status', ['processing', 'succeeded'])

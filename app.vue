@@ -24,31 +24,28 @@ if (isMobile)
 const notificationStore = useNotificationStore()
 const layoutStore = useLayoutStore()
 
-watch(
-  status,
-  async () => {
-    if (status.value === 'authenticated') {
-      try {
-        if (Notification.permission !== 'granted')
-          await Notification.requestPermission()
+onBeforeMount(async () => {
+  if (status.value === 'authenticated') {
+    try {
+      if (Notification.permission !== 'granted')
+        await Notification.requestPermission()
 
-        if (Notification.permission === 'granted' && authStore.currentUser) {
-          const messaging = getMessaging()
-          const token = await getToken(messaging, { vapidKey: config.public.FIREBASE_KEY_PAIR })
-          await tokenDeviceStore.setTokenDevice(token)
-        }
+      if (Notification.permission === 'granted' && authStore.currentUser) {
+        const messaging = getMessaging()
+        const token = await getToken(messaging, { vapidKey: config.public.FIREBASE_KEY_PAIR })
+        await tokenDeviceStore.setTokenDevice(token)
       }
-      catch (error) {
-        console.log('Error:', error)
-      }
-
-      onMessage(getMessaging(), (payload) => {
-        // TODO: Handle incoming messages
-        console.log('Client message:', payload)
-      })
     }
-  },
-)
+    catch (error) {
+      console.log('Error:', error)
+    }
+
+    onMessage(getMessaging(), (payload) => {
+      // TODO: Handle incoming messages
+      console.log('Client message:', payload)
+    })
+  }
+})
 </script>
 
 <template>

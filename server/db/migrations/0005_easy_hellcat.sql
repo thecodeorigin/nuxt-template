@@ -1,0 +1,2 @@
+ALTER TABLE "sys_faq_categories" ADD COLUMN "created_at" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+ALTER TABLE "sys_faqs" ADD COLUMN "created_at" timestamp with time zone DEFAULT now() NOT NULL;

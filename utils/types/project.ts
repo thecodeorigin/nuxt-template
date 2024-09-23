@@ -6,6 +6,11 @@ export enum AIModel {
   MOST_ACCURATE = 'large-v3',
 }
 
+export enum ProjectStatus {
+  PROCESSING = 'processing',
+  SUCCEEDED = 'succeeded',
+}
+
 export interface Subtitle extends ParsedSubtitle {
   selected?: boolean
   speaker?: string

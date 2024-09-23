@@ -9,7 +9,7 @@ interface CrudOptions<T> {
 }
 
 export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions<T>) {
-  async function getRecordsPaginated(opts: ParsedFilterQuery) {
+  async function getRecordsPaginated(opts: Partial<ParsedFilterQuery>) {
     const { keyword = '', keywordLower = '', sortBy = 'created_at', sortAsc = true, limit = 10, page = 1, withCount = false } = opts
 
     const searchConditions = []
@@ -35,6 +35,14 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
         ].filter(Boolean)),
       )
 
+    let total = 0
+
+    if (withCount) {
+      total = (
+        await db.select({ count: count() }).from(sysRecordSubquery.as('count'))
+      )[0].count
+    }
+
     const sysRecords = await sysRecordSubquery
       .orderBy(
         sortAsc ? asc((sourceTable as any)[sortBy]) : desc((sourceTable as any)[sortBy]),
@@ -42,13 +50,8 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
       .offset((page - 1) * limit)
       .limit(limit)
 
-    let total = sysRecords.length
-
-    if (withCount) {
-      total = (
-        await db.select({ count: count() }).from(sysRecordSubquery.as('count'))
-      )[0].count
-    }
+    if (!withCount)
+      total = sysRecords.length
 
     return {
       data: sysRecords as InferSelectModel<T>[],
@@ -138,11 +141,7 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
       await db.update(sourceTable)
         .set(body)
         .where(
-          and(
-            ...[
-              options?.queryRestrict?.(),
-            ].filter(Boolean),
-          ),
+          options?.queryRestrict?.(),
         )
         .returning()
     )

@@ -36,6 +36,13 @@
       "when": 1726935264800,
       "tag": "0004_majestic_hercules",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1727004013331,
+      "tag": "0005_easy_hellcat",
+      "breakpoints": true
     }
   ]
 }

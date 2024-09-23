@@ -1,55 +1,33 @@
 <script setup lang="ts">
 const dropZoneRef = ref<HTMLDivElement>()
 interface FileData {
-  file: File
+  files: File[]
   url: string
 }
+const fileData = defineModel<FileData>({ required: true })
 
-const fileData = ref<FileData[]>([])
-const { open, onChange } = useFileDialog({ accept: 'image/*' })
-
-function onDrop(DroppedFiles: File[] | null) {
-  DroppedFiles?.forEach((file) => {
-    if (file.type.slice(0, 6) !== 'image/') {
-      // eslint-disable-next-line no-alert
-      alert('Only image files are allowed')
-
-      return
-    }
-
-    fileData.value.push({
-      file,
-      url: useObjectUrl(file).value ?? '',
-    })
-  },
-  )
-}
+const { open, onChange } = useFileDialog({ multiple: false, reset: true, accept: '.mp4, .mov, .mkv, .avi, .srt, .mp3' })
 
 onChange((selectedFiles: any) => {
   if (!selectedFiles)
     return
 
   for (const file of selectedFiles) {
-    fileData.value.push({
-      file,
-      url: useObjectUrl(file).value ?? '',
-    })
+    fileData.value.files[0] = file
   }
 })
-
-useDropZone(dropZoneRef, onDrop)
+function selectFile() {
+  if (fileData.value.url.trim() !== '')
+    return
+  open()
+}
 </script>
 
 <template>
   <VCard class="mb-6">
     <VCardItem>
       <template #title>
-        Project Image
-      </template>
-      <template #append>
-        <h6 class="text-h6 text-primary cursor-pointer">
-          Add Media from URL
-        </h6>
+        Resource from computer
       </template>
     </VCardItem>
 
@@ -58,12 +36,10 @@ useDropZone(dropZoneRef, onDrop)
         <div class="w-full h-auto relative">
           <div
             ref="dropZoneRef"
-            class="cursor-pointer"
-            @click="() => open()"
+            class="border-dashed drop-zone py-8"
           >
             <div
-              v-if="fileData.length === 0"
-              class="d-flex flex-column justify-center align-center gap-y-2 pa-12 border-dashed drop-zone"
+              class="d-flex flex-column justify-center align-center gap-y-2 pt-2 "
             >
               <VAvatar
                 variant="tonal"
@@ -73,48 +49,39 @@ useDropZone(dropZoneRef, onDrop)
                 <VIcon icon="ri-upload-2-line" />
               </VAvatar>
               <h4 class="text-h4 text-wrap">
-                Drag and Drop Your Image Here.
+                Select up to 1 file (video, audio, or subtitles) to start
               </h4>
-              <span class="text-disabled">or</span>
+              <span class="text-disabled">Allowed file types include .mp4, .mov, .mkv, .avi, .srt, .mp3</span>
 
               <VBtn
                 variant="outlined"
                 size="small"
+                :disabled="fileData.url.trim() !== ''"
+                :style="{ cursor: fileData.url.trim() !== '' ? 'not-allowed' : 'pointer' }"
+                @click="selectFile"
               >
-                Browse Images
+                Select File
               </VBtn>
             </div>
 
             <div
-              v-else
-              class="d-flex justify-center align-center gap-3 pa-8 border-dashed drop-zone flex-wrap"
+              v-if="fileData.files.length !== 0"
+              class="d-flex justify-center align-center gap-3 pa-8 pb-0 flex-wrap"
             >
-              <VRow class="match-height w-100">
+              <VRow class="justify-center match-height w-100">
                 <template
-                  v-for="(item, index) in fileData"
+                  v-for="(item, index) in fileData.files"
                   :key="index"
                 >
-                  <VCol
-                    cols="12"
-                    sm="4"
-                  >
+                  <VCol>
                     <VCard :ripple="false">
                       <VCardText
                         class="d-flex flex-column"
                         @click.stop
                       >
-                        <VImg
-                          :src="item.url"
-                          width="200px"
-                          height="150px"
-                          class="w-100 mx-auto"
-                        />
-                        <div class="mt-2">
-                          <span class="clamp-text text-wrap">
-                            {{ item.file.name }}
-                          </span>
-                          <span>
-                            {{ item.file.size / 1000 }} KB
+                        <div class="mt-2 d-flex flex-column align-center">
+                          <span class="clamp-text text-center text-h6 text-wrap w-100">
+                            {{ item.name }}
                           </span>
                         </div>
                       </VCardText>
@@ -122,7 +89,7 @@ useDropZone(dropZoneRef, onDrop)
                         <VBtn
                           variant="text"
                           block
-                          @click.stop="fileData.splice(index, 1)"
+                          @click.stop="fileData.files.splice(index, 1)"
                         >
                           Remove File
                         </VBtn>
@@ -134,6 +101,21 @@ useDropZone(dropZoneRef, onDrop)
             </div>
           </div>
         </div>
+      </div>
+    </VCardText>
+    <VCardItem>
+      <template #title>
+        Add resource from URL
+      </template>
+    </VCardItem>
+    <VCardText>
+      <div class="flex">
+        <VTextField
+          v-model="fileData.url"
+          :rules="[fileData.files.length === 0 ? requiredValidator : null]"
+          :disabled="fileData.files.length !== 0"
+          placeholder="Example: https://www.youtube.com/watch?v=YkeWTEULGwU"
+        />
       </div>
     </VCardText>
   </VCard>

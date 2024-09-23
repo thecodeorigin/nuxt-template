@@ -57,6 +57,7 @@
     "nuxt": "^3.12.3",
     "nuxt-vuefire": "^1.0.3",
     "ofetch": "1.3.4",
+    "parse-srt": "1.0.0-alpha",
     "pdfmake": "^0.2.12",
     "pinia": "2.1.7",
     "prismjs": "1.29.0",
