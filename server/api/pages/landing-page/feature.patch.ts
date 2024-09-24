@@ -1,5 +1,5 @@
+import type { FeatureSectionType } from '@utils/types/landing-page'
 import { getLandingPageId } from './landingPageID.get'
-import type { FeatureSectionType } from '~/utils/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const featureReqData = await readBody<FeatureSectionType>(event)

@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm'
 import { projectTable } from '../db/schemas/project.schema'
 import { useCrud } from './useCrud'
-import type { ParsedFilterQuery } from '~/server/utils/filter'
+import type { ParsedFilterQuery } from '@/server/utils/filter'
 
 export function useProjectCrud(queryRestrict:
 {

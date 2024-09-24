@@ -6,10 +6,10 @@ import type { Session } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 import { NuxtAuthHandler } from '#auth'
 import type { LoggedInUser } from '@/next-auth'
-import { useRoleCrud } from '~/server/composables/useRoleCrud'
-import { useUserCrud } from '~/server/composables/useUserCrud'
-import { useCategoryCrud } from '~/server/composables/useCategoryCrud'
-import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
+import { useRoleCrud } from '@/server/composables/useRoleCrud'
+import { useUserCrud } from '@/server/composables/useUserCrud'
+import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
+import { useShortcutCrud } from '@/server/composables/useShortcutCrud'
 
 const runtimeConfig = useRuntimeConfig()
 

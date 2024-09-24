@@ -1,6 +1,6 @@
 import { postTable } from '../db/schemas/post.schema'
 import { useCrud } from './useCrud'
-import type { ParsedFilterQuery } from '~/server/utils/filter'
+import type { ParsedFilterQuery } from '@/server/utils/filter'
 
 export function usePostCrud() {
   const {

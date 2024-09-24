@@ -1,4 +1,4 @@
-import { useUserCrud } from '~/server/composables/useUserCrud'
+import { useUserCrud } from '@/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {

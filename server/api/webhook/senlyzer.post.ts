@@ -1,5 +1,5 @@
-import { readSRT } from '@/utils/srt'
-import { ProjectStatus } from '@/utils/types/project'
+import { readSRT } from '@utils/srt'
+import { ProjectStatus } from '@utils/types/project'
 import { useProjectCrud } from '@/server/composables/useProjectCrud'
 
 export default defineEventHandler(async (event) => {

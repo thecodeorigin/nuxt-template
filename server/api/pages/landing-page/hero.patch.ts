@@ -1,5 +1,5 @@
+import type { HeroSectionType } from '@utils/types/landing-page'
 import { getLandingPageId } from './landingPageID.get'
-import type { HeroSectionType } from '~/utils/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const heroReqData = await readBody<HeroSectionType>(event)

@@ -1,1 +1,1 @@
-export { omit } from '@/utils/array'
+export { omit } from '@utils/array'

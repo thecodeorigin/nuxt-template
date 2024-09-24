@@ -1,7 +1,7 @@
 import { count, ilike, or } from 'drizzle-orm'
 import { useCrud } from './useCrud'
-import type { ParsedFilterQuery } from '~/server/utils/filter'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import type { ParsedFilterQuery } from '@/server/utils/filter'
+import { sysUserTable } from '@/server/db/schemas/sys_users.schema'
 
 export function useUserCrud() {
   const {

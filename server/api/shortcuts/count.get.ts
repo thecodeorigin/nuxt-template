@@ -1,5 +1,5 @@
 import { count, eq } from 'drizzle-orm'
-import { userShortcutTable } from '~/server/db/schemas/user_shortcuts.schema'
+import { userShortcutTable } from '@/server/db/schemas/user_shortcuts.schema'
 
 export default defineEventHandler(async (event) => {
   try {

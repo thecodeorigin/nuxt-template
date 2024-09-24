@@ -1,6 +1,6 @@
 import { sysRoleTable } from '../db/schemas/sys_roles.schema'
 import { useCrud } from './useCrud'
-import type { ParsedFilterQuery } from '~/server/utils/filter'
+import type { ParsedFilterQuery } from '@/server/utils/filter'
 
 export function useRoleCrud() {
   const {

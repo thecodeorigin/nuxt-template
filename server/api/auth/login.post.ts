@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { eq, or } from 'drizzle-orm'
 import { omit } from 'lodash-es'
-import { sysUserTable } from '~/server/db/schemas/sys_users.schema'
+import { sysUserTable } from '@/server/db/schemas/sys_users.schema'
 
 export default defineEventHandler(async (event) => {
   try {

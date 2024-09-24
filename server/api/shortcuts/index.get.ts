@@ -1,4 +1,4 @@
-import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
+import { useShortcutCrud } from '@/server/composables/useShortcutCrud'
 
 export default defineEventHandler(async (event) => {
   try {

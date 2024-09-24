@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm'
-import { postTable } from '~/server/db/schemas/post.schema'
+import { postTable } from '@/server/db/schemas/post.schema'
 
 export default defineEventHandler(async (event) => {
   try {

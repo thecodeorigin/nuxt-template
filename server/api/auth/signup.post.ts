@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
-import { useCategoryCrud } from '~/server/composables/useCategoryCrud'
-import { useRoleCrud } from '~/server/composables/useRoleCrud'
-import { useShortcutCrud } from '~/server/composables/useShortcutCrud'
-import { useUserCrud } from '~/server/composables/useUserCrud'
+import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
+import { useRoleCrud } from '@/server/composables/useRoleCrud'
+import { useShortcutCrud } from '@/server/composables/useShortcutCrud'
+import { useUserCrud } from '@/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {

@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm'
 import { categoryTable } from '../db/schemas/category.schema'
 import { useCrud } from './useCrud'
-import type { ParsedFilterQuery } from '~/server/utils/filter'
+import type { ParsedFilterQuery } from '@/server/utils/filter'
 
 export function useCategoryCrud(queryRestrict:
 {

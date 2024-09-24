@@ -1,5 +1,5 @@
+import type { ContactUsSectionType } from '@utils/types/landing-page'
 import { getLandingPageId } from './landingPageID.get'
-import type { ContactUsSectionType } from '~/utils/types/landing-page'
 
 export default defineEventHandler(async (event) => {
   const contactUsReqData = await readBody<ContactUsSectionType>(event)
