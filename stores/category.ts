@@ -1,6 +1,7 @@
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { categoryTable } from '@/server/db/schemas/category.schema.js'
 
-type Category = Tables<'categories'>
+type Category = InferSelectModel<typeof categoryTable>
 
 export const useCategoryStore = defineStore('category', () => {
   async function fetchCategories(query: { page: number, limit: number, keyword: string }) {

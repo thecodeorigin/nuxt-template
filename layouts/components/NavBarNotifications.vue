@@ -1,8 +1,10 @@
 <script lang="ts" setup>
-import type { Tables } from '@/server/types/supabase.js'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { sysNotificationTable } from '@/server/db/schemas/sys_notifications.schema.js'
+
+type Notification = InferSelectModel<typeof sysNotificationTable>
 
 const systemNotificationStore = useSystemNotificationStore()
-type Notification = Tables<'sys_notifications'>
 
 const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})

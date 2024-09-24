@@ -1,4 +1,3 @@
-import { and, eq } from 'drizzle-orm'
 import { sysFaqTable } from '../db/schemas/sys_faqs.schema'
 import { sysFaqCategoryTable } from '../db/schemas/sys_faq_categories.schema'
 import { useCrud } from './useCrud'

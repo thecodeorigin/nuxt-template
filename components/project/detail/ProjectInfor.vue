@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { projectTable } from '@/server/db/schemas/project.schema.js'
 
-type Project = Tables<'projects'>
+type Project = InferSelectModel<typeof projectTable>
 const project = defineModel<Project>({ required: true })
 
 const projectStore = useProjectStore()

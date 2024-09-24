@@ -1,7 +1,8 @@
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
 import type { ParsedFilterQuery } from '@/server/utils/filter'
+import type { sysNotificationTable } from '@/server/db/schemas/sys_notifications.schema.js'
 
-type Notification = Tables<'sys_notifications'>
+type Notification = InferSelectModel<typeof sysNotificationTable>
 
 export const useSystemNotificationStore = defineStore('SystemNotification', () => {
   async function fetchNotifications(query: Partial<ParsedFilterQuery>) {

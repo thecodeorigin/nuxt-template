@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { InferSelectModel } from 'drizzle-orm'
 import ProjectSubtitleItem from './ProjectSubtitleItem.vue'
 import type { Subtitle } from '@/utils/types/project'
-import type { Tables } from '@/server/types/supabase'
+import type { projectTable } from '@/server/db/schemas/project.schema.js'
 
-type Project = Tables<'projects'>
+type Project = InferSelectModel<typeof projectTable>
 
 const prop = defineProps<{
   project: Project

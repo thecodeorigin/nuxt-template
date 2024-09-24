@@ -1,7 +1,9 @@
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { sysFaqTable } from '@/server/db/schemas/sys_faqs.schema.js'
+import type { sysFaqCategoryTable } from '@/server/db/schemas/sys_faq_categories.schema.js'
 
-type FaqCategory = Tables<'sys_faq_categories'>
-type Faq = Tables<'sys_faqs'>
+type Faq = InferSelectModel<typeof sysFaqTable>
+type FaqCategory = InferSelectModel<typeof sysFaqCategoryTable>
 
 type Faqs = FaqCategory & {
   questions: Faq[]

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { categoryTable } from '@/server/db/schemas/category.schema.js'
 
-type Category = Tables<'categories'>
+type Category = InferSelectModel<typeof categoryTable>
 
 type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>
 

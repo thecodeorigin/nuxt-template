@@ -3,9 +3,10 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import { VForm } from 'vuetify/components/VForm'
 import { kebabCase } from 'lodash-es'
-import type { Tables } from '@/server/types/supabase'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { categoryTable } from '@/server/db/schemas/category.schema.js'
 
-type Category = Tables<'categories'>
+type Category = InferSelectModel<typeof categoryTable>
 
 type FormData = Pick<Category, 'name' | 'slug' | 'description' | 'image_url' | 'parent_id'>
 

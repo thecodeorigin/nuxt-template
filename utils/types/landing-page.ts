@@ -1,7 +1,8 @@
+import type { InferSelectModel } from 'drizzle-orm'
 import type { DRAWER_ACTION_TYPES } from '@/constant/landingPageConstants'
-import type { Tables } from '@/server/types/supabase'
+import type { sysLandingPageTable } from '@/server/db/schemas/sys_landing_page.schema.js'
 
-export type LandingPage = Tables<'sys_landing_page'>
+export type LandingPage = InferSelectModel<typeof sysLandingPageTable>
 
 // Interface for hero section
 export interface HeroButtonType {

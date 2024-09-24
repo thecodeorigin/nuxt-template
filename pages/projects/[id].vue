@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { VideoPlayer } from '@videojs-player/vue'
+import type { InferSelectModel } from 'drizzle-orm'
 import ProjectInfor from '@/components/project/detail/ProjectInfor.vue'
 import ProjectSubtitleGroup from '@/components/project/detail/subtitle/ProjectSubtitleGroup.vue'
 import 'video.js/dist/video-js.css'
 import type { Subtitle } from '@/utils/types/project'
-import type { Tables } from '@/server/types/supabase'
+import type { projectTable } from '@/server/db/schemas/project.schema.js'
 
-type Project = Tables<'projects'>
+type Project = InferSelectModel<typeof projectTable>
 
 const project = ref<Project | null>(null)
 const projectSubtitle = ref<Subtitle[]>([])
@@ -53,8 +54,9 @@ const downloadOptions: DownloadOption[] = [
 ]
 
 async function handleExport(type: typeof downloadOptions[0]['type']) {
-  if (!project.value)
+  if (!project.value?.title)
     return
+
   try {
     if (type === 'srt')
       downloadSRT(formSubtitle.value, project.value.title)
@@ -153,7 +155,7 @@ async function handleExport(type: typeof downloadOptions[0]['type']) {
 }
 
 .video-player {
-  width: 100%;
+  inline-size: 100%;
 }
 
 .course-content {
@@ -218,6 +220,6 @@ async function handleExport(type: typeof downloadOptions[0]['type']) {
 
 <style>
 .video-js {
-  width: 100%;
+  inline-size: 100%;
 }
 </style>
