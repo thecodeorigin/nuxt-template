@@ -117,30 +117,6 @@ export default defineNuxtConfig({
     '@configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
   },
 
-  // typescript: {
-  //   tsConfig: {
-  //     compilerOptions: {
-  //       paths: {
-  //         '@/*': ['../*'],
-  //         '@themeConfig': ['../app/themeConfig.ts'],
-  //         '@plugins/*': ['../app/plugins/*'],
-  //         '@plugins': ['../app/plugins'],
-  //         '@stores/*': ['../app/stores/*'],
-  //         '@stores': ['../app/stores'],
-  //         '@utils/*': ['../app/utils/*'],
-  //         '@utils': ['../app/utils'],
-  //         '@layouts/*': ['../app/@layouts/*'],
-  //         '@layouts': ['../app/@layouts'],
-  //         '@core/*': ['../app/@core/*'],
-  //         '@core': ['../app/@core'],
-  //         '@images/*': ['../app/assets/images/*'],
-  //         '@styles/*': ['../app/assets/styles/*'],
-  //         '@validators': ['../app/@core/utils/validators'],
-  //       },
-  //     },
-  //   },
-  // },
-
   // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
   sourcemap: {
     server: false,
@@ -155,21 +131,6 @@ export default defineNuxtConfig({
 
   vite: {
     define: { 'process.env': {} },
-
-    // resolve: {
-    //   alias: {
-    //     '@': fileURLToPath(new URL('.', import.meta.url)),
-    //     '@themeConfig': fileURLToPath(new URL('./app/themeConfig.ts', import.meta.url)),
-    //     '@stores': fileURLToPath(new URL('./app/stores', import.meta.url)),
-    //     '@plugins': fileURLToPath(new URL('./app/plugins', import.meta.url)),
-    //     '@utils': fileURLToPath(new URL('./app/utils', import.meta.url)),
-    //     '@core': fileURLToPath(new URL('./app/@core', import.meta.url)),
-    //     '@layouts': fileURLToPath(new URL('./app/@layouts', import.meta.url)),
-    //     '@images': fileURLToPath(new URL('./app/assets/images/', import.meta.url)),
-    //     '@styles': fileURLToPath(new URL('./app/assets/styles/', import.meta.url)),
-    //     '@configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
-    //   },
-    // },
 
     build: {
       chunkSizeWarningLimit: 5000,
