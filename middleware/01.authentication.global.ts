@@ -18,7 +18,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo('/')
     }
   }
-  else if (to.name !== 'auth-login') {
+  else if (!to.meta.unauthenticatedOnly && to.name !== 'auth-login') {
     return navigateTo({
       name: 'auth-login',
       query: {
