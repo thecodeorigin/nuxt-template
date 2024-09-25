@@ -1,4 +1,4 @@
-import { seed } from './init.seed'
+import { seed } from './all.seed'
 
 (async function () {
   await seed()
