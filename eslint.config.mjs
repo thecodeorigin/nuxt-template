@@ -2,7 +2,16 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu({
   vue: true,
-  typescript: true,
+  typescript: {
+    overrides: [
+      {
+        files: ['*.d.ts'],
+        rules: {
+          'no-var': 'off',
+        },
+      },
+    ],
+  },
   jsonc: true,
   stylistic: {
     indent: 2,

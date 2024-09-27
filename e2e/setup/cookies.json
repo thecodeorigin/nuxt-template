@@ -1,0 +1,14 @@
+[
+  {
+    "name": "nuxt-csrf-token",
+    "value": "c78f852528dea97ae1b5ae73c91acddbbbaa7a5f483add8c58973cc238fcd008%7Ccb7f002cca456aa275f73f5082d7d86b8b5ecfd071a965640c95159293386193"
+  },
+  {
+    "name": "nuxt-callback-url",
+    "value": "http://localhost:3000/dashboard"
+  },
+  {
+    "name": "nuxt-session-token",
+    "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..xX1f-QdMLdEjHLMF.51UJaBnioxjEYgr5bzjGnRam3VbQzJxMyI5zXNxGkt-7R6XatLJZDMLtOMA6KM5dKNwUM56WFJvtmia-SNDys-OxujyLamVetpFswHqoqYDa41QOI3RhSasTKuuUpDuXIncddFvde5dp2njUihHZBpFimfuTIqE5s-6-cRheFK5O9cafKJGU_rr7nNzbUp1Omio50hLNaswUiGOdcy1_eZfy_wAaV3aivjFuFvX_omuqmnVGfi3SqkJtTLI2PGay99pgYEGmhnmbEgaHnT60n3gNaDJZW_FcKWDw_qpbzThVk6Niv4Wt_RwOjNg85JSlY3Y8wG5wDNQXjpJ-o6qfMpEz2aZF1ij8alTYUwQM6y6wGUpK4cYhSA8m--9tHTT3pPx-BakkVQub.T3X0pRe9aKe-yKgpN6fBCA"
+  }
+]
