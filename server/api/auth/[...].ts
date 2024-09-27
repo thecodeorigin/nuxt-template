@@ -92,8 +92,8 @@ export default NuxtAuthHandler({
         }
         catch (error: any) {
           throw createError({
-            statusCode: error.statusCode || 403,
-            statusMessage: JSON.stringify(error.data),
+            statusCode: error.response.status || 500,
+            statusMessage: error.response.statusText || 'Internal Server Error',
           })
         }
       },

@@ -8,9 +8,12 @@ import { db } from '../../utils/db'
 export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding users...')
 
+  const editorRole = roles.find(role => role.name === 'Editor')
+
   const testUser = {
-    email: randEmail(),
+    email: 'test@gmail.com',
     password: await bcrypt.hash('123456', 10),
+    role_id: editorRole!.id,
   }
 
   const users = await Promise.all(Array.from({ length: 15 }).fill(null).map(
@@ -32,6 +35,7 @@ export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) 
 
   users[0].email = testUser.email
   users[0].password = testUser.password
+  users[0].role_id = testUser.role_id
 
   return await db.insert(sysUserTable).values(users).returning()
 }

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
     if (!(email || phone) || !password) {
       throw createError({
-        statusCode: 403,
+        statusCode: 400,
         statusMessage: 'Email or Phone and Password is required to signup',
         data: {
           email: ['Email or Phone and Password is required to signup'],
@@ -27,6 +27,13 @@ export default defineEventHandler(async (event) => {
         ),
       ))[0]
 
+    if (!sysUser) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Invalid credentials!',
+      })
+    }
+
     const isValid = await bcrypt.compare(password, sysUser.password!)
 
     if (isValid) {
@@ -35,9 +42,12 @@ export default defineEventHandler(async (event) => {
       return { data: omit(sysUser, ['password']) }
     }
 
-    setResponseStatus(event, 401, 'Invalid credentials!')
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Invalid credentials!',
+    })
   }
   catch (error: any) {
-    setResponseStatus(event, 400, error.message)
+    setResponseStatus(event, 401, error.message)
   }
 })
