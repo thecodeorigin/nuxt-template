@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import vueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import vuetify from 'vite-plugin-vuetify'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -39,7 +39,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-  
+
   css: [
     '@materialize/@core/scss/template/index.scss',
     '@materialize/styles/styles.scss',
@@ -70,7 +70,7 @@ export default defineNuxtConfig({
       {
         path: '@materialize/components',
         pathPrefix: false,
-      }
+      },
     ],
   },
 
@@ -82,7 +82,7 @@ export default defineNuxtConfig({
       type: 'authjs',
     },
   },
-  
+
   plugins: [
     '@materialize/plugins/vuetify/index.ts',
     '@materialize/plugins/i18n/index.ts',
@@ -144,10 +144,10 @@ export default defineNuxtConfig({
     plugins: [
       svgLoader(),
       vuetify({
-        // styles: {
-        //   configFile: fileURLToPath(new URL('./app/assets/styles/variables/_vuetify.scss', import.meta.url)),
-        // },
-      }),
+        styles: {
+          configFile: fileURLToPath(new URL('./app/assets/styles/variables/_vuetify.scss', import.meta.url)),
+        },
+      }) as any,
       vueI18nPlugin({
         runtimeOnly: true,
         compositionOnly: true,
@@ -157,12 +157,18 @@ export default defineNuxtConfig({
         ],
       }),
     ],
+
+    vue: {
+      template: {
+        transformAssetUrls,
+      },
+    },
   },
-  
+
   pinia: {
     storesDirs: [
       fileURLToPath(new URL('./app/stores', import.meta.url)),
-    ]
+    ],
   },
 
   build: {
@@ -171,6 +177,7 @@ export default defineNuxtConfig({
 
   modules: [
     '@vueuse/nuxt',
+    '@nuxt/eslint',
     '@nuxtjs/device',
     '@sidebase/nuxt-auth',
     '@pinia/nuxt',
@@ -187,6 +194,12 @@ export default defineNuxtConfig({
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+    },
+  },
+
+  eslint: {
+    config: {
+      standalone: false,
     },
   },
 

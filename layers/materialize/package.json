@@ -61,5 +61,10 @@
     "vuetify": "3.5.15",
     "webfontloader": "1.6.28",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.5.7",
+    "vite-plugin-vuetify": "2.0.3",
+    "vite-svg-loader": "5.1.0"
   }
 }

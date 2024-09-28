@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: [
       fileURLToPath(new URL('./app/stores', import.meta.url)),
-    ]
+    ],
   },
 
   alias: {
