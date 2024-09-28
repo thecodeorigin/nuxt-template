@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import miscMaskDark from '@images/misc/misc-mask-dark.png'
-import miscMaskLight from '@images/misc/misc-mask-light.png'
-import miscComingSoonObj from '@images/pages/misc-coming-soon-object.png'
-import miscComingSoon from '@images/pages/misc-coming-soon.png'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+import miscMaskDark from '@materialize/images/misc/misc-mask-dark.png'
+import miscMaskLight from '@materialize/images/misc/misc-mask-light.png'
+import miscComingSoonObj from '@materialize/images/pages/misc-coming-soon-object.png'
+import miscComingSoon from '@materialize/images/pages/misc-coming-soon.png'
+import { useGenerateImageVariant } from '@materialize/@core/composable/useGenerateImageVariant'
 
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
@@ -70,5 +70,5 @@ const email = ref('')
 </template>
 
 <style lang="scss">
-@use "@core/scss/template/pages/misc.scss";
+@use "@materialize/@core/scss/template/pages/misc.scss";
 </style>

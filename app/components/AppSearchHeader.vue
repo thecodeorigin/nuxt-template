@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppSearchHeaderBg from '@images/pages/app-search-header-bg.png'
+import AppSearchHeaderBg from '@materialize/images/pages/app-search-header-bg.png'
 
 interface Props {
   title?: string

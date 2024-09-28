@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import AccountSettingsAccount from '@/app/views/pages/account-settings/AccountSettingsAccount.vue'
+import AccountSettingsAccount from '@materialize/views/pages/account-settings/AccountSettingsAccount.vue'
 
-const AccountSettingsBillingAndPlans = defineAsyncComponent(() => import('@/app/views/pages/account-settings/AccountSettingsBillingAndPlans.vue'))
-// import AccountSettingsConnections from '@/app/views/pages/account-settings/AccountSettingsConnections.vue'
-// import AccountSettingsNotification from '@/app/views/pages/account-settings/AccountSettingsNotification.vue'
-// import AccountSettingsSecurity from '@/app/views/pages/account-settings/AccountSettingsSecurity.vue'
+const AccountSettingsBillingAndPlans = defineAsyncComponent(() => import('@materialize/views/pages/account-settings/AccountSettingsBillingAndPlans.vue'))
+// import AccountSettingsConnections from '@materialize/views/pages/account-settings/AccountSettingsConnections.vue'
+// import AccountSettingsNotification from '@materialize/views/pages/account-settings/AccountSettingsNotification.vue'
+// import AccountSettingsSecurity from '@materialize/views/pages/account-settings/AccountSettingsSecurity.vue'
 
 const route = useRoute('settings-tab')
 

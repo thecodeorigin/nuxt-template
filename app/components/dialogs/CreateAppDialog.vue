@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import illustrationJohn from '@images/pages/illustration-john.png'
+import illustrationJohn from '@materialize/images/pages/illustration-john.png'
 
-import angularIcon from '@images/icons/brands/angular.png'
-import laravelIcon from '@images/icons/brands/laravel.png'
-import reactIcon from '@images/icons/brands/react.png'
-import vueIcon from '@images/icons/brands/vue.png'
+import angularIcon from '@materialize/images/icons/brands/angular.png'
+import laravelIcon from '@materialize/images/icons/brands/laravel.png'
+import reactIcon from '@materialize/images/icons/brands/react.png'
+import vueIcon from '@materialize/images/icons/brands/vue.png'
 
-import awsIcon from '@images/icons/brands/aws.png'
-import firebaseIcon from '@images/icons/brands/firebase.png'
-import mysqlIcon from '@images/icons/brands/mysql.png'
+import awsIcon from '@materialize/images/icons/brands/aws.png'
+import firebaseIcon from '@materialize/images/icons/brands/firebase.png'
+import mysqlIcon from '@materialize/images/icons/brands/mysql.png'
 
 const props = defineProps<{
   isDialogVisible: boolean

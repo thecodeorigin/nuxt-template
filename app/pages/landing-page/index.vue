@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useConfigStore } from '@core/stores/config'
+import { useConfigStore } from '@materialize/@core/stores/config'
 
-import Footer from '@/app/views/front-pages/front-page-footer.vue'
-import Navbar from '@/app/views/front-pages/front-page-navbar.vue'
-import Banner from '@/app/views/front-pages/landing-page/banner.vue'
-import ContactUs from '@/app/views/front-pages/landing-page/contact-us.vue'
-import CustomersReview from '@/app/views/front-pages/landing-page/customers-review.vue'
-import FaqSection from '@/app/views/front-pages/landing-page/faq-section.vue'
-import Features from '@/app/views/front-pages/landing-page/features.vue'
-import HeroSection from '@/app/views/front-pages/landing-page/hero-section.vue'
-import OurTeam from '@/app/views/front-pages/landing-page/our-team.vue'
-import PricingPlans from '@/app/views/front-pages/landing-page/pricing-plans.vue'
-import ProductStats from '@/app/views/front-pages/landing-page/product-stats.vue'
+import Footer from '@materialize/views/front-pages/front-page-footer.vue'
+import Navbar from '@materialize/views/front-pages/front-page-navbar.vue'
+import Banner from '@materialize/views/front-pages/landing-page/banner.vue'
+import ContactUs from '@materialize/views/front-pages/landing-page/contact-us.vue'
+import CustomersReview from '@materialize/views/front-pages/landing-page/customers-review.vue'
+import FaqSection from '@materialize/views/front-pages/landing-page/faq-section.vue'
+import Features from '@materialize/views/front-pages/landing-page/features.vue'
+import HeroSection from '@materialize/views/front-pages/landing-page/hero-section.vue'
+import OurTeam from '@materialize/views/front-pages/landing-page/our-team.vue'
+import PricingPlans from '@materialize/views/front-pages/landing-page/pricing-plans.vue'
+import ProductStats from '@materialize/views/front-pages/landing-page/product-stats.vue'
 
 const store = useConfigStore()
 

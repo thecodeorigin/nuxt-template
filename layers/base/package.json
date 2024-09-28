@@ -1,0 +1,13 @@
+{
+  "name": "@imrim12/base",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./nuxt.config.ts",
+  "scripts": {
+    "prepare": "nuxt prepare"
+  },
+  "dependencies": {
+    "@imrim12/materialize": "workspace:*"
+  }
+}

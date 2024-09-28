@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import faqIllustration from '@images/illustrations/faq-illustration.png'
+import faqIllustration from '@materialize/images/illustrations/faq-illustration.png'
 import { debounce } from 'lodash-es'
 
 const faqStore = useFaqStore()

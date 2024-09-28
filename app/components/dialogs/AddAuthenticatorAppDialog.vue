@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import themeselectionQr from '@images/pages/themeselection-qr.png'
+import themeselectionQr from '@materialize/images/pages/themeselection-qr.png'
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void

@@ -4,12 +4,12 @@ import { cloneDeep } from 'lodash-es'
 import type { VForm } from 'vuetify/components'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
-import SelectSolid from '@images/svg/3d-select-solid.svg'
-import Edit from '@images/svg/edit.svg'
-import GoogleDocs from '@images/svg/google-docs.svg'
-import LaptopCharging from '@images/svg/laptop-charging.svg'
-import Lifebelt from '@images/svg/lifebelt.svg'
-import TransitionUp from '@images/svg/transition-up.svg'
+import SelectSolid from '@materialize/images/svg/3d-select-solid.svg'
+import Edit from '@materialize/images/svg/edit.svg'
+import GoogleDocs from '@materialize/images/svg/google-docs.svg'
+import LaptopCharging from '@materialize/images/svg/laptop-charging.svg'
+import Lifebelt from '@materialize/images/svg/lifebelt.svg'
+import TransitionUp from '@materialize/images/svg/transition-up.svg'
 
 import type { Feature, FeatureSectionType, LandingPageStatusEmit } from '@utils/types/landing-page'
 

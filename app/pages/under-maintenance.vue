@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import miscMaskDark from '@images/misc/misc-mask-dark.png'
-import miscMaskLight from '@images/misc/misc-mask-light.png'
-import miscObj from '@images/pages/misc-under-maintenance-object.png'
-import miscUnderMaintenance from '@images/pages/misc-under-maintenance.png'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+import miscMaskDark from '@materialize/images/misc/misc-mask-dark.png'
+import miscMaskLight from '@materialize/images/misc/misc-mask-light.png'
+import miscObj from '@materialize/images/pages/misc-under-maintenance-object.png'
+import miscUnderMaintenance from '@materialize/images/pages/misc-under-maintenance.png'
+import { useGenerateImageVariant } from '@materialize/@core/composable/useGenerateImageVariant'
 
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
@@ -59,5 +59,5 @@ definePageMeta({
 </template>
 
 <style lang="scss">
-@use "@core/scss/template/pages/misc.scss";
+@use "@materialize/@core/scss/template/pages/misc.scss";
 </style>

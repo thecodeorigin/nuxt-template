@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import avatar1 from '@images/avatars/avatar-1.png'
-import avatar2 from '@images/avatars/avatar-2.png'
-import avatar3 from '@images/avatars/avatar-3.png'
-import avatar4 from '@images/avatars/avatar-4.png'
-import avatar5 from '@images/avatars/avatar-5.png'
-import avatar6 from '@images/avatars/avatar-6.png'
-import avatar7 from '@images/avatars/avatar-7.png'
-import avatar8 from '@images/avatars/avatar-8.png'
+import avatar1 from '@materialize/images/avatars/avatar-1.png'
+import avatar2 from '@materialize/images/avatars/avatar-2.png'
+import avatar3 from '@materialize/images/avatars/avatar-3.png'
+import avatar4 from '@materialize/images/avatars/avatar-4.png'
+import avatar5 from '@materialize/images/avatars/avatar-5.png'
+import avatar6 from '@materialize/images/avatars/avatar-6.png'
+import avatar7 from '@materialize/images/avatars/avatar-7.png'
+import avatar8 from '@materialize/images/avatars/avatar-8.png'
 
 interface Props {
   isDialogVisible: boolean

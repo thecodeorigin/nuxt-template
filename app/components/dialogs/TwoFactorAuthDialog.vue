@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CustomInputContent } from '@core/types'
+import type { CustomInputContent } from '@materialize/@core/types'
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
