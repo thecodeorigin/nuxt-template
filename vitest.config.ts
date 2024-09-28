@@ -5,6 +5,9 @@ import { defineConfig } from 'vitest/config'
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
+  define: {
+    $page: 'globalThis.$page',
+  },
   test: {
     globals: true,
     setupFiles: [
