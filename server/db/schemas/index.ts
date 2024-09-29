@@ -8,4 +8,4 @@ export * from './project.schema'
 
 export * from './sys_user.schema'
 
-export * from './user_payment_methods.schema'
+export * from '../../../layers/base/server/db/schemas/user_payment_methods.schema'

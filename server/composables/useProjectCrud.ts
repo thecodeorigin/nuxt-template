@@ -1,6 +1,6 @@
 import { and, eq, isNull } from 'drizzle-orm'
-import type { ParsedFilterQuery } from '@materialize/server/utils/filter'
-import { useCrud } from '@materialize/server/composables/useCrud'
+import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import { useCrud } from '@base/server/composables/useCrud'
 import { projectTable } from '../db/schemas/project.schema'
 
 export function useProjectCrud(queryRestrict:

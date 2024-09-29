@@ -1,8 +1,8 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import { randRecentDate } from '@ngneat/falso'
-import type { sysUserTable } from '../schemas'
+import type { sysUserTable } from '@imrim12/base/schemas'
 import { categoryTable } from '../schemas'
-import { db } from '../../../layers/materialize/server/utils/db'
+import { db } from '../../../layers/base/server/utils/db'
 
 export async function seedCategories(users: InferSelectModel<typeof sysUserTable>[]) {
   console.log('Seeding categories...')

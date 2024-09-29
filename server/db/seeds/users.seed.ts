@@ -1,9 +1,9 @@
 import { rand, randAvatar, randCountryCode, randEmail, randFullName, randLanguage, randPhoneNumber } from '@ngneat/falso'
 import type { InferSelectModel } from 'drizzle-orm'
 import bcrypt from 'bcrypt'
-import type { sysRoleTable } from '../schemas'
-import { sysUserTable } from '../schemas'
-import { db } from '../../../layers/materialize/server/utils/db'
+import type { sysRoleTable } from '@imrim12/base/schemas'
+import { sysUserTable } from '@imrim12/base/schemas'
+import { db } from '../../../layers/base/server/utils/db'
 
 export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding users...')

@@ -1,5 +1,5 @@
-import { sysRoleTable } from '../schemas'
-import { db } from '../../../layers/materialize/server/utils/db'
+import { sysRoleTable } from '@imrim12/base/schemas'
+import { db } from '../../../layers/base/server/utils/db'
 
 export async function seedRoles() {
   console.log('Seeding roles...')

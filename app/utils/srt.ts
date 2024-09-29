@@ -1,7 +1,7 @@
 // @ts-expect-error
 import parseSRT from 'parse-srt'
 
-import { convertToSeconds } from './time'
+import { convertToSeconds } from '../../layers/base/app/utils/time'
 
 export interface ParsedSubtitle {
   id?: number

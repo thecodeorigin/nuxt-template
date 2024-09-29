@@ -1,7 +1,7 @@
 import { foreignKey, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { sysUserTable } from '@imrim12/materialize/schemas'
+import { sysUserTable } from '@imrim12/base/schemas'
 import { categoryTable } from './category.schema'
 
 export const postTable = pgTable('posts', {

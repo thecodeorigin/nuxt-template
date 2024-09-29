@@ -1,7 +1,7 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { sysUserTable } from '../schemas'
-import { sysNotificationTable } from '../schemas'
-import { db } from '../../../layers/materialize/server/utils/db'
+import type { sysUserTable } from '@imrim12/base/schemas'
+import { sysNotificationTable } from '@imrim12/base/schemas'
+import { db } from '../../../layers/base/server/utils/db'
 
 type Notification = Partial<typeof sysNotificationTable.$inferSelect>
 

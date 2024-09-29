@@ -1,7 +1,7 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { sysUserTable } from '../schemas'
-import { userShortcutTable } from '../schemas'
-import { db } from '../../../layers/materialize/server/utils/db'
+import type { sysUserTable } from '@imrim12/base/schemas'
+import { userShortcutTable } from '@imrim12/base/schemas'
+import { db } from '../../../layers/base/server/utils/db'
 
 export async function seedUserShortcuts(users: InferSelectModel<typeof sysUserTable>[]) {
   console.log('Seeding user shortcuts...')
