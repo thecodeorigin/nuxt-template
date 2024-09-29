@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import vueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+// import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -84,7 +84,7 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    '@materialize/plugins/vuetify/index.ts',
+    // '@materialize/plugins/vuetify/index.ts',
     '@materialize/plugins/i18n/index.ts',
     '@materialize/plugins/iconify/index.ts',
   ],
@@ -143,11 +143,6 @@ export default defineNuxtConfig({
 
     plugins: [
       svgLoader(),
-      vuetify({
-        styles: {
-          configFile: fileURLToPath(new URL('./app/assets/styles/variables/_vuetify.scss', import.meta.url)),
-        },
-      }) as any,
       vueI18nPlugin({
         runtimeOnly: true,
         compositionOnly: true,
@@ -157,22 +152,12 @@ export default defineNuxtConfig({
         ],
       }),
     ],
-
-    vue: {
-      template: {
-        transformAssetUrls,
-      },
-    },
   },
 
   pinia: {
     storesDirs: [
       fileURLToPath(new URL('./app/stores', import.meta.url)),
     ],
-  },
-
-  build: {
-    transpile: ['vuetify'],
   },
 
   modules: [
@@ -182,6 +167,7 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-auth',
     '@pinia/nuxt',
     'nuxt-vuefire',
+    // './modules/vuetify/module',
   ],
 
   vuefire: {

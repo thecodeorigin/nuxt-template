@@ -65,6 +65,7 @@
   "devDependencies": {
     "@nuxt/eslint": "^0.5.7",
     "vite-plugin-vuetify": "2.0.3",
-    "vite-svg-loader": "5.1.0"
+    "vite-svg-loader": "5.1.0",
+    "vuetify-nuxt-module": "^0.18.3"
   }
 }

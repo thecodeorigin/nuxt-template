@@ -1,14 +1,15 @@
 import { deepMerge } from '@antfu/utils'
-import { useI18n } from 'vue-i18n'
-import { createVuetify } from 'vuetify'
+// import { useI18n } from 'vue-i18n'
+// import { createVuetify } from 'vuetify'
 import { VBtn } from 'vuetify/components/VBtn'
-import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
+// import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import { cookieRef } from '@materialize/@layouts/stores/config'
 import { themeConfig } from '@materialize/config'
-import { getI18n } from '@materialize/plugins/i18n/index'
+// import { getI18n } from '@materialize/plugins/i18n/index'
 import defaults from './defaults'
 import { icons } from './icons'
 import { staticPrimaryColor, staticPrimaryDarkenColor, themes } from './theme'
+import { defineNuxtPlugin } from '#imports'
 
 // Styles
 import '@materialize/@core/scss/template/libs/vuetify/index.scss'
@@ -38,19 +39,13 @@ export default defineNuxtPlugin({
 
     const optionTheme = deepMerge({ themes }, cookieThemeValues)
 
-    const vuetify = createVuetify({
-      ssr: true,
-      aliases: {
+    nuxtApp.hook('vuetify:before-create', ({ vuetifyOptions }) => {
+      vuetifyOptions.aliases = {
         IconBtn: VBtn,
-      },
-      defaults,
-      icons,
-      theme: optionTheme,
-      locale: {
-        adapter: createVueI18nAdapter({ i18n: getI18n(), useI18n }),
-      },
+      }
+      vuetifyOptions.defaults = defaults
+      vuetifyOptions.icons = icons
+      vuetifyOptions.theme = optionTheme
     })
-
-    nuxtApp.vueApp.use(vuetify)
   },
 })
