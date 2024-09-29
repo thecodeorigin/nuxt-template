@@ -1,8 +1,8 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
+import type { Page } from 'puppeteer'
 import type { Actions, Subjects } from './layers/materialize/app/utils/casl'
 import type { NavGroupType, NavItem } from './layers/materialize/app/@materialize/@layouts/types'
-import type { Page } from 'puppeteer'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -20,6 +20,7 @@ declare module 'vue-router' {
 }
 
 declare global {
+  // eslint-disable-next-line vars-on-top
   var $page: Page
 }
 

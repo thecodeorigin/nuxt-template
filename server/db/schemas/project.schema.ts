@@ -1,8 +1,8 @@
-import { boolean, foreignKey, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, foreignKey, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { sysUserTable } from '@imrim12/materialize/schemas'
 import { categoryTable } from './category.schema'
-import { sysUserTable } from './sys_users.schema'
 import { modelProjectEnum, statusProjectEnum } from './enum.schema'
 
 export const projectTable = pgTable('projects', {

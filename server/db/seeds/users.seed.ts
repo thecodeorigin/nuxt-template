@@ -3,7 +3,7 @@ import type { InferSelectModel } from 'drizzle-orm'
 import bcrypt from 'bcrypt'
 import type { sysRoleTable } from '../schemas'
 import { sysUserTable } from '../schemas'
-import { db } from '../../utils/db'
+import { db } from '../../../layers/materialize/server/utils/db'
 
 export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding users...')

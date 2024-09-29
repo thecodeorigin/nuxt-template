@@ -1,7 +1,7 @@
 import { date, foreignKey, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { sysUserTable } from './sys_users.schema'
+import { sysUserTable } from '@imrim12/materialize/schemas'
 
 export const userPaymentMethodTable = pgTable('user_payment_methods', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),

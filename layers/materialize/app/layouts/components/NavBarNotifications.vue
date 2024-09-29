@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { InferSelectModel } from 'drizzle-orm'
-// import type { sysNotificationTable } from '@/server/db/schemas/sys_notifications.schema.js'
+// import type { sysNotificationTable } from '@materialize/server/db/schemas/sys_notifications.schema.js'
 
 // type Notification = InferSelectModel<typeof sysNotificationTable>
 // TODO: Fix this type

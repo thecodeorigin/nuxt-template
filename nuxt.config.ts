@@ -17,17 +17,7 @@ export default defineNuxtConfig({
     },
   },
 
-  /*
-    ❗ Please read the docs before updating runtimeConfig
-    https://nuxt.com/docs/guide/going-further/runtime-config
-  */
-  runtimeConfig: {
-    redis: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      password: process.env.REDIS_PASSWORD,
-    },
-  },
+  runtimeConfig: {},
 
   components: {
     dirs: [

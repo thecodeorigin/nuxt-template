@@ -6,5 +6,5 @@ export default defineNuxtConfig({
 
   extends: [
     '@imrim12/materialize',
-  ]
+  ],
 })

@@ -4,24 +4,6 @@ function enumToPgEnum(myEnum: any): [string, ...string[]] {
   return Object.values(myEnum).map((value: any) => `${value}`) as [string, ...string[]]
 }
 
-export enum PermissionAction {
-  CREATE = 'create',
-  READ = 'read',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  MANAGE = 'manage',
-}
-
-export enum PermissionSubject {
-  ALL = 'all',
-  POST = 'Post',
-  CATEGORY = 'Category',
-  USER = 'User',
-  PROJECT = 'Project',
-  SETTING = 'Setting',
-  LANDING = 'Landing',
-}
-
 export enum PricingPlanInterval {
   DAY = 'day',
   WEEK = 'week',
@@ -45,12 +27,6 @@ export enum SubscriptionStatus {
   PAUSED = 'paused',
 }
 
-export enum UserStatus {
-  ACTIVE = 'active',
-  DEACTIVATED = 'deactivated',
-  PENDING = 'pending',
-}
-
 export enum ModelProject {
   TINY = 'tiny',
   MEDIUM = 'medium',
@@ -62,17 +38,11 @@ export enum StatusProject {
   SUCCEEDED = 'succeeded',
 }
 
-export const permissionAction = pgEnum('permission_action', enumToPgEnum(PermissionAction))
-
-export const permissionSubject = pgEnum('permission_subject', enumToPgEnum(PermissionSubject))
-
 export const pricingPlanInterval = pgEnum('pricing_plan_interval', enumToPgEnum(PricingPlanInterval))
 
 export const pricingType = pgEnum('pricing_type', enumToPgEnum(PricingType))
 
 export const subscriptionStatus = pgEnum('subscription_status', enumToPgEnum(SubscriptionStatus))
-
-export const userStatus = pgEnum('user_status', enumToPgEnum(UserStatus))
 
 export const modelProjectEnum = pgEnum('model', enumToPgEnum(ModelProject))
 

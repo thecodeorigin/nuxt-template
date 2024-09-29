@@ -1,6 +1,6 @@
 import type { AnyAbility, SubjectType } from '@casl/ability'
 import { createMongoAbility } from '@casl/ability'
-import type { PermissionAction, PermissionSubject } from '@/server/db/schemas'
+import type { PermissionAction, PermissionSubject } from '@materialize/server/db/schemas'
 
 export type Actions = `${PermissionAction}`
 

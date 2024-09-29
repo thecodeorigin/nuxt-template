@@ -1,5 +1,5 @@
 import { sysRoleTable } from '../schemas'
-import { db } from '../../utils/db'
+import { db } from '../../../layers/materialize/server/utils/db'
 
 export async function seedRoles() {
   console.log('Seeding roles...')

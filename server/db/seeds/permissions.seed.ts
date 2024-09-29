@@ -1,7 +1,7 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysRoleTable } from '../schemas'
 import { sysPermissionTable } from '../schemas'
-import { db } from '../../utils/db'
+import { db } from '../../../layers/materialize/server/utils/db'
 
 export async function seedPermissions(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding permissions...')

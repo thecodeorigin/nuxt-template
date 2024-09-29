@@ -55,6 +55,12 @@ export default defineNuxtConfig({
     AUTH_ORIGIN: process.env.NUXT_PUBLIC_APP_BASE_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
 
+    redis: {
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      password: process.env.REDIS_PASSWORD,
+    },
+
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
       FIREBASE_KEY_PAIR: process.env.FIREBASE_KEY_PAIR,
@@ -104,14 +110,11 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@materialize/config': fileURLToPath(new URL('./app/config', import.meta.url)),
-    '@materialize/@core': fileURLToPath(new URL('./app/@core', import.meta.url)),
-    '@materialize/@layouts': fileURLToPath(new URL('./app/@layouts', import.meta.url)),
     '@materialize/validators': fileURLToPath(new URL('./app/@core/utils/validators', import.meta.url)),
     '@materialize/images': fileURLToPath(new URL('./app/assets/images/', import.meta.url)),
     '@materialize/styles': fileURLToPath(new URL('./app/assets/styles/', import.meta.url)),
-    '@materialize/plugins': fileURLToPath(new URL('./app/plugins', import.meta.url)),
     '@materialize/configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
+    '@materialize/server': fileURLToPath(new URL('./server', import.meta.url)),
     '@materialize': fileURLToPath(new URL('./app', import.meta.url)),
   },
 

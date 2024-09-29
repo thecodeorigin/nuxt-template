@@ -1,6 +1,6 @@
+import type { ParsedFilterQuery } from '@materialize/server/utils/filter'
+import { useCrud } from '@materialize/server/composables/useCrud'
 import { postTable } from '../db/schemas/post.schema'
-import { useCrud } from './useCrud'
-import type { ParsedFilterQuery } from '@/server/utils/filter'
 
 export function usePostCrud() {
   const {

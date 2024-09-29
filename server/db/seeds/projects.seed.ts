@@ -1,7 +1,7 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { categoryTable, sysUserTable } from '../schemas'
 import { projectTable } from '../schemas'
-import { db } from '../../utils/db'
+import { db } from '../../../layers/materialize/server/utils/db'
 
 export async function seedProjects(users: InferSelectModel<typeof sysUserTable>[], categories: InferSelectModel<typeof categoryTable>[]) {
   console.log('Seeding projects...')

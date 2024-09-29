@@ -1,6 +1,6 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { Actions, Rule, Subjects } from '@/layers/materialize/app/utils/casl'
-import type { sysPermissionTable } from '@/server/db/schemas'
+import type { sysPermissionTable } from '@materialize/server/db/schemas'
+import type { Actions, Rule, Subjects } from '@materialize/utils/casl'
 
 type Permission = InferSelectModel<typeof sysPermissionTable>
 
