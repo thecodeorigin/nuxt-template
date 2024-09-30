@@ -2,7 +2,6 @@ import { foreignKey, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { sysUserTable } from '@imrim12/base/schemas'
-import { postTable } from './post.schema'
 import { projectTable } from './project.schema'
 
 export const categoryTable = pgTable('categories', {
@@ -48,6 +47,5 @@ export const categoryRelations = relations(categoryTable, ({ one, many }) => ({
   children: many(categoryTable, {
     relationName: 'categories_parentId_categories_id',
   }),
-  posts: many(postTable),
   projects: many(projectTable),
 }))

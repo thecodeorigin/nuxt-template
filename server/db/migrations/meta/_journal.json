@@ -50,6 +50,13 @@
       "when": 1727108035392,
       "tag": "0006_real_korvac",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1727716354308,
+      "tag": "0007_nosy_james_howlett",
+      "breakpoints": true
     }
   ]
 }

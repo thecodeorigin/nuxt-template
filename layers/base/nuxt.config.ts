@@ -170,7 +170,6 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-auth',
     '@pinia/nuxt',
     'nuxt-vuefire',
-    // './modules/vuetify/module',
   ],
 
   vuefire: {
