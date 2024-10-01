@@ -14,6 +14,13 @@ definePageMeta({
   },
 })
 
+const { t } = useI18n()
+
+const route = useRoute()
+
+if (route.meta.sidebar)
+  route.meta.sidebar.title = t('Categories')
+
 const categoryStore = useCategoryStore()
 
 const isCreatingCategory = ref(false)
@@ -36,7 +43,7 @@ const categoryHeaders = computed(() => [
   {
     title: selectingParentCategory.value
       ? `${selectingParentCategory.value.name}'s sub-categories`
-      : 'Name',
+      : t('Name'),
     key: 'name',
   },
   {
@@ -101,7 +108,7 @@ async function handleUpdateCategory(payload: FormData) {
 
 async function handleDeleteCategory(item: Category) {
   try {
-    const canDelete = await confirmation('Are you sure you want to delete this category?')
+    const canDelete = await confirmation(t('Are you sure you want to delete this category?'))
 
     if (canDelete) {
       await categoryStore.deleteCategory(item.id)
@@ -135,12 +142,12 @@ function handleSelectParentCategory(e: Event, context: any) {
           <div class="d-flex align-center flex-wrap gap-4">
             <VBtn v-if="selectingParentCategory" variant="outlined" color="secondary" @click="backToPreviousParent">
               <VIcon size="28" icon="ri-arrow-drop-left-line" />
-              Go Back
+              {{ $t('Go Back') }}
             </VBtn>
 
             <VTextField
               v-model="categoryDebouncedQuery.keyword"
-              placeholder="Search"
+              :placeholder="$t('Search')"
               density="compact"
               style="max-inline-size: 280px; min-inline-size: 200px;"
             />
@@ -153,8 +160,8 @@ function handleSelectParentCategory(e: Event, context: any) {
             >
               {{
                 selectingParentCategory
-                  ? `Add ${selectingParentCategory.name}'s sub-categories`
-                  : 'Add Parent Category'
+                  ? $t('Add {parentName}\'s sub-categories', { parentName: selectingParentCategory.name })
+                  : $t('Add Parent Category')
               }}
             </VBtn>
           </div>
@@ -185,7 +192,7 @@ function handleSelectParentCategory(e: Event, context: any) {
                   prepend-icon="ri-stack-line"
                   @click="handleSelectCategory(item)"
                 >
-                  Edit
+                  {{ $t('Edit') }}
                 </VListItem>
 
                 <VListItem
@@ -193,7 +200,7 @@ function handleSelectParentCategory(e: Event, context: any) {
                   prepend-icon="ri-delete-bin-line"
                   @click="handleDeleteCategory(item)"
                 >
-                  Delete
+                  {{ $t('Delete') }}
                 </VListItem>
               </VList>
             </VMenu>

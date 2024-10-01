@@ -77,13 +77,13 @@ export interface NavItem extends Partial<AclProperties> {
   icon?: { icon: string }
   badgeContent?: string
   badgeClass?: string
-  children: NavItem[]
+  children?: NavItem[]
   disable?: boolean
-  to?: RouteRecordNormalized
+  to?: RouteLocationRaw
   href?: string
   target?: ATagTargetAttrValues
   rel?: ATagRelAttrValues
-  group: NavGroupType
+  group?: NavGroupType
 }
 
 export enum NavGroupType {

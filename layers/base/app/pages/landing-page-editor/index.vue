@@ -14,6 +14,14 @@ definePageMeta({
     icon: { icon: 'ri-file-text-line' },
   },
 })
+
+const { t } = useI18n()
+
+const route = useRoute()
+
+if (route.meta.sidebar)
+  route.meta.sidebar.title = t('Landing Page Editor')
+
 const sectionStatuses = ref<SectionStatuses>({
   hero: 'default',
   feature: 'default',

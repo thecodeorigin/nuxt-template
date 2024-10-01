@@ -9,6 +9,8 @@ import type { projectTable } from '@/server/db/schemas/project.schema.js'
 
 type Project = InferSelectModel<typeof projectTable>
 
+const { t } = useI18n()
+
 const project = ref<Project | null>(null)
 const projectSubtitle = ref<Subtitle[]>([])
 
@@ -48,9 +50,9 @@ interface DownloadOption {
 }
 
 const downloadOptions: DownloadOption[] = [
-  { title: 'Download PDF', type: 'pdf' },
-  { title: 'Download DOCX', type: 'docx' },
-  { title: 'Download SRT', type: 'srt' },
+  { title: t('Download PDF'), type: 'pdf' },
+  { title: t('Download DOCX'), type: 'docx' },
+  { title: t('Download SRT'), type: 'srt' },
 ]
 
 async function handleExport(type: typeof downloadOptions[0]['type']) {
@@ -91,7 +93,7 @@ async function handleExport(type: typeof downloadOptions[0]['type']) {
                   color="error"
                   size="small"
                 >
-                  Voice recognition
+                  {{ $t('Voice recognition') }}
                 </VChip>
 
                 <VMenu>

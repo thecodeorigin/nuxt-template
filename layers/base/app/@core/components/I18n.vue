@@ -7,7 +7,7 @@ const props = withDefaults(defineProps<Props>(), {
   location: 'bottom end',
 })
 
-const { locale, locales } = useI18n({ useScope: 'global' })
+const { locale, locales, setLocale } = useI18n({ useScope: 'global' })
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const { locale, locales } = useI18n({ useScope: 'global' })
           :key="lang.code"
           class="px-4"
           :value="lang.code"
-          @click="locale = lang.code"
+          @click="setLocale(lang.code)"
         >
           <!-- Language label -->
           <VListItemTitle>

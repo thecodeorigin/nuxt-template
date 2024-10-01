@@ -1,17 +1,12 @@
 import { useStorage } from '@vueuse/core'
 import { useTheme } from 'vuetify'
 import { useConfigStore } from '@base/@core/stores/config'
-import { cookieRef, namespaceConfig } from '@base/@layouts/stores/config'
+import { namespaceConfig } from '@base/@layouts/stores/config'
 
 function _syncAppRtl() {
   const configStore = useConfigStore()
-  const storedLang = cookieRef<string | null>('language', null)
 
   const { locale, localeProperties } = useI18n({ useScope: 'global' })
-
-  // TODO: Handle case where i18n can't read persisted value
-  if (locale.value !== storedLang.value && storedLang.value)
-    locale.value = storedLang.value
 
   // watch and change lang attribute of html on language change
   watch(
@@ -20,9 +15,6 @@ function _syncAppRtl() {
       // Update lang attribute of html tag
       if (typeof document !== 'undefined')
         document.documentElement.setAttribute('lang', val as string)
-
-      // Store selected language in cookie
-      storedLang.value = val as string
 
       configStore.isAppRTL = localeProperties.value.dir === 'rtl'
     },

@@ -18,6 +18,14 @@ definePageMeta({
     icon: { icon: 'ri-stack-line' },
   },
 })
+
+const { t } = useI18n()
+
+const route = useRoute()
+
+if (route.meta.sidebar)
+  route.meta.sidebar.title = t('List')
+
 const categoryStore = useCategoryStore()
 const projectStore = useProjectStore()
 const router = useRouter()
@@ -121,7 +129,12 @@ function handleGoToProject(project: Project) {
     })
   }
 }
+
 onMounted(() => setInterval(refreshProjects, 5000))
+
+function handleCreateProject() {
+  navigateTo('/projects/create')
+}
 </script>
 
 <template>
@@ -157,7 +170,7 @@ onMounted(() => setInterval(refreshProjects, 5000))
         <VBtn
           color="primary"
           prepend-icon="ri-add-line"
-          @click="$router.push('/projects/create')"
+          @click="handleCreateProject"
         >
           Create new project
         </VBtn>
@@ -206,6 +219,7 @@ onMounted(() => setInterval(refreshProjects, 5000))
     color: rgba(var(--v-theme-on-surface), var(--v-text-high-emphasis));
   }
 }
+
 .projectContainer {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));

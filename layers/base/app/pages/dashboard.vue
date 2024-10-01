@@ -6,6 +6,13 @@ definePageMeta({
     icon: { icon: 'ri-dashboard-2-line' },
   },
 })
+
+const { t } = useI18n()
+
+const route = useRoute()
+
+if (route.meta.sidebar)
+  route.meta.sidebar.title = t('Dashboard')
 </script>
 
 <template>

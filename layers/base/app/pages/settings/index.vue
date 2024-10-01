@@ -9,4 +9,11 @@ definePageMeta({
     return navigateTo({ name: 'settings-tab', params: { tab: 'account' } })
   },
 })
+
+const { t } = useI18n()
+
+const route = useRoute()
+
+if (route.meta.sidebar)
+  route.meta.sidebar.title = t('Settings')
 </script>

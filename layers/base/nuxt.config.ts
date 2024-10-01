@@ -161,8 +161,9 @@ export default defineNuxtConfig({
     },
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: 'language',
+      cookieKey: 'nuxt-template-language',
     },
+    langDir: './app/assets/locale',
     locales: [
       {
         code: 'en',
@@ -170,7 +171,7 @@ export default defineNuxtConfig({
         name: 'English',
         dir: 'ltr',
         file: {
-          path: fileURLToPath(new URL('./app/plugins/i18n/locale.ts', import.meta.url)),
+          path: fileURLToPath(new URL('./app/assets/locale/en.json', import.meta.url)),
           cache: true,
         },
       },
@@ -180,7 +181,7 @@ export default defineNuxtConfig({
         name: 'Tiếng Việt',
         dir: 'ltr',
         file: {
-          path: fileURLToPath(new URL('./app/plugins/i18n/locale.ts', import.meta.url)),
+          path: fileURLToPath(new URL('./app/assets/locale/vi.json', import.meta.url)),
           cache: true,
         },
       },

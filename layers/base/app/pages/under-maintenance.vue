@@ -10,7 +10,6 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 definePageMeta({
   layout: 'blank',
   public: false,
-
 })
 </script>
 

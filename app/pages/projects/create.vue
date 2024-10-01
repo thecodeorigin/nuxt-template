@@ -13,6 +13,7 @@ interface FileData {
   files: File[]
   url: string
 }
+
 definePageMeta({
   sidebar: {
     order: 1,
@@ -20,6 +21,14 @@ definePageMeta({
     icon: { icon: 'ri-add-circle-line' },
   },
 })
+
+const { t } = useI18n()
+
+const route = useRoute()
+
+if (route.meta.sidebar)
+  route.meta.sidebar.title = t('Create New')
+
 const router = useRouter()
 const creating = ref(false)
 const senlyzerStore = useSenlyzerStore()
@@ -261,7 +270,7 @@ async function createProject() {
     <div class="d-flex flex-wrap justify-space-between gap-4 mb-6">
       <div class="d-flex flex-column justify-center">
         <h4 class="text-h4 mb-1">
-          Add a new project
+          {{ $t('Create New Project') }}
         </h4>
       </div>
 
@@ -271,13 +280,13 @@ async function createProject() {
           color="secondary"
           @click="resetForm"
         >
-          Reset
+          {{ $t('Reset') }}
         </VBtn>
         <VBtn
           type="submit"
           :disabled="creating"
         >
-          Create Project
+          {{ $t('Create Project') }}
         </VBtn>
       </div>
     </div>
