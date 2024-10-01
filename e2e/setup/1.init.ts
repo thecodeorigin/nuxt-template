@@ -12,7 +12,7 @@ function createCookie(name: string, value: string): CookieParam {
 }
 
 beforeAll(async () => {
-  const browser = await puppeteer.launch({ headless: false, slowMo: 50, args: ['--disable-notifications'] })
+  const browser = await puppeteer.launch({ slowMo: 50, args: ['--disable-notifications'] })
   const page = await browser.newPage()
 
   await page.setViewport({ width: 1920, height: 1080 })
