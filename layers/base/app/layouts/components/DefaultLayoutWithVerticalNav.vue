@@ -48,10 +48,7 @@ watch([
 
         <VSpacer />
 
-        <NavBarI18n
-          v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
-          :languages="themeConfig.app.i18n.langConfig"
-        />
+        <NavBarI18n />
         <NavbarThemeSwitcher />
         <NavbarShortcuts />
         <NavBarNotifications class="me-2" />

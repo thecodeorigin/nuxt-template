@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import type { I18nLanguage } from '@base/@layouts/types'
-
 interface Props {
-  languages: I18nLanguage[]
   location?: any
 }
 
@@ -10,7 +7,7 @@ const props = withDefaults(defineProps<Props>(), {
   location: 'bottom end',
 })
 
-const { locale } = useI18n({ useScope: 'global' })
+const { locale, locales } = useI18n({ useScope: 'global' })
 </script>
 
 <template>
@@ -32,15 +29,15 @@ const { locale } = useI18n({ useScope: 'global' })
       >
         <!-- List item -->
         <VListItem
-          v-for="lang in props.languages"
-          :key="lang.i18nLang"
+          v-for="lang in locales"
+          :key="lang.code"
           class="px-4"
-          :value="lang.i18nLang"
-          @click="locale = lang.i18nLang"
+          :value="lang.code"
+          @click="locale = lang.code"
         >
           <!-- Language label -->
           <VListItemTitle>
-            {{ lang.label }}
+            {{ lang.name || lang.code }}
           </VListItemTitle>
         </VListItem>
       </VList>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   middleware() {
-    return navigateTo({ name: 'dashboard' })
+    return navigateTo({ path: '/dashboard' })
   },
 })
 </script>

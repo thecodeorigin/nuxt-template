@@ -60,13 +60,12 @@ watch(() => route.path, () => {
         class="nav-item-icon"
         v-bind="item.icon || layoutConfig.verticalNav.defaultNavItemIconProps"
       />
-      <Component
-        :is="layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
+      <i18n-t
         v-bind="getDynamicI18nProps(item.title, 'span')"
         class="nav-item-title"
       >
         {{ item.title }}
-      </Component>
+      </i18n-t>
       <Component
         v-bind="layoutConfig.icons.chevronDown"
         :is="layoutConfig.app.iconRenderer || 'div'"

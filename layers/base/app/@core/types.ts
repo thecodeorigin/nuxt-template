@@ -1,13 +1,9 @@
 import type { LiteralUnion, ValueOf } from 'type-fest'
-import type { I18nLanguage, LayoutConfig } from '@base/@layouts/types'
+import type { LayoutConfig } from '@base/@layouts/types'
 import type { Skins } from './enums'
 
 interface ExplicitThemeConfig {
   app: {
-    i18n: {
-      defaultLocale: string
-      langConfig: I18nLanguage[]
-    }
     theme: LiteralUnion<'light' | 'dark' | 'system', string>
     skin: ValueOf<typeof Skins>
   }

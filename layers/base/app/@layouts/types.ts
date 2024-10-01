@@ -12,10 +12,6 @@ export interface LayoutConfig {
     contentLayoutNav: typeof AppContentLayoutNav[keyof typeof AppContentLayoutNav]
     overlayNavFromBreakpoint: number
 
-    // isRTL: boolean
-    i18n: {
-      enable: boolean
-    }
     iconRenderer: Component
   }
   navbar: {
@@ -97,12 +93,6 @@ export enum NavGroupType {
 }
 
 // 👉 Components ========================
-
-export interface I18nLanguage {
-  label: string
-  i18nLang: string
-  isRTL: boolean
-}
 
 // avatar | text | icon
 // Thanks: https://stackoverflow.com/a/60617060/10796681

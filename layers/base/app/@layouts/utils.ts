@@ -92,13 +92,10 @@ export function _setDirAttr(dir: 'ltr' | 'rtl') {
  * @param tag tag to wrap the translation with
  */
 export function getDynamicI18nProps(key: string, tag = 'span') {
-  if (!layoutConfig.app.i18n.enable)
-    return {}
-
   return {
     keypath: key,
     tag,
-    scope: 'global',
+    scope: 'global' as const,
   }
 }
 
@@ -175,7 +172,7 @@ export function hexToRgb(hex: string) {
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
 
-  return result ? `${Number.parseInt(result[1], 16)},${Number.parseInt(result[2], 16)},${Number.parseInt(result[3], 16)}` : null
+  return result ? `${Number.parseInt(result[1]!, 16)},${Number.parseInt(result[2]!, 16)},${Number.parseInt(result[3]!, 16)}` : null
 }
 
 /**

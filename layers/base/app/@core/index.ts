@@ -11,9 +11,6 @@ export function defineThemeConfig(userConfig: UserThemeConfig): { themeConfig: U
         contentWidth: userConfig.app.contentWidth,
         contentLayoutNav: userConfig.app.contentLayoutNav,
         overlayNavFromBreakpoint: userConfig.app.overlayNavFromBreakpoint,
-        i18n: {
-          enable: userConfig.app.i18n.enable,
-        },
         iconRenderer: userConfig.app.iconRenderer,
       },
       navbar: {

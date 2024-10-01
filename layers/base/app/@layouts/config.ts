@@ -8,11 +8,6 @@ export const layoutConfig: LayoutConfig = {
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: 1279,
-
-    // isRTL: false,
-    i18n: {
-      enable: true,
-    },
     iconRenderer: h('div'),
   },
   navbar: {

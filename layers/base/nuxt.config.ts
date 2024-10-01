@@ -1,6 +1,4 @@
 import { fileURLToPath } from 'node:url'
-import vueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-// import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -90,8 +88,6 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    // '@base/plugins/vuetify/index.ts',
-    '@base/plugins/i18n/index.ts',
     '@base/plugins/iconify/index.ts',
   ],
 
@@ -102,7 +98,6 @@ export default defineNuxtConfig({
       fileURLToPath(new URL('./app/@core/utils', import.meta.url)),
       fileURLToPath(new URL('./app/@core/composable', import.meta.url)),
     ],
-    presets: ['vue-i18n'],
   },
 
   experimental: {
@@ -146,14 +141,6 @@ export default defineNuxtConfig({
 
     plugins: [
       svgLoader(),
-      vueI18nPlugin({
-        runtimeOnly: true,
-        compositionOnly: true,
-        ssr: true,
-        include: [
-          fileURLToPath(new URL('./plugins/i18n/locales/**', import.meta.url)),
-        ],
-      }),
     ],
   },
 
@@ -163,10 +150,48 @@ export default defineNuxtConfig({
     ],
   },
 
+  i18n: {
+    lazy: true,
+    strategy: 'no_prefix',
+    defaultLocale: 'en',
+    vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),
+    bundle: {
+      runtimeOnly: true,
+      compositionOnly: true,
+    },
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'language',
+    },
+    locales: [
+      {
+        code: 'en',
+        language: 'en-US',
+        name: 'English',
+        dir: 'ltr',
+        file: {
+          path: fileURLToPath(new URL('./app/plugins/i18n/locale.ts', import.meta.url)),
+          cache: true,
+        },
+      },
+      {
+        code: 'vi',
+        language: 'vi-VN',
+        name: 'Tiếng Việt',
+        dir: 'ltr',
+        file: {
+          path: fileURLToPath(new URL('./app/plugins/i18n/locale.ts', import.meta.url)),
+          cache: true,
+        },
+      },
+    ],
+  },
+
   modules: [
     '@vueuse/nuxt',
     '@nuxt/eslint',
     '@nuxtjs/device',
+    '@nuxtjs/i18n',
     '@sidebase/nuxt-auth',
     '@pinia/nuxt',
     'nuxt-vuefire',

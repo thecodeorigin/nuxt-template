@@ -14,6 +14,8 @@ const hideTitleAndBadge = configStore.isVerticalNavMini()
 
 const { can } = useAbility()
 
+const router = useRouter()
+
 const visible = computed(() => {
   if (!props.item.action || !props.item.subject)
     return true
@@ -31,7 +33,7 @@ const visible = computed(() => {
     <Component
       :is="item.to ? NuxtLink : 'a'"
       v-bind="getComputedNavLinkToProp(item)"
-      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }"
+      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, router) }"
     >
       <Component
         :is="layoutConfig.app.iconRenderer || 'div'"
@@ -40,19 +42,17 @@ const visible = computed(() => {
       />
       <TransitionGroup name="transition-slide-x">
         <!-- 👉 Title -->
-        <Component
-          :is="layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
+        <i18n-t
           v-show="!hideTitleAndBadge"
           key="title"
           class="nav-item-title"
           v-bind="getDynamicI18nProps(item.title, 'span')"
         >
           {{ item.title }}
-        </Component>
+        </i18n-t>
 
         <!-- 👉 Badge -->
-        <Component
-          :is="layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
+        <i18n-t
           v-if="item.badgeContent"
           v-show="!hideTitleAndBadge"
           key="badge"
@@ -61,7 +61,7 @@ const visible = computed(() => {
           v-bind="getDynamicI18nProps(item.badgeContent, 'span')"
         >
           {{ item.badgeContent }}
-        </Component>
+        </i18n-t>
       </TransitionGroup>
     </Component>
   </li>

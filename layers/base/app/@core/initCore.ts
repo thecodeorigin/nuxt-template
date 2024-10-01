@@ -2,13 +2,12 @@ import { useStorage } from '@vueuse/core'
 import { useTheme } from 'vuetify'
 import { useConfigStore } from '@base/@core/stores/config'
 import { cookieRef, namespaceConfig } from '@base/@layouts/stores/config'
-import { themeConfig } from '@base/config'
 
 function _syncAppRtl() {
   const configStore = useConfigStore()
   const storedLang = cookieRef<string | null>('language', null)
 
-  const { locale } = useI18n({ useScope: 'global' })
+  const { locale, localeProperties } = useI18n({ useScope: 'global' })
 
   // TODO: Handle case where i18n can't read persisted value
   if (locale.value !== storedLang.value && storedLang.value)
@@ -25,13 +24,7 @@ function _syncAppRtl() {
       // Store selected language in cookie
       storedLang.value = val as string
 
-      // set isAppRtl value based on selected language
-      if (themeConfig.app.i18n.langConfig && themeConfig.app.i18n.langConfig.length) {
-        themeConfig.app.i18n.langConfig.forEach((lang) => {
-          if (lang.i18nLang === storedLang.value)
-            configStore.isAppRTL = lang.isRTL
-        })
-      }
+      configStore.isAppRTL = localeProperties.value.dir === 'rtl'
     },
     { immediate: true },
   )
@@ -51,8 +44,8 @@ function _handleSkinChanges() {
     () => configStore.skin,
     (val) => {
       Object.values(themes.value).forEach((t) => {
-        t.colors.background = t.colors[`skin-${val}-background`]
-        t.colors.surface = t.colors[`skin-${val}-surface`]
+        t.colors.background = t.colors[`skin-${val}-background`]!
+        t.colors.surface = t.colors[`skin-${val}-surface`]!
       })
     },
     { immediate: true },
@@ -85,9 +78,7 @@ function initCore() {
   _syncInitialLoaderTheme()
   _handleSkinChanges()
 
-  // ℹ️ We don't want to trigger i18n in SK
-  if (themeConfig.app.i18n.enable)
-    _syncAppRtl()
+  _syncAppRtl()
 }
 
 export default initCore

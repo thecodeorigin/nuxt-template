@@ -172,28 +172,26 @@ const isMounted = useMounted()
         v-bind="!isMounted ? { class: 'd-flex align-center flex-grow-1' } : undefined"
       >
         <!-- 👉 Title -->
-        <Component
-          :is=" layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
-          v-bind="getDynamicI18nProps(item.title, 'span')"
+        <i18n-t
           v-show="!hideTitleAndBadge"
+          v-bind="getDynamicI18nProps(item.title, 'span')"
           key="title"
           class="nav-item-title"
         >
           {{ item.title }}
-        </Component>
+        </i18n-t>
 
         <!-- 👉 Badge -->
-        <Component
-          :is="layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
-          v-bind="getDynamicI18nProps(item.badgeContent, 'span')"
+        <i18n-t
           v-show="!hideTitleAndBadge"
           v-if="item.badgeContent"
+          v-bind="getDynamicI18nProps(item.badgeContent, 'span')"
           key="badge"
           class="nav-item-badge"
           :class="item.badgeClass"
         >
           {{ item.badgeContent }}
-        </Component>
+        </i18n-t>
         <Component
           :is="layoutConfig.app.iconRenderer || 'div'"
           v-show="!hideTitleAndBadge"
