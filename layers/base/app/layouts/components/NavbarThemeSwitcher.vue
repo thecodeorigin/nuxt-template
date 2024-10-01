@@ -9,10 +9,12 @@ const themes: ThemeSwitcherTheme[] = [
   {
     name: 'light',
     icon: 'ri-sun-line',
+    data: 'button-active-light-theme',
   },
   {
     name: 'dark',
     icon: 'ri-moon-clear-line',
+    data: 'button-active-dark-theme',
   },
 ]
 </script>

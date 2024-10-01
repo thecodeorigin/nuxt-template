@@ -164,7 +164,7 @@ async function createProject() {
       formData.value.subtitle = subtitle
     }
     else {
-      formData.value.source_duration = await getFileDuration(fileData.value.files[0])
+      formData.value.source_duration = await getFileDuration(fileData.value.files[0] as File)
 
       if (formData.value.source_duration > (60 * 60)
       ) {

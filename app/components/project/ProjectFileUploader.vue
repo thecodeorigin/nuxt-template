@@ -56,6 +56,7 @@ function selectFile() {
               <VBtn
                 variant="outlined"
                 size="small"
+                data-test="button-select-project-file"
                 :disabled="fileData.url.trim() !== ''"
                 :style="{ cursor: fileData.url.trim() !== '' ? 'not-allowed' : 'pointer' }"
                 @click="selectFile"
@@ -112,6 +113,7 @@ function selectFile() {
       <div class="flex">
         <VTextField
           v-model="fileData.url"
+          data-test="input-project-source-url"
           :rules="[fileData.files.length === 0 ? requiredValidator : null]"
           :disabled="fileData.files.length !== 0"
           placeholder="Example: https://www.youtube.com/watch?v=YkeWTEULGwU"

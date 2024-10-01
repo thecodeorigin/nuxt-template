@@ -21,7 +21,7 @@ watch(
 </script>
 
 <template>
-  <IconBtn>
+  <IconBtn data-test="button-active-popup-theme-switcher">
     <VIcon :icon="props.themes.find(t => t.name === configStore.theme)?.icon" />
 
     <VTooltip
@@ -38,13 +38,15 @@ watch(
     >
       <VList
         v-model:selected="selectedItem"
+        data-test="popup-theme-switcher"
         mandatory
       >
         <VListItem
-          v-for="{ name, icon } in props.themes"
+          v-for="{ name, icon, data } in props.themes"
           :key="name"
           :value="name"
           :prepend-icon="icon"
+          :data-test="data"
           color="primary"
           class="text-capitalize px-4"
           @click="() => { configStore.theme = name }"

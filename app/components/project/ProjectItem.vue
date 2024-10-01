@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { InferSelectModel } from 'drizzle-orm'
 import type { projectTable } from '@/server/db/schemas/project.schema.js'
+import type { categoryTable } from '@/server/db/schemas/category.schema.js'
 
 type Project = InferSelectModel<typeof projectTable>
-
+type Category = InferSelectModel<typeof categoryTable>
 const props = defineProps<{
   item: Project
+  category: Category
 }>()
-
 defineEmits<{
   (e: 'select', id: string): void
 }>()
+
+const router = useRouter()
+
 const resolveChipColor = computed(() => {
   const map: { [key: string]: string } = {
     'medium': 'info',
@@ -59,7 +63,7 @@ const resolveChipColor = computed(() => {
                 :src="item.source_thumbnail"
                 :alt="item.title || item.source_title || ''"
                 class="cursor-pointer"
-                @click="() => $router.push({ name: 'projects-id', params: { id: item.id } })"
+                @click="() => router.push({ name: 'projects-id', params: { id: item.id } })"
               />
               <FileIcon
                 v-else
@@ -83,6 +87,7 @@ const resolveChipColor = computed(() => {
 
           <h5 class="text-h5 mb-1">
             <a
+              data-test="project-item-title"
               :class="$style.courseTitle"
               :aria-disabled="item.status !== 'succeeded'"
               class="text-truncate"
@@ -90,10 +95,28 @@ const resolveChipColor = computed(() => {
               {{ item.title }}
             </a>
           </h5>
-          <p :class="$style.description" class="mb-2">
+          <p
+            data-test="project-item-description"
+            :class="$style.description" class="mb-2"
+          >
             {{ item.description }}
           </p>
 
+          <div
+            class="d-flex align-center mb-4"
+          >
+            <VIcon
+              icon="ri-menu-fold-4-line"
+              size="20"
+              class="me-1"
+            />
+            <div
+              data-test="project-item-category-title"
+              class="text-slate-500 text-sm text-center mt-0.5"
+            >
+              {{ category.name }}
+            </div>
+          </div>
           <div
             class="d-flex align-center mb-4"
           >
@@ -111,6 +134,7 @@ const resolveChipColor = computed(() => {
             <VBtn
               variant="outlined"
               class="flex-grow-1"
+              data-test="project-item-button-detail"
               :disabled="item.status !== 'succeeded'"
               :to="{ name: 'projects-id', params: { id: item.id } }"
             >

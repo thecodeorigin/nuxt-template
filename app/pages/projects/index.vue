@@ -135,6 +135,11 @@ onMounted(() => setInterval(refreshProjects, 5000))
 function handleCreateProject() {
   navigateTo('/projects/create')
 }
+let intervalId: any
+onMounted(() => {
+  intervalId = setInterval(refreshProjects, 5000)
+})
+onUnmounted(() => clearInterval(intervalId))
 </script>
 
 <template>
@@ -144,6 +149,7 @@ function handleCreateProject() {
         <!-- 👉 Search  -->
         <VTextField
           v-model="searchValue"
+          data-test="container-input-search-projects"
           placeholder="Project Title"
           style="inline-size: 200px;"
           clearable
@@ -152,6 +158,7 @@ function handleCreateProject() {
         />
         <VSelect
           v-model="projectQuery.category"
+          data-test="container-select-category-projects"
           :items="listCategorires"
           item-title="name"
           item-value="id"
@@ -169,6 +176,7 @@ function handleCreateProject() {
         </VBtn>
         <VBtn
           color="primary"
+          data-test="button-create-project"
           prepend-icon="ri-add-line"
           @click="handleCreateProject"
         >
@@ -187,11 +195,12 @@ function handleCreateProject() {
       />
     </div>
     <div v-else-if="response.data.length > 0" class="gap-3 mt-5 intro-y sm:gap-6">
-      <VRow class="match-height">
+      <VRow data-test="grid-list-projects" class="match-height">
         <ProjectItem
           v-for="project in response.data"
           :key="project.id"
           :item="project"
+          :category="categories.data.find((category) => category.id === project.category_id) as Category"
           @select="handleSelectProject"
           @click="handleGoToProject(project)"
         />
