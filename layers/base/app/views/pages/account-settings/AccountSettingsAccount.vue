@@ -107,7 +107,7 @@ async function handleSubmit() {
 <template>
   <VRow>
     <VCol cols="12">
-      <VCard>
+      <VCard data-test="account-form">
         <VCardText>
           <div class="d-flex mb-10">
             <!-- 👉 Avatar -->
@@ -123,6 +123,7 @@ async function handleSubmit() {
               <div class="d-flex flex-wrap gap-4">
                 <VBtn
                   color="primary"
+                  data-test="upload-photo-button"
                   @click="inputFileRef?.click()"
                 >
                   <VIcon
@@ -143,6 +144,7 @@ async function handleSubmit() {
                   type="reset"
                   color="error"
                   variant="outlined"
+                  data-test="reset-photo-button"
                   @click="resetAvatar"
                 >
                   <span class="d-none d-sm-block">Reset</span>
@@ -170,6 +172,7 @@ async function handleSubmit() {
                   v-model="formData.full_name"
                   placeholder="John"
                   label="Full Name"
+                  data-test="full-name-input"
                 />
               </VCol>
 
@@ -184,6 +187,7 @@ async function handleSubmit() {
                   label="E-mail"
                   placeholder="johndoe@gmail.com"
                   type="email"
+                  data-test="email-input"
                 />
               </VCol>
 
@@ -196,6 +200,7 @@ async function handleSubmit() {
                   v-model="formData.organization"
                   label="Organization"
                   placeholder="Thecodeorigin"
+                  data-test="organization-input"
                 />
               </VCol>
 
@@ -208,6 +213,7 @@ async function handleSubmit() {
                   v-model="formData.phone"
                   label="Phone Number"
                   placeholder="+1 (917) 543-9876"
+                  data-test="phone-input"
                 />
               </VCol>
 
@@ -220,6 +226,7 @@ async function handleSubmit() {
                   v-model="formData.address"
                   label="Address"
                   placeholder="123 Main St, New York, NY 10001"
+                  data-test="address-input"
                 />
               </VCol>
 
@@ -232,6 +239,7 @@ async function handleSubmit() {
                   v-model="formData.postcode"
                   label="Zip Code"
                   placeholder="10001"
+                  data-test="zip-code-input"
                 />
               </VCol>
 
@@ -247,6 +255,7 @@ async function handleSubmit() {
                   item-title="name"
                   item-value="name"
                   placeholder="Select Country"
+                  data-test="country-select"
                 >
                   <template #item="{ props, item }">
                     <VListItem v-bind="props">
@@ -271,6 +280,7 @@ async function handleSubmit() {
                   item-title="name"
                   item-value="state_code"
                   placeholder="Select City"
+                  data-test="city-select"
                 />
               </VCol>
 
@@ -286,6 +296,7 @@ async function handleSubmit() {
                   closable-chips
                   placeholder="Select Language"
                   :items="['English', 'Spanish', 'Arabic', 'Hindi', 'Urdu']"
+                  data-test="language-select"
                 />
               </VCol>
 
@@ -294,7 +305,7 @@ async function handleSubmit() {
                 cols="12"
                 class="d-flex flex-wrap gap-4"
               >
-                <VBtn type="submit">
+                <VBtn type="submit" data-test="save-button">
                   Save changes
                 </VBtn>
 
@@ -302,6 +313,7 @@ async function handleSubmit() {
                   color="secondary"
                   variant="outlined"
                   type="reset"
+                  data-test="reset-button"
                   @click.prevent="resetForm"
                 >
                   Reset

@@ -30,7 +30,7 @@ const isSubscriptionDue = computed(() => {
 <template>
   <VRow>
     <!-- 👉 Current Plan -->
-    <VCol v-if="subscription" cols="12">
+    <VCol v-if="subscription" data-test="current-plan-component" cols="12">
       <VCard>
         <VCardItem class="pb-6">
           <VCardTitle>Current Plan</VCardTitle>
@@ -44,7 +44,8 @@ const isSubscriptionDue = computed(() => {
               <div class="d-flex flex-column gap-y-6">
                 <div class="d-flex flex-column gap-y-1">
                   <h6 class="text-h6">
-                    Your Current Plan is {{ subscription.items.data[0].price.metadata?.name }}
+                    Your Current Plan is
+                    <span data-test="plan-name">{{ subscription.items.data[0]?.price.metadata?.name }}</span>
                   </h6>
                   <div>
                     A simple start for everyone
@@ -53,7 +54,10 @@ const isSubscriptionDue = computed(() => {
 
                 <div class="d-flex flex-column gap-y-1">
                   <h6 class="text-h6">
-                    Active until {{ dateExpired }}
+                    Active until
+                    <span data-test="plan-expired-date">
+                      {{ dateExpired }}
+                    </span>
                   </h6>
                   <div>
                     We will send you a notification upon Subscription expiration
@@ -63,10 +67,12 @@ const isSubscriptionDue = computed(() => {
                 <div class="d-flex flex-column gap-y-1">
                   <div class="d-flex align-center gap-x-2">
                     <h6 class="text-h6">
-                      {{ new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: (subscription.currency || 'usd').toUpperCase(),
-                      }).format((subscription.items.data[0].price.unit_amount || 0) / 100) }} Per Month
+                      <span data-test="plan-price">
+                        {{ new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: (subscription.currency || 'usd').toUpperCase(),
+                        }).format((subscription.items.data[0]?.price.unit_amount || 0) / 100) }}
+                      </span> Per Month
                     </h6>
                     <VChip
                       color="primary"
@@ -82,7 +88,7 @@ const isSubscriptionDue = computed(() => {
               </div>
             </VCol>
             <VCol
-              v-if="subscription.items.data[0].price.unit_amount !== 0"
+              v-if="subscription.items.data[0]?.price.unit_amount !== 0"
               cols="12"
               md="6"
             >

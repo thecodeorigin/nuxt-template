@@ -23,7 +23,7 @@ const pricingComputed = computed(() => {
     return []
 
   const newArrayOfPrices = Object.values(stripeStore.stripePrices)[0]?.map((price) => {
-    const isCurrentPlan = subscriptionStore.subscriptions.some(sub => sub.items.data[0].plan.id === price.id)
+    const isCurrentPlan = subscriptionStore.subscriptions.some(sub => sub.items.data[0]?.plan.id === price.id)
     return {
       ...price,
       current: isCurrentPlan,
@@ -61,7 +61,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
   </div>
   <!-- SECTION pricing plans -->
 
-  <VRow class="justify-center">
+  <VRow v-if="pricingComputed && pricingComputed?.length > 0" data-test="pricing-list" class="justify-center">
     <VCol
       v-for="plan in pricingComputed?.reverse()"
       :key="plan.id"
@@ -75,7 +75,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
         <VCardText class="position-relative text-center">
           <div>
             <div class="d-flex align-center">
-              <h1 class="text-h3 text-primary font-weight-bold">
+              <h1 data-test="pricing-price" class="text-h3 text-primary font-weight-bold">
                 {{ new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: (plan.currency || 'usd').toUpperCase(),
@@ -92,6 +92,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
             :disabled="plan.current"
             color="primary"
             class="mt-4"
+            :data-test="plan.current ? 'current-plan-button' : 'upgrade-plan-button'"
             @click="handleSubscribe(plan.id, plan.current)"
           >
             {{ plan.current ? 'Your Current Plan' : 'Upgrade' }}
@@ -116,7 +117,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
                   icon="mdi-check"
                   class="me-2 icon-check"
                 />
-                <div class="text-truncate">
+                <div data-test="pricing-features" class="text-truncate">
                   {{ feature }}
                 </div>
               </VListItemTitle>
