@@ -88,6 +88,7 @@ function selectFile() {
                       </VCardText>
                       <VCardActions>
                         <VBtn
+                          data-test="button-remove-project-file"
                           variant="text"
                           block
                           @click.stop="fileData.files.splice(index, 1)"

@@ -36,6 +36,7 @@ const resolveChipColor = computed(() => {
     lg="3"
     md="4"
     sm="6"
+    data-test="project-item"
   >
     <div
       class="relative px-5 pt-8 pb-5 file sm:px-5 zoom-in"
@@ -48,9 +49,13 @@ const resolveChipColor = computed(() => {
         flat
       >
         <div class="pa-2">
-          <div :class="$style.thumbnail">
+          <div
+            :class="$style.thumbnail"
+            :data-test="`project-preview-${item.status}`"
+          >
             <VProgressCircular
               v-if="item.status !== 'succeeded'"
+              data-test="project-preview-loading-img"
               :size="60"
               color="primary"
               indeterminate
@@ -60,6 +65,7 @@ const resolveChipColor = computed(() => {
             >
               <VImg
                 v-if="item.source_thumbnail"
+                data-test="project-preview-img"
                 :src="item.source_thumbnail"
                 :alt="item.title || item.source_title || ''"
                 class="cursor-pointer"
@@ -67,6 +73,7 @@ const resolveChipColor = computed(() => {
               />
               <FileIcon
                 v-else
+                data-test="project-preview-img"
                 variant="directory"
                 style="height: 100%; width: 60%;"
               />

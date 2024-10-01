@@ -171,7 +171,7 @@ onUnmounted(() => clearInterval(intervalId))
       <VSpacer />
 
       <div class="d-flex gap-x-4 align-center">
-        <VBtn v-if="itemsSelected.length > 0" color="error" @click="handleDeleteProject">
+        <VBtn v-if="itemsSelected.length > 0" data-test="button-delete-project" color="error" @click="handleDeleteProject">
           Delete
         </VBtn>
         <VBtn

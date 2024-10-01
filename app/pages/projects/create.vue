@@ -276,6 +276,7 @@ async function createProject() {
 
       <div class="d-flex gap-4 align-center flex-wrap">
         <VBtn
+          data-test="button-reset-form-create-project"
           variant="outlined"
           color="secondary"
           @click="resetForm"
@@ -283,6 +284,7 @@ async function createProject() {
           {{ $t('Reset') }}
         </VBtn>
         <VBtn
+          data-test="button-confirm-form-create-project"
           type="submit"
           :disabled="creating"
         >
@@ -301,6 +303,7 @@ async function createProject() {
               <VCol md="6" cols="12">
                 <VTextField
                   v-model="formData.title"
+                  data-test="input-enter-project-title"
                   label="Name"
                   :rules="[requiredValidator]"
                   placeholder="Project's Name"
@@ -310,6 +313,7 @@ async function createProject() {
                 <VSelect
                   v-model="formData.category_id"
                   :items="categories.data"
+                  data-test="dropdown-enter-project-category"
                   item-title="name"
                   item-value="id"
                   label="Category"
@@ -321,6 +325,7 @@ async function createProject() {
               <VCol cols="12">
                 <VTextarea
                   v-model="formData.description"
+                  data-test="input-enter-project-description"
                   label="Description"
                   placeholder="Project's Description"
                 />
@@ -340,6 +345,7 @@ async function createProject() {
               <span>Speaker Recognition</span>
               <VSwitch
                 v-model="formData.is_voice_recognition"
+                data-test="input-confirm-voice-recognition"
                 density="compact"
               />
             </div>
@@ -347,6 +353,7 @@ async function createProject() {
               <VSelect
                 v-model="formData.translate_from"
                 :items="languages"
+                data-test="dropdown-enter-project-origin-language"
                 item-title="label"
                 item-value="value"
                 label="Original Language"
@@ -355,6 +362,7 @@ async function createProject() {
               />
               <VSelect
                 v-model="formData.translate_to"
+                data-test="dropdown-enter-project-language"
                 :items="languages"
                 item-title="label"
                 item-value="value"
@@ -365,6 +373,7 @@ async function createProject() {
               <VSelect
                 :model-value="formData.model"
                 placeholder="Select AI Model"
+                data-test="dropdown-enter-project-model-AI"
                 label="AI Model"
                 :items="listModel"
                 item-title="label"
