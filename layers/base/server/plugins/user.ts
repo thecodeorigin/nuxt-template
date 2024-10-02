@@ -1,9 +1,21 @@
-export default defineNitroPlugin((nitroApp: any) => {
-  nitroApp.hooks.hook('user:get', (data: any) => {
-    console.log('User get:', data)
-  })
+import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
 
-  nitroApp.hooks.hook('user:created', (data: any) => {
-    console.log('User created:', data)
+export default defineNitroPlugin((nitroApp) => {
+  nitroApp.hooks.hook('user:created', async (sysUser) => {
+    if (sysUser.email)
+      await createStripeCustomerOnSignup(sysUser.email)
+
+    const { createShortcut } = useShortcutCrud(sysUser.id)
+
+    await Promise.all([
+      createShortcut({
+        route: '/projects',
+        user_id: sysUser.id,
+      }),
+      createShortcut({
+        route: '/dashboard',
+        user_id: sysUser.id,
+      }),
+    ])
   })
 })
