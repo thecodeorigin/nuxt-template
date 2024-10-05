@@ -3457,7 +3457,7 @@ packages:
     peerDependencies:
       '@types/video.js': ^7
       video.js: 7.x
-      vue: 3.3.13
+      vue: 3.x
 
   '@videojs/http-streaming@3.6.0':
     resolution: {integrity: sha512-dK98DFM7D3j8BIGVk6Htaw5A32ciPLDiKyMlcQaxVbxDzH7DtLpkldIRlf92No8lbh0u6VS0EF9q2vv0nDwkOg==}
