@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -13,6 +13,14 @@
     "type": "git",
     "url": "git+ssh://git@github.com/imrim12/nuxt-template.git",
     "directory": ""
+  },
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./utils": "./app/utils",
+    "./constant": "./app/constant",
+    "./schemas": "./app/server/db/schemas",
+    "./@core": "./app/@core",
+    "./@layouts": "./app/@layouts"
   },
   "main": "./nuxt.config.ts",
   "scripts": {
