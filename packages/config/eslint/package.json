@@ -2,7 +2,18 @@
   "name": "@imrim12/eslint-config",
   "type": "module",
   "version": "1.0.0",
-  "private": true,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/",
+    "access": "restricted"
+  },
+  "packageManager": "pnpm@9.4.0",
+  "author": "thecodeorigin <contact@thecodeorigin.com>",
+  "homepage": "https://github.com/imrim12/nuxt-template",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/imrim12/nuxt-template.git",
+    "directory": ""
+  },
   "main": "./index.mjs",
   "types": "./index.d.ts",
   "devDependencies": {
