@@ -1,7 +1,7 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
-import type { Actions, Subjects } from './layers/base/app/utils/casl'
-import type { NavGroupType, NavItem } from './layers/base/app/@base/@layouts/types'
+import type { Actions, Subjects } from './app/utils/casl'
+import type { NavGroupType, NavItem } from './app/@base/@layouts/types'
 
 declare module '#app' {
   interface PageMeta {

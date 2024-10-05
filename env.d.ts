@@ -1,8 +1,10 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
 import type { Page } from 'puppeteer'
-import type { Actions, Subjects } from './layers/base/app/utils/casl'
-import type { NavGroupType, NavItem } from './layers/base/app/@base/@layouts/types'
+import type { Actions, Subjects } from '@base/utils/casl'
+import type { NavGroupType, NavItem } from '@base/@layouts/types'
+import type { z } from 'zod'
+import type { selectSysUserSchema } from './server/db/schemas'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -22,6 +24,13 @@ declare module 'vue-router' {
 declare global {
   // eslint-disable-next-line vars-on-top
   var $page: Page
+}
+
+declare module 'nitropack' {
+  interface NitroRuntimeHooks {
+    'user:created': (data: z.infer<typeof selectSysUserSchema>) => void
+    'user:get': (data: z.infer<typeof selectSysUserSchema>) => void
+  }
 }
 
 export {}

@@ -1,7 +1,7 @@
 import type { DefaultSession } from 'next-auth'
 import type * as z from 'zod'
-import type { selectSysUserSchema } from '../../server/db/schemas/sys_users.schema'
-import type { selectSysPermissionSchema, selectSysRoleSchema } from '../../server/db/schemas'
+import type { selectSysUserSchema } from '@base/server/db/schemas/sys_users.schema'
+import type { selectSysPermissionSchema, selectSysRoleSchema } from '@base/server/db/schemas'
 
 export type LoggedInUser = z.infer<typeof selectSysUserSchema> & {
   role: z.infer<typeof selectSysRoleSchema> & {

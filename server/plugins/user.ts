@@ -1,13 +1,20 @@
-import { useCategoryCrud } from '@/server/composables/useCategoryCrud'
+import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('user:created', async (sysUser) => {
-    const { createCategory } = useCategoryCrud({ user_id: sysUser.id })
+    if (sysUser.email)
+      await createStripeCustomerOnSignup(sysUser.email)
+
+    const { createShortcut } = useShortcutCrud(sysUser.id)
 
     await Promise.all([
-      createCategory({
-        name: 'Uncategorized',
-        slug: `uncategorized-${Date.now()}`,
+      createShortcut({
+        route: '/projects',
+        user_id: sysUser.id,
+      }),
+      createShortcut({
+        route: '/dashboard',
+        user_id: sysUser.id,
       }),
     ])
   })
