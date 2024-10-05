@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -18,10 +18,12 @@
     ".": "./nuxt.config.ts",
     "./utils": "./app/utils/index.ts",
     "./utils/*": "./app/utils/*.ts",
+    "./server/utils": "./server/utils/index.ts",
+    "./server/utils/*": "./server/utils/*.ts",
     "./constant": "./app/constant/index.ts",
     "./constant/*": "./app/constant/*.ts",
-    "./schemas": "./app/server/db/schemas/index.ts",
-    "./schemas/*": "./app/server/db/schemas/*.ts",
+    "./schemas": "./server/db/schemas/index.ts",
+    "./schemas/*": "./server/db/schemas/*.ts",
     "./@core": "./app/@core/index.ts",
     "./@core/*": "./app/@core/*.ts",
     "./@layouts": "./app/@layouts/index.ts",
