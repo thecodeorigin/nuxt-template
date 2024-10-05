@@ -8,7 +8,7 @@ const commandOptions = {
 
 (async function () {
   try {
-    $(commandOptions)`npx unbuild`
+    await $(commandOptions)`npx unbuild`
   }
   catch (error) {
     console.error(error)
