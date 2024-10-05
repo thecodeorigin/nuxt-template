@@ -55,3 +55,6 @@ public/firebase-config.json
 
 docker/postgres
 docker/pgadmin
+
+server/db/schemas/cjs
+server/db/schemas/mjs
