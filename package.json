@@ -28,6 +28,7 @@
   },
   "main": "./nuxt.config.ts",
   "scripts": {
+    "with-env": "doppler run -- pnpm",
     "dev": "jiti ./scripts/serve.ts",
     "build": "node --max-old-space-size=4096 node_modules/nuxt/bin/nuxt.mjs build",
     "prepack": "jiti ./scripts/prepack.ts",

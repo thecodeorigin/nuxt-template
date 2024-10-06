@@ -87,5 +87,7 @@
         "borderStyle": "solid"
       }
     ]
-  }
+  },
+  "doppler.autocomplete.enable": true,
+  "doppler.hover.enable": true
 }
