@@ -8,8 +8,6 @@ const commandOptions = {
 
 (async function () {
   try {
-    $(commandOptions)`npx jiti ./scripts/postbuild.ts`
-
     $(commandOptions)`nuxt dev`
   }
   catch (error) {
