@@ -1,4 +1,4 @@
-import { $ } from 'execa'
+// import { $ } from 'execa'
 
 import 'dotenv/config'
 
@@ -8,7 +8,7 @@ const commandOptions = {
 
 (async function () {
   try {
-    await $(commandOptions)`npx unbuild`
+    // await $(commandOptions)``
   }
   catch (error) {
     console.error(error)

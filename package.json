@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -19,16 +19,8 @@
     "./utils/*": "./app/utils/*.ts",
     "./server/utils/*": "./server/utils/*.ts",
     "./constant/*": "./app/constant/*.ts",
-    "./schemas": {
-      "types": "./server/db/schemas/index.ts",
-      "import": "./server/db/schemas/mjs/index.mjs",
-      "require": "./server/db/schemas/cjs/index.cjs"
-    },
-    "./schemas/*": {
-      "types": "./server/db/schemas/*.ts",
-      "import": "./server/db/schemas/mjs/*.mjs",
-      "require": "./server/db/schemas/cjs/*.cjs"
-    },
+    "./schemas": "./server/db/schemas/index.ts",
+    "./schemas/*": "./server/db/schemas/*.ts",
     "./@core": "./app/@core/index.ts",
     "./@core/*": "./app/@core/*.ts",
     "./@layouts": "./app/@layouts/index.ts",
