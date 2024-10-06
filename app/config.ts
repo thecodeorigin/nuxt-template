@@ -7,6 +7,7 @@ import logo from '@base/images/logo.svg?raw'
 import { Skins } from '@base/@core/enums'
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@base/@layouts/enums'
 import { defineThemeConfig } from '@base/@core'
+import { h } from 'vue'
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
