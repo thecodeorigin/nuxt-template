@@ -8,7 +8,7 @@ import { NavGroupType } from '@base/@layouts/types'
 defineOptions({
   inheritAttrs: false,
 })
-
+const { t } = useI18n()
 const LazyAppBarSearch = defineAsyncComponent(() => import('@base/@core/components/AppBarSearch.vue'))
 
 interface Suggestion {
@@ -122,7 +122,7 @@ function redirectToSuggestedOrSearchedPage(selected: Suggestion) {
       @click="Shepherd.activeTour?.cancel()"
     >
       <div>
-        Search
+        {{ t('Search') }}
       </div>
       <div class="meta-key">
         &#8984;K
@@ -132,7 +132,7 @@ function redirectToSuggestedOrSearchedPage(selected: Suggestion) {
 
   <!-- 👉 App Bar Search -->
   <LazyAppBarSearch
-    v-model:isDialogVisible="isAppSearchBarVisible"
+    v-model:is-dialog-visible="isAppSearchBarVisible"
     :search-results="searchResult"
     :is-loading="isLoading"
     @search="searchQuery = $event"

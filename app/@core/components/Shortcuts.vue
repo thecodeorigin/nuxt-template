@@ -10,12 +10,11 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   togglerIcon: 'ri-star-smile-line',
 })
-
 const emit = defineEmits<{
   (e: 'add'): void
   (e: 'change', payload: boolean): void
 }>()
-
+const { t } = useI18n()
 function handleAddShortcut() {
   emit('add')
 }
@@ -38,7 +37,7 @@ function handleAddShortcut() {
       >
         <VCardItem class="px-4 py-3">
           <h6 class="text-h6">
-            Shortcuts
+            {{ t('Shortcuts') }}
           </h6>
 
           <template #append>
@@ -51,7 +50,7 @@ function handleAddShortcut() {
                 activator="parent"
                 location="start"
               >
-                Add current page to shortcut
+                {{ t('Add current page to shortcut') }}
               </VTooltip>
             </IconBtn>
           </template>
@@ -81,7 +80,7 @@ function handleAddShortcut() {
               </VAvatar>
 
               <h6 class="text-h6 mt-3">
-                {{ shortcut.title }}
+                {{ t(shortcut.title) }}
               </h6>
             </VCol>
           </VRow>

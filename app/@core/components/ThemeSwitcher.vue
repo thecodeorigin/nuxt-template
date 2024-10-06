@@ -7,6 +7,7 @@ const props = defineProps<{
 }>()
 
 const configStore = useConfigStore()
+const { t } = useI18n()
 
 const selectedItem = ref([configStore.theme])
 
@@ -29,7 +30,7 @@ watch(
       open-delay="1000"
       scroll-strategy="close"
     >
-      <span class="text-capitalize">{{ configStore.theme }}</span>
+      <span class="text-capitalize">{{ t(configStore.theme) }}</span>
     </VTooltip>
     <VMenu
       activator="parent"
@@ -52,7 +53,7 @@ watch(
           @click="() => { configStore.theme = name }"
         >
           <VListItemTitle class="text-capitalize">
-            {{ name }}
+            {{ t(name) }}
           </VListItemTitle>
         </VListItem>
       </VList>

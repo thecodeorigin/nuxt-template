@@ -6,6 +6,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'confirm', value: boolean): void
 }>()
+const { t } = useI18n()
 
 const modelValue = defineModel('modelValue', {
   type: Boolean,
@@ -53,7 +54,7 @@ function handleCancel() {
           variant="elevated"
           @click="handleConfirm"
         >
-          Confirm
+          {{ t('Confirm') }}
         </VBtn>
 
         <VBtn
@@ -61,7 +62,7 @@ function handleCancel() {
           variant="outlined"
           @click="handleCancel"
         >
-          Cancel
+          {{ t('Cancel') }}
         </VBtn>
       </VCardText>
     </VCard>

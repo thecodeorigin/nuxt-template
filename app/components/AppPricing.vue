@@ -3,6 +3,8 @@ import type { StripePricingMetadata } from '@base/utils/types/stripe'
 
 const props = defineProps<Pricing>()
 
+const { t } = useI18n()
+
 const stripeStore = useStripeStore()
 const subscriptionStore = useSubscriptionStore()
 
@@ -50,12 +52,12 @@ async function handleSubscribe(priceId: string, subscribed = false) {
   <div class="text-center mb-6">
     <slot name="heading">
       <h4 class="text-h4 mb-2">
-        {{ props.title ? props.title : 'Pricing Plans' }}
+        {{ props.title ? props.title : t('Pricing Plans') }}
       </h4>
     </slot>
     <slot name="subtitle">
       <p class="mb-0">
-        Choose the plan that fits your needs
+        {{ t('Choose the plan that fits your needs') }}
       </p>
     </slot>
   </div>
@@ -81,7 +83,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
                   currency: (plan.currency || 'usd').toUpperCase(),
                 }).format((plan.unit_amount || 0) / 100) }}
               </h1>
-              <span class="text-body-1 font-weight-medium align-self-end">/month</span>
+              <span class="text-body-1 font-weight-medium align-self-end">/{{ t('month') }}</span>
             </div>
           </div>
 
@@ -95,7 +97,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
             :data-test="plan.current ? 'current-plan-button' : 'upgrade-plan-button'"
             @click="handleSubscribe(plan.id, plan.current)"
           >
-            {{ plan.current ? 'Your Current Plan' : 'Upgrade' }}
+            {{ plan.current ? t('Your Current Plan') : t('Upgrade') }}
           </VBtn>
         </VCardText>
         <!-- 👉 Plan features -->
@@ -103,7 +105,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
           <VList class="card-list pb-5">
             <!-- title package includes color black -->
             <VListItemTitle class="mb-3 font-weight-medium">
-              Package Includes
+              {{ t('Package Includes') }}
             </VListItemTitle>
             <VListItem
               v-for="feature in plan.features"

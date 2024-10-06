@@ -2,13 +2,14 @@
 import type { RouteLocationRaw } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
+const { t } = useI18n()
 const { signOut } = useAuth()
 const authStore = useAuthStore()
 const tokenDeviceStore = useTokenDeviceStore()
 const userEmail = computed(() => authStore.currentUser?.email)
 const userAvatar = computed(() => authStore.currentUser?.avatar_url)
 const userFullname = computed(() => authStore.currentUser?.full_name)
-const userRole = computed(() => authStore.currentUser?.role?.name || 'User')
+const userRole = computed(() => authStore.currentUser?.role?.name || t('User'))
 
 async function logout() {
   try {
@@ -33,13 +34,13 @@ const userProfileList: Array<{
   {
     type: 'navItem',
     icon: 'ri-user-line',
-    title: 'Profile Settings',
+    title: t('Profile Settings'),
     to: { name: 'settings-tab', params: { tab: 'account' } },
   },
   {
     type: 'navItem',
     icon: 'ri-file-text-line',
-    title: 'Billing Plan',
+    title: t('Billing & Plan'),
     to: { name: 'settings-tab', params: { tab: 'billing-plans' } },
     chipsProps: { color: 'error', text: '4', size: 'small' },
   },
@@ -47,7 +48,7 @@ const userProfileList: Array<{
   {
     type: 'navItem',
     icon: 'ri-money-dollar-circle-line',
-    title: 'Pricing',
+    title: t('Pricing'),
     to: { name: 'settings-pricing' },
   },
   {

@@ -1,13 +1,10 @@
 <script lang="ts" setup>
-import type { InferSelectModel } from 'drizzle-orm'
-// import type { sysNotificationTable } from '@base/server/db/schemas/sys_notifications.schema.js'
+const { t } = useI18n()
 
-// type Notification = InferSelectModel<typeof sysNotificationTable>
-// TODO: Fix this type
 type Notification = any
 
 const systemNotificationStore = useSystemNotificationStore()
-
+const emptyNotification = ref(false)
 const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})
 const notificationQuery = ref({
@@ -25,25 +22,25 @@ const { data, refresh: fetchNotifications } = await useLazyAsyncData(() => syste
 })
 notifications.value.push(...data.value)
 
-watch(notificationVisible, async (visible) => {
-  if (visible) {
-    notificationQuery.value.page = 1
-    await fetchNotifications()
-  }
-})
-
 async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 'loading' | 'error') => void }) {
   try {
-    if (!notifications.value.length)
+    if (emptyNotification.value) {
       return done('empty')
+    }
 
+    if (!notifications.value.length) {
+      emptyNotification.value = true
+      return done('empty')
+    }
     notificationQuery.value.page++
 
     await fetchNotifications()
     notifications.value.push(...data.value)
 
-    if (!data || data.value?.length === 0)
+    if (!data || data.value?.length === 0) {
+      emptyNotification.value = true
       return done('empty')
+    }
 
     return done('ok')
   }
@@ -146,7 +143,7 @@ async function handleMarkAllReadOrUnread() {
         <!-- 👉 Header -->
         <VCardItem class="notification-section">
           <h6 class="text-h6 text-truncate">
-            Notifications
+            {{ t('Notifications') }}
           </h6>
 
           <template #append>
@@ -157,7 +154,7 @@ async function handleMarkAllReadOrUnread() {
               variant="tonal"
               color="primary"
             >
-              {{ notifications.filter(item => !item.read_at).length }} unread
+              {{ notifications.filter(item => !item.read_at).length }} {{ t('Unread') }}
             </VChip>
 
             <IconBtn
@@ -174,7 +171,7 @@ async function handleMarkAllReadOrUnread() {
                 activator="parent"
                 location="start"
               >
-                {{ isAllMarkRead ? 'Mark all as unread' : 'Mark all as read' }}
+                {{ isAllMarkRead ? t('Mark all as unread') : t('Mark all as read') }}
               </VTooltip>
             </IconBtn>
           </template>
@@ -184,7 +181,8 @@ async function handleMarkAllReadOrUnread() {
         <VInfiniteScroll
           :max-height="300"
           :items="notifications"
-          :empty-text="!notifications?.length ? 'No Notification Found!' : 'No more notifications'"
+          :empty-text="!notifications?.length ? t('No Notification Found!') : t('No more notifications')"
+
           @load="fetchMoreNotifications"
         >
           <template
@@ -215,7 +213,7 @@ async function handleMarkAllReadOrUnread() {
                     class="text-caption mb-0"
                     style="letter-spacing: 0.4px !important; line-height: 18px;"
                   >
-                    {{ $formatCreatedAt(notification.created_at) }}
+                    {{ formatCreatedAt(notification.created_at) }}
                   </p>
                 </div>
                 <VSpacer />
@@ -248,15 +246,8 @@ async function handleMarkAllReadOrUnread() {
         <!-- 👉 Footer -->
         <VCardText
           v-show="notifications?.length"
-          class="pa-4"
-        >
-          <VBtn
-            block
-            size="small"
-          >
-            View All Notifications
-          </VBtn>
-        </VCardText>
+          class="pa-2"
+        />
       </VCard>
     </VMenu>
   </IconBtn>
