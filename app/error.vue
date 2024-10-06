@@ -58,7 +58,7 @@ const handleError = () => clearError({ redirect: '/' })
   <NuxtLayout name="blank">
     <div class="misc-wrapper">
       <ErrorHeader
-        :status-code="errToShow.status"
+        :status-code="errToShow?.status"
         :title="errToShow.title"
         :description="errToShow.description"
         class="mb-10"
@@ -66,7 +66,7 @@ const handleError = () => clearError({ redirect: '/' })
 
       <!-- eslint-disable vue/no-v-html -->
       <div
-        v-if="errToShow.status === 500"
+        v-if="errToShow?.status === 500"
         style="max-inline-size: 80dvw; overflow-x: scroll;"
         v-html="error.stack"
       />

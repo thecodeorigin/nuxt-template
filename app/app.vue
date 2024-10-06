@@ -39,13 +39,18 @@ onBeforeMount(async () => {
     catch (error) {
       console.log('Error:', error)
     }
-
-    onMessage(getMessaging(), (payload) => {
-      // TODO: Handle incoming messages
-      console.log('Client message:', payload)
-    })
   }
+  onMessage(getMessaging(), (payload) => {
+    // TODO: Handle incoming messages
+    // console.log('Client message:', payload)
+    const linkSplits = payload.fcmOptions?.link?.split('/projects/')
+    notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
+  })
 })
+function handleClick() {
+  if (notificationStore.notificationProps.link)
+    navigateTo(notificationStore.notificationProps.link)
+}
 </script>
 
 <template>
@@ -71,6 +76,8 @@ onBeforeMount(async () => {
 
       <VSnackbar
         v-bind="notificationStore.notificationProps"
+        :style="{ cursor: notificationStore.notificationProps.link ? 'pointer' : 'default' }"
+        @click="handleClick"
       >
         {{ notificationStore.notificationMessage }}
       </VSnackbar>

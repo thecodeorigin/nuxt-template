@@ -7,6 +7,7 @@ export interface NotifyOptions {
   location?: NotificationLocation
   timeout?: number
   outline?: boolean
+  link?: string
 }
 
 export const useNotificationStore = defineStore('notification', () => {
@@ -16,6 +17,7 @@ export const useNotificationStore = defineStore('notification', () => {
   const notificationType = ref<NotificationType>()
   const notificationTimeout = ref(3000)
   const notificationOutline = ref(false)
+  const notificationLink = ref('')
 
   const confirmationMessage = ref('')
 
@@ -26,6 +28,7 @@ export const useNotificationStore = defineStore('notification', () => {
     timeout: notificationTimeout.value,
     outline: notificationOutline.value,
     multiline: true,
+    link: notificationLink.value,
   }))
 
   function showNotification(message: string, options?: NotifyOptions) {
@@ -35,6 +38,7 @@ export const useNotificationStore = defineStore('notification', () => {
     notificationLocation.value = options?.location || 'bottom'
     notificationTimeout.value = options?.timeout || 10000
     notificationOutline.value = options?.outline || false
+    notificationLink.value = options?.link || ''
 
     setTimeout(hideNotification, options?.timeout || notificationTimeout.value)
   }
@@ -45,6 +49,7 @@ export const useNotificationStore = defineStore('notification', () => {
     notificationType.value = 'success'
     notificationLocation.value = 'bottom'
     notificationTimeout.value = 3000
+    notificationLink.value = ''
   }
 
   let confirmationResolver: (value: boolean) => void
