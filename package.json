@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -33,7 +33,7 @@
     "postbuild": "jiti ./scripts/postbuild.ts",
     "prepack": "jiti ./scripts/prepack.ts",
     "lint": "eslint . --fix",
-    "postinstall": "nuxt prepare && puppeteer browsers install",
+    "postinstall": "nuxt prepare",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "prepare": "nuxt prepare",
