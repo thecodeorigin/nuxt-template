@@ -191,6 +191,7 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@nuxt/eslint',
+    '@nuxt/fonts',
     '@nuxtjs/device',
     '@nuxtjs/i18n',
     '@sidebase/nuxt-auth',
