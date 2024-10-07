@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-const { t } = useI18n()
 const isPricingPlanDialogVisible = ref(false)
 
 const stripeStore = useStripeStore()
@@ -34,7 +33,7 @@ const isSubscriptionDue = computed(() => {
     <VCol v-if="subscription" data-test="current-plan-component" cols="12">
       <VCard>
         <VCardItem class="pb-6">
-          <VCardTitle>{{ t('Current Plan') }}</VCardTitle>
+          <VCardTitle>{{ $t('Current Plan') }}</VCardTitle>
         </VCardItem>
         <VCardText>
           <VRow>
@@ -45,23 +44,23 @@ const isSubscriptionDue = computed(() => {
               <div class="d-flex flex-column gap-y-6">
                 <div class="d-flex flex-column gap-y-1">
                   <h6 class="text-h6">
-                    {{ t('Your Current Plan is') }}
+                    {{ $t('Your Current Plan is') }}
                     <span data-test="plan-name">{{ subscription.items.data[0]?.price.metadata?.name }}</span>
                   </h6>
                   <div>
-                    {{ t('A simple start for everyone') }}
+                    {{ $t('A simple start for everyone') }}
                   </div>
                 </div>
 
                 <div class="d-flex flex-column gap-y-1">
                   <h6 class="text-h6">
-                    {{ t('Active until') }}
+                    {{ $t('Active until') }}
                     <span data-test="plan-expired-date">
                       {{ dateExpired }}
                     </span>
                   </h6>
                   <div>
-                    {{ t('We will send you a notification upon Subscription expiration') }}
+                    {{ $t('We will send you a notification upon Subscription expiration') }}
                   </div>
                 </div>
 
@@ -73,17 +72,17 @@ const isSubscriptionDue = computed(() => {
                           style: 'currency',
                           currency: (subscription.currency || 'usd').toUpperCase(),
                         }).format((subscription.items.data[0]?.price.unit_amount || 0) / 100) }}
-                      </span> {{ t('Per Month') }}
+                      </span> {{ $t('Per Month') }}
                     </h6>
                     <VChip
                       color="primary"
                       size="small"
                     >
-                      {{ t('Popular') }}
+                      {{ $t('Popular') }}
                     </VChip>
                   </div>
                   <p class="text-base mb-0">
-                    {{ t('Standard plan for small to medium businesses') }}
+                    {{ $t('Standard plan for small to medium businesses') }}
                   </p>
                 </div>
               </div>
@@ -103,9 +102,9 @@ const isSubscriptionDue = computed(() => {
 
               <!-- progress -->
               <h6 class="d-flex text-h6 justify-space-between mb-1">
-                <div>{{ t('days') }}</div>
+                <div>{{ $t('days') }}</div>
                 <div v-if="subscription.days_until_due">
-                  {{ 30 - subscription.days_until_due }} {{ t('of') }} 30 {{ t('days') }}
+                  {{ 30 - subscription.days_until_due }} {{ $t('of') }} 30 {{ $t('days') }}
                 </div>
               </h6>
               <VProgressLinear
@@ -120,7 +119,7 @@ const isSubscriptionDue = computed(() => {
                   icon="mdi-check"
                   class="me-2 icon-check"
                 />
-                <p>{{ t('Your plan is active, no further action required') }}</p>
+                <p>{{ $t('Your plan is active, no further action required') }}</p>
               </div>
 
               <div v-else class="text-base mt-1 d-flex align-center">
@@ -129,21 +128,21 @@ const isSubscriptionDue = computed(() => {
                   icon="mdi-alert"
                   class="me-2"
                 />
-                <p>{{ t('Your plan is due for renewal in 15 days') }}</p>
+                <p>{{ $t('Your plan is due for renewal in 15 days') }}</p>
               </div>
             </VCol>
 
             <VCol cols="12">
               <div class="d-flex flex-wrap gap-4">
                 <VBtn @click="isPricingPlanDialogVisible = true">
-                  {{ t('Upgrade Plan') }}
+                  {{ $t('Upgrade Plan') }}
                 </VBtn>
 
                 <VBtn
                   variant="outlined"
                   @click="handleOpenStripePortal"
                 >
-                  {{ t('Manage Subscription') }}
+                  {{ $t('Manage Subscription') }}
                 </VBtn>
               </div>
             </VCol>

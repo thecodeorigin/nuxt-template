@@ -122,7 +122,7 @@ function redirectToSuggestedOrSearchedPage(selected: Suggestion) {
       @click="Shepherd.activeTour?.cancel()"
     >
       <div>
-        {{ t('Search') }}
+        {{ $t('Search') }}
       </div>
       <div class="meta-key">
         &#8984;K

@@ -2,7 +2,6 @@
 const inputFileRef = ref<HTMLElement>()
 
 const authStore = useAuthStore()
-const { t } = useI18n()
 const formFile = ref<File | null>(null)
 
 const formData = ref({
@@ -130,7 +129,7 @@ async function handleSubmit() {
                     icon="ri-upload-cloud-line"
                     class="d-sm-none"
                   />
-                  <span class="d-none d-sm-block">{{ t('Upload New Photo') }}</span>
+                  <span class="d-none d-sm-block">{{ $t('Upload New Photo') }}</span>
                 </VBtn>
                 <input
                   ref="inputFileRef"
@@ -147,7 +146,7 @@ async function handleSubmit() {
                   data-test="reset-photo-button"
                   @click="resetAvatar"
                 >
-                  <span class="d-none d-sm-block">{{ t('Reset') }}</span>
+                  <span class="d-none d-sm-block">{{ $t('Reset') }}</span>
                   <VIcon
                     icon="ri-refresh-line"
                     class="d-sm-none"
@@ -155,7 +154,7 @@ async function handleSubmit() {
                 </VBtn>
               </div>
               <p class="text-body-1 mb-0">
-                {{ t('Allowed JPG, GIF or PNG. Max size of 800K') }}
+                {{ $t('Allowed JPG, GIF or PNG, Max size of 800K') }}
               </p>
             </form>
           </div>
@@ -171,7 +170,7 @@ async function handleSubmit() {
                 <VTextField
                   v-model="formData.full_name"
                   placeholder="John"
-                  :label="t('Full Name')"
+                  :label="$t('Full Name')"
                   data-test="full-name-input"
                 />
               </VCol>
@@ -198,7 +197,7 @@ async function handleSubmit() {
               >
                 <VTextField
                   v-model="formData.organization"
-                  :label="t('Organization')"
+                  :label="$t('Organization')"
                   placeholder="Thecodeorigin"
                   data-test="organization-input"
                 />
@@ -211,7 +210,7 @@ async function handleSubmit() {
               >
                 <VTextField
                   v-model="formData.phone"
-                  :label="t('Phone Number')"
+                  :label="$t('Phone Number')"
                   placeholder="+1 (917) 543-9876"
                   data-test="phone-input"
                 />
@@ -224,7 +223,7 @@ async function handleSubmit() {
               >
                 <VTextField
                   v-model="formData.address"
-                  :label="t('Address')"
+                  :label="$t('Address')"
                   placeholder="123 Main St, New York, NY 10001"
                   data-test="address-input"
                 />
@@ -237,7 +236,7 @@ async function handleSubmit() {
               >
                 <VTextField
                   v-model="formData.postcode"
-                  :label="t('Zip Code')"
+                  :label="$t('Zip Code')"
                   placeholder="10001"
                   data-test="zip-code-input"
                 />
@@ -251,7 +250,7 @@ async function handleSubmit() {
                 <VSelect
                   v-model="formData.country"
                   :items="countryList || []"
-                  :label="t('Country')"
+                  :label="$t('Country')"
                   item-title="name"
                   item-value="name"
                   placeholder="Select Country"
@@ -276,7 +275,7 @@ async function handleSubmit() {
                   v-model="formData.city"
                   :items="cityList || []"
                   :disabled="!formData.country"
-                  :label="t('City')"
+                  :label="$t('City')"
                   item-title="name"
                   item-value="state_code"
                   placeholder="Select City"
@@ -291,7 +290,7 @@ async function handleSubmit() {
               >
                 <VSelect
                   v-model="formData.language"
-                  :label="t('Language')"
+                  :label="$t('Language')"
                   chips
                   closable-chips
                   placeholder="Select Language"
@@ -306,7 +305,7 @@ async function handleSubmit() {
                 class="d-flex flex-wrap gap-4"
               >
                 <VBtn type="submit" data-test="save-button">
-                  {{ t('Save Change') }}
+                  {{ $t('Save Change') }}
                 </VBtn>
 
                 <VBtn
@@ -316,7 +315,7 @@ async function handleSubmit() {
                   data-test="reset-button"
                   @click.prevent="resetForm"
                 >
-                  {{ t('Reset') }}
+                  {{ $t('Reset') }}
                 </VBtn>
               </VCol>
             </VRow>

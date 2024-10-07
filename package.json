@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -38,6 +38,7 @@
     "prepare": "jiti ./scripts/prepare.ts",
     "test": "vitest run",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
+    "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "jiti ./server/db/seeds/index.seed.ts",
@@ -110,6 +111,7 @@
     "bcrypt": "^5.1.1",
     "chart.js": "4.4.2",
     "cookie-es": "1.1.0",
+    "date-fns": "^4.1.0",
     "docx": "^8.5.0",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.24.2",
@@ -174,6 +176,7 @@
     "vue": "^3.5.8",
     "vue-chartjs": "5.3.1",
     "vue-flatpickr-component": "11.0.5",
+    "vue-i18n-extract": "^2.0.7",
     "vue-prism-component": "2.0.0",
     "vue-shepherd": "3.0.0",
     "vue3-apexcharts": "1.5.2",

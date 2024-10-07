@@ -37,7 +37,7 @@ function handleAddShortcut() {
       >
         <VCardItem class="px-4 py-3">
           <h6 class="text-h6">
-            {{ t('Shortcuts') }}
+            {{ $t('Shortcuts') }}
           </h6>
 
           <template #append>
@@ -50,7 +50,7 @@ function handleAddShortcut() {
                 activator="parent"
                 location="start"
               >
-                {{ t('Add current page to shortcut') }}
+                {{ $t('Add current page to shortcut') }}
               </VTooltip>
             </IconBtn>
           </template>

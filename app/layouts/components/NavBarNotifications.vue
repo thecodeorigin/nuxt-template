@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-const { t } = useI18n()
-
 type Notification = any
 
 const systemNotificationStore = useSystemNotificationStore()
@@ -143,7 +141,7 @@ async function handleMarkAllReadOrUnread() {
         <!-- 👉 Header -->
         <VCardItem class="notification-section">
           <h6 class="text-h6 text-truncate">
-            {{ t('Notifications') }}
+            {{ $t('Notifications') }}
           </h6>
 
           <template #append>
@@ -154,7 +152,7 @@ async function handleMarkAllReadOrUnread() {
               variant="tonal"
               color="primary"
             >
-              {{ notifications.filter(item => !item.read_at).length }} {{ t('Unread') }}
+              {{ notifications.filter(item => !item.read_at).length }} {{ $t('Unread') }}
             </VChip>
 
             <IconBtn
@@ -171,7 +169,7 @@ async function handleMarkAllReadOrUnread() {
                 activator="parent"
                 location="start"
               >
-                {{ isAllMarkRead ? t('Mark all as unread') : t('Mark all as read') }}
+                {{ isAllMarkRead ? $t('Mark all as unread') : $t('Mark all as read') }}
               </VTooltip>
             </IconBtn>
           </template>
@@ -181,7 +179,7 @@ async function handleMarkAllReadOrUnread() {
         <VInfiniteScroll
           :max-height="300"
           :items="notifications"
-          :empty-text="!notifications?.length ? t('No Notification Found!') : t('No more notifications')"
+          :empty-text="!notifications?.length ? $t('No Notification Found!') : $t('No more notifications')"
 
           @load="fetchMoreNotifications"
         >
@@ -213,7 +211,7 @@ async function handleMarkAllReadOrUnread() {
                     class="text-caption mb-0"
                     style="letter-spacing: 0.4px !important; line-height: 18px;"
                   >
-                    {{ formatCreatedAt(notification.created_at) }}
+                    {{ formatDistanceToNow(notification.created_at) }}
                   </p>
                 </div>
                 <VSpacer />
