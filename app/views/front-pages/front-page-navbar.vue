@@ -92,6 +92,8 @@ function isCurrentRoute(to: RouteLocationRaw) {
 }
 
 const isPageActive = computed(() => menuItems.some(item => item.navItems.some(listItem => isCurrentRoute(listItem.to))))
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -212,13 +214,18 @@ const isPageActive = computed(() => menuItems.some(item => item.navItems.some(li
             :class="$vuetify.display.mdAndUp ? 'd-none' : 'd-block'"
           >
             <div class="d-flex gap-x-3 align-center">
-              <VNodeRenderer :nodes="themeConfig.app.logo" />
+              <img
+                :src="config.public.theme.appLogo"
+                :alt="config.public.theme.appName"
+                width="auto"
+                height="24"
+              >
 
               <div
                 class="nav-title text-truncate"
                 :class="[$vuetify.display.lgAndUp ? 'd-block' : 'd-none', $vuetify.display.mdAndUp ? 'd-none' : 'd-block']"
               >
-                {{ themeConfig.app.title }}
+                {{ config.public.theme.appName }}
               </div>
             </div>
           </NuxtLink>
@@ -331,7 +338,7 @@ const isPageActive = computed(() => menuItems.some(item => item.navItems.some(li
       <VSpacer />
 
       <div class="d-flex gap-x-4 align-center">
-        <!--<NavbarThemeSwitcher class="me-0 me-sm-2" />-->
+        <!-- <NavbarThemeSwitcher class="me-0 me-sm-2" /> -->
 
         <VBtn
           v-if="$vuetify.display.lgAndUp"
@@ -378,7 +385,6 @@ const isPageActive = computed(() => menuItems.some(item => item.navItems.some(li
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.75rem;
-  text-transform: capitalize;
 }
 
 .nav-link {

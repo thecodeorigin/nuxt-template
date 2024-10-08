@@ -5,14 +5,14 @@ import { layoutConfig } from '@base/config'
 
 // ℹ️ We should not import themeConfig here but in urgency we are doing it for now
 
-export const namespaceConfig = (str: string) => `${layoutConfig.app.title}-${str}`
+export const namespaceConfig = (str: string) => `${useRuntimeConfig().public.theme.appName}-${str}`
 
 export function cookieRef<T>(key: string, defaultValue: T) {
   return useCookie<T>(
     namespaceConfig(key),
     {
       default: () => defaultValue,
-      maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30,
+      maxAge: Number(import.meta.env.AUTH_MAX_AGE) || 60 * 60 * 24 * 30,
     },
   )
 }

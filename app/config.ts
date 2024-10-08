@@ -2,8 +2,6 @@ import VerticalNavHeaderArrow from '@base/images/svg/vertical-nav-header-arrow.s
 import { breakpointsVuetifyV3 } from '@vueuse/core'
 import { VIcon } from 'vuetify/components/VIcon'
 
-// ❗ Logo SVG must be imported with ?raw suffix
-import logo from '@base/images/logo.svg?raw'
 import { Skins } from '@base/@core/enums'
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@base/@layouts/enums'
 import { defineThemeConfig } from '@base/@core'
@@ -11,10 +9,6 @@ import { h } from 'vue'
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: 'nuxt-template',
-
-    // ❗ if you have SVG logo and want it to adapt according to theme color, you have to apply color as `color: rgb(var(--v-global-theme-primary))`
-    logo: h('div', { innerHTML: logo, style: 'line-height:0; color: rgb(var(--v-global-theme-primary))' }),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: breakpointsVuetifyV3.lg - 1, // 1 for matching with vuetify breakpoint. Docs: https://next.vuetifyjs.com/en/features/display-and-platform/

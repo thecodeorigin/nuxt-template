@@ -16,6 +16,8 @@ const menus: Menu[] = [
   { name: 'Maintenance', to: { name: 'under-maintenance' } },
   { name: 'Comming Soon', to: { name: 'coming-soon' } },
 ]
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -33,9 +35,14 @@ const menus: Menu[] = [
           >
             <div class="footer-form">
               <div class="d-flex gap-2 py-1 mb-6">
-                <VNodeRenderer :nodes="themeConfig.app.logo" />
+                <img
+                  :src="config.public.theme.appLogo"
+                  :alt="config.public.theme.appName"
+                  width="auto"
+                  height="24"
+                >
                 <h1 class="footer-title">
-                  {{ themeConfig.app.title }}
+                  {{ config.public.theme.appName }}
                 </h1>
               </div>
               <div class="text-body-1 footer-text mb-6">
@@ -244,7 +251,6 @@ const menus: Menu[] = [
   font-weight: 600;
   letter-spacing: 0.27px;
   line-height: 1.5rem;
-  text-transform: capitalize;
 }
 
 .footer-line {

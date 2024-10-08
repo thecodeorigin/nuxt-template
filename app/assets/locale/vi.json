@@ -50,5 +50,7 @@
   "Upgrade Plan": "Nâng cấp gói",
   "Manage Subscription": "Quản lý đăng ký",
   "Allowed JPG, GIF or PNG, Max size of 800K": "Cho phép JPG, GIF hoặc PNG, Kích thước tối đa 800K",
-  "days": "ngày"
+  "days": "ngày",
+  "© {year} Developed by {link}": "© {year} Phát triển bởi {link}",
+  "Introduction": "Giới thiệu"
 }

@@ -32,7 +32,7 @@ onBeforeMount(async () => {
 
       if (Notification.permission === 'granted' && authStore.currentUser) {
         const messaging = getMessaging()
-        const token = await getToken(messaging, { vapidKey: config.public.FIREBASE_KEY_PAIR })
+        const token = await getToken(messaging, { vapidKey: config.public.firebase.keyPair })
         await tokenDeviceStore.setTokenDevice(token)
       }
     }

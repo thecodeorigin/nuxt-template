@@ -1,7 +1,11 @@
 import fs from 'node:fs'
-import dotenv from 'dotenv'
+import { $ } from 'execa'
 
-dotenv.config()
+import 'dotenv/config'
+
+const commandOptions = {
+  stdio: 'inherit' as const,
+};
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -16,10 +20,24 @@ const firebaseConfig = {
 
 const filePath = './public/firebase-config.json'
 
-try {
-  fs.writeFileSync(filePath, JSON.stringify(firebaseConfig, null, 2))
-  console.log('Firebase config file written successfully')
-}
-catch (err) {
-  console.error('Error writing to file:', err)
-}
+;(async function () {
+  try {
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(firebaseConfig, null, 2))
+      console.log('Firebase config file written successfully')
+    }
+    catch (err) {
+      console.error('Error writing to file:', err)
+    }
+    
+    await $(commandOptions)`nuxt prepare`
+  }
+  catch (error) {
+    console.error(error)
+
+    process.exit(1)
+  }
+})()
+
+
+

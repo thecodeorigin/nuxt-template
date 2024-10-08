@@ -89,15 +89,22 @@ function onSubmit() {
         login()
     })
 }
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
   <div>
     <NuxtLink to="/">
       <div class="auth-logo app-logo">
-        <VNodeRenderer :nodes="themeConfig.app.logo" />
+        <img
+          :src="config.public.theme.appLogo"
+          :alt="config.public.theme.appName"
+          width="auto"
+          height="24"
+        >
         <h1 class="app-logo-title">
-          {{ themeConfig.app.title }}
+          {{ config.public.theme.appName }}
         </h1>
       </div>
     </NuxtLink>
@@ -137,7 +144,7 @@ function onSubmit() {
         >
           <VCardText>
             <h4 class="text-h4 mb-1">
-              Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}!</span> 👋🏻
+              Welcome to <span>{{ config.public.theme.appName }}!</span> 👋🏻
             </h4>
             <p class="mb-0">
               Please sign-in to your account and start the adventure

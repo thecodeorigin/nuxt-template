@@ -1,10 +1,11 @@
+import type { ThemeDefinition } from 'vuetify'
 import { deepMerge } from '@antfu/utils'
 import { VBtn } from 'vuetify/components/VBtn'
 import { cookieRef } from '@base/@layouts/stores/config'
 import { themeConfig } from '@base/config'
 import defaults from './defaults'
 import { icons } from './icons'
-import { staticPrimaryColor, staticPrimaryDarkenColor, themes } from './theme'
+import { getTheme } from './theme'
 import { defineNuxtPlugin } from '#imports'
 
 // Styles
@@ -15,19 +16,21 @@ export default defineNuxtPlugin({
   name: 'vuetify',
   parallel: true,
   setup(nuxtApp) {
+    const themes = getTheme()
+
     const cookieThemeValues = {
       defaultTheme: resolveVuetifyTheme(themeConfig.app.theme),
       themes: {
         light: {
           colors: {
-            'primary': cookieRef('lightThemePrimaryColor', staticPrimaryColor).value,
-            'primary-darken-1': cookieRef('lightThemePrimaryDarkenColor', staticPrimaryDarkenColor).value,
+            'primary': cookieRef('lightThemePrimaryColor', themes.light.colors.primary).value,
+            'primary-darken-1': cookieRef('lightThemePrimaryDarkenColor', themes.light.colors['primary-darken-1']).value,
           },
         },
         dark: {
           colors: {
-            'primary': cookieRef('darkThemePrimaryColor', staticPrimaryColor).value,
-            'primary-darken-1': cookieRef('darkThemePrimaryDarkenColor', staticPrimaryDarkenColor).value,
+            'primary': cookieRef('darkThemePrimaryColor', themes.dark.colors.primary).value,
+            'primary-darken-1': cookieRef('darkThemePrimaryDarkenColor', themes.dark.colors['primary-darken-1']).value,
           },
         },
       },
@@ -41,7 +44,7 @@ export default defineNuxtPlugin({
       }
       vuetifyOptions.defaults = defaults
       vuetifyOptions.icons = icons
-      vuetifyOptions.theme = optionTheme
+      vuetifyOptions.theme = optionTheme as any
     })
   },
 })

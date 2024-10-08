@@ -13,6 +13,8 @@ import NavbarThemeSwitcher from './NavbarThemeSwitcher.vue'
 import UserProfile from './UserProfile.vue'
 
 const layoutStore = useLayoutStore()
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -23,10 +25,15 @@ const layoutStore = useLayoutStore()
         to="/"
         class="app-logo"
       >
-        <VNodeRenderer :nodes="themeConfig.app.logo" />
+        <img
+          :src="config.public.theme.appLogo"
+          :alt="config.public.theme.appName"
+          width="auto"
+          height="24"
+        >
 
         <h1 class="app-logo-title leading-normal">
-          {{ themeConfig.app.title }}
+          {{ config.public.theme.appName }}
         </h1>
       </NuxtLink>
       <VSpacer />
@@ -64,7 +71,6 @@ const layoutStore = useLayoutStore()
     font-size: 1.25rem;
     font-weight: 600;
     line-height: 1.75rem;
-    text-transform: capitalize;
   }
 }
 </style>

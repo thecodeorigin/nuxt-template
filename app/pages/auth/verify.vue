@@ -44,6 +44,8 @@ async function handleVerify() {
     loading().hide()
   }
 }
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -56,9 +58,14 @@ async function handleVerify() {
         <VCardTitle>
           <NuxtLink to="/">
             <div class="app-logo">
-              <VNodeRenderer :nodes="themeConfig.app.logo" />
+              <img
+                :src="config.public.theme.appLogo"
+                :alt="config.public.theme.appName"
+                width="auto"
+                height="24"
+              >
               <h1 class="app-logo-title">
-                {{ themeConfig.app.title }}
+                {{ config.public.theme.appName }}
               </h1>
             </div>
           </NuxtLink>

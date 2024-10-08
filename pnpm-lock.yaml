@@ -263,12 +263,6 @@ importers:
       firebase-functions:
         specifier: ^5.0.1
         version: 5.0.1(firebase-admin@12.2.0(encoding@0.1.13))
-      jsonwebtoken:
-        specifier: ^9.0.2
-        version: 9.0.2
-      jwt-decode:
-        specifier: 4.0.0
-        version: 4.0.0
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -6279,10 +6273,6 @@ packages:
 
   jws@4.0.0:
     resolution: {integrity: sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==}
-
-  jwt-decode@4.0.0:
-    resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
-    engines: {node: '>=18'}
 
   kdbush@4.0.2:
     resolution: {integrity: sha512-WbCVYJ27Sz8zi9Q7Q0xHC+05iwkm3Znipc2XTlrnJbsHMYktW4hPhXUE8Ys1engBrvffoSCqbil1JQAa7clRpA==}
@@ -16853,8 +16843,6 @@ snapshots:
       jwa: 2.0.0
       safe-buffer: 5.2.1
     optional: true
-
-  jwt-decode@4.0.0: {}
 
   kdbush@4.0.2: {}
 

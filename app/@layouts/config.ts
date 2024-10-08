@@ -3,8 +3,6 @@ import type { LayoutConfig } from '@base/@layouts/types'
 
 export const layoutConfig: LayoutConfig = {
   app: {
-    title: 'my-layout',
-    logo: h('img', { src: '/src/assets/logo.svg' }),
     contentWidth: ContentWidth.Boxed,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: 1279,

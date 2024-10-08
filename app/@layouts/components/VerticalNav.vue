@@ -54,6 +54,8 @@ function handleNavScroll(evt: Event) {
 }
 
 const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
+
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -77,14 +79,19 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
           to="/"
           class="app-logo app-title-wrapper"
         >
-          <VNodeRenderer :nodes="layoutConfig.app.logo" />
+          <img
+            :src="config.public.theme.appLogo"
+            :alt="config.public.theme.appName"
+            width="auto"
+            height="24"
+          >
 
           <Transition name="vertical-nav-app-title">
             <h1
               v-show="!hideTitleAndIcon"
               class="app-logo-title leading-normal"
             >
-              {{ layoutConfig.app.title }}
+              {{ config.public.theme.appName }}
             </h1>
           </Transition>
         </NuxtLink>
@@ -150,7 +157,6 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
     font-size: 1.25rem;
     font-weight: 600;
     line-height: 1.75rem;
-    text-transform: capitalize;
   }
 }
 </style>

@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+import { startCase } from 'lodash-es'
 import svgLoader from 'vite-svg-loader'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -10,7 +11,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
-      title: 'Nuxt Template',
+      title: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
 
       link: [{
         rel: 'icon',
@@ -49,9 +50,9 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
-    // Private keys are only available on the server
-    AUTH_ORIGIN: process.env.NUXT_PUBLIC_APP_BASE_URL,
-    AUTH_SECRET: process.env.AUTH_SECRET,
+    auth: {
+      secret: process.env.AUTH_SECRET,
+    },
 
     redis: {
       host: process.env.REDIS_HOST,
@@ -60,8 +61,19 @@ export default defineNuxtConfig({
     },
 
     public: {
+      appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
-      FIREBASE_KEY_PAIR: process.env.FIREBASE_KEY_PAIR,
+
+      theme: {
+        appLogo: process.env.NUXT_PUBLIC_APP_LOGO || '/images/logo.svg',
+        appName: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
+        primaryColor: process.env.NUXT_PUBLIC_THEME_PRIMARY_COLOR || '#666CFF',
+        primaryDarkenColor: process.env.NUXT_PUBLIC_THEME_PRIMARY_DARKEN_COLOR || '#5C61E6',
+      },
+
+      firebase: {
+        keyPair: process.env.FIREBASE_KEY_PAIR,
+      },
     },
   },
 
@@ -79,7 +91,7 @@ export default defineNuxtConfig({
   },
 
   auth: {
-    baseURL: process.env.NUXT_PUBLIC_APP_BASE_URL,
+    baseURL: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
     globalAppMiddleware: false,
 
     provider: {
@@ -152,6 +164,7 @@ export default defineNuxtConfig({
 
   i18n: {
     lazy: true,
+    baseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
     strategy: 'no_prefix',
     defaultLocale: 'en',
     vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),

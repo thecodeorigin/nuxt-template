@@ -6,8 +6,6 @@ import type { Actions, Subjects } from '@base/utils/casl'
 
 export interface LayoutConfig {
   app: {
-    title: Lowercase<string>
-    logo: VNode
     contentWidth: typeof ContentWidth[keyof typeof ContentWidth]
     contentLayoutNav: typeof AppContentLayoutNav[keyof typeof AppContentLayoutNav]
     overlayNavFromBreakpoint: number

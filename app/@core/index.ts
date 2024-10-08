@@ -6,8 +6,6 @@ export function defineThemeConfig(userConfig: UserThemeConfig): { themeConfig: U
     themeConfig: userConfig,
     layoutConfig: {
       app: {
-        title: userConfig.app.title,
-        logo: userConfig.app.logo,
         contentWidth: userConfig.app.contentWidth,
         contentLayoutNav: userConfig.app.contentLayoutNav,
         overlayNavFromBreakpoint: userConfig.app.overlayNavFromBreakpoint,

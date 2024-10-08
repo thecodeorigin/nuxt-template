@@ -8,8 +8,6 @@ export * from './filter'
 
 export * from './firebase'
 
-export * from './jwt'
-
 export * from './options'
 
 export * from './params'

@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -133,8 +133,6 @@
     "firebase": "^10.12.4",
     "firebase-admin": "^12.2.0",
     "firebase-functions": "^5.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "4.0.0",
     "lodash-es": "^4.17.21",
     "mapbox-gl": "3.2.0",
     "next-auth": "4.21.1",

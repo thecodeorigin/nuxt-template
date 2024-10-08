@@ -54,7 +54,7 @@ async function createSysUser(token: JWT) {
 }
 
 export default NuxtAuthHandler({
-  secret: runtimeConfig.AUTH_SECRET,
+  secret: runtimeConfig.auth.secret,
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
@@ -151,15 +151,15 @@ export default NuxtAuthHandler({
   cookies: {
     sessionToken: {
       name: 'nuxt-session-token',
-      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30 },
+      options: { maxAge: Number(process.env.AUTH_MAX_AGE) || 60 * 60 * 24 * 30 },
     },
     callbackUrl: {
       name: 'nuxt-callback-url',
-      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30 },
+      options: { maxAge: Number(process.env.AUTH_MAX_AGE) || 60 * 60 * 24 * 30 },
     },
     csrfToken: {
       name: 'nuxt-csrf-token',
-      options: { maxAge: Number(process.env.AUTH_MAX_AGES) || 60 * 60 * 24 * 30 },
+      options: { maxAge: Number(process.env.AUTH_MAX_AGE) || 60 * 60 * 24 * 30 },
     },
   },
 })
