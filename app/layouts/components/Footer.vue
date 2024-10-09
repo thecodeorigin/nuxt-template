@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const VNodeCredit = computed(() => h('div', {
+const VNodeCredit = () => h('div', {
   class: 'd-flex align-center text-base',
   innerHTML: t(
     '© {year} Developed by {link}',
@@ -10,7 +10,7 @@ const VNodeCredit = computed(() => h('div', {
       link: `<a href="https://thecodeorigin.com" target="_blank" rel="noopener noreferrer" class="text-primary ms-1">Thecodeorigin</a>`,
     }
   )
-}))
+})
 </script>
 
 <template>
