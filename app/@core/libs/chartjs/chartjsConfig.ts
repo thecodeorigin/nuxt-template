@@ -1,5 +1,5 @@
 import type { ThemeInstance } from 'vuetify'
-import { hexToRgb } from '@base/@layouts/utils'
+import { hexToRgb } from '@base/@core/utils/colorConverter'
 
 // 👉 Colors variables
 function colorVariables(themeColors: ThemeInstance['themes']['value']['colors']) {

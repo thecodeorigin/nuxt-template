@@ -1,5 +1,4 @@
 import { fileURLToPath } from 'node:url'
-import { startCase } from 'lodash-es'
 import svgLoader from 'vite-svg-loader'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config

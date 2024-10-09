@@ -1,128 +1,114 @@
-<script lang="ts">
-import type { PropType } from 'vue'
+<script lang="ts" setup>
 import { VerticalNav } from '@base/@layouts/components'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import type { NavItem } from '@base/@layouts/types'
 
-export default defineComponent({
-  props: {
-    navItems: {
-      type: Array as PropType<NavItem[]>,
-      required: true,
-    },
-    verticalNavAttrs: {
-      type: Object as PropType<Record<string, null>>,
-      default: () => ({}),
-    },
-  },
-  setup(props, { slots }) {
-    const { width: windowWidth } = useWindowSize()
-    const configStore = useLayoutConfigStore()
+interface Props {
+  navItems: NavItem[]
+  verticalNavAttrs?: {
+    wrapper?: string
+    wrapperProps?: Record<string, unknown>
+  }
+}
 
-    const isOverlayNavActive = ref(false)
-    const isLayoutOverlayVisible = ref(false)
-    const toggleIsOverlayNavActive = useToggle(isOverlayNavActive)
+const props = withDefaults(defineProps<Props>(), {
+  verticalNavAttrs: () => ({}),
+})
 
-    // ℹ️ This is alternative to below two commented watcher
-    // We want to show overlay if overlay nav is visible and want to hide overlay if overlay is hidden and vice versa.
-    syncRef(isOverlayNavActive, isLayoutOverlayVisible)
+const { width: windowWidth } = useWindowSize()
+const configStore = useLayoutConfigStore()
 
-    // watch(isOverlayNavActive, value => {
-    //   // Sync layout overlay with overlay nav
-    //   isLayoutOverlayVisible.value = value
-    // })
+const isOverlayNavActive = ref(false)
+const isLayoutOverlayVisible = ref(false)
+const toggleIsOverlayNavActive = useToggle(isOverlayNavActive)
 
-    // watch(isLayoutOverlayVisible, value => {
-    //   // If overlay is closed via click, close hide overlay nav
-    //   if (!value) isOverlayNavActive.value = false
-    // })
+// ℹ️ This is alternative to below two commented watcher
+// We want to show overlay if overlay nav is visible and want to hide overlay if overlay is hidden and vice versa.
+syncRef(isOverlayNavActive, isLayoutOverlayVisible)
 
-    // ℹ️ Hide overlay if user open overlay nav in <md and increase the window width without closing overlay nav
-    watch(windowWidth, () => {
-      if (!configStore.isLessThanOverlayNavBreakpoint && isLayoutOverlayVisible.value)
-        isLayoutOverlayVisible.value = false
-    })
+// watch(isOverlayNavActive, value => {
+//   // Sync layout overlay with overlay nav
+//   isLayoutOverlayVisible.value = value
+// })
 
-    return () => {
-      const verticalNavAttrs = toRef(props, 'verticalNavAttrs')
+// watch(isLayoutOverlayVisible, value => {
+//   // If overlay is closed via click, close hide overlay nav
+//   if (!value) isOverlayNavActive.value = false
+// })
 
-      const { wrapper: verticalNavWrapper, wrapperProps: verticalNavWrapperProps, ...additionalVerticalNavAttrs } = verticalNavAttrs.value
+// ℹ️ Hide overlay if user open overlay nav in <md and increase the window width without closing overlay nav
+watch(windowWidth, () => {
+  if (!configStore.isLessThanOverlayNavBreakpoint && isLayoutOverlayVisible.value)
+    isLayoutOverlayVisible.value = false
+})
 
-      // 👉 Vertical nav
-      const verticalNav = h(
-        VerticalNav,
-        { isOverlayNavActive: isOverlayNavActive.value, toggleIsOverlayNavActive, navItems: props.navItems, ...additionalVerticalNavAttrs },
-        {
-          'nav-header': () => slots['vertical-nav-header']?.(),
-          'before-nav-items': () => slots['before-vertical-nav-items']?.(),
-        },
-      )
+const verticalNavAttrs = computed(() => {
+  const vNavAttrs = toRef(props, 'verticalNavAttrs')
 
-      // 👉 Navbar
-      const navbar = h(
-        'header',
-        { class: ['layout-navbar', { 'navbar-blur': configStore.isNavbarBlurEnabled }] },
-        [
-          h(
-            'div',
-            { class: 'navbar-content-container' },
-            slots.navbar?.({
-              toggleVerticalOverlayNavActive: toggleIsOverlayNavActive,
-            }),
-          ),
-        ],
-      )
+  const { wrapper: verticalNavWrapper, wrapperProps: verticalNavWrapperProps, ...additionalVerticalNavAttrs } = vNavAttrs.value
 
-      // 👉 Content area
-      const main = h(
-        'main',
-        { class: 'layout-page-content' },
-        h('div', { class: 'page-content-container' }, slots.default?.()),
-      )
-
-      // 👉 Footer
-      const footer = h(
-        'footer',
-        { class: 'layout-footer' },
-        [
-          h(
-            'div',
-            { class: 'footer-content-container' },
-            slots.footer?.(),
-          ),
-        ],
-      )
-
-      // 👉 Overlay
-      const layoutOverlay = h(
-        'div',
-        {
-          class: ['layout-overlay', { visible: isLayoutOverlayVisible.value }],
-          onClick: () => { isLayoutOverlayVisible.value = !isLayoutOverlayVisible.value },
-        },
-      )
-
-      return h(
-        'div',
-        { class: ['layout-wrapper', ...configStore._layoutClasses] },
-        [
-          verticalNavWrapper ? h(verticalNavWrapper, verticalNavWrapperProps, { default: () => verticalNav }) : verticalNav,
-          h(
-            'div',
-            { class: 'layout-content-wrapper' },
-            [
-              navbar,
-              main,
-              footer,
-            ],
-          ),
-          layoutOverlay,
-        ],
-      )
-    }
-  },
+  return {
+    verticalNavWrapper,
+    verticalNavWrapperProps,
+    additionalVerticalNavAttrs,
+  }
 })
 </script>
+
+<template>
+  <div
+    class="layout-wrapper"
+    :class="configStore._layoutClasses"
+  >
+    <component
+      :is="verticalNavAttrs.verticalNavWrapper ? verticalNavAttrs.verticalNavWrapper : 'div'"
+      v-bind="verticalNavAttrs.verticalNavWrapperProps"
+      class="vertical-nav-wrapper"
+    >
+      <VerticalNav
+        :is-overlay-nav-active="isOverlayNavActive"
+        :toggle-is-overlay-nav-active="toggleIsOverlayNavActive"
+        :nav-items="props.navItems"
+        v-bind="{ ...verticalNavAttrs.additionalVerticalNavAttrs }"
+      >
+        <template #nav-header>
+          <slot name="vertical-nav-header" />
+        </template>
+        <template #before-nav-items>
+          <slot name="before-vertical-nav-items" />
+        </template>
+      </VerticalNav>
+    </component>
+    <div class="layout-content-wrapper">
+      <header
+        class="layout-navbar"
+        :class="[{ 'navbar-blur': configStore.isNavbarBlurEnabled }]"
+      >
+        <div class="navbar-content-container">
+          <slot
+            name="navbar"
+            :toggle-vertical-overlay-nav-active="toggleIsOverlayNavActive"
+          />
+        </div>
+      </header>
+      <main class="layout-page-content">
+        <div class="page-content-container">
+          <slot />
+        </div>
+      </main>
+      <footer class="layout-footer">
+        <div class="footer-content-container">
+          <slot name="footer" />
+        </div>
+      </footer>
+    </div>
+    <div
+      class="layout-overlay"
+      :class="[{ visible: isLayoutOverlayVisible }]"
+      @click="() => { isLayoutOverlayVisible = !isLayoutOverlayVisible }"
+    />
+  </div>
+</template>
 
 <style lang="scss">
 @use "@base/configured-variables" as variables;
@@ -194,7 +180,7 @@ export default defineComponent({
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease-in-out;
-    will-change: transform;
+    will-change: opacity;
 
     &.visible {
       opacity: 1;

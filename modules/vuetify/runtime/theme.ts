@@ -47,7 +47,7 @@ export function getTheme() {
         'track-bg': '#FAFAFD',
         'chat-bg': '#F7F6FA',
       },
-  
+
       variables: {
         'code-color': '#d400ff',
         'overlay-scrim-background': '#262B43',
@@ -65,7 +65,7 @@ export function getTheme() {
         'table-header-color': '#F5F5F7',
         'high-emphasis-opacity': 0.9,
         'medium-emphasis-opacity': 0.7,
-  
+
         // 👉 shadows
         'shadow-key-umbra-color': '#262B43',
         'shadow-xs-opacity': '0.14',
@@ -75,7 +75,7 @@ export function getTheme() {
         'shadow-xl-opacity': '0.18',
       },
     },
-  
+
     dark: {
       dark: true,
       colors: {
@@ -118,7 +118,7 @@ export function getTheme() {
         'track-bg': '#3C3F59',
         'chat-bg': '#343752',
       },
-  
+
       variables: {
         'code-color': '#d400ff',
         'overlay-scrim-background': '#101121',
@@ -136,7 +136,7 @@ export function getTheme() {
         'table-header-color': '#3A3E5B',
         'high-emphasis-opacity': 0.9,
         'medium-emphasis-opacity': 0.7,
-  
+
         // 👉 Shadows
         'shadow-key-umbra-color': '#101121',
         'shadow-xs-opacity': '0.20',

@@ -41,6 +41,16 @@
       padding-inline: 1.375rem 1rem;
     }
   }
+
+  &.layout-vertical-nav-collapsed {
+    .layout-vertical-nav:not(.hovered) {
+      .nav-header {
+        .header-action {
+          opacity: 0;
+        }
+      }
+    }
+  }
 }
 
 //  👉 Overlay

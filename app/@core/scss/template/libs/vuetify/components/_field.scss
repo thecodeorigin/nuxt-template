@@ -59,7 +59,7 @@
 
 // hover state outline color
 @media (hover: hover) {
-  .v-field:not(.v-field--focused):hover .v-field__outline {
+  .v-field:not(.v-field--focused, .v-field--error):hover .v-field__outline {
     --v-field-border-opacity: 0.6 !important;
   }
 }

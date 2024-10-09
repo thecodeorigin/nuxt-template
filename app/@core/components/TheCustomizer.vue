@@ -24,7 +24,6 @@ import { Direction, Layout, Skins, Theme } from '@base/@core/enums'
 import { cookieRef, namespaceConfig } from '@base/@layouts/stores/config'
 import { AppContentLayoutNav, ContentWidth } from '@base/@layouts/enums'
 import { themeConfig } from '@base/config'
-import { staticPrimaryColor, staticPrimaryDarkenColor } from '@@/modules/vuetify/runtime/theme'
 
 const isNavDrawerOpen = ref(false)
 
@@ -33,8 +32,13 @@ const configStore = useConfigStore()
 // 👉 Primary Color
 const vuetifyTheme = useTheme()
 
+const config = useRuntimeConfig()
+
+const primaryColor = config.public.theme.primaryColor
+const primaryDarkenColor = config.public.theme.primaryDarkenColor
+
 const colors: { main: string, darken: string }[] = [
-  { main: staticPrimaryColor, darken: staticPrimaryDarkenColor },
+  { main: primaryColor, darken: primaryDarkenColor },
   { main: '#0D9394', darken: '#0C8485' },
   { main: '#FFB400', darken: '#E6A200' },
   { main: '#FF4C51', darken: '#E64449' },
@@ -214,8 +218,8 @@ watch([
   locale,
 ], () => {
   const initialConfigValue = [
-    staticPrimaryColor,
-    staticPrimaryColor,
+    primaryColor,
+    primaryColor,
     themeConfig.app.theme,
     themeConfig.app.skin,
     themeConfig.verticalNav.isVerticalNavSemiDark,
@@ -247,13 +251,13 @@ async function resetCustomizer() {
   if (isCookieHasAnyValue.value) {
     // reset themeConfig values
     if (vuetifyTheme.themes.value.light) {
-      vuetifyTheme.themes.value.light.colors.primary = staticPrimaryColor
-      vuetifyTheme.themes.value.light.colors['primary-darken-1'] = staticPrimaryDarkenColor
+      vuetifyTheme.themes.value.light.colors.primary = primaryColor
+      vuetifyTheme.themes.value.light.colors['primary-darken-1'] = primaryDarkenColor
     }
 
     if (vuetifyTheme.themes.value.dark) {
-      vuetifyTheme.themes.value.dark.colors.primary = staticPrimaryColor
-      vuetifyTheme.themes.value.dark.colors['primary-darken-1'] = staticPrimaryDarkenColor
+      vuetifyTheme.themes.value.dark.colors.primary = primaryColor
+      vuetifyTheme.themes.value.dark.colors['primary-darken-1'] = primaryDarkenColor
     }
 
     configStore.theme = themeConfig.app.theme
@@ -263,7 +267,7 @@ async function resetCustomizer() {
     configStore.appContentWidth = themeConfig.app.contentWidth
     configStore.isAppRTL = isActiveLangRTL.value
     configStore.isVerticalNavCollapsed = themeConfig.verticalNav.isVerticalNavCollapsed
-    useStorage<string | null>(namespaceConfig('initial-loader-color'), null).value = staticPrimaryColor
+    useStorage<string | null>(namespaceConfig('initial-loader-color'), null).value = primaryColor
     currentLayout.value = themeConfig.app.contentLayoutNav
     configStore.theme = themeConfig.app.theme
     configStore.skin = themeConfig.app.skin
@@ -272,7 +276,7 @@ async function resetCustomizer() {
     configStore.appContentWidth = themeConfig.app.contentWidth
     configStore.isAppRTL = isActiveLangRTL.value
     configStore.isVerticalNavCollapsed = themeConfig.verticalNav.isVerticalNavCollapsed
-    useStorage<string | null>(namespaceConfig('initial-loader-color'), null).value = staticPrimaryColor
+    useStorage<string | null>(namespaceConfig('initial-loader-color'), null).value = primaryColor
     currentLayout.value = themeConfig.app.contentLayoutNav
 
     cookieRef('lightThemePrimaryColor', null).value = null

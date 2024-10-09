@@ -129,7 +129,7 @@ function emitModelValue(val: string) {
       class="position-relative v-text-field"
       :style="props.style"
     >
-      <template #default="{ id, isDirty, isValid, isDisabled, isReadonly }">
+      <template #default="{ id, isDirty, isValid, isDisabled, isReadonly, validate }">
         <!-- v-field -->
         <VField
           v-bind="{ ...fieldProps }"
@@ -155,7 +155,7 @@ function emitModelValue(val: string) {
                 class="flat-picker-custom-style"
                 :disabled="isReadonly.value"
                 @on-open="isCalendarOpen = true"
-                @on-close="isCalendarOpen = false"
+                @on-close="isCalendarOpen = false; validate()"
                 @update:model-value="emitModelValue"
               />
 

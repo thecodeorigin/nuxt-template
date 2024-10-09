@@ -39,9 +39,9 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
   icons: {
     chevronDown: { icon: 'ri-arrow-down-s-line' },
     chevronRight: { icon: 'ri-arrow-right-s-line' },
-    close: { icon: 'ri-close-line' },
-    verticalNavPinned: { icon: h(VerticalNavHeaderArrow) },
-    verticalNavUnPinned: { icon: h(VerticalNavHeaderArrow) },
+    close: { icon: 'ri-close-line', size: '24' },
+    verticalNavPinned: { icon: h(VerticalNavHeaderArrow), size: '24' },
+    verticalNavUnPinned: { icon: h(VerticalNavHeaderArrow), size: '24' },
     sectionTitlePlaceholder: { icon: 'ri-subtract-line' },
   },
 })

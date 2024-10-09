@@ -21,7 +21,7 @@
   }
 
   .v-selection-control__input {
-    transform: translateX(-6px);
+    transform: translateX(-6px) !important;
 
     --v-selection-control-size: 1.125rem;
 
@@ -52,7 +52,7 @@
     }
 
     .v-selection-control__input {
-      transform: translateX(6px);
+      transform: translateX(6px) !important;
     }
   }
 }

@@ -37,23 +37,29 @@ const isGroupOpen = ref(false)
  * @return {boolean} returns if any of children is open or not.
  */
 function isAnyChildOpen(children: NavItem['children']): boolean {
-  return children.some((child) => {
-    let result = openGroups.value.includes(child.title)
+  if (children?.length) {
+    return children.some((child) => {
+      let result = openGroups.value.includes(child.title)
 
-    if ('children' in child)
-      result = isAnyChildOpen(child.children) || result
+      if ('children' in child)
+        result = isAnyChildOpen(child.children) || result
 
-    return result
-  })
+      return result
+    })
+  }
+
+  return false
 }
 
 function collapseChildren(children: NavItem['children']) {
-  children.forEach((child) => {
-    if ('children' in child)
-      collapseChildren(child.children)
+  if (children?.length) {
+    children.forEach((child) => {
+      if ('children' in child)
+        collapseChildren(child.children)
 
-    openGroups.value = openGroups.value.filter(group => group !== child.title)
-  })
+      openGroups.value = openGroups.value.filter(group => group !== child.title)
+    })
+  }
 }
 
 /*
@@ -64,7 +70,7 @@ function collapseChildren(children: NavItem['children']) {
 watch(
   () => route.path,
   () => {
-    const isActive = isNavGroupActive(props.item.children, router)
+    const isActive = isNavGroupActive(props.item.children || [], router)
 
     // Don't open group if vertical nav is collapsed and window size is more than overlay nav breakpoint
     isGroupOpen.value = isActive && !configStore.isVerticalNavMini(isVerticalNavHovered).value
@@ -117,7 +123,7 @@ watch(openGroups, (val) => {
   if (lastOpenedGroup === props.item.title)
     return
 
-  const isActive = isNavGroupActive(props.item.children, router)
+  const isActive = isNavGroupActive(props.item.children || [], router)
 
   // Goal of this watcher is to close inactive groups. So don't do anything for active groups.
   if (isActive)
@@ -138,8 +144,6 @@ watch(
     isGroupOpen.value = val ? false : isGroupActive.value
   },
 )
-
-const isMounted = useMounted()
 </script>
 
 <template>
@@ -162,14 +166,9 @@ const isMounted = useMounted()
         v-bind="item.icon || layoutConfig.verticalNav.defaultNavItemIconProps"
         class="nav-item-icon"
       />
-      <!--
-        ℹ️ isMounted is workaround of nuxt's hydration issue:
-        https://github.com/vuejs/core/issues/6715
-      -->
       <Component
-        :is="isMounted ? TransitionGroup : 'div'"
+        :is="TransitionGroup"
         name="transition-slide-x"
-        v-bind="!isMounted ? { class: 'd-flex align-center flex-grow-1' } : undefined"
       >
         <!-- 👉 Title -->
         <i18n-t
