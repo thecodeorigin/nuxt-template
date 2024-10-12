@@ -1,12 +1,12 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
   },
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.12.1",
   "author": "thecodeorigin <contact@thecodeorigin.com>",
   "homepage": "https://github.com/imrim12/nuxt-template",
   "repository": {
