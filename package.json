@@ -30,7 +30,7 @@
   "scripts": {
     "with-env": "doppler run -- pnpm",
     "dev": "jiti ./scripts/serve.ts",
-    "build": "node --max-old-space-size=4096 node_modules/nuxt/bin/nuxt.mjs build",
+    "build": "nuxt build",
     "prepack": "jiti ./scripts/prepack.ts",
     "lint": "eslint . --fix",
     "generate": "nuxt generate",
