@@ -9,10 +9,9 @@ export const userShortcutTable = pgTable('user_shortcuts', {
   user_id: uuid('user_id').defaultRandom(),
 }, (table) => {
   return {
-    publicUserShortcutsUserIdFkey: foreignKey({
+    userShortcut_sysUser: foreignKey({
       columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
-      name: 'public_user_shortcuts_user_id_fkey',
     }).onDelete('cascade'),
   }
 })

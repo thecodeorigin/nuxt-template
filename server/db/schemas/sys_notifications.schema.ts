@@ -13,10 +13,9 @@ export const sysNotificationTable = pgTable('sys_notifications', {
   user_id: uuid('user_id').defaultRandom(),
 }, (table) => {
   return {
-    publicSysNotificationsUserIdFkey: foreignKey({
+    sysNotification_sysUser: foreignKey({
       columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
-      name: 'public_sys_notifications_user_id_fkey',
     }).onUpdate('cascade').onDelete('cascade'),
   }
 })

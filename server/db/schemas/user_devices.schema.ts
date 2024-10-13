@@ -11,10 +11,9 @@ export const userDeviceTable = pgTable('user_devices', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => {
   return {
-    publicUserDevicesUserIdFkey: foreignKey({
+    userDevice_sysUser: foreignKey({
       columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
-      name: 'public_user_devices_user_id_fkey',
     }).onUpdate('cascade').onDelete('cascade'),
   }
 })

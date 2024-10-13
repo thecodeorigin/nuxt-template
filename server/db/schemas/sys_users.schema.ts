@@ -27,10 +27,9 @@ export const sysUserTable = pgTable('sys_users', {
   city: text('city'),
 }, (table) => {
   return {
-    publicSysUsersRoleIdFkey: foreignKey({
+    sysUser_sysRole: foreignKey({
       columns: [table.role_id],
       foreignColumns: [sysRoleTable.id],
-      name: 'public_sys_users_role_id_fkey',
     }),
   }
 })

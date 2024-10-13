@@ -11,10 +11,9 @@ export const sysFaqTable = pgTable('sys_faqs', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => {
   return {
-    publicSysFaqsCategoryIdFkey: foreignKey({
+    sysFaq_sysFaqsCategory: foreignKey({
       columns: [table.category_id],
       foreignColumns: [sysFaqCategoryTable.id],
-      name: 'public_sys_faqs_category_id_fkey',
     }).onUpdate('cascade').onDelete('cascade'),
   }
 })

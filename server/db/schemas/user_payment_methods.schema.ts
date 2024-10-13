@@ -14,10 +14,9 @@ export const userPaymentMethodTable = pgTable('user_payment_methods', {
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 }, (table) => {
   return {
-    publicUserPaymentMethodsUserIdFkey: foreignKey({
+    userPaymentMethod_sysUser: foreignKey({
       columns: [table.user_id],
       foreignColumns: [sysUserTable.id],
-      name: 'public_user_payment_methods_user_id_fkey',
     }).onDelete('cascade'),
   }
 })

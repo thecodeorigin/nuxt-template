@@ -11,10 +11,9 @@ export const sysPermissionTable = pgTable('sys_permissions', {
   subject: permissionSubject('subject').notNull(),
 }, (table) => {
   return {
-    publicSysPermissionsRoleIdFkey: foreignKey({
+    sysPermission_sysRole: foreignKey({
       columns: [table.role_id],
       foreignColumns: [sysRoleTable.id],
-      name: 'public_sys_permissions_role_id_fkey',
     }).onDelete('cascade'),
   }
 })
