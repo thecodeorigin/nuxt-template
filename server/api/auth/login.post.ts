@@ -48,6 +48,9 @@ export default defineEventHandler(async (event) => {
     })
   }
   catch (error: any) {
-    setResponseStatus(event, 401, error.message)
+    throw createError({
+      statusCode: 401,
+      statusMessage: error.message,
+    })
   }
 })

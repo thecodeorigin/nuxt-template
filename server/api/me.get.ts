@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     return sysUser
   }
   catch (error: any) {
-    setResponseStatus(event, 404, error.message)
+    throw createError({
+      statusCode: 500,
+      statusMessage: error.message,
+    })
   }
 })
