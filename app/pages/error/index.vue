@@ -66,7 +66,7 @@ const handleError = () => clearError({ redirect: '/' })
 
       <!-- eslint-disable vue/no-v-html -->
       <div
-        v-if="errToShow.status === 500"
+        v-if="isDev && errToShow.status === 500"
         style="max-inline-size: 80dvw; overflow-x: scroll;"
         v-html="error.stack"
       />
