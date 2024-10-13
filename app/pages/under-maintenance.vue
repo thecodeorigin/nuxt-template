@@ -18,10 +18,10 @@ definePageMeta({
     <div class="text-center mb-10">
       <!-- 👉 Title and subtitle -->
       <h4 class="text-h4 mb-2">
-        Under Maintenance! 🚧
+        {{ $t('Under Maintenance! 🚧') }}
       </h4>
       <p class="text-body-1 mb-0">
-        Sorry for the inconvenience but we're performing some maintenance at the moment
+        {{ $t('Sorry for the inconvenience but we\'re performing some maintenance at the moment') }}
       </p>
     </div>
 
@@ -30,7 +30,7 @@ definePageMeta({
       <VImg
         :src="miscUnderMaintenance"
         :height="$vuetify.display.xs ? 400 : 500"
-        alt="Coming Soon"
+        :alt="$t('Coming Soon')"
         class="my-sm-5"
       />
 
@@ -38,7 +38,7 @@ definePageMeta({
         to="/"
         class="mt-10"
       >
-        Back to Home
+        {{ $t('Back to Home') }}
       </VBtn>
 
       <VImg

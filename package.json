@@ -1,7 +1,7 @@
 {
   "name": "@imrim12/base",
   "type": "module",
-  "version": "1.3.10",
+  "version": "1.3.11",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -39,7 +39,7 @@
     "test": "vitest run",
     "cleanup": "rimraf .nuxt .output dist node_modules areas",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
-    "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add",
+    "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add --separator '->'",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "jiti ./server/db/seeds/index.seed.ts",

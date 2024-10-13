@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { formatDistanceToNow } from '#imports'
+
 type Notification = any
 
 const systemNotificationStore = useSystemNotificationStore()

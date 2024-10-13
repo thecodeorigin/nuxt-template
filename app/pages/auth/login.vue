@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { NuxtError } from 'nuxt/app'
-
 import { P, match } from 'ts-pattern'
 
 import { VForm } from 'vuetify/components/VForm'
@@ -11,9 +9,9 @@ import authV2LoginIllustrationDark from '@base/images/pages/auth-v2-login-illust
 import authV2LoginIllustrationLight from '@base/images/pages/auth-v2-login-illustration-light.png'
 import authV2LoginMaskDark from '@base/images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@base/images/pages/auth-v2-login-mask-light.png'
-import { VNodeRenderer } from '@base/@layouts/components/VNodeRenderer'
-import { themeConfig } from '@base/config'
+
 import AuthProvider from '@base/views/pages/authentication/AuthProvider.vue'
+import { emailValidator, requiredValidator } from '#imports'
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -144,10 +142,10 @@ const config = useRuntimeConfig()
         >
           <VCardText>
             <h4 class="text-h4 mb-1">
-              Welcome to <span>{{ config.public.theme.appName }}!</span> 👋🏻
+              {{ $t('Welcome to {appName} 👋🏻', { appName: config.public.theme.appName }) }}
             </h4>
             <p class="mb-0">
-              Please sign-in to your account and start the adventure
+              {{ $t('Please sign-in to your account and start the adventure') }}
             </p>
           </VCardText>
 
@@ -161,12 +159,12 @@ const config = useRuntimeConfig()
                 <VCol cols="12">
                   <VTextField
                     v-model="credentials.email"
-                    label="Email"
+                    :label="$t('Email')"
                     placeholder="johndoe@email.com"
                     type="email"
                     autofocus
                     :rules="[requiredValidator, emailValidator]"
-                    :error-messages="errors?.email"
+                    :error-messages="errors?.email && $t(errors.email)"
                   />
                 </VCol>
 
@@ -174,11 +172,11 @@ const config = useRuntimeConfig()
                 <VCol cols="12">
                   <VTextField
                     v-model="credentials.password"
-                    label="Password"
+                    :label="$t('Password')"
                     placeholder="············"
                     :rules="[requiredValidator]"
                     :type="isPasswordVisible ? 'text' : 'password'"
-                    :error-messages="errors?.password"
+                    :error-messages="errors?.password && $t(errors.password)"
                     :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
@@ -186,13 +184,13 @@ const config = useRuntimeConfig()
                   <div class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2">
                     <VCheckbox
                       v-model="rememberMe"
-                      label="Remember me"
+                      :label="$t('Remember me')"
                     />
                     <NuxtLink
                       class="text-primary"
                       :to="{ name: 'auth-forgot-password' }"
                     >
-                      Forgot Password?
+                      {{ $t('Forgot Password?') }}
                     </NuxtLink>
                   </div>
 
@@ -200,7 +198,7 @@ const config = useRuntimeConfig()
                     block
                     type="submit"
                   >
-                    Login
+                    {{ $t('Sign In') }}
                   </VBtn>
                 </VCol>
 
@@ -210,13 +208,13 @@ const config = useRuntimeConfig()
                   class="text-body-1 text-center"
                 >
                   <span class="d-inline-block">
-                    New on our platform?
+                    {{ $t('New on our platform?') }}
                   </span>
                   <NuxtLink
                     class="text-primary ms-1 d-inline-block text-body-1"
                     :to="{ name: 'auth-register' }"
                   >
-                    Create an account
+                    {{ $t('Create an account') }}
                   </NuxtLink>
                 </VCol>
 
@@ -225,7 +223,7 @@ const config = useRuntimeConfig()
                   class="d-flex align-center"
                 >
                   <VDivider />
-                  <span class="mx-4 text-high-emphasis">or</span>
+                  <span class="mx-4 text-high-emphasis">{{ $t('or') }}</span>
                   <VDivider />
                 </VCol>
 

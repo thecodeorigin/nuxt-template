@@ -2,8 +2,6 @@
 import authV1LoginMaskDark from '@base/images/pages/auth-v1-login-mask-dark.png'
 import authV1LoginMaskLight from '@base/images/pages/auth-v1-login-mask-light.png'
 import { useGenerateImageVariant } from '@base/@core/composable/useGenerateImageVariant'
-import { VNodeRenderer } from '@base/@layouts/components/VNodeRenderer'
-import { themeConfig } from '@base/config'
 
 const authV1ThemeVerifyEmailMask = useGenerateImageVariant(authV1LoginMaskLight, authV1LoginMaskDark)
 
@@ -11,6 +9,8 @@ definePageMeta({
   layout: 'blank',
   public: true,
 })
+
+const { t } = useI18n()
 
 const route = useRoute()
 
@@ -56,15 +56,22 @@ async function resendConfirmation() {
 
     startInterval()
 
-    notify('Another confirmation email has been sent to your email address!')
+    notify(t('Another confirmation email has been sent to your email address!'))
   }
   catch {
-    notify('An error has occured, please try again later', { type: 'error' })
+    notify(t('An error has occured, please try again later'), { type: 'error' })
   }
   finally {
     loading().hide()
   }
 }
+
+const verificationMessage = computed(() => t(
+  'Account activation link sent to your email address: {email} Please follow the link inside to continue\.',
+  {
+    email: `<span class="text-high-emphasis font-weight-medium">${currentEmail.value}</span>`,
+  },
+))
 
 const config = useRuntimeConfig()
 </script>
@@ -95,11 +102,12 @@ const config = useRuntimeConfig()
 
       <VCardText>
         <h4 class="text-h4 mb-1">
-          Verify your email ✉️
+          {{ $t('Verify your email ✉️') }}
         </h4>
-        <p class="mb-5">
-          Account activation link sent to your email address: <span class="text-high-emphasis font-weight-medium">{{ currentEmail }}</span> Please follow the link inside to continue.
-        </p>
+        <p
+          class="mb-5"
+          v-html="verificationMessage"
+        />
 
         <VBtn
           block
@@ -107,7 +115,7 @@ const config = useRuntimeConfig()
           :disabled="!canResendConfirmation"
           @click="resendConfirmation"
         >
-          Resend Confirmation {{ resendInterval ? `(${resendInterval})` : '' }}
+          {{ $t('Resend Confirmation {countdown}', { countdown: resendInterval ? `(${resendInterval})` : '' }) }}
         </VBtn>
       </VCardText>
     </VCard>

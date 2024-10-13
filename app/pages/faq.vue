@@ -14,6 +14,9 @@ const { data: faqs, refresh: fetchFaqs } = await useLazyAsyncData(() => faqStore
 }), {
   default: () => ([]),
 })
+
+const { t } = useI18n()
+
 const activeTab = ref('Payment')
 const activeQuestion = ref(1)
 watch(activeTab, () => activeQuestion.value = 0)
@@ -22,13 +25,13 @@ watch(faqSearchQuery, () => debounce(() => fetchFaqs(), 1000)())
 const contactUs = [
   {
     icon: 'ri-phone-line',
-    via: '+ (810) 2548 2568',
-    tagLine: 'We are always happy to help!',
+    via: '(+84) 773 288 148',
+    tagLine: t('We are always happy to help!'),
   },
   {
     icon: 'ri-mail-line',
-    via: 'hello@help.com',
-    tagLine: 'Best way to get answer faster!',
+    via: 'contact@thecodeorigin.com',
+    tagLine: t('Best way to get answer faster!'),
   },
 ]
 </script>
@@ -41,11 +44,11 @@ const contactUs = [
     >
       <template #default>
         <h4 class="text-h4 text-primary mb-2">
-          Hello, how can we help?
+          {{ $t('Hello, how can we help?') }}
         </h4>
 
         <p class="text-body-1 mb-7">
-          or choose a category to quickly find the help you need
+          {{ $t('or choose a category to quickly find the help you need') }}
         </p>
 
         <!-- 👉 Search Input -->
@@ -143,9 +146,9 @@ const contactUs = [
             >
               <VExpansionPanel
                 v-for="item in faq.questions"
-                :key="item.question"
-                :title="item.question"
-                :text="item.answer"
+                :key="item.question || ''"
+                :title="item.question || ''"
+                :text="item.answer || ''"
               />
             </VExpansionPanels>
           </VWindowItem>
@@ -163,7 +166,7 @@ const contactUs = [
           size="20"
         />
         <span class="text-base font-weight-medium">
-          No Results Found!!
+          {{ $t('No results found') }}
         </span>
       </VCol>
     </VRow>
@@ -178,10 +181,10 @@ const contactUs = [
           Question
         </VChip>
         <h4 class="text-h4 my-2">
-          You still have a question?
+          {{ $t('You still have a question?') }}
         </h4>
         <p class="text-body-1 mb-0">
-          If you cannot find a question in our FAQ, you can always contact us. We will answer to you shortly!
+          {{ $t('If you cannot find a question in our FAQ, you can always contact us\. We will answer to you shortly!') }}
         </p>
       </div>
 

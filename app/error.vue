@@ -31,7 +31,7 @@ const errToShow = computed(() => {
       return {
         status: 401,
         title: 'You are not authorized! 🔐',
-        description: 'You don\'t have permission to access this page. Go Home!',
+        description: 'You don\'t have permission to access this page\. Go Home!',
       }
     default:
       if (isDev) {
@@ -44,7 +44,7 @@ const errToShow = computed(() => {
       else {
         return {
           status: 500,
-          title: 'Oops! Something went wrong.',
+          title: 'Oops! Something went wrong\.',
           description: 'We are working on it and we\'ll get it fixed as soon as we can',
         }
       }

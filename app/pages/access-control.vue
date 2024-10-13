@@ -3,6 +3,8 @@ definePageMeta({
   action: 'read',
   subject: 'AclDemo',
 })
+
+const { can } = useAbility()
 </script>
 
 <template>
@@ -19,7 +21,7 @@ definePageMeta({
       </VCard>
     </VCol>
     <VCol
-      v-if="$can('read', 'all')"
+      v-if="can('read', 'all')"
       cols="12"
       md="6"
     >

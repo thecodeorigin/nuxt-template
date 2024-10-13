@@ -18,8 +18,8 @@ definePageMeta({
   <div class="misc-wrapper">
     <ErrorHeader
       status-code="401"
-      title="You are not authorized! 🔐"
-      description="You don't have permission to access this page. Go Home!"
+      :title="$t('You are not authorized! 🔐')"
+      :description="$t(`You don\'t have permission to access this page\. Go Home!`)"
       class="mb-10"
     />
 
@@ -36,7 +36,7 @@ definePageMeta({
         to="/"
         class="mt-10"
       >
-        Back to Home
+        {{ $t('Back to Home') }}
       </VBtn>
 
       <VImg

@@ -5,8 +5,6 @@ import authV2ForgotPasswordIllustrationDark from '@base/images/pages/auth-v2-for
 import authV2ForgotPasswordIllustrationLight from '@base/images/pages/auth-v2-forgot-password-illustration-light.png'
 import authV2ForgotPasswordMaskDark from '@base/images/pages/auth-v2-forgot-password-mask-dark.png'
 import authV2ForgotPasswordMaskLight from '@base/images/pages/auth-v2-forgot-password-mask-light.png'
-import { VNodeRenderer } from '@base/@layouts/components/VNodeRenderer'
-import { themeConfig } from '@base/config'
 
 const authThemeImg = useGenerateImageVariant(
   authV2ForgotPasswordIllustrationLight,
@@ -79,10 +77,10 @@ const config = useRuntimeConfig()
         >
           <VCardText>
             <h4 class="text-h4 mb-1">
-              Forgot Password? 🔒
+              {{ $t('Forgot Password? 🔒') }}
             </h4>
             <p class="mb-0">
-              Enter your email and we'll send you instructions to reset your password
+              {{ $t('Enter your email and we\'ll send you instructions to reset your password') }}
             </p>
           </VCardText>
 
@@ -94,7 +92,7 @@ const config = useRuntimeConfig()
                   <VTextField
                     v-model="email"
                     autofocus
-                    label="Email"
+                    :label="$t('Email')"
                     placeholder="johndoe@email.com"
                     type="email"
                   />
@@ -106,7 +104,7 @@ const config = useRuntimeConfig()
                     block
                     type="submit"
                   >
-                    Send Reset Link
+                    {{ $t('Send Reset Link') }}
                   </VBtn>
                 </VCol>
 
@@ -121,7 +119,7 @@ const config = useRuntimeConfig()
                       size="20"
                       class="me-2 flip-in-rtl"
                     />
-                    <span>Back to login</span>
+                    <span>{{ $t('Back to login') }}</span>
                   </NuxtLink>
                 </VCol>
               </VRow>

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import NavBarI18n from '@base/@core/components/I18n.vue'
-import { VNodeRenderer } from '@base/@layouts/components/VNodeRenderer'
-import { themeConfig } from '@base/config'
+
 import { HorizontalNavLayout } from '@base/@layouts'
 
 // Components

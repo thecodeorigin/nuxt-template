@@ -21,10 +21,10 @@ const email = ref('')
       <!-- 👉 Title and subtitle -->
       <div class="text-center mb-10">
         <h4 class="text-h4 mb-2">
-          We are launching soon 🚀
+          {{ $t('We are launching soon 🚀') }}
         </h4>
         <p class="text-body-1">
-          Our website is opening soon. Please register to get notified when it's ready!
+          {{ $t('Our website is opening soon\. Please register to get notified when it\'s ready!') }}
         </p>
       </div>
 
@@ -36,7 +36,7 @@ const email = ref('')
         <VTextField
           v-model="email"
           autofocus
-          placeholder="Enter your email or username"
+          :placeholder="$t('Enter your email or username')"
           class="misc-email-input"
           density="compact"
         />
@@ -50,7 +50,7 @@ const email = ref('')
     <div class="misc-avatar w-100 mt-10">
       <VImg
         :src="miscComingSoon"
-        alt="Coming Soon"
+        :alt="$t('Coming Soon')"
         :height="$vuetify.display.xs ? 400 : 500"
       />
       <VImg

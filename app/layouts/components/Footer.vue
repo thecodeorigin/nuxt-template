@@ -1,16 +1,18 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const VNodeCredit = () => h('div', {
-  class: 'd-flex align-center text-base',
-  innerHTML: t(
-    '© {year} Developed by {link}',
-    {
-      year: new Date().getFullYear(),
-      link: `<a href="https://thecodeorigin.com" target="_blank" rel="noopener noreferrer" class="text-primary ms-1">Thecodeorigin</a>`,
-    }
-  )
-})
+function VNodeCredit() {
+  return h('div', {
+    class: 'd-flex align-center text-base',
+    innerHTML: t(
+      '© {year} Developed by {link}',
+      {
+        year: new Date().getFullYear(),
+        link: `<a href="https://thecodeorigin.com" target="_blank" rel="noopener noreferrer" class="text-primary ms-1">Thecodeorigin</a>`,
+      },
+    ),
+  })
+}
 </script>
 
 <template>

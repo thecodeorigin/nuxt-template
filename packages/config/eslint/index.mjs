@@ -28,6 +28,7 @@ export default function config(options) {
 
       'vue/valid-v-slot': 'off',
       'vue/custom-event-name-casing': 'off',
+      'vue/no-multiple-template-root': 'off',
     },
   }))
 }

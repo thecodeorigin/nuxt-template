@@ -165,7 +165,7 @@ const userProfileList: Array<{
                 append-icon="ri-logout-box-r-line"
                 @click="logout"
               >
-                Logout
+                {{ $t('Logout') }}
               </VBtn>
             </VListItem>
           </PerfectScrollbar>

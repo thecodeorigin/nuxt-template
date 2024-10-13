@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { NuxtError } from 'nuxt/app'
-
 import { VForm } from 'vuetify/components/VForm'
 
 import authV2RegisterIllustrationBorderedDark from '@base/images/pages/auth-v2-register-illustration-bordered-dark.png'
@@ -9,9 +7,9 @@ import authV2RegisterIllustrationDark from '@base/images/pages/auth-v2-register-
 import authV2RegisterIllustrationLight from '@base/images/pages/auth-v2-register-illustration-light.png'
 import authV2RegisterMaskDark from '@base/images/pages/auth-v2-register-mask-dark.png'
 import authV2RegisterMaskLight from '@base/images/pages/auth-v2-register-mask-light.png'
-import { VNodeRenderer } from '@base/@layouts/components/VNodeRenderer'
-import { themeConfig } from '@base/config'
+
 import AuthProvider from '@base/views/pages/authentication/AuthProvider.vue'
+import { confirmedValidator, emailValidator, requiredValidator } from '#imports'
 
 const authThemeImg = useGenerateImageVariant(
   authV2RegisterIllustrationLight,
@@ -27,6 +25,8 @@ definePageMeta({
   layout: 'blank',
   unauthenticatedOnly: true,
 })
+
+const { t } = useI18n()
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
@@ -64,7 +64,7 @@ async function login(provider?: string) {
     }
   }
   catch (error: any) {
-    notify(error.data.message || 'An error has occured, please try again later', { type: 'error' })
+    notify(error.data.message || t('An error has occured, please try again later'), { type: 'error' })
   }
   finally {
     loading().hide()
@@ -83,12 +83,12 @@ async function signup() {
       },
     })
 
-    notify('Please confirm your email address before signin!')
+    notify(t('Please confirm your email address before signin!'))
 
     navigateTo('/auth/login')
   }
   catch (error: any) {
-    notify(error.data.message || 'An error has occured, please try again later', { type: 'error' })
+    notify(error.data.message || t('An error has occured, please try again later'), { type: 'error' })
   }
   finally {
     loading().hide()
@@ -102,6 +102,10 @@ function onSubmit() {
         signup()
     })
 }
+
+const termAndPolicyMessage = computed(() => t('I agree to {policyLink}', {
+  policyLink: `<a href="#" class="text-primary">${t('privacy policy & terms')}</a>`,
+}))
 
 const config = useRuntimeConfig()
 </script>
@@ -158,10 +162,10 @@ const config = useRuntimeConfig()
         >
           <VCardText>
             <h4 class="text-h4 mb-1">
-              Adventure starts here 🚀
+              {{ $t('Adventure starts here 🚀') }}
             </h4>
             <p class="mb-0">
-              Make your app management easy and fun!
+              {{ $t('Getting subtitle from video with ease!') }}
             </p>
           </VCardText>
 
@@ -175,23 +179,23 @@ const config = useRuntimeConfig()
                 <VCol cols="12">
                   <VTextField
                     v-model="credentials.email"
-                    label="Email"
+                    :label="$t('Email')"
                     placeholder="johndoe@email.com"
                     type="email"
                     autofocus
                     :rules="[requiredValidator, emailValidator]"
-                    :error-messages="errors.email"
+                    :error-messages="errors?.email && $t(errors.email)"
                   />
                 </VCol>
 
                 <VCol cols="12">
                   <VTextField
                     v-model="credentials.password"
-                    label="Password"
+                    :label="$t('Password')"
                     placeholder="············"
                     :rules="[requiredValidator]"
                     :type="isPasswordVisible ? 'text' : 'password'"
-                    :error-messages="errors.password"
+                    :error-messages="errors?.password && $t(errors.password)"
                     :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
@@ -200,11 +204,11 @@ const config = useRuntimeConfig()
                 <VCol cols="12">
                   <VTextField
                     v-model="credentials.confirmPassword"
-                    label="Confirm Password"
+                    :label="$t('Confirm Password')"
                     placeholder="············"
                     :rules="[requiredValidator, confirmedValidator(credentials.confirmPassword, credentials.password)]"
                     :type="isPasswordVisible ? 'text' : 'password'"
-                    :error-messages="errors.confirmPassword"
+                    :error-messages="errors?.confirmPassword && $t(errors?.confirmPassword)"
                     :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
@@ -221,11 +225,7 @@ const config = useRuntimeConfig()
                       for="privacy-policy"
                       style="opacity: 1;"
                     >
-                      <span class="me-1 text-high-emphasis">I agree to</span>
-                      <a
-                        href="javascript:void(0)"
-                        class="text-primary"
-                      >privacy policy & terms</a>
+                      <span class="me-1 text-high-emphasis" v-html="termAndPolicyMessage" />
                     </VLabel>
                   </div>
 
@@ -234,18 +234,21 @@ const config = useRuntimeConfig()
                     type="submit"
                     :disabled="!acceptPrivacyPolicies"
                   >
-                    Sign up
+                    {{ $t('Sign up') }}
                   </VBtn>
                 </VCol>
 
                 <!-- create account -->
                 <VCol cols="12">
                   <div class="text-center text-base">
-                    <span class="d-inline-block">Already have an account?</span> <NuxtLink
+                    <span class="d-inline-block">
+                      {{ $t('Already have an account?') }}
+                    </span>
+                    <NuxtLink
                       class="text-primary d-inline-block"
                       :to="{ name: 'auth-login' }"
                     >
-                      Sign in instead
+                      {{ $t('Sign In instead') }}
                     </NuxtLink>
                   </div>
                 </VCol>
@@ -253,7 +256,7 @@ const config = useRuntimeConfig()
                 <VCol cols="12">
                   <div class="d-flex align-center">
                     <VDivider />
-                    <span class="mx-4 text-high-emphasis">or</span>
+                    <span class="mx-4 text-high-emphasis">{{ $t('or') }}</span>
                     <VDivider />
                   </div>
                 </VCol>

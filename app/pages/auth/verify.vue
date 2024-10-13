@@ -2,8 +2,6 @@
 import authV1LoginMaskDark from '@base/images/pages/auth-v1-login-mask-dark.png'
 import authV1LoginMaskLight from '@base/images/pages/auth-v1-login-mask-light.png'
 import { useGenerateImageVariant } from '@base/@core/composable/useGenerateImageVariant'
-import { VNodeRenderer } from '@base/@layouts/components/VNodeRenderer'
-import { themeConfig } from '@base/config'
 
 const authV1ThemeVerifyEmailMask = useGenerateImageVariant(authV1LoginMaskLight, authV1LoginMaskDark)
 
@@ -11,6 +9,8 @@ definePageMeta({
   layout: 'blank',
   public: true,
 })
+
+const { t } = useI18n()
 
 const route = useRoute()
 
@@ -33,12 +33,12 @@ async function handleVerify() {
       },
     })
 
-    notify('Another confirmation email has been sent to your email address!')
+    notify(t('Another confirmation email has been sent to your email address!'))
 
     window.location.href = redirectTo.value
   }
   catch {
-    notify('An error has occured, please try again later', { type: 'error' })
+    notify(t('An error has occured, please try again later'), { type: 'error' })
   }
   finally {
     loading().hide()
@@ -74,10 +74,10 @@ const config = useRuntimeConfig()
 
       <VCardText>
         <h4 class="text-h4 mb-1">
-          Verify your account ✉️
+          {{ $t('Verify your account ✉️') }}
         </h4>
         <p class="mb-5">
-          Please click the button below to confirm your registration.
+          {{ $t('Please click the button below to confirm your registration\.') }}
         </p>
 
         <VBtn
@@ -85,7 +85,7 @@ const config = useRuntimeConfig()
           class="mb-5"
           @click="handleVerify"
         >
-          Verify Registration
+          {{ $t('Verify Registration') }}
         </VBtn>
       </VCardText>
     </VCard>

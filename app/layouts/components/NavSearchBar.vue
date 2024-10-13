@@ -33,9 +33,9 @@ const layoutStore = useLayoutStore()
 
 const suggestionGroups = computed(() => {
   const results: SuggestionGroup[] = [
-    { title: 'Popular', content: [] } as SuggestionGroup,
-    { title: 'Apps', content: [] } as SuggestionGroup,
-    { title: 'Settings', content: [] } as SuggestionGroup,
+    { title: t('Popular'), content: [] } as SuggestionGroup,
+    { title: t('Apps'), content: [] } as SuggestionGroup,
+    { title: t('Settings'), content: [] } as SuggestionGroup,
   ]
 
   for (const layoutItem of layoutStore.layoutItems) {
@@ -48,21 +48,21 @@ const suggestionGroups = computed(() => {
     if ('group' in layoutItem) {
       switch (layoutItem.group) {
         case NavGroupType.POPULAR:
-          results[0].content.push(item)
+          results[0]?.content.push(item)
           break
         case NavGroupType.APP:
-          results[1].content.push(item)
+          results[1]?.content.push(item)
           break
         case NavGroupType.SETTINGS:
-          results[2].content.push(item)
+          results[2]?.content.push(item)
           break
         default:
-          results[1].content.push(item)
+          results[1]?.content.push(item)
           break
       }
     }
     else {
-      results[1].content.push(item)
+      results[1]?.content.push(item)
     }
   }
 

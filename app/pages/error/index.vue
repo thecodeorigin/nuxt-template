@@ -15,6 +15,8 @@ const props = defineProps<{
   error: NuxtError
 }>()
 
+const { t } = useI18n()
+
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
 const isDev = import.meta.env.DEV
@@ -24,14 +26,14 @@ const errToShow = computed(() => {
     case 404:
       return {
         status: 404,
-        title: 'Page Not Found',
-        description: 'We couldn\'t find the page you are looking for.',
+        title: t('Page Not Found'),
+        description: t('We couldn\'t find the page you are looking for\.'),
       }
     case 401:
       return {
         status: 401,
-        title: 'You are not authorized! 🔐',
-        description: 'You don\'t have permission to access this page. Go Home!',
+        title: t('You are not authorized! 🔐'),
+        description: t('You don\'t have permission to access this page\. Go Home!'),
       }
     default:
       if (isDev) {
@@ -44,8 +46,8 @@ const errToShow = computed(() => {
       else {
         return {
           status: 500,
-          title: 'Oops! Something went wrong.',
-          description: 'We are working on it and we\'ll get it fixed as soon as we can',
+          title: t('Oops! Something went wrong\.'),
+          description: t('We are working on it and we\'ll get it fixed as soon as we can'),
         }
       }
   }
@@ -85,7 +87,7 @@ const handleError = () => clearError({ redirect: '/' })
           class="mt-10"
           @click="handleError"
         >
-          Back to Home
+          {{ $t('Back to Home') }}
         </VBtn>
 
         <VImg
