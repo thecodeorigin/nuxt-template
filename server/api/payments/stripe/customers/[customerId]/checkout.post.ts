@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!url) {
     throw createError({
       status: 400,
-      message: 'Cannot create Stripe Checkout session',
+      message: ErrorMessage.CANNOT_CHECKOUT,
     })
   }
 

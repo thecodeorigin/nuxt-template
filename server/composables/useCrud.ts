@@ -134,7 +134,10 @@ export function useCrud<T extends PgTable>(sourceTable: T, options?: CrudOptions
   }
   async function updateManyRecords(body: InferInsertModel<T>) {
     if (!options?.queryRestrict) {
-      throw new Error('Query restrict option is required for updating many records.')
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Query restrict option is required for updating many records.',
+      })
     }
 
     const sysRecord = (

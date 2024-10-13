@@ -41,8 +41,13 @@ export async function createStripeCustomerOnSignup(email: string) {
   const freePrice = minBy(prices.data, 'unit_amount')
 
   if (!freePrice) {
-    throw new Error('No prices found')
+    throw createError({
+      statusCode: 500,
+      statusMessage: ErrorMessage.STRIPE_NO_PRICE,
+    })
   }
+
+  console.log(`${email} (${stripeCustomer.id}) has signed up for ${freePrice.id} (${freePrice.unit_amount} ${freePrice.currency})`)
 
   return {
     customer: stripeCustomer,

@@ -27,12 +27,12 @@ async function getUser(token: JWT) {
 async function createSysUser(token: JWT) {
   const { getRoleByName } = useRoleCrud()
 
-  const editorRole = await getRoleByName('User')
+  const userRole = await getRoleByName('User')
 
-  if (!editorRole.data?.id) {
+  if (!userRole.data?.id) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Cannot sign up user!',
+      statusMessage: ErrorMessage.CANNOT_FIND_ROLE,
     })
   }
 
@@ -47,7 +47,7 @@ async function createSysUser(token: JWT) {
     postcode: '',
     address: '',
     organization: '',
-    role_id: editorRole.data.id,
+    role_id: userRole.data.id,
   })
 
   return sysUser.data
@@ -72,7 +72,7 @@ export default NuxtAuthHandler({
         catch (error: any) {
           throw createError({
             statusCode: error.response.status || 500,
-            statusMessage: error.response.statusText || 'Internal Server Error',
+            statusMessage: error.response.statusText || ErrorMessage.INTERNAL_SERVER_ERROR,
           })
         }
       },

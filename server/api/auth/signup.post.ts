@@ -9,21 +9,21 @@ export default defineEventHandler(async (event) => {
     if (!(email || phone) || !password) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'Email or Phone and Password is required to signup',
+        statusMessage: ErrorMessage.INVALID_CREDENTIALS,
         data: {
-          email: ['Email or Phone and Password is required to signup'],
+          email: [ErrorMessage.INVALID_CREDENTIALS],
         },
       })
     }
 
     const { getRoleByName } = useRoleCrud()
 
-    const editorRole = await getRoleByName('User')
+    const userRole = await getRoleByName('User')
 
-    if (!editorRole.data?.id) {
+    if (!userRole.data?.id) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'Cannot sign up user!',
+        statusMessage: ErrorMessage.CANNOT_FIND_ROLE,
       })
     }
 
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       address: '',
       organization: '',
       provider,
-      role_id: editorRole.data.id,
+      role_id: userRole.data.id,
     })
 
     setResponseStatus(event, 201)

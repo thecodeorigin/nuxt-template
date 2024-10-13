@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { template } from 'lodash-es'
 
 export function getParam(event: H3Event, key = 'uuid') {
   const value = getRouterParam(event, key)
@@ -6,7 +7,7 @@ export function getParam(event: H3Event, key = 'uuid') {
   if (!value) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Not Found!',
+      statusMessage: template(ErrorMessage.INVALID_PARAMS)({ key, value }),
     })
   }
 

@@ -10,9 +10,9 @@ export default defineEventHandler(async (event) => {
     if (!(email || phone) || !password) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Email or Phone and Password is required to signup',
+        statusMessage: ErrorMessage.INVALID_CREDENTIALS,
         data: {
-          email: ['Email or Phone and Password is required to signup'],
+          email: [ErrorMessage.INVALID_CREDENTIALS],
         },
       })
     }
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     if (!sysUser) {
       throw createError({
         statusCode: 401,
-        statusMessage: 'Invalid credentials!',
+        statusMessage: ErrorMessage.INVALID_CREDENTIALS,
       })
     }
 
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
 
     throw createError({
       statusCode: 401,
-      statusMessage: 'Invalid credentials!',
+      statusMessage: ErrorMessage.INVALID_CREDENTIALS,
     })
   }
   catch (error: any) {
