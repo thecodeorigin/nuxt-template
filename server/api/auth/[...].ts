@@ -27,7 +27,7 @@ async function getUser(token: JWT) {
 async function createSysUser(token: JWT) {
   const { getRoleByName } = useRoleCrud()
 
-  const editorRole = await getRoleByName('Editor')
+  const editorRole = await getRoleByName('User')
 
   if (!editorRole.data?.id) {
     throw createError({

@@ -7,14 +7,14 @@ export async function seedPermissions(roles: InferSelectModel<typeof sysRoleTabl
   console.log('Seeding permissions...')
 
   const adminRole = roles.find(role => role.name === 'Admin')
-  const editorRole = roles.find(role => role.name === 'Editor')
-  const readerRole = roles.find(role => role.name === 'Reader')
+  const userRole = roles.find(role => role.name === 'User')
+  const visitorRole = roles.find(role => role.name === 'Visitor')
 
   return await db.insert(sysPermissionTable).values([
     { role_id: adminRole!.id, action: 'manage' as const, subject: 'all' as const },
-    { role_id: editorRole!.id, action: 'manage' as const, subject: 'Post' as const },
-    { role_id: readerRole!.id, action: 'read' as const, subject: 'Post' as const },
-    { role_id: editorRole!.id, action: 'manage' as const, subject: 'Category' as const },
-    { role_id: readerRole!.id, action: 'read' as const, subject: 'Category' as const },
+    { role_id: userRole!.id, action: 'manage' as const, subject: 'Project' as const },
+    { role_id: visitorRole!.id, action: 'read' as const, subject: 'Project' as const },
+    { role_id: userRole!.id, action: 'manage' as const, subject: 'Category' as const },
+    { role_id: visitorRole!.id, action: 'read' as const, subject: 'Category' as const },
   ].filter(Boolean))
 }

@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
     const { getRoleByName } = useRoleCrud()
 
-    const editorRole = await getRoleByName('Editor')
+    const editorRole = await getRoleByName('User')
 
     if (!editorRole.data?.id) {
       throw createError({

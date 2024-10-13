@@ -8,7 +8,7 @@ import { db } from '../../utils/db'
 export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding users...')
 
-  const editorRole = roles.find(role => role.name === 'Editor')
+  const editorRole = roles.find(role => role.name === 'User')
 
   const testUser = {
     email: 'test@gmail.com',

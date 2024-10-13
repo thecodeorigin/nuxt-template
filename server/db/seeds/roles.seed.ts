@@ -7,8 +7,8 @@ export async function seedRoles() {
   return await db.insert(sysRoleTable)
     .values([
       { name: 'Admin' },
-      { name: 'Editor' },
-      { name: 'Reader' },
+      { name: 'User' },
+      { name: 'Visitor' },
     ])
     .returning()
 }

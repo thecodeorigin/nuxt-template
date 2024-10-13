@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getSingletonHighlighter } from 'shiki'
+import { getSingletonHighlighter } from 'shikiji'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 type CodeLanguages = 'ts' | 'js'
