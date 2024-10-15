@@ -104,6 +104,14 @@ pnpm with-env dev
 
 Thank you to all the people who already contributed to the Nuxt Template project!
 
+Use the following content in the PR to add new contributors:
+
+```bash
+@all-contributors
+please add @<username> for <contributions>. 
+please add @<username> for <contributions>.
+```
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
