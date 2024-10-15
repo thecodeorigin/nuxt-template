@@ -3,7 +3,7 @@ name: Release to GitHub Packages
 on:
   push:
     branches:
-      - base
+      - main
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
