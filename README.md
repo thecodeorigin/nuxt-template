@@ -2,9 +2,6 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Nuxt 3 template is a opinionated template for Nuxt 3 project. It includes the following features:
 
@@ -113,10 +110,10 @@ Thank you to all the people who already contributed to the Nuxt Template project
 <table>
   <tbody>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://nguyenhuunguyeny.com"><img src="https://avatars.githubusercontent.com/u/46400321?v=4?s=100" width="100px;" alt="Rim (Y Nguyen)"/><br /><sub><b>Rim (Y Nguyen)</b></sub></a><br /><a href="https://github.com/thecodeorigin/nuxt-template/commits?author=imrim12" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/NguyenDucTruyen"><img src="https://avatars.githubusercontent.com/u/118962054?v=4?s=100" width="100px;" alt="Nguyễn Đức Truyền"/><br /><sub><b>Nguyễn Đức Truyền</b></sub></a><br /><a href="#maintenance-NguyenDucTruyen" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://huynamboz.github.io"><img src="https://avatars.githubusercontent.com/u/38585889?v=4?s=100" width="100px;" alt="Trịnh Huy Nam"/><br /><sub><b>Trịnh Huy Nam</b></sub></a><br /><a href="#maintenance-huynamboz" title="Maintenance">🚧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/HaoNguyen-Ron"><img src="https://avatars.githubusercontent.com/u/131354641?v=4?s=100" width="100px;" alt="HaoNguyen-Ron"/><br /><sub><b>HaoNguyen-Ron</b></sub></a><br /><a href="#maintenance-HaoNguyen-Ron" title="Maintenance">🚧</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://nguyenhuunguyeny.com"><img src="https://avatars.githubusercontent.com/u/46400321?v=4?s=100" width="100px;" alt="Rim (Y Nguyen)"/><br /><sub><b>Rim (Y Nguyen)</b></sub></a><br /><a href="https://github.com/thecodeorigin/nuxt-template/commits?author=imrim12" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

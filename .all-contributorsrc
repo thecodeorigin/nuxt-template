@@ -8,6 +8,15 @@
   "commitConvention": "angular",
   "contributors": [
     {
+      "login": "imrim12",
+      "name": "Rim (Y Nguyen)",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46400321?v=4",
+      "profile": "http://nguyenhuunguyeny.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
       "login": "NguyenDucTruyen",
       "name": "Nguyễn Đức Truyền",
       "avatar_url": "https://avatars.githubusercontent.com/u/118962054?v=4",
@@ -32,15 +41,6 @@
       "profile": "https://github.com/HaoNguyen-Ron",
       "contributions": [
         "maintenance"
-      ]
-    },
-    {
-      "login": "imrim12",
-      "name": "Rim (Y Nguyen)",
-      "avatar_url": "https://avatars.githubusercontent.com/u/46400321?v=4",
-      "profile": "http://nguyenhuunguyeny.com",
-      "contributions": [
-        "code"
       ]
     }
   ],
