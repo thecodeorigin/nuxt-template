@@ -35,5 +35,5 @@ jobs:
         run: pnpm install
 
       - name: Publish to GitHub Packages
-        run: pnpm -r publish --publish-branch base
+        run: pnpm -r publish --publish-branch main --access public
 
