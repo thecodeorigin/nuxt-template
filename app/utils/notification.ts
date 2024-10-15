@@ -1,5 +1,5 @@
 export function notify(message: string, options?: NotifyOptions) {
-  const notificationStore = useNotificationStore()
+  const notificationStore = useMessageStore()
 
   notificationStore.showNotification(message, options)
 

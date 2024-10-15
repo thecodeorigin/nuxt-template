@@ -1,5 +1,5 @@
 export function confirmation(message: string) {
-  const notificationStore = useNotificationStore()
+  const notificationStore = useMessageStore()
 
   return notificationStore.showConfirmation(message)
 }

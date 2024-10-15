@@ -3,7 +3,7 @@ import { formatDistanceToNow } from '#imports'
 
 type Notification = any
 
-const systemNotificationStore = useSystemNotificationStore()
+const systemNotificationStore = useNotificationStore()
 const emptyNotification = ref(false)
 const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})

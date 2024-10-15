@@ -21,7 +21,7 @@ const { global } = useTheme()
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
-const notificationStore = useNotificationStore()
+const notificationStore = useMessageStore()
 const layoutStore = useLayoutStore()
 
 onBeforeMount(async () => {

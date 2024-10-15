@@ -1,6 +1,6 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysPermissionTable } from '@base/server/db/schemas'
-import type { Actions, Rule, Subjects } from '@base/utils/casl'
+import type { Actions, Rule, Subjects } from '~/stores/casl'
 
 type Permission = InferSelectModel<typeof sysPermissionTable>
 
