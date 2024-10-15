@@ -1,35 +1,140 @@
-# vue
+# Nuxt 3 template
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-This template should help get you started developing with Vue 3 in Vite.
+Nuxt 3 template is a opinionated template for Nuxt 3 project. It includes the following features:
 
-## Recommended IDE Setup
+- [UnoCSS](https://unocss.com) for utility-first CSS
+- [Vuetify](https://vuetifyjs.com) for component library
+- [Nuxt i18n](https://i18n.nuxtjs.org) for internationalization
+- [Nuxt Auth](https://auth.sidebase.io) for authentication
+- [Drizzle ORM](https://drizzle.dev) for Database communication
+- [CASL](https://casl.js.org) for Access Control
+- [Firebase Notification](https://firebase.google.com) for push notification
 
-[VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur).
+## Getting Started
 
-## Type Support for `.vue` Imports in TS
+### Prerequisites
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates.
+- [PNPM](https://pnpm.io) - Fast, disk space efficient package manager
+- [Node.js 20+](https://nodejs.org) - Recommend to be installed via PNPM standalone using `pnpm env use --global`
 
-However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can run `Volar: Switch TS Plugin on/off` from VS Code command palette.
+### Installation
 
-## Customize configuration
+1. Clone the repository
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```bash
+git clone git@github.com:thecodeorigin/nuxt-template.git
 ```
 
-### Compile and Hot-Reload for Development
+2. Install dependencies
 
-```sh
-npm run dev
+```bash
+pnpm install
 ```
 
-### Type-Check, Compile and Minify for Production
+3. Prepare the environment
 
-```sh
-npm run build
+Copy the `.env.example` file to `.env` and fill in the necessary information
+
+```bash
+cp .env.example .env
 ```
+
+4. Prepare the Database with Docker
+
+You can use a remote database and fill in all the environment variables in the `.env` file. Or you can use the provided docker-compose file to start a local database.
+
+> Please be careful with your configured environment variables, you can accidentally execute the database commands on your production database.
+
+```bash
+pnpm db:start
+
+pnpm db:migrate
+
+pnpm db:seed
+```
+
+> Please checkout the `server/db/seeds` folder to review all the seed data, especially the `users.seed.ts` file to get the default user credentials.
+
+You can stop or reset the database with the following commands:
+
+```bash
+# Stop the database
+pnpm db:stop
+# Reset the database
+pnpm db:reset
+```
+
+5. Run the project
+
+```bash
+pnpm dev
+```
+
+### Usage with Doppler
+You can use Doppler to manage your environment variables. To do this, you need to install the Doppler CLI and authenticate with your account.
+
+1. Install the Doppler CLI
+
+Please follow the instructions on the [official Doppler documentation](https://docs.doppler.com/docs/install-cli) to install the Doppler CLI.
+
+2. Authenticate with Doppler
+
+```bash
+doppler login
+```
+
+3. Select the project from Doppler
+
+```bash
+doppler setup
+```
+
+4. Run the project with Doppler
+
+> Please be careful with your configured environment variables, you can accidentally execute the database commands on your production database.
+
+```bash
+pnpm with-env dev
+```
+
+## Contribution
+
+Thank you to all the people who already contributed to the Nuxt Template project!
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://nguyenhuunguyeny.com"><img src="https://avatars.githubusercontent.com/u/46400321?v=4?s=100" width="100px;" alt="Rim (Y Nguyen)"/><br /><sub><b>Rim (Y Nguyen)</b></sub></a><br /><a href="#maintenance-imrim12" title="Maintenance">🚧</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2022-present, Nguyen Huu Nguyen Y
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
