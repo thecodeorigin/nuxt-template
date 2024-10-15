@@ -1,7 +1,7 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
 import type { Page } from 'puppeteer'
-import type { Actions, Subjects } from '@base/utils/casl'
+import type { Actions, Subjects } from '~/stores/casl'
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
 import type { z } from 'zod'
 import type { selectSysUserSchema } from './server/db/schemas'

@@ -74,7 +74,7 @@ importers:
       '@iconify/vue':
         specifier: 4.1.1
         version: 4.1.1(vue@3.5.8(typescript@5.4.5))
-      '@imrim12/eslint-config':
+      '@thecodeorigin/eslint-config':
         specifier: workspace:*
         version: link:packages/config/eslint
       '@ngneat/falso':

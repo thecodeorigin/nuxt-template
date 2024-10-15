@@ -1,6 +1,6 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
-import type { Actions, Subjects } from './app/utils/casl'
+import type { Actions, Subjects } from './app/stores/casl'
 import type { NavGroupType, NavItem } from './app/@base/@layouts/types'
 
 declare module '#app' {

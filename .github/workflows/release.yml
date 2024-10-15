@@ -29,7 +29,7 @@ jobs:
           node-version: 20
           cache: 'pnpm'
           registry-url: "https://npm.pkg.github.com"
-          scope: "@imrim12"
+          scope: "@thecodeorigin"
 
       - name: Install dependencies
         run: pnpm install

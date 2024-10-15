@@ -1,5 +1,5 @@
 {
-  "name": "@imrim12/eslint-config",
+  "name": "@thecodeorigin/eslint-config",
   "type": "module",
   "version": "1.0.1",
   "publishConfig": {
@@ -8,10 +8,10 @@
   },
   "packageManager": "pnpm@9.4.0",
   "author": "thecodeorigin <contact@thecodeorigin.com>",
-  "homepage": "https://github.com/imrim12/nuxt-template",
+  "homepage": "https://github.com/thecodeorigin/nuxt-template",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/imrim12/nuxt-template.git",
+    "url": "git+ssh://git@github.com/thecodeorigin/nuxt-template.git",
     "directory": ""
   },
   "main": "./index.mjs",
