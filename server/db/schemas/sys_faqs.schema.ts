@@ -6,16 +6,10 @@ import { sysFaqCategoryTable } from './sys_faq_categories.schema'
 export const sysFaqTable = pgTable('sys_faqs', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   answer: text('answer'),
-  category_id: smallint('category_id'),
+  category_id: smallint('category_id')
+    .references(() => sysFaqCategoryTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   question: text('question'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-}, (table) => {
-  return {
-    sysFaq_sysFaqsCategory: foreignKey({
-      columns: [table.category_id],
-      foreignColumns: [sysFaqCategoryTable.id],
-    }).onUpdate('cascade').onDelete('cascade'),
-  }
 })
 
 export const insertSysFaqSchema = createInsertSchema(sysFaqTable)

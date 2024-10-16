@@ -1,4 +1,4 @@
-import { foreignKey, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { sysUserTable } from './sys_users.schema'
@@ -10,14 +10,7 @@ export const sysNotificationTable = pgTable('sys_notifications', {
   message: text('message'),
   action: jsonb('action'),
   read_at: timestamp('read_at', { withTimezone: true }),
-  user_id: uuid('user_id').defaultRandom(),
-}, (table) => {
-  return {
-    sysNotification_sysUser: foreignKey({
-      columns: [table.user_id],
-      foreignColumns: [sysUserTable.id],
-    }).onUpdate('cascade').onDelete('cascade'),
-  }
+  user_id: uuid('user_id').references(() => sysUserTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
 })
 
 export const insertSysNotificationSchema = createInsertSchema(sysNotificationTable)
