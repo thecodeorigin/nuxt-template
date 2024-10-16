@@ -116,9 +116,14 @@ export default NuxtAuthHandler({
     async session({ session, token }) {
       const storage = useStorage('redis')
 
-      const sessionKey = getStorageSessionKey(token.email)
+      let cachedSession = null
+      let sessionKey = ''
 
-      let cachedSession = await storage.getItem<Session | null>(sessionKey)
+      if (token.id) {
+        sessionKey = getStorageSessionKey(token.id)
+
+        cachedSession = await storage.getItem<Session | null>(sessionKey)
+      }
 
       if (!cachedSession?.user?.id) {
         let loggedInUser = await getUser(token)
@@ -134,7 +139,8 @@ export default NuxtAuthHandler({
           user: loggedInUser as any,
         }
 
-        storage.setItem(sessionKey, cachedSession)
+        if (sessionKey && cachedSession)
+          storage.setItem(sessionKey, cachedSession)
       }
 
       return cachedSession
