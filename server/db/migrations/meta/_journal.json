@@ -15,6 +15,13 @@
       "when": 1728805573170,
       "tag": "0001_unknown_paladin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729103193637,
+      "tag": "0002_opposite_black_bird",
+      "breakpoints": true
     }
   ]
 }

@@ -68,7 +68,7 @@ export function isNavLinkActive(link: NavItem, router: Router) {
 export function isNavGroupActive(children: (NavItem | NavItem)[], router: Router): boolean {
   return children.some((child) => {
     // If child have children => It's group => Go deeper(recursive)
-    if ('children' in child)
+    if (child.children?.length)
       return isNavGroupActive(child.children, router)
 
     // else it's link => Check for matched Route
