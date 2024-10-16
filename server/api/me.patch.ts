@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
 
     const sysUser = await updateUserById(session.user!.id!, body)
 
-    const storage = useStorage('redis')
+    const storage = useStorage('mongodb')
     const sessionKey = getStorageSessionKey(sysUser.data.email!)
 
     storage.setItem(sessionKey, {

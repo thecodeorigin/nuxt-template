@@ -114,7 +114,7 @@ export default NuxtAuthHandler({
       return token
     },
     async session({ session, token }) {
-      const storage = useStorage('redis')
+      const storage = useStorage('mongodb')
 
       let cachedSession = null
       let sessionKey = ''
@@ -148,7 +148,7 @@ export default NuxtAuthHandler({
   },
   events: {
     async signOut({ token }) {
-      const storage = useStorage('redis')
+      const storage = useStorage('mongodb')
       const sessionKey = getStorageSessionKey(token.email)
 
       await storage.removeItem(sessionKey)

@@ -59,6 +59,12 @@ export default defineNuxtConfig({
       password: process.env.REDIS_PASSWORD,
     },
 
+    mongodb: {
+      connectionString: process.env.MONGODB_CONNECTION_STRING,
+      databaseName: process.env.MONGODB_DATABASE_NAME,
+      collectionName: process.env.MONGODB_COLLECTION_NAME,
+    },
+
     public: {
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
