@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -126,6 +126,7 @@
     "firebase-functions": "^5.0.1",
     "lodash-es": "^4.17.21",
     "mapbox-gl": "3.2.0",
+    "mongodb": "^6.9.0",
     "next-auth": "4.21.1",
     "nuxt": "^3.13.2",
     "nuxt-vuefire": "^1.0.3",
