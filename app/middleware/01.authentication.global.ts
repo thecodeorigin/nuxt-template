@@ -10,6 +10,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { signOut } = useAuth()
 
+  if (authStore.isAuthenticated || to.query.loggedIn) {
+    try {
+      await authStore.getCurrentUser()
+    }
+    catch {}
+  }
+
   if (authStore.isAuthenticated) {
     if (!authStore.currentUser?.id) {
       await signOut({ redirect: false })

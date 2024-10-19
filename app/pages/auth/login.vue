@@ -11,6 +11,7 @@ import authV2LoginMaskDark from '@base/images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@base/images/pages/auth-v2-login-mask-light.png'
 
 import AuthProvider from '@base/views/pages/authentication/AuthProvider.vue'
+import { withQuery } from 'ufo'
 import { emailValidator, requiredValidator } from '#imports'
 
 const authThemeImg = useGenerateImageVariant(
@@ -53,12 +54,12 @@ async function login(provider?: string) {
     loading()
     if (provider) {
       await signIn(provider, {
-        callbackUrl: route.query.to ? String(route.query.to) : '/',
+        callbackUrl: withQuery(route.query.to ? String(route.query.to) : '/', { loggedIn: true }),
       })
     }
     else {
       const response = await signIn('credentials', {
-        callbackUrl: route.query.to ? String(route.query.to) : '/',
+        callbackUrl: withQuery(route.query.to ? String(route.query.to) : '/', { loggedIn: true }),
         redirect: false,
         ...credentials.value,
       })

@@ -2,56 +2,10 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
 import FacebookProvider from 'next-auth/providers/facebook'
-import type { Session } from 'next-auth'
-import type { JWT } from 'next-auth/jwt'
-import { useRoleCrud } from '@base/server/composables/useRoleCrud'
-import { useUserCrud } from '@base/server/composables/useUserCrud'
 import type { LoggedInUser } from '../../../next-auth'
 import { NuxtAuthHandler } from '#auth'
 
 const runtimeConfig = useRuntimeConfig()
-
-async function getUser(token: JWT) {
-  const { getUser: getUserByKey } = useUserCrud()
-
-  if (token.email)
-    return (await getUserByKey('email', token.email)).data
-  else if (token.phone)
-    return (await getUserByKey('phone', token.phone)).data
-  else if (token.id)
-    return (await getUserByKey('id', token.id)).data
-
-  return null
-}
-
-async function createSysUser(token: JWT) {
-  const { getRoleByName } = useRoleCrud()
-
-  const userRole = await getRoleByName('User')
-
-  if (!userRole.data?.id) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: ErrorMessage.CANNOT_FIND_ROLE,
-    })
-  }
-
-  const { createUser } = useUserCrud()
-
-  const sysUser = await createUser({
-    ...omit(token, ['id']),
-    password: '',
-    language: '',
-    country: '',
-    city: '',
-    postcode: '',
-    address: '',
-    organization: '',
-    role_id: userRole.data.id,
-  })
-
-  return sysUser.data
-}
 
 export default NuxtAuthHandler({
   secret: runtimeConfig.auth.secret,
@@ -99,59 +53,40 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     jwt({ token, user, account }) {
-      /*
-       * For adding custom parameters to user in session, we first need to add those parameters
-       * in token which then will be available in the `session()` callback
-       */
       if (user?.id) {
         token.id = user.id
         token.email = user.email!
         token.phone = user.phone!
-        token.avatar_url = user.avatar_url || (token.image || token.picture) as string
         token.provider = account?.provider || 'credentials'
+      }
+
+      if (account?.provider !== 'credentials') {
+        // token.accessToken = account?.access_token // TODO: add database adapter
       }
 
       return token
     },
-    async session({ session, token }) {
-      const storage = useStorage('mongodb')
-
-      let cachedSession = null
-      let sessionKey = ''
-
-      if (token.id) {
-        sessionKey = getStorageSessionKey(token.id)
-
-        cachedSession = await storage.getItem<Session | null>(sessionKey)
+    session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          id: token.id,
+          email: token.email,
+          phone: token.phone,
+          provider: token.provider,
+          // accessToken: token.accessToken,
+        },
       }
-
-      if (!cachedSession?.user?.id) {
-        let loggedInUser = await getUser(token)
-
-        if (!loggedInUser) {
-          await createSysUser(token)
-
-          loggedInUser = await getUser(token)
-        }
-
-        cachedSession = {
-          ...session,
-          user: loggedInUser as any,
-        }
-
-        if (sessionKey && cachedSession)
-          storage.setItem(sessionKey, cachedSession)
-      }
-
-      return cachedSession
     },
   },
   events: {
     async signOut({ token }) {
-      const storage = useStorage('mongodb')
-      const sessionKey = getStorageSessionKey(token.email)
+      if (token.id) {
+        const storage = useStorage('mongodb')
+        const sessionKey = getStorageSessionKey(token.id)
 
-      await storage.removeItem(sessionKey)
+        await storage.removeItem(sessionKey)
+      }
     },
   },
   cookies: {

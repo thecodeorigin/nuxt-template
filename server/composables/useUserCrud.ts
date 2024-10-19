@@ -1,6 +1,7 @@
 import { count, ilike, or } from 'drizzle-orm'
 import { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import type { LoggedInUser } from '../../next-auth'
 import { useCrud } from './useCrud'
 
 export function useUserCrud() {
@@ -81,9 +82,7 @@ export function useUserCrud() {
       },
     })
 
-    nitroApp.hooks.callHook('user:get', sysUser)
-
-    return { data: sysUser! }
+    return { data: sysUser as LoggedInUser }
   }
 
   function getUserById(id: string) {

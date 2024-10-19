@@ -1,22 +1,22 @@
 import type { DefaultSession } from 'next-auth'
 import type * as z from 'zod'
 import type { selectSysUserSchema } from '@base/server/db/schemas/sys_users.schema'
-import type { selectSysPermissionSchema, selectSysRoleSchema } from '@base/server/db/schemas'
+import type { sysPermissionTable, sysRoleTable, sysUserTable } from '@base/server/db/schemas'
 
-export type LoggedInUser = z.infer<typeof selectSysUserSchema> & {
-  role: z.infer<typeof selectSysRoleSchema> & {
-    permissions: z.infer<typeof selectSysPermissionSchema>[]
+export type LoggedInUser = Omit<typeof sysUserTable.$inferSelect & {
+  role: typeof sysRoleTable.$inferSelect & {
+    permissions: typeof sysPermissionTable.$inferSelect[]
   }
-}
+}, 'password'>
 
 declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    id: string
-    email: string
-    phone: string
-    provider: string
-    avatar_url?: string
+    id?: string
+    email?: string
+    phone?: string
+    provider?: string
+    accessToken?: string
   }
 }
 
@@ -26,12 +26,15 @@ declare module 'next-auth' {
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
   interface Session {
-    user: Omit<LoggedInUser, 'password'>
+    user: {
+      id: string
+      email: string
+      phone: string
+      provider: string
+    }
   }
 
-  interface User extends Omit<LoggedInUser, 'password'> {
-    verified?: boolean
-  }
+  interface User extends LoggedInUser {}
 }
 
 export {}
