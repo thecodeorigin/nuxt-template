@@ -17,15 +17,15 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const sysUser = (await db.select().from(sysUserTable)
-      .where(
-        or(
-          ...[
-            email && eq(sysUserTable.email, email),
-            phone && eq(sysUserTable.phone, phone),
-          ].filter(Boolean),
-        ),
-      ))[0]
+    const sysUser = await db.query.sysUserTable.findFirst({
+      columns: {
+        id: true,
+        email: true,
+        phone: true,
+        password: true,
+      },
+      where: eq(sysUserTable.email, email),
+    })
 
     if (!sysUser) {
       throw createError({

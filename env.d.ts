@@ -1,10 +1,10 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
 import type { Page } from 'puppeteer'
-import type { Actions, Subjects } from '~/stores/casl'
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
 import type { z } from 'zod'
-import type { selectSysUserSchema } from './server/db/schemas'
+import type { sysUserTable } from './server/db/schemas'
+import type { Actions, Subjects } from '~/stores/casl'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -28,8 +28,7 @@ declare global {
 
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
-    'user:created': (data: z.infer<typeof selectSysUserSchema>) => void
-    'user:get': (data: z.infer<typeof selectSysUserSchema>) => void
+    'user:created': (data: typeof sysUserTable.$inferSelect) => void
   }
 }
 

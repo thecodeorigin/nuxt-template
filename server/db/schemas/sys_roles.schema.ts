@@ -6,7 +6,7 @@ import { sysPermissionTable } from './sys_permissions.schema'
 
 export const sysRoleTable = pgTable('sys_roles', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  name: text('name'),
+  name: text('name').notNull(),
 })
 
 export const insertSysRoleSchema = createInsertSchema(sysRoleTable)
