@@ -161,6 +161,12 @@ export default defineNuxtConfig({
     ],
   },
 
+  nitro: {
+    devProxy: {
+      host: 'localhost',
+    },
+  },
+
   pinia: {
     storesDirs: [
       fileURLToPath(new URL('./app/stores', import.meta.url)),

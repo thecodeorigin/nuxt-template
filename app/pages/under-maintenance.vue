@@ -21,7 +21,7 @@ definePageMeta({
         {{ $t('Under Maintenance! 🚧') }}
       </h4>
       <p class="text-body-1 mb-0">
-        {{ $t('Sorry for the inconvenience but we\'re performing some maintenance at the moment') }}
+        {{ $t('Sorry for the inconvenience but we are performing some maintenance at the moment') }}
       </p>
     </div>
 

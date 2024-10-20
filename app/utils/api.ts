@@ -36,9 +36,6 @@ export const $api = $fetch.create({
           })
         }
         break
-      case 503:
-        navigateTo({ name: 'error' })
-        break
       default:
         notify(error.response?.statusText || 'Internal Server Error', {
           type: 'error',
