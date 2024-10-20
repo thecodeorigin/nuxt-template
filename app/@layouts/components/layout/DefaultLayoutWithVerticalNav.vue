@@ -1,16 +1,5 @@
 <script lang="ts" setup>
-import NavBarI18n from '@base/@core/components/I18n.vue'
 import { useConfigStore } from '@base/@core/stores/config'
-
-import { VerticalNavLayout } from '@base/@layouts'
-
-// Components
-import Footer from './Footer.vue'
-import NavBarNotifications from './NavBarNotifications.vue'
-import NavSearchBar from './NavSearchBar.vue'
-import NavbarShortcuts from './NavbarShortcuts.vue'
-import NavbarThemeSwitcher from './NavbarThemeSwitcher.vue'
-import UserProfile from './UserProfile.vue'
 
 // @layouts plugin
 

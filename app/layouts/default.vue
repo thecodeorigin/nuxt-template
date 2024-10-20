@@ -2,9 +2,7 @@
 import { useConfigStore } from '@base/@core/stores/config'
 import { AppContentLayoutNav } from '@base/@layouts/enums'
 import { switchToVerticalNavOnLtOverlayNavBreakpoint } from '@base/@layouts/utils'
-
-const DefaultLayoutWithHorizontalNav = defineAsyncComponent(() => import('./components/DefaultLayoutWithHorizontalNav.vue'))
-const DefaultLayoutWithVerticalNav = defineAsyncComponent(() => import('./components/DefaultLayoutWithVerticalNav.vue'))
+import { LazyDefaultLayoutWithHorizontalNav, LazyDefaultLayoutWithVerticalNav } from '#components'
 
 const configStore = useConfigStore()
 
@@ -20,7 +18,7 @@ injectSkinClasses()
 <template>
   <Component
     v-bind="layoutAttrs"
-    :is="configStore.appContentLayoutNav === AppContentLayoutNav.Vertical ? DefaultLayoutWithVerticalNav : DefaultLayoutWithHorizontalNav"
+    :is="configStore.appContentLayoutNav === AppContentLayoutNav.Vertical ? LazyDefaultLayoutWithVerticalNav : LazyDefaultLayoutWithHorizontalNav"
   >
     <slot />
   </Component>

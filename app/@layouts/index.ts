@@ -42,5 +42,4 @@ export function createLayouts(userConfig: PartialDeep<LayoutConfig>): Plugin {
   }
 }
 
-export * from './components'
 export { layoutConfig }

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { HorizontalNav } from '@base/@layouts/components'
 import type { NavItem } from '@base/@layouts/types'
 
 // ℹ️ Using import from `@layouts` causing build to hangup

@@ -1,16 +1,4 @@
 <script lang="ts" setup>
-import NavBarI18n from '@base/@core/components/I18n.vue'
-
-import { HorizontalNavLayout } from '@base/@layouts'
-
-// Components
-import Footer from './Footer.vue'
-import NavBarNotifications from './NavBarNotifications.vue'
-import NavSearchBar from './NavSearchBar.vue'
-import NavbarShortcuts from './NavbarShortcuts.vue'
-import NavbarThemeSwitcher from './NavbarThemeSwitcher.vue'
-import UserProfile from './UserProfile.vue'
-
 const layoutStore = useLayoutStore()
 
 const config = useRuntimeConfig()

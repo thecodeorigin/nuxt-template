@@ -8,7 +8,6 @@ import authV2RegisterIllustrationLight from '@base/images/pages/auth-v2-register
 import authV2RegisterMaskDark from '@base/images/pages/auth-v2-register-mask-dark.png'
 import authV2RegisterMaskLight from '@base/images/pages/auth-v2-register-mask-light.png'
 
-import AuthProvider from '@base/views/pages/authentication/AuthProvider.vue'
 import { confirmedValidator, emailValidator, requiredValidator } from '#imports'
 
 const authThemeImg = useGenerateImageVariant(

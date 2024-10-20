@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { HorizontalNavLink, HorizontalNavPopper } from '@base/@layouts/components'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import type { NavItem } from '@base/@layouts/types'
 import { getDynamicI18nProps, isNavGroupActive } from '@base/@layouts/utils'
 import { layoutConfig } from '@base/@layouts'
+import { HorizontalNavLink } from '#components'
 
 interface Props {
   item: NavItem
@@ -34,9 +34,7 @@ const isGroupActive = ref(false)
   updates isActive & isOpen based on active state of group.
 */
 watch(() => route.path, () => {
-  const isActive = isNavGroupActive(props.item.children, router)
-
-  isGroupActive.value = isActive
+  isGroupActive.value = isNavGroupActive(props.item.children ?? [], router)
 }, { immediate: true })
 </script>
 
