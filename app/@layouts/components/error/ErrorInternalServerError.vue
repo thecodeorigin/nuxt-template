@@ -1,42 +1,56 @@
 <script setup lang="ts">
+import type { NuxtError } from 'nuxt/app'
+import pages404 from '@base/images/pages/404.png'
+
 import miscMaskDark from '@base/images/misc/misc-mask-dark.png'
 import miscMaskLight from '@base/images/misc/misc-mask-light.png'
-import miscObj from '@base/images/pages/misc-under-maintenance-object.png'
-import miscUnderMaintenance from '@base/images/pages/misc-under-maintenance.png'
+import miscObj from '@base/images/pages/misc-404-object.png'
 import { useGenerateImageVariant } from '@base/@core/composable/useGenerateImageVariant'
+
+defineOptions({
+  inheritAttrs: false,
+})
+
+defineProps<{
+  error: NuxtError
+}>()
 
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
-definePageMeta({
-  layout: 'blank',
-  public: false,
-})
+const isDev = import.meta.env.DEV
+
+const handleError = () => clearError({ redirect: '/' })
 </script>
 
 <template>
   <div class="misc-wrapper">
-    <div class="text-center mb-10">
-      <!-- 👉 Title and subtitle -->
-      <h4 class="text-h4 mb-2">
-        {{ $t('Under Maintenance! 🚧') }}
-      </h4>
-      <p class="text-body-1 mb-0">
-        {{ $t('Sorry for the inconvenience but we are performing some maintenance at the moment') }}
-      </p>
-    </div>
+    <ErrorHeader
+      :status-code="500"
+      title="Oops! Something went wrong\."
+      description="We are working on it and we\'ll get it fixed as soon as we can"
+      class="mb-10"
+    />
+
+    <!-- eslint-disable vue/no-v-html -->
+    <div
+      v-if="isDev"
+      style="max-inline-size: 80dvw; overflow-x: scroll;"
+      v-html="error.stack"
+    />
+    <!-- eslint-enable -->
 
     <!-- 👉 Image -->
     <div class="misc-avatar w-100 text-center">
       <VImg
-        :src="miscUnderMaintenance"
+        :src="pages404"
+        alt="Coming Soon"
         :height="$vuetify.display.xs ? 400 : 500"
-        :alt="$t('Coming Soon')"
         class="my-sm-5"
       />
 
       <VBtn
-        to="/"
         class="mt-10"
+        @click="handleError"
       >
         {{ $t('Back to Home') }}
       </VBtn>
@@ -50,8 +64,8 @@ definePageMeta({
       <VImg
         :src="miscObj"
         class="d-none d-md-block footer-coming-soon-obj"
-        :max-width="173"
-        height="170"
+        :max-width="212"
+        height="165"
       />
     </div>
   </div>

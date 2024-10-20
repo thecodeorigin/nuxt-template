@@ -1,33 +1,28 @@
 <script setup lang="ts">
 import miscMaskLight from '@base/images/misc/misc-mask-light.png'
-import pages401 from '@base/images/pages/401.png'
+import pages404 from '@base/images/pages/404.png'
 
 import miscMaskDark from '@base/images/misc/misc-mask-dark.png'
-import miscObj from '@base/images/pages/misc-401-object.png'
+import miscObj from '@base/images/pages/misc-404-object.png'
 import { useGenerateImageVariant } from '@base/@core/composable/useGenerateImageVariant'
 
 const miscThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
-
-definePageMeta({
-  public: true,
-  layout: 'blank',
-})
 </script>
 
 <template>
   <div class="misc-wrapper">
     <ErrorHeader
-      status-code="401"
-      :title="$t('You are not authorized! 🔐')"
-      :description="$t(`You don\'t have permission to access this page\. Go Home!`)"
+      status-code="404"
+      :title="$t('Page Not Found')"
+      :description="$t('We couldn\'t find the page you are looking for\.')"
       class="mb-10"
     />
 
     <!-- 👉 Image -->
     <div class="misc-avatar w-100 text-center">
       <VImg
-        :src="pages401"
-        alt="Coming Soon"
+        :src="pages404"
+        alt="Not Found"
         :height="$vuetify.display.xs ? 400 : 500"
         class="my-sm-5"
       />
