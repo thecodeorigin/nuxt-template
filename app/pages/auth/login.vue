@@ -10,7 +10,6 @@ import authV2LoginIllustrationLight from '@base/images/pages/auth-v2-login-illus
 import authV2LoginMaskDark from '@base/images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@base/images/pages/auth-v2-login-mask-light.png'
 
-import AuthProvider from '@base/views/pages/authentication/AuthProvider.vue'
 import { withQuery } from 'ufo'
 import { emailValidator, requiredValidator } from '#imports'
 

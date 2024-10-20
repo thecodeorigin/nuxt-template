@@ -89,6 +89,11 @@ export default defineNuxtConfig({
         pathPrefix: false,
       },
       {
+        path: '@base/@layouts/components',
+        extensions: ['.tsx', '.vue'],
+        pathPrefix: false,
+      },
+      {
         path: '@base/components',
         pathPrefix: false,
       },

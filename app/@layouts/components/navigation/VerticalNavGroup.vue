@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { TransitionGroup } from 'vue'
-import { TransitionExpand, VerticalNavLink } from '@base/@layouts/components'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@base/@layouts/symbols'
 import type { NavItem } from '@base/@layouts/types'
 import { getDynamicI18nProps, isNavGroupActive, openGroups } from '@base/@layouts/utils'
 import { layoutConfig } from '@base/@layouts'
+import { VerticalNavLink } from '#components'
 
 defineOptions({
   name: 'VerticalNavGroup',
@@ -166,10 +165,7 @@ watch(
         v-bind="item.icon || layoutConfig.verticalNav.defaultNavItemIconProps"
         class="nav-item-icon"
       />
-      <Component
-        :is="TransitionGroup"
-        name="transition-slide-x"
-      >
+      <TransitionGroup name="transition-slide-x">
         <!-- 👉 Title -->
         <i18n-t
           v-show="!hideTitleAndBadge"
@@ -198,7 +194,7 @@ watch(
           key="arrow"
           class="nav-group-arrow"
         />
-      </Component>
+      </TransitionGroup>
     </div>
     <TransitionExpand>
       <ul

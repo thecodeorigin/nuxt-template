@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { VerticalNav } from '@base/@layouts/components'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import type { NavItem } from '@base/@layouts/types'
 

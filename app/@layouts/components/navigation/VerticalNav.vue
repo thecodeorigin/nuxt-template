@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import type { Component } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle } from '@base/@layouts/components'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@base/@layouts/symbols'
 import type { NavItem } from '@base/@layouts/types'
 import { layoutConfig } from '@base/@layouts'
-import { VNodeRenderer } from './VNodeRenderer'
+import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle } from '#components'
 
 interface Props {
   tag?: string | Component
