@@ -41,7 +41,7 @@ const suggestionGroups = computed(() => {
   for (const layoutItem of layoutStore.layoutItems) {
     const item = {
       icon: 'icon' in layoutItem ? layoutItem.icon?.icon : '',
-      title: 'title' in layoutItem ? layoutItem.title : '',
+      title: 'title' in layoutItem ? t(layoutItem.title) : '',
       url: 'to' in layoutItem ? layoutItem.to : { },
     } as Suggestion
 

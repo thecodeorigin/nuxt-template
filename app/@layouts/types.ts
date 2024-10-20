@@ -108,7 +108,8 @@ export type Notification = {
 )
 
 export interface ThemeSwitcherTheme {
-  name: string
+  label: string
+  value: string
   icon: string
   data?: string
 }

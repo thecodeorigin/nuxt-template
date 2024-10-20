@@ -23,7 +23,7 @@ watch(
 
 <template>
   <IconBtn data-test="button-active-popup-theme-switcher">
-    <VIcon :icon="props.themes.find(t => t.name === configStore.theme)?.icon" />
+    <VIcon :icon="props.themes.find(t => t.value === configStore.theme)?.icon" />
 
     <VTooltip
       activator="parent"
@@ -43,17 +43,17 @@ watch(
         mandatory
       >
         <VListItem
-          v-for="{ name, icon, data } in props.themes"
-          :key="name"
-          :value="name"
+          v-for="{ label, value, icon, data } in props.themes"
+          :key="value"
+          :value="value"
           :prepend-icon="icon"
           :data-test="data"
           color="primary"
           class="text-capitalize px-4"
-          @click="() => { configStore.theme = name }"
+          @click="() => { configStore.theme = value }"
         >
           <VListItemTitle class="text-capitalize">
-            {{ t(name) }}
+            {{ label }}
           </VListItemTitle>
         </VListItem>
       </VList>

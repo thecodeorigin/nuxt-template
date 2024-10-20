@@ -8,7 +8,7 @@ export const useShortcutStore = defineStore('shortcut', () => {
 
   async function getUserShortcuts() {
     if (!userShortcuts.value.length) {
-      const response = await $api<{ data: RawShortcut[], total: number }>(`/shortcuts`)
+      const response = await $api<{ data: RawShortcut[], total: number }>(`/users/shortcuts`)
 
       userShortcuts.value = response.data
     }
@@ -17,7 +17,7 @@ export const useShortcutStore = defineStore('shortcut', () => {
   }
 
   async function postUserShortcut(route: string) {
-    const response = await $api<{ data: RawShortcut }>(`/shortcuts`, {
+    const response = await $api<{ data: RawShortcut }>(`/users/shortcuts`, {
       method: 'POST',
       body: JSON.stringify({
         route,

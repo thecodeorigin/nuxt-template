@@ -14,6 +14,8 @@ export default defineEventHandler(async (event) => {
     return userShortcuts
   }
   catch (error: any) {
+    console.log(error)
+
     throw createError({
       statusCode: 500,
       statusMessage: error.message,
