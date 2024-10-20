@@ -54,6 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser,
     currentRole,
     currentPermissions,
+    currentSession: data,
     pendingUser,
     setPendingUser,
     signOut,

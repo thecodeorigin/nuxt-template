@@ -1,3 +1,3 @@
-export function getStorageSessionKey(userEmail: string) {
-  return `session:${userEmail}`
+export function getStorageSessionKey(providerAccountId: string) {
+  return `session:${providerAccountId}`
 }

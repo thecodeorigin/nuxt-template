@@ -40,6 +40,7 @@
     "cleanup": "rimraf .nuxt .output dist node_modules areas",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
     "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add --separator '->'",
+    "db:preview": "drizzle-kit studio --port 3001",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
     "db:seed": "jiti ./server/db/seeds/index.seed.ts",

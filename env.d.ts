@@ -29,6 +29,7 @@ declare global {
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
     'user:created': (data: typeof sysUserTable.$inferSelect) => void
+    'user:cache:clear': (data: { providerAccountId: string }) => void
   }
 }
 

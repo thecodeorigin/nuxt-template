@@ -19,9 +19,6 @@ export default defineEventHandler(async (event) => {
     return { data: userShortcut[0] }
   }
   catch (error: any) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: error.message,
-    })
+    throw parseError(error)
   }
 })
