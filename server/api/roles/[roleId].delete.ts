@@ -3,18 +3,17 @@ import { sysRoleTable } from '@base/server/db/schemas/sys_roles.schema'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { roleId } = await defineEventOptions(event, { auth: true, params: ['roleId'] })
 
-    const body = await readBody(event)
-
-    const sysRole = await db.update(sysRoleTable)
-      .set(body)
-      .where(eq(sysRoleTable.id, uuid))
+    const sysRole = await db.delete(sysRoleTable)
+      .where(
+        eq(sysRoleTable.id, roleId),
+      )
       .returning()
 
     setResponseStatus(event, 201)
 
-    return { data: sysRole }
+    return { data: sysRole[0] }
   }
   catch (error: any) {
     throw createError({

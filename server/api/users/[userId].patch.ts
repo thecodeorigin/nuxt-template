@@ -2,13 +2,13 @@ import { useUserCrud } from '@base/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
     const body = await readBody(event)
 
     const { updateUserById } = useUserCrud()
 
-    const response = await updateUserById(uuid, body)
+    const response = await updateUserById(userId, body)
 
     setResponseStatus(event, 201)
 

@@ -12,8 +12,6 @@ async function _getUser(session: Session) {
     user = (await getUserByKey('email', session.user.email)).data
   else if (session.user.phone)
     user = (await getUserByKey('phone', session.user.phone)).data
-  else if (session.user.id)
-    user = (await getUserByKey('id', session.user.id)).data
 
   return user
 }
@@ -52,8 +50,8 @@ export async function getUserBySession(session: Session) {
   let cachedUser = null
   let sessionKey = ''
 
-  if (session.user?.id) {
-    sessionKey = getStorageSessionKey(session.user.id)
+  if (session.user?.providerAccountId) {
+    sessionKey = getStorageSessionKey(session.user.providerAccountId)
     cachedUser = await storage.getItem<LoggedInUser | null>(sessionKey)
   }
 

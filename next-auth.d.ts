@@ -12,7 +12,7 @@ export type LoggedInUser = Omit<typeof sysUserTable.$inferSelect & {
 declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    id?: string
+    providerAccountId?: string
     email?: string
     phone?: string
     provider?: string
@@ -27,7 +27,7 @@ declare module 'next-auth' {
    */
   interface Session {
     user: {
-      id: string
+      providerAccountId: string
       email: string
       phone: string
       provider: string

@@ -103,6 +103,12 @@ export function useUserCrud() {
     return { data: omit(data, ['password']) }
   }
 
+  async function updateUserByEmail(email: string, body: any) {
+    const { data } = await updateRecordByKey('email', email, body)
+
+    return { data: omit(data, ['password']) }
+  }
+
   async function createUser(body: any) {
     const { data } = await createRecord(body)
 
@@ -125,6 +131,7 @@ export function useUserCrud() {
     getUserByPhone,
     createUser,
     updateUserById,
+    updateUserByEmail,
     deleteUserById,
     getUsersCount,
   }

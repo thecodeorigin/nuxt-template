@@ -3,11 +3,11 @@ import { sysRoleTable } from '@base/server/db/schemas/sys_roles.schema'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { roleId } = await defineEventOptions(event, { auth: true, params: ['roleId'] })
 
     const sysRole = await db.select().from(sysRoleTable)
       .where(
-        eq(sysRoleTable.id, uuid),
+        eq(sysRoleTable.id, roleId),
       )
       .limit(1)
 

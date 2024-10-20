@@ -3,13 +3,13 @@ import { userShortcutTable } from '@base/server/db/schemas/user_shortcuts.schema
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { userId, shortcutId } = await defineEventOptions(event, { auth: true, params: ['userId', 'shortcutId'] })
 
     const body = await readBody(event)
 
     const userShortcut = await db.update(userShortcutTable)
-      .set({ ...body, user_id: session.user!.id! })
-      .where(eq(userShortcutTable.id, uuid))
+      .set({ ...body, user_id: userId })
+      .where(eq(userShortcutTable.id, shortcutId))
       .returning()
 
     setResponseStatus(event, 201)

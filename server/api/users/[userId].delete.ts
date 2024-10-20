@@ -2,11 +2,11 @@ import { useUserCrud } from '@base/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
     const { deleteUserById } = useUserCrud()
 
-    const response = await deleteUserById(uuid)
+    const response = await deleteUserById(userId)
 
     setResponseStatus(event, 201)
 

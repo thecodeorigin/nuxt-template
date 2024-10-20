@@ -5,14 +5,18 @@ import type { ParsedFilterQuery } from '@base/server/utils/filter'
 type Notification = InferSelectModel<typeof sysNotificationTable>
 
 export const useNotificationStore = defineStore('notification', () => {
+  const authStore = useAuthStore()
+
+  const userId = computed(() => authStore.currentUser?.id || '')
+
   async function fetchNotifications(query: Partial<ParsedFilterQuery>) {
-    return $api<Notification[]>('/notifications', {
+    return $api<Notification[]>(`/users/${userId.value}/notifications`, {
       query,
     })
   }
 
   async function markRead(id: string) {
-    return $api<Notification>(`/notifications/${id}`, {
+    return $api<Notification>(`/users/${userId.value}/notifications/${id}`, {
       method: 'PATCH',
       body: {
         read_at: new Date(),
@@ -21,7 +25,7 @@ export const useNotificationStore = defineStore('notification', () => {
   }
 
   async function markUnread(id: string) {
-    return $api<Notification>(`/notifications/${id}`, {
+    return $api<Notification>(`/users/${userId.value}/notifications/${id}`, {
       method: 'PATCH',
       body: {
         read_at: null,
@@ -30,19 +34,19 @@ export const useNotificationStore = defineStore('notification', () => {
   }
 
   async function markAllRead() {
-    return $api<Notification>('/notifications/mark-all-read', {
+    return $api<Notification>(`/users/${userId.value}/notifications/mark-all-read`, {
       method: 'PATCH',
     })
   }
 
   async function markAllUnread() {
-    return $api<Notification>('/notifications/mark-all-unread', {
+    return $api<Notification>(`/users/${userId.value}/notifications/mark-all-unread`, {
       method: 'PATCH',
     })
   }
 
   async function deleteNotification(id: string) {
-    return $api<Notification>(`/notifications/${id}`, {
+    return $api<Notification>(`/users/${userId.value}/notifications/${id}`, {
       method: 'DELETE',
     })
   }

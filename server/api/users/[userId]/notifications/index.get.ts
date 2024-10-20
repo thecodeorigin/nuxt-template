@@ -2,9 +2,9 @@ import { useNotificationCrud } from '@base/server/composables/useNotificationCru
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session } = await defineEventOptions(event, { auth: true })
+    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
-    const queryRestrict = { user_id: session.user!.id! }
+    const queryRestrict = { user_id: userId }
     const { getNotificationsPaginated } = useNotificationCrud(queryRestrict)
 
     const notifications = await getNotificationsPaginated(getFilter(event))

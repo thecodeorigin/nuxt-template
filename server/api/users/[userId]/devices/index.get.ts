@@ -2,9 +2,9 @@ import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session } = await defineEventOptions(event, { auth: true })
+    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
-    const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id: session.user.id })
+    const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id: userId })
 
     const tokens = await getUserDeviceAllTokens({} as ParsedFilterQuery)
     setResponseStatus(event, 200)

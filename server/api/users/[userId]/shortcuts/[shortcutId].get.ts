@@ -3,13 +3,13 @@ import { userShortcutTable } from '@base/server/db/schemas/user_shortcuts.schema
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { userId, shortcutId } = await defineEventOptions(event, { auth: true, params: ['userId', 'shortcutId'] })
 
     const userShortcut = await db.select().from(userShortcutTable)
       .where(
         and(
-          eq(userShortcutTable.user_id, session.user!.id!),
-          eq(userShortcutTable.id, uuid),
+          eq(userShortcutTable.user_id, userId),
+          eq(userShortcutTable.id, shortcutId),
         ),
       )
       .limit(1)

@@ -53,8 +53,8 @@ export default NuxtAuthHandler({
   },
   callbacks: {
     jwt({ token, user, account }) {
-      if (user?.id) {
-        token.id = user.id
+      if (account?.providerAccountId) {
+        token.providerAccountId = account?.providerAccountId || user.id
         token.email = user.email!
         token.phone = user.phone!
         token.provider = account?.provider || 'credentials'
@@ -70,7 +70,7 @@ export default NuxtAuthHandler({
       return {
         ...session,
         user: {
-          id: token.id,
+          providerAccountId: token.providerAccountId,
           email: token.email,
           phone: token.phone,
           provider: token.provider,
@@ -81,9 +81,9 @@ export default NuxtAuthHandler({
   },
   events: {
     async signOut({ token }) {
-      if (token.id) {
+      if (token.providerAccountId) {
         const storage = useStorage('mongodb')
-        const sessionKey = getStorageSessionKey(token.id)
+        const sessionKey = getStorageSessionKey(token.providerAccountId)
 
         await storage.removeItem(sessionKey)
       }
