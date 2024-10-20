@@ -3,6 +3,7 @@ import type { Arrayable } from '@vueuse/core'
 import type { Page } from 'puppeteer'
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
 import type { z } from 'zod'
+import type { HookResult } from '@nuxt/schema'
 import type { sysUserTable } from './server/db/schemas'
 import type { Actions, Subjects } from '~/stores/casl'
 
@@ -26,10 +27,16 @@ declare global {
   var $page: Page
 }
 
+declare module '#app' {
+  interface RuntimeNuxtHooks {
+    'session:cache:refresh': () => HookResult
+  }
+}
+
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
     'user:created': (data: typeof sysUserTable.$inferSelect) => void
-    'user:cache:clear': (data: { providerAccountId: string }) => void
+    'session:cache:clear': (data: { providerAccountId: string }) => void
   }
 }
 

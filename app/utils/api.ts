@@ -2,7 +2,7 @@ import type { $Fetch } from 'ofetch'
 
 export const $api = $fetch.create({
   retry: 3,
-  retryDelay: 1000,
+  retryDelay: 3000,
   retryStatusCodes: [500, 503, 504],
   // Request interceptor
   async onRequest({ options }) {
@@ -15,6 +15,7 @@ export const $api = $fetch.create({
     }
   },
   async onResponseError(error) {
+    const nuxtApp = useNuxtApp()
     const authStore = useAuthStore()
 
     switch (error.response?.status) {
@@ -37,6 +38,8 @@ export const $api = $fetch.create({
         }
         break
       default:
+        await nuxtApp.hooks.callHook('session:cache:refresh')
+
         notify(error.response?.statusText || 'Internal Server Error', {
           type: 'error',
         })
