@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from 'vuetify'
-import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+import { getMessaging, onMessage } from 'firebase/messaging'
 import ScrollToTop from '@base/@core/components/ScrollToTop.vue'
 import initCore from '@base/@core/initCore'
 import { initConfigStore, useConfigStore } from '@base/@core/stores/config'
@@ -9,12 +9,9 @@ import { hexToRgb } from '@base/@core/utils/colorConverter'
 // ℹ️ Sync current theme with initial loader theme
 initCore()
 initConfigStore()
-const config = useRuntimeConfig()
 
 const configStore = useConfigStore()
-const authStore = useAuthStore()
-const tokenDeviceStore = useTokenDeviceStore()
-const { status } = useAuth()
+
 const { isMobile } = useDevice()
 const { global } = useTheme()
 
@@ -25,21 +22,6 @@ const notificationStore = useMessageStore()
 const layoutStore = useLayoutStore()
 
 onBeforeMount(async () => {
-  if (status.value === 'authenticated') {
-    try {
-      if (Notification.permission !== 'granted')
-        await Notification.requestPermission()
-
-      if (Notification.permission === 'granted' && authStore.currentUser) {
-        const messaging = getMessaging()
-        const token = await getToken(messaging, { vapidKey: config.public.firebase.keyPair })
-        await tokenDeviceStore.setTokenDevice(token)
-      }
-    }
-    catch (error) {
-      console.log('Error:', error)
-    }
-  }
   onMessage(getMessaging(), (payload) => {
     // TODO: Handle incoming messages
     // console.log('Client message:', payload)
