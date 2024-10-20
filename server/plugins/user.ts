@@ -18,4 +18,11 @@ export default defineNitroPlugin((nitroApp) => {
       }),
     ])
   })
+
+  nitroApp.hooks.hook('user:cache:clear', async ({ providerAccountId }) => {
+    const storage = useStorage('mongodb')
+    const sessionKey = getStorageSessionKey(providerAccountId)
+
+    await storage.removeItem(sessionKey)
+  })
 })

@@ -1,9 +1,20 @@
-export enum ErrorMessage {
-  CANNOT_FIND_ROLE = 'Cannot assign role and permissions to user!',
-  INTERNAL_SERVER_ERROR = 'Internal server error!',
-  INVALID_CREDENTIALS = 'Invalid signin credentials!',
-  CANNOT_CHECKOUT = 'Cannot create Stripe Checkout session!',
-  DONOT_HAVE_PERMISSION = 'You do not have permission to perform this action!',
-  INVALID_PARAMS = 'Invalid parameter: <%= key %>, receive value: <%= value %>',
-  STRIPE_NO_PRICE = 'No price found for this product!',
+import type { PostgresError } from 'postgres'
+import { pick } from 'lodash-es'
+
+export function parseError(error: any) {
+  if (error.name === 'PostgresError') {
+    const _error: PostgresError = error
+
+    return createError({
+      statusCode: 400,
+      statusMessage: ErrorMessage.BAD_REQUEST,
+      data: pick(_error, ['code', 'table_name', 'constraint_name', 'detail']),
+    })
+  }
+
+  return createError({
+    statusCode: 500,
+    statusMessage: error.message,
+    data: error,
+  })
 }

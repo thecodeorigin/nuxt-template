@@ -16,9 +16,6 @@ export default defineEventHandler(async (event) => {
     return { data: sysRole[0] }
   }
   catch (error: any) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: error.message,
-    })
+    throw parseError(error)
   }
 })

@@ -4,6 +4,8 @@ export * from './array'
 
 export * from './db'
 
+export * from './error'
+
 export * from './filter'
 
 export * from './firebase'

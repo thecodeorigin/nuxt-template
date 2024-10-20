@@ -42,7 +42,7 @@ export async function createStripeCustomerOnSignup(email: string) {
 
   if (!freePrice) {
     throw createError({
-      statusCode: 500,
+      statusCode: 400,
       statusMessage: ErrorMessage.STRIPE_NO_PRICE,
     })
   }
