@@ -13,7 +13,9 @@ const userRole = computed(() => authStore.currentUser?.role?.name || t('User'))
 
 async function logout() {
   try {
-    await tokenDeviceStore.clearTokenDevice()
+    if (authStore.currentUser)
+      await tokenDeviceStore.clearTokenDevice()
+
     await signOut({ redirect: false, callbackUrl: '/' })
 
     navigateTo({ name: 'auth-login' })

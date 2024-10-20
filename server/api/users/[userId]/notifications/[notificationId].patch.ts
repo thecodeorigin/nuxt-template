@@ -2,9 +2,9 @@ import { useNotificationCrud } from '@base/server/composables/useNotificationCru
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session, uuid } = await defineEventOptions(event, { auth: true, params: ['uuid'] })
+    const { userId, notificationId } = await defineEventOptions(event, { auth: true, params: ['userId', 'notificationId'] })
 
-    const queryRestrict = { user_id: session.user!.id! }
+    const queryRestrict = { user_id: userId }
     const { updateNotificationById } = useNotificationCrud(queryRestrict)
 
     const body = await readBody(event)
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       body.read_at = new Date(body.read_at)
     }
 
-    const data = await updateNotificationById(uuid, body)
+    const data = await updateNotificationById(notificationId, body)
 
     setResponseStatus(event, 200)
 

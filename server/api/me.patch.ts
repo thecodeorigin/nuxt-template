@@ -6,9 +6,9 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const { updateUserById } = useUserCrud()
+    const { updateUserByEmail } = useUserCrud()
 
-    const sysUser = await updateUserById(session.user!.id!, body)
+    const sysUser = await updateUserByEmail(session.user!.email, body)
 
     const storage = useStorage('mongodb')
     const sessionKey = getStorageSessionKey(sysUser.data.email!)

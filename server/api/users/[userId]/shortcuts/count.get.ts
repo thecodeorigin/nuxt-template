@@ -3,11 +3,11 @@ import { userShortcutTable } from '@base/server/db/schemas/user_shortcuts.schema
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session } = await defineEventOptions(event, { auth: true })
+    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
     const userShortcutSubquery = db.select().from(userShortcutTable)
       .where(
-        eq(userShortcutTable.user_id, session.user!.id!),
+        eq(userShortcutTable.user_id, userId),
       )
 
     const total = await db.select({ count: count() }).from(userShortcutSubquery.as('count'))

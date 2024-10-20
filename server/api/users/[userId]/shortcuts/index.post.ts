@@ -2,11 +2,11 @@ import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session } = await defineEventOptions(event, { auth: true })
+    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
     const body = await readBody(event)
 
-    const { createShortcut } = useShortcutCrud(session.user!.id!)
+    const { createShortcut } = useShortcutCrud(userId)
 
     const userShortcut = await createShortcut(body)
 
