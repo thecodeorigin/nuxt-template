@@ -19,20 +19,15 @@ if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
 const notificationStore = useMessageStore()
-const layoutStore = useLayoutStore()
 
 onBeforeMount(async () => {
-  onMessage(getMessaging(), (payload) => {
+  onMessage(getMessaging(), () => {
     // TODO: Handle incoming messages
     // console.log('Client message:', payload)
-    const linkSplits = payload.fcmOptions?.link?.split('/projects/')
-    notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
+    // const linkSplits = payload.fcmOptions?.link?.split('/projects/')
+    // notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
   })
 })
-function handleClick() {
-  if (notificationStore.notificationProps.link)
-    navigateTo(notificationStore.notificationProps.link)
-}
 </script>
 
 <template>
@@ -46,23 +41,6 @@ function handleClick() {
 
       <ScrollToTop />
 
-      <VOverlay
-        :model-value="layoutStore.isLoading"
-        contained
-        persistent
-        scroll-strategy="none"
-        class="align-center justify-center"
-      >
-        <VProgressCircular indeterminate />
-      </VOverlay>
-
-      <VSnackbar
-        v-bind="notificationStore.notificationProps"
-        :style="{ cursor: notificationStore.notificationProps.link ? 'pointer' : 'default' }"
-        @click="handleClick"
-      >
-        {{ notificationStore.notificationMessage }}
-      </VSnackbar>
       <ConfirmDialog
         :model-value="Boolean(notificationStore.confirmationMessage)"
         :message="notificationStore.confirmationMessage"
