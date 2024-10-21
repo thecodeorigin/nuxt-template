@@ -1,17 +1,10 @@
-export function loading() {
-  const layoutStore = useLayoutStore()
+import type { Props } from 'vue-loading-overlay'
+import { useLoading } from 'vue-loading-overlay'
 
-  layoutStore.showLoading()
+interface LoadingOptions extends Props {}
 
-  function hide() {
-    layoutStore.hideLoading()
-  }
+export function loading(options?: LoadingOptions) {
+  const $loading = useLoading()
 
-  return {
-    /**
-     * Alias for `hideLoading`
-     */
-    hide,
-    hideLoading: hide,
-  }
+  return $loading.show(options)
 }

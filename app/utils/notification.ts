@@ -1,17 +1,47 @@
-export function notify(message: string, options?: NotifyOptions) {
-  const notificationStore = useMessageStore()
+import type { ToastOptions } from 'vue-toastification/dist/types/types'
+import { useToast } from 'vue-toastification'
+import defu from 'defu'
 
-  notificationStore.showNotification(message, options)
+interface NotificationOptions extends Omit<ToastOptions, 'type'> {
+  content?: string
+}
 
-  function hide() {
-    notificationStore.hideNotification()
-  }
+const notificationDefaultOptions: NotificationOptions = {
+  content: '',
+}
 
-  return {
-    /**
-     * Alias for `hideNotification`
-     */
-    hide,
-    hideNotification: hide,
-  }
+export function notifyError(options: NotificationOptions) {
+  const toast = useToast()
+
+  toast.error(
+    options.content || '',
+    defu(options, notificationDefaultOptions),
+  )
+}
+
+export function notifySuccess(options: NotificationOptions) {
+  const toast = useToast()
+
+  toast.success(
+    options.content || '',
+    defu(options, notificationDefaultOptions),
+  )
+}
+
+export function notifyWarning(options: NotificationOptions) {
+  const toast = useToast()
+
+  toast.warning(
+    options.content || '',
+    defu(options, notificationDefaultOptions),
+  )
+}
+
+export function notifyInfo(options: NotificationOptions) {
+  const toast = useToast()
+
+  toast.info(
+    options.content || '',
+    defu(options, notificationDefaultOptions),
+  )
 }

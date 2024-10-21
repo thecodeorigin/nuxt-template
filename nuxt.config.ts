@@ -95,6 +95,7 @@ export default defineNuxtConfig({
       },
       {
         path: '@base/components',
+        extensions: ['.vue'],
         pathPrefix: false,
       },
     ],
