@@ -32,16 +32,16 @@ export const $api = $fetch.create({
         catch {}
         finally {
           navigateTo({ name: 'auth-login' })
-          notify('Unauthorized', {
-            type: 'error',
+          notifyError({
+            content: 'You are not authorized to perform this action.',
           })
         }
         break
       default:
         await nuxtApp.hooks.callHook('session:cache:refresh')
 
-        notify(error.response?.statusText || 'Internal Server Error', {
-          type: 'error',
+        notifyError({
+          content: error.response?.statusText || 'Internal Server Error',
         })
         break
     }

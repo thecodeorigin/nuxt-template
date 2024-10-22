@@ -33,12 +33,16 @@ async function handleVerify() {
       },
     })
 
-    notify(t('Another confirmation email has been sent to your email address!'))
+    notifySuccess({
+      content: t('Another confirmation email has been sent to your email address!'),
+    })
 
     window.location.href = redirectTo.value
   }
-  catch {
-    notify(t('An error has occured, please try again later'), { type: 'error' })
+  catch (error: any) {
+    notifyError({
+      content: error.data.message || t('An error has occured, please try again later'),
+    })
   }
   finally {
     loading().hide()

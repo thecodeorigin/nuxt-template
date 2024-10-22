@@ -65,7 +65,7 @@ async function login(provider?: string) {
 
       match(response)
         .with({ error: P.string }, ({ error }) => {
-          notify(error, { type: 'error' })
+          notifyError({ content: error })
         })
         .with({ url: P.string }, ({ url }) => {
           navigateTo(url, { external: true })
@@ -73,7 +73,7 @@ async function login(provider?: string) {
     }
   }
   catch (error: any) {
-    notify(error.message)
+    notifyError({ content: error.message })
   }
   finally {
     loading().hide()
