@@ -56,10 +56,14 @@ async function resendConfirmation() {
 
     startInterval()
 
-    notify(t('Another confirmation email has been sent to your email address!'))
+    notifySuccess({
+      content: t('Another confirmation email has been sent to your email address!'),
+    })
   }
   catch {
-    notify(t('An error has occured, please try again later'), { type: 'error' })
+    notifyError({
+      content: t('An error has occured, please try again later'),
+    })
   }
   finally {
     loading().hide()

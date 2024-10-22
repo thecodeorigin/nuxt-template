@@ -63,7 +63,9 @@ async function login(provider?: string) {
     }
   }
   catch (error: any) {
-    notify(error.data.message || t('An error has occured, please try again later'), { type: 'error' })
+    notifyError({
+      content: error.data.message || t('An error has occured, please try again later'),
+    })
   }
   finally {
     loading().hide()
@@ -82,12 +84,16 @@ async function signup() {
       },
     })
 
-    notify(t('Please confirm your email address before signin!'))
+    notifySuccess({
+      content: t('Please confirm your email address before signin!'),
+    })
 
     navigateTo('/auth/login')
   }
   catch (error: any) {
-    notify(error.data.message || t('An error has occured, please try again later'), { type: 'error' })
+    notifyError({
+      content: error.data.message || t('An error has occured, please try again later'),
+    })
   }
   finally {
     loading().hide()
