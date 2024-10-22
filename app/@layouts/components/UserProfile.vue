@@ -3,7 +3,6 @@ import type { RouteLocationRaw } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 const { t } = useI18n()
-const { signOut } = useAuth()
 const authStore = useAuthStore()
 const tokenDeviceStore = useTokenDeviceStore()
 const userEmail = computed(() => authStore.currentUser?.email)
@@ -16,7 +15,7 @@ async function logout() {
     if (authStore.currentUser)
       await tokenDeviceStore.clearTokenDevice()
 
-    await signOut({ redirect: false, callbackUrl: '/' })
+    await authStore.signOut({ callbackUrl: '/auth/login' })
 
     navigateTo({ name: 'auth-login' })
   }

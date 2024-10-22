@@ -8,8 +8,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const authStore = useAuthStore()
 
-  const { signOut } = useAuth()
-
   if (authStore.isAuthenticated || to.query.loggedIn) {
     try {
       await authStore.getCurrentUser()
@@ -19,7 +17,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (authStore.isAuthenticated) {
     if (!authStore.currentUser?.id) {
-      await signOut({ redirect: false })
+      await authStore.signOut({ callbackUrl: '/auth/login' })
     }
     else if (to.meta.unauthenticatedOnly) {
       return navigateTo('/')
