@@ -4,6 +4,7 @@ type DoneFn = (cancel?: boolean) => void
 export type ConfirmationBeforeCloseFn = (done: DoneFn) => void
 
 export interface ConfirmationProps {
+  title?: string
   type?: 'primary' | 'danger'
   fullscreen?: boolean
   beforeClose?: ConfirmationBeforeCloseFn
@@ -34,6 +35,7 @@ export type Callback =
 export type ConfirmationServiceOptions = ConfirmationProps & {
   closeOnHashChange?: boolean
   dangerouslyUseHTMLString?: boolean
+  title?: string | ConfirmationServiceOptions
   body?: string | VNode | (() => VNode)
   callback?: Callback
 }
@@ -45,6 +47,7 @@ export type ConfirmationServiceShortcutMethod = ((
 ) => Promise<ConfirmationServiceData>) &
 ((
   body: ConfirmationServiceOptions['body'],
+  title: ConfirmationServiceOptions['title'],
   options?: ConfirmationServiceOptions,
   appContext?: AppContext | null
 ) => Promise<ConfirmationServiceData>)

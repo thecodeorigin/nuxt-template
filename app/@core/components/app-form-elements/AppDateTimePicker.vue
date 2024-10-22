@@ -230,7 +230,7 @@ input[altinputclass="inlinePicker"] {
     }
 
     .flatpickr-days {
-      font-size: 0.9375rem;
+      font-size: 1rem;
       min-inline-size: 16.875rem;
 
       .dayContainer {
@@ -446,7 +446,7 @@ input[altinputclass="inlinePicker"] {
     padding: 2px;
     border-radius: 4px;
     color: $heading-color;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 400;
     transition: all 0.15s ease-out;
 

@@ -2,7 +2,7 @@ import type { AppContext, ComponentPublicInstance, VNode } from 'vue'
 import type { Action, Callback, ConfirmationServiceData, ConfirmationServiceOptions, ConfirmationServiceShortcutMethod, IConfirmationService } from '@base/components/dialogs/confirmation/confirm-dialog'
 
 import { hasOwn, isClient } from '@vueuse/core'
-import { isElement, isFunction, isString } from 'lodash-es'
+import { isElement, isFunction, isString, isUndefined } from 'lodash-es'
 import { createVNode, isVNode, render } from 'vue'
 
 import { ConfirmDialog } from '#components'
@@ -160,12 +160,26 @@ CONFIRMATION_VARIANTS.forEach((confirmationType) => {
 function confirmationFactory(confirmationType: typeof CONFIRMATION_VARIANTS[number]) {
   return (
     body: string | VNode,
+    title: string | ConfirmationServiceOptions,
     options?: ConfirmationServiceOptions,
     appContext?: AppContext | null,
   ) => {
+    let titleOrOpts = ''
+    if (isObject(title)) {
+      options = title as ConfirmationServiceOptions
+      titleOrOpts = ''
+    }
+    else if (isUndefined(title)) {
+      titleOrOpts = ''
+    }
+    else {
+      titleOrOpts = title as string
+    }
+
     return ConfirmationService(
       Object.assign(
         {
+          title: titleOrOpts,
           body,
           type: '',
           ...CONFIRMATION_DEFAULT_OPTS[confirmationType],

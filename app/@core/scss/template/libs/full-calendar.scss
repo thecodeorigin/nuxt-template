@@ -35,7 +35,7 @@ body .fc {
 
   .fc-col-header-cell-cushion {
     color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 500;
     line-height: 1.375rem;
   }
@@ -141,7 +141,7 @@ body .fc {
     .fc-list-event-time,
     .fc-list-event-title {
       color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
-      font-size: 0.9375rem;
+      font-size: 1rem;
       line-height: 22px;
     }
 
@@ -151,7 +151,7 @@ body .fc {
 
     .fc-list-day .fc-list-day-text,
     .fc-list-day .fc-list-day-side-text {
-      font-size: 0.9375rem;
+      font-size: 1rem;
       line-height: 22px;
       text-decoration: none;
     }
@@ -220,7 +220,7 @@ body .fc {
         .fc-button:active {
           border: 1px solid rgb(var(--v-theme-primary));
           color: rgb(var(--v-theme-primary));
-          font-size: 0.9375rem;
+          font-size: 1rem;
           font-weight: 500;
           line-height: 22px;
           padding-block: 0.4375rem;
@@ -327,7 +327,7 @@ body .fc {
 
     .fc-popover-title {
       margin: 0;
-      font-size: 0.9375rem;
+      font-size: 1rem;
       font-weight: 500;
     }
   }

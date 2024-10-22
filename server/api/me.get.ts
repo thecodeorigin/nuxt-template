@@ -4,8 +4,6 @@ export default defineEventHandler(async (event) => {
 
     const sysUser = await getUserBySession(session)
 
-    setResponseStatus(event, 201)
-
     return sysUser
   }
   catch (error: any) {

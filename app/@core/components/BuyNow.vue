@@ -33,7 +33,7 @@ const buyNowUrl = (typeof window !== 'undefined' && 'isMarketplace' in window &&
   background-size: 600%;
   color: rgba(255, 255, 255, 90%);
   cursor: pointer;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.43px;
   line-height: 1.2;

@@ -322,7 +322,7 @@ watchEffect(() => {
 
       .stepper-title {
         color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
-        font-size: 0.9375rem;
+        font-size: 1rem;
         line-height: 1.375rem;
       }
 

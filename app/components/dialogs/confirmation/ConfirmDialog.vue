@@ -86,18 +86,17 @@ defineExpose({
     v-bind="propsComputed"
     max-width="500"
   >
-    <VCard class="text-center px-10 py-6">
-      <VCardText>
-        <VBtn
-          icon
-          variant="outlined"
+    <!-- Dialog Content -->
+    <VCard>
+      <VCardTitle class="d-flex align-center gap-2">
+        <VIcon
+          size="24"
+          icon="ri-error-warning-fill"
           color="warning"
-          class="my-4"
-          size="x-large"
-        >
-          <span class="text-4xl">!</span>
-        </VBtn>
-
+        />
+        {{ title }}
+      </VCardTitle>
+      <VCardText class="text-body-1">
         <slot>
           <template v-if="hasBody">
             <template v-if="!dangerouslyUseHTMLString">
@@ -112,20 +111,19 @@ defineExpose({
         </slot>
       </VCardText>
 
-      <VCardText class="d-flex align-center justify-center gap-4">
-        <VBtn
-          variant="elevated"
-          @click="handleConfirm"
-        >
-          {{ $t('Confirm') }}
-        </VBtn>
-
+      <VCardText class="d-flex justify-end flex-wrap gap-4">
         <VBtn
           color="secondary"
           variant="outlined"
           @click="handleCancel"
         >
           {{ $t('Cancel') }}
+        </VBtn>
+        <VBtn
+          variant="elevated"
+          @click="handleConfirm"
+        >
+          {{ $t('Confirm') }}
         </VBtn>
       </VCardText>
     </VCard>
