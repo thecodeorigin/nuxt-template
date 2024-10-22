@@ -99,8 +99,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1(magicast@0.3.5)(rollup@3.29.5)(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       '@sidebase/nuxt-auth':
-        specifier: ^0.9.3
-        version: 0.9.3(drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)
+        specifier: ^0.9.4
+        version: 0.9.4(drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)
       '@sindresorhus/is':
         specifier: 6.3.0
         version: 6.3.0
@@ -2735,8 +2735,8 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@sidebase/nuxt-auth@0.9.3':
-    resolution: {integrity: sha512-celbFy5j1IIFUpVQA+0CvqzxqFTdHS3SFMHnPGONzrjka0BDIDOHtMfZ7xyIgOb8OaBdibjRsqeUhhJmBYfkOA==}
+  '@sidebase/nuxt-auth@0.9.4':
+    resolution: {integrity: sha512-TpOI9E6BJLjU558cl4AwE8tmGbvKt4GJtAmm8TUNJEEPLX6i5MbpzpJyoSXDALp19RqHa1INe7oDWggtEiba/w==}
     engines: {node: '>=20', pnpm: '>=9.4.0'}
     peerDependencies:
       next-auth: ~4.21.1
@@ -11743,7 +11743,7 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@sidebase/nuxt-auth@0.9.3(drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)':
+  '@sidebase/nuxt-auth@0.9.4(drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       defu: 6.1.4

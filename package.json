@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -80,7 +80,7 @@
     "@nuxtjs/device": "^3.2.4",
     "@nuxtjs/i18n": "^8.5.5",
     "@pinia/nuxt": "^0.5.1",
-    "@sidebase/nuxt-auth": "^0.9.3",
+    "@sidebase/nuxt-auth": "^0.9.4",
     "@sindresorhus/is": "6.3.0",
     "@stylistic/stylelint-config": "1.0.1",
     "@stylistic/stylelint-plugin": "2.1.1",
