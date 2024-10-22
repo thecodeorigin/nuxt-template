@@ -25,13 +25,13 @@ async function logout() {
   }
 }
 
-const userProfileList: Array<{
+const userProfileList = computed<Array<{
   type: 'divider' | 'navItem'
   icon?: string
   title?: string
   to?: RouteLocationRaw
   chipsProps?: any
-}> = [
+}>>(() => [
   { type: 'divider' },
   {
     type: 'navItem',
@@ -44,7 +44,6 @@ const userProfileList: Array<{
     icon: 'ri-file-text-line',
     title: t('Billing & Plan'),
     to: { name: 'settings-tab', params: { tab: 'billing-plans' } },
-    chipsProps: { color: 'error', text: '4', size: 'small' },
   },
   { type: 'divider' },
   {
@@ -59,7 +58,7 @@ const userProfileList: Array<{
     title: 'FAQ',
     to: { name: 'faq' },
   },
-]
+])
 </script>
 
 <template>

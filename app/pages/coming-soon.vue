@@ -9,7 +9,6 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
 definePageMeta({
   layout: 'blank',
-
 })
 
 const email = ref('')

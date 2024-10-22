@@ -116,5 +116,10 @@
   "Sorry for the inconvenience but we are performing some maintenance at the moment": "Xin lỗi vì sự bất tiện nhưng chúng tôi đang thực hiện một số bảo trì vào lúc này",
   "Account activation link sent to your email address: {email} Please follow the link inside to continue\\.": "Liên kết kích hoạt tài khoản đã được gửi đến địa chỉ email của bạn: {email} Vui lòng làm theo liên kết bên trong để tiếp tục\\.",
   "I agree to {policyLink}": "Tôi đồng ý với {policyLink}",
-  "privacy policy & terms": "chính sách bảo mật và điều khoản"
+  "privacy policy & terms": "chính sách bảo mật và điều khoản",
+  "System": "Mặc định",
+  "Light": "Chế độ sáng",
+  "Dark": "Chế độ tối",
+  "Heads Up!": "Thông báo",
+  "You will be redirected to the Stripe portal to manage your subscription!": "Bạn sẽ được điều hướng sang Stripe để quản lý các gói đăng ký của bạn!"
 }

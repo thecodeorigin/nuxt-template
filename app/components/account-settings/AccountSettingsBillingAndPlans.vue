@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+const { t } = useI18n()
+
 const isPricingPlanDialogVisible = ref(false)
 
 const stripeStore = useStripeStore()
@@ -15,8 +17,16 @@ const dateExpired = computed(() => {
 })
 useLazyAsyncData(() => stripeStore.fetchStripeProductPrices())
 
-function handleOpenStripePortal() {
-  window.open(import.meta.env.STRIPE_CUSTOMER_PORTAL_URL, '_self')
+async function handleOpenStripePortal() {
+  try {
+    await confirmation({
+      title: t('Heads Up!'),
+      body: t('You will be redirected to the Stripe portal to manage your subscription!'),
+    })
+
+    window.location.href = import.meta.env.STRIPE_CUSTOMER_PORTAL_URL
+  }
+  catch {}
 }
 
 // computed check is 50% of the way to the end of the billing cycle

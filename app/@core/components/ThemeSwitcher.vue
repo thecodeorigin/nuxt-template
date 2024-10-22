@@ -35,7 +35,7 @@ watch(
     <VMenu
       activator="parent"
       offset="15px"
-      width="160"
+      width="180"
     >
       <VList
         v-model:selected="selectedItem"

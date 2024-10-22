@@ -116,5 +116,10 @@
   "Sorry for the inconvenience but we are performing some maintenance at the moment": "Sorry for the inconvenience but we are performing some maintenance at the moment",
   "Account activation link sent to your email address: {email} Please follow the link inside to continue\\.": "Account activation link sent to your email address: {email} Please follow the link inside to continue\\.",
   "I agree to {policyLink}": "I agree to {policyLink}",
-  "privacy policy & terms": "privacy policy & terms"
+  "privacy policy & terms": "privacy policy & terms",
+  "System": "System",
+  "Light": "Light",
+  "Dark": "Dark",
+  "Heads Up!": "Heads Up!",
+  "You will be redirected to the Stripe portal to manage your subscription!": "You will be redirected to the Stripe portal to manage your subscription!"
 }
