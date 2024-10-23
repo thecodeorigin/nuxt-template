@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ConfirmationServiceProps } from './loading-dialog'
+import type { LoadingServiceProps } from './loading-dialog'
 
 const props = withDefaults(
-  defineProps<ConfirmationServiceProps>(),
+  defineProps<LoadingServiceProps>(),
   {
     closeOnHashChange: true,
   },
@@ -15,20 +15,17 @@ const visible = ref(false)
 onMounted(async () => {
   await nextTick()
   if (props.closeOnHashChange) {
-    window.addEventListener('hashchange', doClose)
+    window.addEventListener('hashchange', hide)
   }
 })
 
 onBeforeUnmount(() => {
   if (props.closeOnHashChange) {
-    window.removeEventListener('hashchange', doClose)
+    window.removeEventListener('hashchange', hide)
   }
 })
 
-function doClose() {
-  if (!visible.value)
-    return
-
+function hide() {
   visible.value = false
 }
 
@@ -38,7 +35,7 @@ function setVisible(value: boolean) {
 
 defineExpose({
   setVisible,
-  doClose,
+  hide,
 })
 </script>
 

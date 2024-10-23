@@ -43,9 +43,9 @@ async function resendConfirmation() {
   if (!canResendConfirmation.value)
     return
 
-  const loader = loading()
-
   try {
+    loading()
+
     await $api('/auth/resend', {
       method: 'POST',
       body: {
@@ -66,7 +66,7 @@ async function resendConfirmation() {
     })
   }
   finally {
-    loader.hide()
+    loading.close()
   }
 }
 

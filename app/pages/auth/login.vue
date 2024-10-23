@@ -48,18 +48,10 @@ const rememberMe = ref(false)
 
 const { signIn } = useAuth()
 
-onMounted(() => {
-  loading()
-
-  setTimeout(() => {
-    loading.close()
-  }, 5000)
-})
-
 async function login(provider?: string) {
-  loading()
-
   try {
+    loading()
+
     if (provider) {
       await signIn(provider, {
         callbackUrl: withQuery(route.query.to ? String(route.query.to) : '/', { loggedIn: true }),
