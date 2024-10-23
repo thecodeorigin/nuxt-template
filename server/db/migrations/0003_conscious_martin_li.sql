@@ -1,1 +1,0 @@
-ALTER TABLE "sys_roles" ALTER COLUMN "name" SET NOT NULL;

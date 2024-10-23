@@ -59,4 +59,6 @@ docker/pgadmin
 server/db/schemas/cjs
 server/db/schemas/mjs
 
+server/db/migrations
+
 areas
