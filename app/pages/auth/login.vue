@@ -49,8 +49,9 @@ const rememberMe = ref(false)
 const { signIn } = useAuth()
 
 async function login(provider?: string) {
+  const loader = loading()
+
   try {
-    loading()
     if (provider) {
       await signIn(provider, {
         callbackUrl: withQuery(route.query.to ? String(route.query.to) : '/', { loggedIn: true }),
@@ -76,7 +77,7 @@ async function login(provider?: string) {
     notifyError({ content: error.message })
   }
   finally {
-    loading().hide()
+    loader.hide()
   }
 }
 // UJ3K5SpX4KHUgn6gy%D*

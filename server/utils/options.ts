@@ -30,7 +30,7 @@ export async function defineEventOptions<
 
     if (!session) {
       throw createError({
-        statusCode: 403,
+        statusCode: 401,
         statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
       })
     }

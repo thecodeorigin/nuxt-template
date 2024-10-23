@@ -7,8 +7,10 @@ settings:
 overrides:
   '@tiptap/core': ^2
   '@types/video.js': ^7
+  h3: ^1.13.0
   postcss: ^8
   stylelint-order: 6.0.3
+  vue-loading-overlay: 6.0.6
 
 importers:
 
@@ -233,6 +235,9 @@ importers:
       firebase-functions:
         specifier: ^5.0.1
         version: 5.0.1(firebase-admin@12.2.0(encoding@0.1.13))
+      h3:
+        specifier: ^1.13.0
+        version: 1.13.0
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -362,6 +367,9 @@ importers:
       vue-i18n-extract:
         specifier: ^2.0.7
         version: 2.0.7
+      vue-loading-overlay:
+        specifier: 6.0.6
+        version: 6.0.6(vue@3.5.8(typescript@5.4.5))
       vue-prism-component:
         specifier: 2.0.0
         version: 2.0.0
@@ -901,9 +909,11 @@ packages:
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
+    deprecated: 'Merged into tsx: https://tsx.is'
 
   '@esbuild-kit/esm-loader@2.6.5':
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
+    deprecated: 'Merged into tsx: https://tsx.is'
 
   '@esbuild/aix-ppc64@0.19.12':
     resolution: {integrity: sha512-bmoCYyWdEL3wDQIVbcyzRyeKLgk2WtWLTWz1ZIAZF/EGbNOwSA6ew3PftJ1PqMiOOGu0OyFMzG53L0zqIpPeNA==}
@@ -5580,8 +5590,8 @@ packages:
     resolution: {integrity: sha512-O1Ld7Dr+nqPnmGpdhzLmMTQ4vAsD+rHwMm1NLUmoUFFymBOMKxCCrtDxqdBRYXdeEPEi3SyoR4TizJLQrnKBNA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  h3@1.12.0:
-    resolution: {integrity: sha512-Zi/CcNeWBXDrFNlV0hUBJQR9F7a96RjMeAZweW/ZWkR9fuXrMcvKnSA63f/zZ9l0GgQOZDVHGvXivNN9PWOwhA==}
+  h3@1.13.0:
+    resolution: {integrity: sha512-vFEAu/yf8UMUcB4s43OaDaigcqpQd14yanmOsn+NcRX3/guSKncyE2rOYhq8RIchgJrPSs/QiIddnTTR1ddiAg==}
 
   has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
@@ -5752,8 +5762,8 @@ packages:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
     engines: {node: '>= 0.10'}
 
-  iron-webcrypto@1.1.1:
-    resolution: {integrity: sha512-5xGwQUWHQSy039rFr+5q/zOmj7GP0Ypzvo34Ep+61bPIhaLduEDp/PvLGlU3awD2mzWUR0weN2vJ1mILydFPEg==}
+  iron-webcrypto@1.2.1:
+    resolution: {integrity: sha512-feOM6FaSr6rEABp/eDfVseKyTMDt+KGpeB35SkVn9Tyn0CqvVsY3EwI0v5i8nMHyJnzCIQf7nsy3p41TPkJZhg==}
 
   is-alphabetical@1.0.4:
     resolution: {integrity: sha512-DwzsA04LQ10FHTZuL0/grVDk4rFoVH1pjAToYwBrHSxcrBIGQuXrQMtD5U1b0U2XVgKZCTLLP8u2Qxqhy3l2Vg==}
@@ -8634,6 +8644,12 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
+  vue-loading-overlay@6.0.6:
+    resolution: {integrity: sha512-ZPrWawjCoNKGbCG9z4nePgbs/K9KXPa1j1oAJXP6T8FQho3NO+/chhjx4MLYFzfpwr+xkiQ8SNrV1kUG1bZPAw==}
+    engines: {node: '>=12.13.0'}
+    peerDependencies:
+      vue: ^3.2.0
+
   vue-prism-component@2.0.0:
     resolution: {integrity: sha512-1ofrL+GCZOv4HqtX5W3EgkhSAgadSeuD8FDTXbwhLy8kS+28RCR8t2S5VTeM9U/peAaXLBpSgRt3J25ao8KTeg==}
 
@@ -10290,7 +10306,7 @@ snapshots:
       fast-glob: 3.3.2
       find-up: 7.0.0
       get-port-please: 3.1.2
-      h3: 1.12.0
+      h3: 1.13.0
       minimatch: 9.0.5
       mlly: 1.7.1
       mrmime: 2.0.0
@@ -11225,7 +11241,7 @@ snapshots:
       defu: 6.1.4
       esbuild: 0.24.0
       fontaine: 0.5.0(encoding@0.1.13)(webpack-sources@3.2.3)
-      h3: 1.12.0
+      h3: 1.13.0
       jiti: 1.21.6
       magic-regexp: 0.8.0(webpack-sources@3.2.3)
       magic-string: 0.30.11
@@ -11348,7 +11364,7 @@ snapshots:
       estree-walker: 3.0.3
       externality: 1.0.2
       get-port-please: 3.1.2
-      h3: 1.12.0
+      h3: 1.13.0
       knitwork: 1.1.0
       magic-string: 0.30.11
       mlly: 1.7.1
@@ -11738,7 +11754,7 @@ snapshots:
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       defu: 6.1.4
-      h3: 1.12.0
+      h3: 1.13.0
       knitwork: 1.1.0
       next-auth: 4.21.1(next@13.5.6(@babel/core@7.24.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       nitropack: 2.9.7(drizzle-orm@0.33.0(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(webpack-sources@3.2.3)
@@ -13182,13 +13198,13 @@ snapshots:
 
   '@vue/shared@3.5.8': {}
 
-  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15(typescript@5.4.5)(vite-plugin-vuetify@2.0.3)(vue-i18n@9.13.1(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5)))':
+  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15)':
     dependencies:
       upath: 2.0.1
       vue: 3.5.8(typescript@5.4.5)
       vuetify: 3.5.15(typescript@5.4.5)(vite-plugin-vuetify@2.0.3)(vue-i18n@9.13.1(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5))
 
-  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2(typescript@5.4.5)(vite-plugin-vuetify@2.0.4)(vue@3.5.8(typescript@5.4.5)))':
+  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2)':
     dependencies:
       upath: 2.0.1
       vue: 3.5.8(typescript@5.4.5)
@@ -15483,16 +15499,16 @@ snapshots:
     dependencies:
       duplexer: 0.1.2
 
-  h3@1.12.0:
+  h3@1.13.0:
     dependencies:
-      cookie-es: 1.1.0
+      cookie-es: 1.2.2
       crossws: 0.2.4
       defu: 6.1.4
       destr: 2.0.3
-      iron-webcrypto: 1.1.1
+      iron-webcrypto: 1.2.1
       ohash: 1.1.4
       radix3: 1.1.2
-      ufo: 1.5.3
+      ufo: 1.5.4
       uncrypto: 0.1.3
       unenv: 1.10.0
     transitivePeerDependencies:
@@ -15676,7 +15692,7 @@ snapshots:
 
   ipaddr.js@1.9.1: {}
 
-  iron-webcrypto@1.1.1: {}
+  iron-webcrypto@1.2.1: {}
 
   is-alphabetical@1.0.4: {}
 
@@ -15980,7 +15996,7 @@ snapshots:
       crossws: 0.2.4
       defu: 6.1.4
       get-port-please: 3.1.2
-      h3: 1.12.0
+      h3: 1.13.0
       http-shutdown: 1.2.2
       jiti: 1.21.6
       mlly: 1.7.1
@@ -16432,7 +16448,7 @@ snapshots:
       fs-extra: 11.2.0
       globby: 14.0.2
       gzip-size: 7.0.0
-      h3: 1.12.0
+      h3: 1.13.0
       hookable: 5.5.3
       httpxy: 0.1.5
       ioredis: 5.4.1
@@ -16590,7 +16606,7 @@ snapshots:
       escape-string-regexp: 5.0.0
       estree-walker: 3.0.3
       globby: 14.0.2
-      h3: 1.12.0
+      h3: 1.13.0
       hookable: 5.5.3
       ignore: 5.3.2
       impound: 0.1.0(rollup@3.29.5)(webpack-sources@3.2.3)
@@ -18545,7 +18561,7 @@ snapshots:
       anymatch: 3.1.3
       chokidar: 3.6.0
       destr: 2.0.3
-      h3: 1.12.0
+      h3: 1.13.0
       listhen: 1.7.2
       lru-cache: 10.4.3
       mri: 1.2.0
@@ -18729,7 +18745,7 @@ snapshots:
 
   vite-plugin-vuetify@2.0.3(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15):
     dependencies:
-      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15(typescript@5.4.5)(vite-plugin-vuetify@2.0.3)(vue-i18n@9.13.1(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5)))
+      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15)
       debug: 4.3.7
       upath: 2.0.1
       vite: 5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4)
@@ -18740,7 +18756,7 @@ snapshots:
 
   vite-plugin-vuetify@2.0.4(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2):
     dependencies:
-      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2(typescript@5.4.5)(vite-plugin-vuetify@2.0.4)(vue@3.5.8(typescript@5.4.5)))
+      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2)
       debug: 4.3.7
       upath: 2.0.1
       vite: 5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4)
@@ -18884,6 +18900,10 @@ snapshots:
       '@intlify/core-base': 9.13.1
       '@intlify/shared': 9.13.1
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.8(typescript@5.4.5)
+
+  vue-loading-overlay@6.0.6(vue@3.5.8(typescript@5.4.5)):
+    dependencies:
       vue: 3.5.8(typescript@5.4.5)
 
   vue-prism-component@2.0.0: {}

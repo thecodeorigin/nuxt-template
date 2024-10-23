@@ -23,7 +23,7 @@ async function _createUser(session: Session) {
 
   if (!userRole.data?.id) {
     throw createError({
-      statusCode: 403,
+      statusCode: 401,
       statusMessage: ErrorMessage.CANNOT_FIND_ROLE,
     })
   }

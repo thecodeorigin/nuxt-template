@@ -22,9 +22,9 @@ if (!token.value)
   navigateTo('/')
 
 async function handleVerify() {
-  try {
-    loading()
+  const loader = loading()
 
+  try {
     await $api('/auth/verify', {
       method: 'POST',
       body: {
@@ -45,7 +45,7 @@ async function handleVerify() {
     })
   }
   finally {
-    loading().hide()
+    loader.hide()
   }
 }
 

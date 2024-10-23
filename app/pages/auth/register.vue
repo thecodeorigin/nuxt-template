@@ -47,9 +47,9 @@ const credentials = ref({
 const { signIn } = useAuth()
 
 async function login(provider?: string) {
-  try {
-    loading()
+  const loader = loading()
 
+  try {
     if (provider) {
       await signIn(provider, {
         callbackUrl: '/',
@@ -68,14 +68,14 @@ async function login(provider?: string) {
     })
   }
   finally {
-    loading().hide()
+    loader.hide()
   }
 }
 
 async function signup() {
-  try {
-    loading()
+  const loader = loading()
 
+  try {
     await $api('/auth/signup', {
       method: 'POST',
       body: {
@@ -96,7 +96,7 @@ async function signup() {
     })
   }
   finally {
-    loading().hide()
+    loader.hide()
   }
 }
 
