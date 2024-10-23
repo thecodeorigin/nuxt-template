@@ -48,8 +48,16 @@ const rememberMe = ref(false)
 
 const { signIn } = useAuth()
 
+onMounted(() => {
+  loading()
+
+  setTimeout(() => {
+    loading.close()
+  }, 5000)
+})
+
 async function login(provider?: string) {
-  const loader = loading()
+  loading()
 
   try {
     if (provider) {
@@ -77,7 +85,7 @@ async function login(provider?: string) {
     notifyError({ content: error.message })
   }
   finally {
-    loader.hide()
+    loading.close()
   }
 }
 // UJ3K5SpX4KHUgn6gy%D*
