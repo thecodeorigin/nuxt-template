@@ -5,7 +5,7 @@ import 'dotenv/config'
 
 const commandOptions = {
   stdio: 'inherit' as const,
-};
+}
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -29,8 +29,22 @@ const filePath = './public/firebase-config.json'
     catch (err) {
       console.error('Error writing to file:', err)
     }
-    
+
     await $(commandOptions)`nuxt prepare`
+
+    try {
+      fs.mkdirSync('./server/db/migrations/meta', { recursive: true })
+    }
+    catch {}
+
+    try {
+      fs.writeFileSync('./server/db/migrations/meta/_journal.json', JSON.stringify({
+        version: '7',
+        dialect: 'postgresql',
+        entries: [],
+      }))
+    }
+    catch {}
   }
   catch (error) {
     console.error(error)
@@ -38,6 +52,3 @@ const filePath = './public/firebase-config.json'
     process.exit(1)
   }
 })()
-
-
-
