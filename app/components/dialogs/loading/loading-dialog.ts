@@ -1,33 +1,33 @@
 import type { AppContext } from 'vue'
 
-export interface ConfirmationServiceProps {
+export interface LoadingServiceProps {
   closeOnHashChange?: boolean
   container?: string
 }
 
-/** Options used in ConfirmationService */
-export interface ConfirmationServiceOptions {
+/** Options used in LoadingService */
+export interface LoadingServiceOptions {
   closeOnHashChange?: boolean
 }
 
-export type ConfirmationServiceShortcutMethod =
+export type LoadingServiceShortcutMethod =
 ((
-  options?: ConfirmationServiceOptions,
+  options?: LoadingServiceOptions,
   appContext?: AppContext | null
 ) => Promise<void>)
 
-export interface IConfirmationService {
+export interface ILoadingService {
   _context: AppContext | null
 
-  /** Show a confirmation */
-  // (confirmation: string, title?: string, type?: string): Promise<ConfirmationServiceData>
+  /** Show a loading */
+  // (loading: string, title?: string, type?: string): Promise<LoadingServiceData>
 
-  /** Show a confirmation */
+  /** Show a loading */
   (
-    options?: ConfirmationServiceOptions,
+    options?: LoadingServiceOptions,
     appContext?: AppContext | null
   ): Promise<void>
 
-  /** Close current confirmation */
+  /** Close current loading */
   close: () => void
 }

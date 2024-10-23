@@ -2,13 +2,15 @@ import type { AppContext, ComponentPublicInstance, VNode } from 'vue'
 import type { Action, Callback, ConfirmationServiceData, ConfirmationServiceOptions, ConfirmationServiceShortcutMethod, IConfirmationService } from '@base/components/dialogs/confirmation/confirm-dialog'
 
 import { hasOwn, isClient } from '@vueuse/core'
-import { isElement, isFunction, isString, isUndefined } from 'lodash-es'
+import { isString, isUndefined } from 'lodash-es'
 import { createVNode, isVNode, render } from 'vue'
 
 import { ConfirmDialog } from '#components'
 
+// TODO: refactor this
+
 const confirmationInstance = new Map<
-  InstanceType<typeof ConfirmDialog>, // marking doClose as function
+  InstanceType<typeof ConfirmDialog>,
   {
     options: any
     callback: Callback | null | undefined
@@ -17,38 +19,7 @@ const confirmationInstance = new Map<
   }
 >()
 
-function getAppendToElement(props: any) {
-  let appendTo: HTMLElement | null = document.body
-  if (props.appendTo) {
-    if (isString(props.appendTo)) {
-      appendTo = document.querySelector<HTMLElement>(props.appendTo)
-    }
-    if (isElement(props.appendTo)) {
-      appendTo = props.appendTo
-    }
-
-    // should fallback to default value with a warning
-    if (!isElement(appendTo)) {
-      console.warn(
-        'ConfirmationService',
-        'the appendTo option is not an HTMLElement. Falling back to document.body.',
-      )
-      appendTo = document.body
-    }
-  }
-
-  return appendTo
-}
-
-function renderPropToVNode(prop: any) {
-  return isFunction(prop)
-    ? prop
-    : isVNode(prop)
-      ? () => prop
-      : null
-}
-
-function initInstance(props: any, container: HTMLElement, appContext: AppContext | null = null) {
+function renderToContainer(props: any, container: HTMLElement, appContext: AppContext | null = null) {
   const vnode = createVNode(
     ConfirmDialog,
     props,
@@ -60,7 +31,7 @@ function initInstance(props: any, container: HTMLElement, appContext: AppContext
   render(vnode, container)
 
   if (container.firstElementChild)
-    getAppendToElement(props)?.appendChild(container.firstElementChild)
+    getAppendToElement(props.appendTo)?.appendChild(container.firstElementChild)
 
   return vnode.component
 }
@@ -72,7 +43,7 @@ function genContainer() {
 function showConfirmation(options: any, appContext?: AppContext | null) {
   const container = genContainer()
 
-  const instance = initInstance(options, container, appContext)!
+  const instance = renderToContainer(options, container, appContext)!
 
   const vm = instance.proxy as InstanceType<typeof ConfirmDialog>
   // Adding destruct method.

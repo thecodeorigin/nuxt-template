@@ -10,7 +10,6 @@ overrides:
   h3: ^1.13.0
   postcss: ^8
   stylelint-order: 6.0.3
-  vue-loading-overlay: 6.0.6
 
 importers:
 
@@ -367,9 +366,6 @@ importers:
       vue-i18n-extract:
         specifier: ^2.0.7
         version: 2.0.7
-      vue-loading-overlay:
-        specifier: 6.0.6
-        version: 6.0.6(vue@3.5.8(typescript@5.4.5))
       vue-prism-component:
         specifier: 2.0.0
         version: 2.0.0
@@ -8644,12 +8640,6 @@ packages:
     peerDependencies:
       vue: ^3.0.0
 
-  vue-loading-overlay@6.0.6:
-    resolution: {integrity: sha512-ZPrWawjCoNKGbCG9z4nePgbs/K9KXPa1j1oAJXP6T8FQho3NO+/chhjx4MLYFzfpwr+xkiQ8SNrV1kUG1bZPAw==}
-    engines: {node: '>=12.13.0'}
-    peerDependencies:
-      vue: ^3.2.0
-
   vue-prism-component@2.0.0:
     resolution: {integrity: sha512-1ofrL+GCZOv4HqtX5W3EgkhSAgadSeuD8FDTXbwhLy8kS+28RCR8t2S5VTeM9U/peAaXLBpSgRt3J25ao8KTeg==}
 
@@ -13198,13 +13188,13 @@ snapshots:
 
   '@vue/shared@3.5.8': {}
 
-  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15)':
+  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15(typescript@5.4.5)(vite-plugin-vuetify@2.0.3)(vue-i18n@9.13.1(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5)))':
     dependencies:
       upath: 2.0.1
       vue: 3.5.8(typescript@5.4.5)
       vuetify: 3.5.15(typescript@5.4.5)(vite-plugin-vuetify@2.0.3)(vue-i18n@9.13.1(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5))
 
-  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2)':
+  '@vuetify/loader-shared@2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2(typescript@5.4.5)(vite-plugin-vuetify@2.0.4)(vue@3.5.8(typescript@5.4.5)))':
     dependencies:
       upath: 2.0.1
       vue: 3.5.8(typescript@5.4.5)
@@ -18745,7 +18735,7 @@ snapshots:
 
   vite-plugin-vuetify@2.0.3(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15):
     dependencies:
-      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15)
+      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.5.15(typescript@5.4.5)(vite-plugin-vuetify@2.0.3)(vue-i18n@9.13.1(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5)))
       debug: 4.3.7
       upath: 2.0.1
       vite: 5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4)
@@ -18756,7 +18746,7 @@ snapshots:
 
   vite-plugin-vuetify@2.0.4(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2):
     dependencies:
-      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2)
+      '@vuetify/loader-shared': 2.0.3(vue@3.5.8(typescript@5.4.5))(vuetify@3.7.2(typescript@5.4.5)(vite-plugin-vuetify@2.0.4)(vue@3.5.8(typescript@5.4.5)))
       debug: 4.3.7
       upath: 2.0.1
       vite: 5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4)
@@ -18900,10 +18890,6 @@ snapshots:
       '@intlify/core-base': 9.13.1
       '@intlify/shared': 9.13.1
       '@vue/devtools-api': 6.6.4
-      vue: 3.5.8(typescript@5.4.5)
-
-  vue-loading-overlay@6.0.6(vue@3.5.8(typescript@5.4.5)):
-    dependencies:
       vue: 3.5.8(typescript@5.4.5)
 
   vue-prism-component@2.0.0: {}
