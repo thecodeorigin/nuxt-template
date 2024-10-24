@@ -1,5 +1,4 @@
 import type { ToastOptions } from 'vue-toastification/dist/types/types'
-import { useToast } from 'vue-toastification'
 import defu from 'defu'
 
 interface NotificationOptions extends Omit<ToastOptions, 'type'> {
@@ -11,36 +10,36 @@ const notificationDefaultOptions: NotificationOptions = {
 }
 
 export function notifyError(options: NotificationOptions) {
-  const toast = useToast()
+  const { $toast } = useNuxtApp()
 
-  toast.error(
+  $toast.error(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )
 }
 
 export function notifySuccess(options: NotificationOptions) {
-  const toast = useToast()
+  const { $toast } = useNuxtApp()
 
-  toast.success(
+  $toast.success(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )
 }
 
 export function notifyWarning(options: NotificationOptions) {
-  const toast = useToast()
+  const { $toast } = useNuxtApp()
 
-  toast.warning(
+  $toast.warning(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )
 }
 
 export function notifyInfo(options: NotificationOptions) {
-  const toast = useToast()
+  const { $toast } = useNuxtApp()
 
-  toast.info(
+  $toast.info(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )

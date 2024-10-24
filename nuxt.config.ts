@@ -134,6 +134,8 @@ export default defineNuxtConfig({
     '@base/configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
     '@base/server': fileURLToPath(new URL('./server', import.meta.url)),
     '@base': fileURLToPath(new URL('./app', import.meta.url)),
+    // Bug fix:
+    // 'vue-toastification': 'vue-toastification/dist/index.mjs',
   },
 
   // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
