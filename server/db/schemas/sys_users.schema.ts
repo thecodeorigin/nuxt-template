@@ -25,6 +25,7 @@ export const sysUserTable = pgTable('sys_users', {
   status: userStatus('status').default('pending'),
   address: text('address'),
   city: text('city'),
+  emailVerified: timestamp('email_verified'),
 })
 
 export const insertSysUserSchema = createInsertSchema(sysUserTable)
