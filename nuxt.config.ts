@@ -246,7 +246,7 @@ export default defineNuxtConfig({
   },
 
   nodemailer: {
-    host: process.env.SMTP_HOST,
+    host: process.env.SMTP_SERVER,
     port: Number(process.env.SMTP_PORT),
     secure: true,
     auth: {
