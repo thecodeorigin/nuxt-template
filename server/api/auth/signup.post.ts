@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         from: runtimeConfig.EMAIL_FROM,
         to: email,
         subject: 'Email Verification',
-        text: `Please click on the link to verify your email: ${runtimeConfig.FRONTEND_URL}/auth/verify?token=${token}`,
+        text: `Please click on the link to verify your email: ${runtimeConfig.FRONTEND_URL}/auth/verify?token=${token}&type=verify&redirect_to=/auth/login`,
       })
     }
 
