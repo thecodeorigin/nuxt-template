@@ -1,10 +1,21 @@
-import { createVerify } from 'node:crypto'
+import { Buffer } from 'node:buffer'
+import { createHmac } from 'node:crypto'
+import { eq } from 'drizzle-orm'
+import { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
+import { useUserCrud } from '@base/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const query = getQuery(event)
+    const { token, type }: { token: string, type: string } = await readBody(event)
 
-    if (!query.token) {
+    if (type !== 'verify') {
+      throw createError({
+        statusCode: 401,
+        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+      })
+    }
+
+    if (!token) {
       throw createError({
         statusCode: 401,
         statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
@@ -12,7 +23,43 @@ export default defineEventHandler(async (event) => {
     }
 
     const runtimeConfig = useRuntimeConfig()
-    const isValid = createVerify('HS256').verify(runtimeConfig.auth.secret, query.token as string)
+    const [email, hash] = Buffer.from(token, 'base64').toString('utf-8').split('.')
+
+    const isValid = createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex') === hash
+    if (!isValid) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+      })
+    }
+
+    const sysUser = await db.query.sysUserTable.findFirst({
+      columns: {
+        id: true,
+        email: true,
+        email_verified: true,
+      },
+      where: eq(sysUserTable.email, email),
+    })
+
+    if (!sysUser) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+      })
+    }
+
+    if (sysUser.email_verified) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+      })
+    }
+
+    const { updateUserByEmail } = useUserCrud()
+    await updateUserByEmail(email, { emailVerified: new Date() })
+
+    setResponseStatus(event, 201)
   }
   catch (error: any) {
     throw parseError(error)
