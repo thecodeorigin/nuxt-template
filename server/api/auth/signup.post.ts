@@ -1,4 +1,5 @@
-import { createSign } from 'node:crypto'
+import { createHmac } from 'node:crypto'
+import { Buffer } from 'node:buffer'
 import bcrypt from 'bcrypt'
 import { useRoleCrud } from '@base/server/composables/useRoleCrud'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
@@ -48,7 +49,7 @@ export default defineEventHandler(async (event) => {
     if (provider === 'credentials') {
       const runtimeConfig = useRuntimeConfig()
       const { sendMail } = useNodeMailer()
-      const token = createSign('HS256').update(email).end().sign(runtimeConfig.auth.secret)
+      const token = Buffer.from(`${email}.${createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex')}`).toString('base64')
 
       await sendMail({
         from: runtimeConfig.EMAIL_FROM,
