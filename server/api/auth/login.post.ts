@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
         email: true,
         phone: true,
         password: true,
-        emailVerified: true,
+        email_verified: true,
       },
       where: eq(sysUserTable.email, email),
     })
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
     const isValid = await bcrypt.compare(password, sysUser.password!)
 
     if (isValid) {
-      if (!sysUser.emailVerified) {
+      if (!sysUser.email_verified) {
         throw createError({
           statusCode: 401,
           statusMessage: ErrorMessage.EMAIL_NOT_VERIFIED,
