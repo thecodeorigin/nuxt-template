@@ -1,3 +1,4 @@
+import { createSign } from 'node:crypto'
 import bcrypt from 'bcrypt'
 import { useRoleCrud } from '@base/server/composables/useRoleCrud'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
@@ -41,7 +42,21 @@ export default defineEventHandler(async (event) => {
       organization: '',
       provider,
       role_id: userRole.data.id,
+      emailVerified: provider === 'credentials' ? null : new Date(),
     })
+
+    if (provider === 'credentials') {
+      const runtimeConfig = useRuntimeConfig()
+      const { sendMail } = useNodeMailer()
+      const token = createSign('HS256').update(email).end().sign(runtimeConfig.auth.secret)
+
+      await sendMail({
+        from: runtimeConfig.EMAIL_FROM,
+        to: email,
+        subject: 'Email Verification',
+        text: `Please click on the link to verify your email: ${runtimeConfig.FRONTEND_URL}/auth/verify?token=${token}`,
+      })
+    }
 
     setResponseStatus(event, 201)
 
