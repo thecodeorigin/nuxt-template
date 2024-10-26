@@ -7,4 +7,5 @@ export enum ErrorMessage {
   INVALID_PARAMS = 'Invalid parameter: <%= key %>, receive value: <%= value %>',
   STRIPE_NO_PRICE = 'No price found for this product!',
   BAD_REQUEST = 'Bad request!',
+  EMAIL_NOT_VERIFIED = 'Email not verified!',
 }
