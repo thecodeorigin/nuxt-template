@@ -25,7 +25,7 @@ async function handleVerify() {
   try {
     loading()
 
-    await $api('/auth/verify', {
+    await $api('/auth/verify-request', {
       method: 'POST',
       body: {
         type: type.value,
