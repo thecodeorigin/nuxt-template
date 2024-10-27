@@ -8,4 +8,5 @@ export enum ErrorMessage {
   STRIPE_NO_PRICE = 'No price found for this product!',
   BAD_REQUEST = 'Bad request!',
   EMAIL_NOT_VERIFIED = 'Email not verified!',
+  INVALID_VERIFICATION_URL = 'Invalid verification URL!',
 }

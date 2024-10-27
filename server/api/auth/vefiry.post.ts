@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     if (!isValid) {
       throw createError({
         statusCode: 401,
-        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+        statusMessage: ErrorMessage.INVALID_VERIFICATION_URL,
       })
     }
 
@@ -42,14 +42,7 @@ export default defineEventHandler(async (event) => {
       where: eq(sysUserTable.email, email),
     })
 
-    if (!sysUser) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
-      })
-    }
-
-    if (sysUser.email_verified) {
+    if (!sysUser || sysUser.email_verified) {
       throw createError({
         statusCode: 401,
         statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
@@ -57,7 +50,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const { updateUserByEmail } = useUserCrud()
-    await updateUserByEmail(email, { emailVerified: new Date() })
+    await updateUserByEmail(email, { email_verified: new Date() })
 
     setResponseStatus(event, 201)
   }
