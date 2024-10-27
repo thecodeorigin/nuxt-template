@@ -1,14 +1,12 @@
 import type { AnyAbility, SubjectType } from '@casl/ability'
 import { createMongoAbility } from '@casl/ability'
-import type { PermissionAction, PermissionSubject } from '@base/server/db/schemas'
+import type { PermissionAction } from '@base/server/db/schemas'
 
 export type Actions = `${PermissionAction}`
 
-export type Subjects = `${PermissionSubject}`
-
 export interface Rule {
   action: Actions
-  subject: Subjects
+  subject: string
 }
 
 export const useCaslStore = defineStore('casl', () => {
@@ -35,7 +33,7 @@ export const useCaslStore = defineStore('casl', () => {
   }
 
   const ability = reactiveAbility(
-    createMongoAbility<[Actions, Subjects]>(currentPermissions),
+    createMongoAbility<[Actions, string]>(currentPermissions),
   )
 
   return {

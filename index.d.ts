@@ -1,12 +1,12 @@
 import type { RouteLocationRaw } from 'vue-router'
 import type { Arrayable } from '@vueuse/core'
-import type { Actions, Subjects } from './app/stores/casl'
+import type { Actions } from './app/stores/casl'
 import type { NavGroupType, NavItem } from './app/@base/@layouts/types'
 
 declare module '#app' {
   interface PageMeta {
     action?: Actions
-    subject?: Subjects
+    subject?: string
     sidebar?: (NavItem & {
       group: NavGroupType
     })

@@ -17,7 +17,7 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
 
     if (children.length) {
       item.children = sortBy(children, [
-        function (o) { return o.order || 0 },
+        function (o) { return o.order === undefined ? 1 : o.order },
       ])
     }
 
@@ -32,11 +32,25 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
 
     // filter routes in tree that are also in children
     tree = tree.filter((item) => {
-      return !children.some(child => child.to?.name === item.to?.name)
+      if (!item.to)
+        return false
+
+      const normalizedItem = item.to as RouteRecordNormalized
+
+      return !children.some((child) => {
+        if (!child.to)
+          return false
+
+        const normalizedChild = child.to as RouteRecordNormalized
+
+        console.log('normalizedItem', normalizedChild.name, normalizedItem.name)
+
+        return normalizedChild.name === normalizedItem.name
+      })
     })
   }
 
   return sortBy(tree, [
-    function (o) { return o.order || 0 },
+    function (o) { return o.order === undefined ? 1 : o.order },
   ])
 }
