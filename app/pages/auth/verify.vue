@@ -37,7 +37,7 @@ async function handleVerify() {
       content: t('Another confirmation email has been sent to your email address!'),
     })
 
-    window.location.href = redirectTo.value
+    navigateTo(redirectTo.value)
   }
   catch (error: any) {
     notifyError({

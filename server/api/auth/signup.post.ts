@@ -43,13 +43,13 @@ export default defineEventHandler(async (event) => {
       organization: '',
       provider,
       role_id: userRole.data.id,
-      emailVerified: provider === 'credentials' ? null : new Date(),
+      email_verified: provider === 'credentials' ? null : new Date(),
     })
 
     if (provider === 'credentials') {
       const runtimeConfig = useRuntimeConfig()
       const { sendMail } = useNodeMailer()
-      const token = Buffer.from(`${email}.${createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex')}`).toString('base64')
+      const token = Buffer.from(`${email}^^${createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex')}`).toString('base64')
 
       await sendMail({
         from: runtimeConfig.EMAIL_FROM,

@@ -18,12 +18,12 @@ export default defineEventHandler(async (event) => {
     if (!token) {
       throw createError({
         statusCode: 401,
-        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+        statusMessage: ErrorMessage.INVALID_VERIFICATION_URL,
       })
     }
 
     const runtimeConfig = useRuntimeConfig()
-    const [email, hash] = Buffer.from(token, 'base64').toString('utf-8').split('.')
+    const [email, hash] = Buffer.from(token, 'base64').toString().split('^^')
 
     const isValid = createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex') === hash
     if (!isValid) {
