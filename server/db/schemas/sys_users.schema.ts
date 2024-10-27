@@ -6,6 +6,7 @@ import { sysRoleTable } from './sys_roles.schema'
 import { sysNotificationTable } from './sys_notifications.schema'
 import { userShortcutTable } from './user_shortcuts.schema'
 import { userDeviceTable } from './user_devices.schema'
+import { sysOrganizationTable } from './sys_organizations.schema'
 
 export const sysUserTable = pgTable('sys_users', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -18,6 +19,7 @@ export const sysUserTable = pgTable('sys_users', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
   deleted_at: timestamp('deleted_at', { withTimezone: true }),
   role_id: uuid('role_id').references(() => sysRoleTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+  organization_id: uuid('organization_id').references(() => sysOrganizationTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   country: varchar('country'),
   language: varchar('language').default('en'),
   organization: text('organization'),
@@ -40,4 +42,8 @@ export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
   userShortcuts: many(userShortcutTable),
   userDevices: many(userDeviceTable),
   notifications: many(sysNotificationTable),
+  organization: one(sysOrganizationTable, {
+    fields: [sysUserTable.organization_id],
+    references: [sysOrganizationTable.id],
+  }),
 }))
