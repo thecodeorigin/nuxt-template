@@ -42,6 +42,15 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "minhcu",
+      "name": "Minh Dong",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70119705?v=4",
+      "profile": "https://minhcu.github.io/",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
