@@ -1,7 +1,7 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysPermissionTable } from '@base/server/db/schemas'
 import type { User } from 'next-auth'
-import type { Actions, Rule, Subjects } from '~/stores/casl'
+import type { Actions, Rule } from '~/stores/casl'
 
 type Permission = InferSelectModel<typeof sysPermissionTable>
 
@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (permission.action === 'manage') {
         results.push(
           ...new Array<Actions>('create', 'read', 'update', 'delete', 'manage').map(action => ({
-            subject: permission.subject as Subjects,
+            subject: permission.subject,
             action,
           })),
         )
@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
       else {
         results.push({
           action: permission.action as Actions,
-          subject: permission.subject as Subjects,
+          subject: permission.subject,
         })
       }
     }

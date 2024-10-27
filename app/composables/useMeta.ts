@@ -1,10 +1,10 @@
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
-import type { Actions, Subjects } from '#imports'
+import type { Actions } from '#imports'
 import { useHead } from '#imports'
 
 type UseMetaInput = Parameters<typeof useHead>[0] & {
   action?: Actions
-  subject?: Subjects
+  subject?: string
   sidebar?: (NavItem & {
     group?: NavGroupType
   })
