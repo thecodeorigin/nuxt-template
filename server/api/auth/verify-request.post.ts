@@ -8,14 +8,7 @@ export default defineEventHandler(async (event) => {
   try {
     const { token, type }: { token: string, type: string } = await readBody(event)
 
-    if (type !== 'verify') {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
-      })
-    }
-
-    if (!token) {
+    if (type !== 'verify' || !token) {
       throw createError({
         statusCode: 401,
         statusMessage: ErrorMessage.INVALID_VERIFICATION_URL,
@@ -23,6 +16,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const runtimeConfig = useRuntimeConfig()
+
     const [email, hash] = Buffer.from(token, 'base64').toString().split('^^')
 
     const isValid = createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex') === hash
@@ -50,6 +44,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const { updateUserByEmail } = useUserCrud()
+
     await updateUserByEmail(email, { email_verified: new Date() })
 
     setResponseStatus(event, 201)

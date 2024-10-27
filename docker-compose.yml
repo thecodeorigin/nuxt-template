@@ -31,6 +31,13 @@ services:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
 
+  mailhog:
+    container_name: nuxt-mailhog
+    image: mailhog/mailhog
+    ports:
+      - "${SMTP_PORT:-1025}:1025"
+      - "${SMTP_WEB_PORT:-8025}:8025"
+    restart: unless-stopped
 
 volumes:
   postgres:

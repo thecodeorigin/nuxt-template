@@ -52,7 +52,6 @@ export default defineEventHandler(async (event) => {
       const token = Buffer.from(`${email}^^${createHmac('sha256', runtimeConfig.auth.secret).update(email).digest('hex')}`).toString('base64')
 
       await sendMail({
-        from: runtimeConfig.EMAIL_FROM,
         to: email,
         subject: 'Email Verification',
         text: `Please click on the link to verify your email: ${runtimeConfig.public.appBaseUrl}/auth/verify?token=${token}&type=verify&redirect_to=/auth/login`,
