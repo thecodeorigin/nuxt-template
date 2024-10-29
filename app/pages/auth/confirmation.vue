@@ -70,6 +70,7 @@ async function resendConfirmation() {
   }
 }
 
+// TODO: AY YO! This is not working
 const verificationMessage = computed(() => t(
   'Account activation link sent to your email address: {email} Please follow the link inside to continue\.',
   {
