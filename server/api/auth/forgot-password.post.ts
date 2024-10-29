@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
 
     const runtimeConfig = useRuntimeConfig()
     const { sendMail } = useNodeMailer()
-    const token = Buffer.from(`${email}^^${createHmac('sha256', runtimeConfig.auth.secret).update(`${email}${sysUser.id}`).digest('hex')}`).toString('base64')
+    const token = Buffer.from(`${email}^^${createHmac('sha256', runtimeConfig.auth.secret).update(`${email}reset`).digest('hex')}`).toString('base64')
 
     await sendMail({
       to: email,

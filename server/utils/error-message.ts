@@ -10,4 +10,5 @@ export enum ErrorMessage {
   EMAIL_NOT_VERIFIED = 'Email not verified!',
   INVALID_VERIFICATION_URL = 'Invalid verification URL!',
   EMAIL_ALREADY_VERIFIED = 'Email already verified!',
+  PASSWORD_MISMATCH = 'Password mismatch!',
 }

@@ -76,6 +76,8 @@
   "Not receiving the email?": "Not receiving the email? Resend now!",
   "Email": "Email",
   "Send Reset Link": "Send Reset Link",
+  "An email has been sent to your email address with instructions to reset your password!": "An email has been sent to your email address with instructions to reset your password!",
+  "Your password has been reset successfully!": "Your password has been reset successfully!",
   "Back to login": "Back to login",
   "Welcome to {appName} 👋🏻": "Welcome to {appName} 👋🏻",
   "Please sign-in to your account and start the adventure": "Please sign-in to your account and start the adventure",

@@ -76,6 +76,8 @@
   "Not receiving the email?": "Không nhận được email? Gửi lại ngay!",
   "Email": "Email",
   "Send Reset Link": "Gửi liên kết đặt lại",
+  "An email has been sent to your email address with instructions to reset your password!": "Một email đã được gửi đến địa chỉ email của bạn với hướng dẫn để đặt lại mật khẩu!",
+  "Your password has been reset successfully!": "Mật khẩu của bạn đã được đặt lại thành công!",
   "Back to login": "Quay lại đăng nhập",
   "Welcome to {appName} 👋🏻": "Chào mừng đến với {appName} 👋🏻",
   "Please sign-in to your account and start the adventure": "Vui lòng đăng nhập vào tài khoản của bạn và bắt đầu khám phá",
