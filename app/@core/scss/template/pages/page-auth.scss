@@ -59,3 +59,8 @@
     line-height: 1.5rem;
   }
 }
+
+.resend-email {
+  color: rgb(var(--v-theme-on-warning)) !important;
+  text-decoration: underline;
+}

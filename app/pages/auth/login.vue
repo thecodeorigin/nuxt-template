@@ -48,6 +48,8 @@ const rememberMe = ref(false)
 
 const { signIn } = useAuth()
 
+const verifyEmail = ref(false)
+
 async function login(provider?: string) {
   try {
     loading()
@@ -63,6 +65,11 @@ async function login(provider?: string) {
         redirect: false,
         ...credentials.value,
       })
+
+      // TODO: AY YO! This is a temporary solution until we have a better way to handle this
+      if (response?.error === 'Email not verified!') {
+        verifyEmail.value = true
+      }
 
       match(response)
         .with({ error: P.string }, ({ error }) => {
@@ -194,6 +201,22 @@ const config = useRuntimeConfig()
                       {{ $t('Forgot Password?') }}
                     </NuxtLink>
                   </div>
+
+                  <VAlert
+                    v-if="verifyEmail"
+                    type="warning"
+                    border="left"
+                    elevation="1"
+                    icon="ri-alert-line"
+                    class="mb-4"
+                  >
+                    <NuxtLink
+                      class="resend-email"
+                      :to="`/auth/confirmation?email=${credentials.email}`"
+                    >
+                      {{ $t('Not receiving the email?') }}
+                    </NuxtLink>
+                  </VAlert>
 
                   <VBtn
                     block
