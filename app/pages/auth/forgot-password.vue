@@ -24,6 +24,28 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
+
+async function sendResetLink() {
+  if (!email.value)
+    return
+  try {
+    loading()
+
+    await $api('/auth/forgot-password', {
+      method: 'POST',
+      body: {
+        email: email.value,
+        type: 'reset',
+      },
+    })
+  }
+  catch (error: any) {
+    notifyError({ content: error.message })
+  }
+  finally {
+    loading.close()
+  }
+}
 </script>
 
 <template>
@@ -103,6 +125,7 @@ const config = useRuntimeConfig()
                   <VBtn
                     block
                     type="submit"
+                    @click="sendResetLink"
                   >
                     {{ $t('Send Reset Link') }}
                   </VBtn>
