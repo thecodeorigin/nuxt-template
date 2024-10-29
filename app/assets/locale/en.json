@@ -73,6 +73,7 @@
   "Resend Confirmation {countdown}": "Resend Confirmation {countdown}",
   "Forgot Password? 🔒": "Forgot Password? 🔒",
   "Enter your email and we\\'ll send you instructions to reset your password": "Enter your email and we\\'ll send you instructions to reset your password",
+  "Not receiving the email?": "Not receiving the email? Resend now!",
   "Email": "Email",
   "Send Reset Link": "Send Reset Link",
   "Back to login": "Back to login",

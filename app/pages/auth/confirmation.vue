@@ -50,7 +50,7 @@ async function resendConfirmation() {
       method: 'POST',
       body: {
         email: currentEmail.value,
-        type: 'signup',
+        type: 'resend',
       },
     })
 
