@@ -163,6 +163,23 @@ const config = useRuntimeConfig()
               @submit.prevent="onSubmit"
             >
               <VRow>
+                <!-- auth providers -->
+                <VCol
+                  cols="12"
+                  class="text-center"
+                >
+                  <AuthProvider @signin="login" />
+                </VCol>
+
+                <VCol
+                  cols="12"
+                  class="d-flex align-center"
+                >
+                  <VDivider />
+                  <span class="mx-4 text-high-emphasis">{{ $t('or') }}</span>
+                  <VDivider />
+                </VCol>
+
                 <!-- email -->
                 <VCol cols="12">
                   <VTextField
@@ -240,23 +257,6 @@ const config = useRuntimeConfig()
                   >
                     {{ $t('Create an account') }}
                   </NuxtLink>
-                </VCol>
-
-                <VCol
-                  cols="12"
-                  class="d-flex align-center"
-                >
-                  <VDivider />
-                  <span class="mx-4 text-high-emphasis">{{ $t('or') }}</span>
-                  <VDivider />
-                </VCol>
-
-                <!-- auth providers -->
-                <VCol
-                  cols="12"
-                  class="text-center"
-                >
-                  <AuthProvider @signin="login" />
                 </VCol>
               </VRow>
             </VForm>

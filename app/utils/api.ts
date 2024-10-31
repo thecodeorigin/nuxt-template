@@ -1,7 +1,7 @@
 import type { $Fetch } from 'ofetch'
 
 export const $api = $fetch.create({
-  retry: 3,
+  retry: 1,
   retryDelay: 3000,
   retryStatusCodes: [500, 503, 504],
   // Request interceptor
@@ -19,9 +19,6 @@ export const $api = $fetch.create({
     const authStore = useAuthStore()
 
     switch (error.response?.status) {
-      case 422:
-        // Handle at component level
-        break
       case 401:
         if (error.request.toString().includes('auth'))
           return

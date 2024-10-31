@@ -1,5 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
+  action: 'manage',
+  subject: 'user',
   sidebar: {
     title: 'Users & Permissions',
     icon: { icon: 'ri-admin-line' },

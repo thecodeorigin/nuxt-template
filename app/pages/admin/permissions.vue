@@ -2,6 +2,8 @@
 import type { Permission } from '@db/apps/permission/types'
 
 definePageMeta({
+  action: 'manage',
+  subject: 'permission',
   sidebar: {
     title: 'Permissions',
     icon: { icon: 'ri-lock-2-line' },

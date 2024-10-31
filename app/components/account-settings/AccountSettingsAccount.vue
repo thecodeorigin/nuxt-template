@@ -113,9 +113,14 @@ async function handleSubmit() {
             <VAvatar
               rounded
               size="100"
-              class="me-6"
+              class="me-6 bg-grey-100"
               :image="formData.avatar_url"
-            />
+              @click="inputFileRef?.click()"
+            >
+              <VIcon
+                icon="ri-user-3-line text-grey-700"
+              />
+            </VAvatar>
 
             <!-- 👉 Upload Photo -->
             <form class="d-flex flex-column justify-center gap-4">
