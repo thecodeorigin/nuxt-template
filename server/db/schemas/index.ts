@@ -6,6 +6,8 @@ export * from './sys_faqs.schema'
 
 export * from './sys_notifications.schema'
 
+export * from './sys_organizations.schema'
+
 export * from './sys_permissions.schema'
 
 export * from './sys_roles.schema'
