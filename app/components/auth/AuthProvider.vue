@@ -5,38 +5,40 @@ defineEmits<{
   (e: 'signin', provider: string): void
 }>()
 
+const { t } = useI18n()
+
 const { global } = useTheme()
 
-const authProviders = [
+const authProviders = computed(() => [
+  {
+    icon: 'bxl-google',
+    color: '#db4437',
+    colorInDark: '#db4437',
+    provider: 'google',
+    label: t('Sign in with Google'),
+  },
   {
     icon: 'bxl-facebook',
     color: '#497CE2',
     colorInDark: '#497CE2',
     provider: 'facebook',
-    label: 'Facebook',
+    label: t('Sign in with Facebook'),
   },
   {
     icon: 'bxl-github',
     color: '#272727',
     colorInDark: '#fff',
     provider: 'github',
-    label: 'Github',
+    label: t('Sign in with Github'),
   },
-  {
-    icon: 'bxl-google',
-    color: '#db4437',
-    colorInDark: '#db4437',
-    provider: 'google',
-    label: 'Google',
-  },
-]
+])
 </script>
 
 <template>
-  <div class="d-flex justify-center flex-wrap gap-2">
+  <div v-for="link in authProviders" :key="link.icon" class="mb-2">
     <VBtn
-      v-for="link in authProviders"
-      :key="link.icon"
+      style="inline-size: 100%;"
+      size="large"
       :color="global.name.value === 'dark' ? link.colorInDark : link.color"
       @click="$emit('signin', link.provider)"
     >

@@ -123,5 +123,14 @@
   "Light": "Chế độ sáng",
   "Dark": "Chế độ tối",
   "Heads Up!": "Thông báo",
-  "You will be redirected to the Stripe portal to manage your subscription!": "Bạn sẽ được điều hướng sang Stripe để quản lý các gói đăng ký của bạn!"
+  "You will be redirected to the Stripe portal to manage your subscription!": "Bạn sẽ được điều hướng sang Stripe để quản lý các gói đăng ký của bạn!",
+  "Sign in with Google": "Đăng nhập bằng Google",
+  "Sign in with Facebook": "Đăng nhập bằng Facebook",
+  "Sign in with Github": "Đăng nhập bằng Github",
+  "Please stand by": "Vui lòng chờ",
+  "Users & Permissions": "Người dùng & Quyền hạn",
+  "Organizations": "Tổ chức",
+  "Permissions": "Quyền hạn",
+  "Roles": "Vai trò",
+  "Users": "Người dùng"
 }

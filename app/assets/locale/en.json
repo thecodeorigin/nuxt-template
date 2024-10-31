@@ -123,5 +123,14 @@
   "Light": "Light",
   "Dark": "Dark",
   "Heads Up!": "Heads Up!",
-  "You will be redirected to the Stripe portal to manage your subscription!": "You will be redirected to the Stripe portal to manage your subscription!"
+  "You will be redirected to the Stripe portal to manage your subscription!": "You will be redirected to the Stripe portal to manage your subscription!",
+  "Sign in with Google": "Sign in with Google",
+  "Sign in with Facebook": "Sign in with Facebook",
+  "Sign in with Github": "Sign in with Github",
+  "Please stand by": "Please stand by",
+  "Users & Permissions": "Users & Permissions",
+  "Organizations": "Organizations",
+  "Permissions": "Permissions",
+  "Roles": "Roles",
+  "Users": "Users"
 }
