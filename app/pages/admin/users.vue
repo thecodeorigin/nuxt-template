@@ -2,6 +2,8 @@
 import AddNewUserDrawer from '@base/components/users/AddNewUserDrawer.vue'
 
 definePageMeta({
+  action: 'manage',
+  subject: 'user',
   sidebar: {
     title: 'Users',
     icon: { icon: 'ri-id-card-line' },

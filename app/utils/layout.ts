@@ -43,8 +43,6 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
 
         const normalizedChild = child.to as RouteRecordNormalized
 
-        console.log('normalizedItem', normalizedChild.name, normalizedItem.name)
-
         return normalizedChild.name === normalizedItem.name
       })
     })

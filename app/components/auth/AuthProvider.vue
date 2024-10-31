@@ -13,18 +13,21 @@ const authProviders = [
     color: '#497CE2',
     colorInDark: '#497CE2',
     provider: 'facebook',
+    label: 'Facebook',
   },
   {
     icon: 'bxl-github',
     color: '#272727',
     colorInDark: '#fff',
     provider: 'github',
+    label: 'Github',
   },
   {
     icon: 'bxl-google',
     color: '#db4437',
     colorInDark: '#db4437',
     provider: 'google',
+    label: 'Google',
   },
 ]
 </script>
@@ -34,13 +37,11 @@ const authProviders = [
     <VBtn
       v-for="link in authProviders"
       :key="link.icon"
-      icon
-      variant="text"
-      size="small"
       :color="global.name.value === 'dark' ? link.colorInDark : link.color"
       @click="$emit('signin', link.provider)"
     >
-      <VIcon :icon="link.icon" />
+      <VIcon :icon="link.icon" class="mr-2" />
+      {{ link.label }}
     </VBtn>
   </div>
 </template>

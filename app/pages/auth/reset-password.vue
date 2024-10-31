@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import authV1ResetPasswordMaskDark from '@base/images/pages/auth-v1-reset-password-mask-dark.png'
 import authV1ResetPasswordMaskLight from '@base/images/pages/auth-v1-reset-password-mask-light.png'
-import { themeConfig } from '@base/config'
 
 const authV1ResetPasswordMask = useGenerateImageVariant(authV1ResetPasswordMaskLight, authV1ResetPasswordMaskDark)
 
@@ -32,7 +31,13 @@ const config = useRuntimeConfig()
         <VCardTitle>
           <NuxtLink to="/">
             <div class="app-logo">
-              <VNodeRenderer :nodes="config.public.theme.appLogo" />
+              <img
+                :src="config.public.theme.appLogo"
+                :alt="config.public.theme.appName"
+                width="auto"
+                height="24"
+              >
+
               <h1 class="app-logo-title">
                 {{ config.public.theme.appName }}
               </h1>
@@ -115,5 +120,5 @@ const config = useRuntimeConfig()
 </template>
 
 <style lang="scss">
-@use "@core/scss/template/pages/page-auth";
+@use "@base/@core/scss/template/pages/page-auth";
 </style>

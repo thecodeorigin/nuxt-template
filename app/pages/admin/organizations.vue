@@ -2,6 +2,8 @@
 import AddNewUserDrawer from '@base/components/users/AddNewUserDrawer.vue'
 
 definePageMeta({
+  action: 'manage',
+  subject: 'organization',
   sidebar: {
     title: 'Organizations',
     icon: { icon: 'ri-building-line' },
