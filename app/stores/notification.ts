@@ -3,6 +3,9 @@ import type { sysNotificationTable } from '@base/server/db/schemas/sys_notificat
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 
 type Notification = InferSelectModel<typeof sysNotificationTable>
+interface CountNotifications {
+  total: number
+}
 
 export const useNotificationStore = defineStore('notification', () => {
   async function fetchNotifications(query: Partial<ParsedFilterQuery>) {
@@ -46,6 +49,10 @@ export const useNotificationStore = defineStore('notification', () => {
       method: 'DELETE',
     })
   }
+
+  async function countUnreadNotifications() {
+    return $api<CountNotifications>('/notifications/unread')
+  }
   return {
     fetchNotifications,
     markRead,
@@ -53,5 +60,6 @@ export const useNotificationStore = defineStore('notification', () => {
     markAllRead,
     markAllUnread,
     deleteNotification,
+    countUnreadNotifications,
   }
 })
