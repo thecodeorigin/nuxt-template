@@ -2,6 +2,9 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
 import FacebookProvider from 'next-auth/providers/facebook'
+import TwitterProvider from 'next-auth/providers/twitter'
+import AppleProvider from 'next-auth/providers/apple'
+import DiscordProvider from 'next-auth/providers/discord'
 import type { LoggedInUser } from '../../../next-auth'
 import { NuxtAuthHandler } from '#auth'
 
@@ -45,6 +48,21 @@ export default NuxtAuthHandler({
     FacebookProvider.default({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    }),
+    // @ts-expect-error
+    TwitterProvider.default({
+      clientId: process.env.TWITTER_CLIENT_ID!,
+      clientSecret: process.env.TWITTER_CLIENT_SECRET!,
+    }),
+    // @ts-expect-error
+    AppleProvider.default({
+      clientId: process.env.APPLE_CLIENT_ID!,
+      clientSecret: process.env.APPLE_CLIENT_SECRET!,
+    }),
+    // @ts-expect-error
+    DiscordProvider.default({
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     }),
   ],
   pages: {
