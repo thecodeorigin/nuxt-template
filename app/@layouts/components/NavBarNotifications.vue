@@ -22,6 +22,18 @@ const { data, refresh: fetchNotifications } = await useLazyAsyncData(() => syste
 })
 notifications.value.push(...data.value)
 
+const { data: unreadNotifications, refresh: fetchUnreadNotifications } = await useLazyAsyncData(() => systemNotificationStore.countUnreadNotifications(), {
+  default: () => ({ total: 0 }),
+})
+const { refresh: markAllUnread } = await useLazyAsyncData(() => systemNotificationStore.markAllUnread(), {
+  default: () => ({}),
+  immediate: false,
+})
+const { refresh: markAllRead } = await useLazyAsyncData(() => systemNotificationStore.markAllRead(), {
+  default: () => ({}),
+  immediate: false,
+})
+
 async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 'loading' | 'error') => void }) {
   try {
     if (emptyNotification.value) {
@@ -51,9 +63,8 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
 
 async function removeNotification(notificationId: string) {
   try {
-    await useLazyAsyncData(() => systemNotificationStore.deleteNotification(notificationId), {
-      default: () => (Notification),
-    })
+    await systemNotificationStore.deleteNotification(notificationId)
+
     notifications.value.forEach((item, index) => {
       if (notificationId === item.id) {
         notifications.value.splice(index, 1)
@@ -68,14 +79,10 @@ async function removeNotification(notificationId: string) {
 async function handleNotificationClick(notification: Notification) {
   try {
     if (!notification.read_at) {
-      await useLazyAsyncData(() => systemNotificationStore.markRead(notification.id), {
-        default: () => (Notification),
-      })
+      await systemNotificationStore.markRead(notification.id)
     }
     else {
-      await useLazyAsyncData(() => systemNotificationStore.markUnread(notification.id), {
-        default: () => (Notification),
-      })
+      await systemNotificationStore.markUnread(notification.id)
     }
 
     for (const item of notifications.value) {
@@ -84,31 +91,27 @@ async function handleNotificationClick(notification: Notification) {
         break
       }
     }
+    fetchUnreadNotifications()
   }
   catch (error) {
     console.error(error)
   }
 }
 
-const isAllMarkRead = computed(() => notifications.value.every(item => item.read_at))
+const isAllMarkRead = computed(() => unreadNotifications.value.total === 0)
 
 async function handleMarkAllReadOrUnread() {
   try {
     if (isAllMarkRead.value) {
-    // mark all as unread
-      await useLazyAsyncData(() => systemNotificationStore.markAllUnread(), {
-        default: () => (Notification),
-      })
+      markAllUnread()
     }
     else {
-    // mark all as read
-      await useLazyAsyncData(() => systemNotificationStore.markAllRead(), {
-        default: () => (Notification),
-      })
+      markAllRead()
     }
     notifications.value.forEach((item) => {
       item.read_at = !isAllMarkRead.value ? new Date().toDateString() : null
     })
+    fetchUnreadNotifications()
   }
   catch (error) {
     console.error(error)
@@ -154,7 +157,7 @@ async function handleMarkAllReadOrUnread() {
               variant="tonal"
               color="primary"
             >
-              {{ notifications.filter(item => !item.read_at).length }} {{ $t('Unread') }}
+              {{ unreadNotifications?.total }} {{ $t('Unread') }}
             </VChip>
 
             <IconBtn

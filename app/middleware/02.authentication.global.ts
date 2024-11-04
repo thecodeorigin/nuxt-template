@@ -24,11 +24,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
   else if (!to.meta.unauthenticatedOnly && to.name !== 'auth-login') {
+    const filteredQuery = Object.entries(to.query)
+      .filter(([key]) => key !== 'to')
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&')
+    const fullPath = filteredQuery ? `${to.path}?${filteredQuery}` : to.path
     return navigateTo({
       name: 'auth-login',
       query: {
-        ...to.query,
-        to: to.fullPath !== '/' ? to.path : undefined,
+        to: to.fullPath !== '/' ? fullPath : undefined,
       },
     })
   }
