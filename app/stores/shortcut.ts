@@ -31,9 +31,17 @@ export const useShortcutStore = defineStore('shortcut', () => {
     userShortcuts.value.push(response.data)
   }
 
+  async function deleteUserShortcut(shortcutId: string) {
+    const response = await $api<{ data: RawShortcut[] }>(`/users/${userId.value}/shortcuts/${shortcutId}`, {
+      method: 'DELETE',
+    })
+
+    userShortcuts.value = userShortcuts.value.filter(shortcut => shortcut.id !== response.data[0]?.id)
+  }
   return {
     userShortcuts,
     getUserShortcuts,
     postUserShortcut,
+    deleteUserShortcut,
   }
 })

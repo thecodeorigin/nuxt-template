@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const { createShortcut } = useShortcutCrud(userId)
 
-    const userShortcut = await createShortcut(body)
+    const userShortcut = await createShortcut({ ...body, user_id: userId })
 
     setResponseStatus(event, 201)
 

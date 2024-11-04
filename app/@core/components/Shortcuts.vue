@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import type { NavItem } from '@base/@layouts/types'
+import type { RawShortcut } from '@base/stores/shortcut'
 
+export interface ShortcutItem {
+  item: RawShortcut
+  route: NavItem
+}
 interface Props {
   togglerIcon?: string
-  shortcuts: NavItem[]
+  shortcuts: ShortcutItem[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -13,10 +18,18 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'add'): void
   (e: 'change', payload: boolean): void
+  (e: 'delete', payload: string): void
 }>()
 const { t } = useI18n()
 function handleAddShortcut() {
   emit('add')
+}
+function deleteShortcut(shortcutId: string) {
+  emit('delete', shortcutId)
+}
+
+function navigate(route: string) {
+  navigateTo(route)
 }
 </script>
 
@@ -60,29 +73,44 @@ function handleAddShortcut() {
 
         <PerfectScrollbar :options="{ wheelPropagation: false }">
           <VRow class="ma-0 mt-n1">
-            <VCol
+            <template
               v-for="(shortcut, index) in props.shortcuts"
-              :key="shortcut.title"
-              cols="6"
-              class="text-center border-t cursor-pointer pa-6 shortcut-icon"
-              :class="(index + 1) % 2 ? 'border-e' : ''"
-              @click="navigateTo(shortcut.to)"
+              :key="index"
             >
-              <VAvatar
-                variant="tonal"
-                size="50"
+              <VCol
+                v-if="shortcut.route"
+                cols="6"
+                class="text-center border-t cursor-pointer pa-6 shortcut-icon position-relative"
+                :class="(index + 1) % 2 ? 'border-e' : ''"
+                @click="navigate(shortcut.route.to as string)"
               >
-                <VIcon
-                  color="high-emphasis"
-                  size="26"
-                  :icon="shortcut.icon?.icon || 'ri-star-smile-line'"
-                />
-              </VAvatar>
+                <VAvatar
+                  variant="tonal"
+                  size="50"
+                >
+                  <VIcon
+                    color="high-emphasis"
+                    size="26"
+                    :icon="shortcut.route.icon?.icon || 'ri-star-smile-line'"
+                  />
+                </VAvatar>
 
-              <h6 class="text-h6 mt-3">
-                {{ t(shortcut.title) }}
-              </h6>
-            </VCol>
+                <h6 class="text-h6 mt-3">
+                  {{ t(shortcut.route.title) }}
+                </h6>
+                <IconBtn
+                  class="shortcut-icon-close"
+                  size="x-small"
+                  @click.stop="deleteShortcut(shortcut.item.id)"
+                >
+                  <VIcon
+                    color="high-emphasis"
+                    size="20"
+                    icon="ri-close-large-fill"
+                  />
+                </IconBtn>
+              </VCol>
+            </template>
           </VRow>
         </PerfectScrollbar>
       </VCard>
@@ -90,8 +118,13 @@ function handleAddShortcut() {
   </IconBtn>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .shortcut-icon:hover {
   background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
+}
+.shortcut-icon-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
 </style>
