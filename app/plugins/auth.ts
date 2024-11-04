@@ -1,4 +1,5 @@
 export default defineNuxtPlugin({
+  name: 'auth',
   parallel: true,
   setup(nuxtApp) {
     nuxtApp.hook('session:cache:refresh', async () => {

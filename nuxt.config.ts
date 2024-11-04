@@ -1,5 +1,8 @@
 import { fileURLToPath } from 'node:url'
+
 import svgLoader from 'vite-svg-loader'
+
+import { version as appVersion } from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -66,6 +69,7 @@ export default defineNuxtConfig({
     },
 
     public: {
+      appVersion,
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
 
@@ -78,6 +82,14 @@ export default defineNuxtConfig({
 
       firebase: {
         keyPair: process.env.FIREBASE_KEY_PAIR,
+      },
+
+      sentry: {
+        dsn: process.env.SENTRY_DSN,
+        environment: process.env.SENTRY_ENVIRONMENT,
+        release: process.env.SENTRY_RELEASE,
+        tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE),
+        replaysOnErrorSampleRate: Number(process.env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE),
       },
     },
   },
@@ -140,8 +152,8 @@ export default defineNuxtConfig({
 
   // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
   sourcemap: {
-    server: false,
-    client: false,
+    server: true,
+    client: true,
   },
 
   vue: {

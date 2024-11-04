@@ -188,5 +188,8 @@
     "h3": "^1.13.0",
     "postcss": "^8",
     "stylelint-order": "6.0.3"
+  },
+  "devDependencies": {
+    "@sentry/nuxt": "^8.36.0"
   }
 }
