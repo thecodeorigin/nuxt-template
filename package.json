@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -80,6 +80,7 @@
     "@nuxtjs/device": "^3.2.4",
     "@nuxtjs/i18n": "^8.5.5",
     "@pinia/nuxt": "^0.5.1",
+    "@sentry/nuxt": "^8.36.0",
     "@sidebase/nuxt-auth": "^0.9.4",
     "@sindresorhus/is": "6.3.0",
     "@stylistic/stylelint-config": "1.0.1",
@@ -181,9 +182,6 @@
     "vuetify": "3.5.15",
     "vuetify-nuxt-module": "^0.18.3",
     "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@sentry/nuxt": "^8.36.0"
   },
   "resolutions": {
     "@tiptap/core": "^2",
