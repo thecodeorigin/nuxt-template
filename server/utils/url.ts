@@ -1,6 +1,6 @@
 export function getURL(path: string = '') {
   let url
-    = process?.env?.VITE_APP_PUBLIC_URL // Set this to your site URL in production env.
+    = process?.env?.NUXT_PUBLIC_APP_BASE_URL // Set this to your site URL in production env.
     ?? 'http://localhost:3000/'
 
   // Trim the URL and remove trailing slash if exists.
