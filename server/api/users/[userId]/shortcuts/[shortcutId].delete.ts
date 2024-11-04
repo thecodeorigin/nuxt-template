@@ -1,22 +1,16 @@
-import { and, eq } from 'drizzle-orm'
-import { userShortcutTable } from '@base/server/db/schemas/user_shortcuts.schema'
+import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
 
 export default defineEventHandler(async (event) => {
   try {
     const { userId, shortcutId } = await defineEventOptions(event, { auth: true, params: ['userId', 'shortcutId'] })
 
-    const userShortcut = await db.delete(userShortcutTable)
-      .where(
-        and(
-          eq(userShortcutTable.user_id, userId),
-          eq(userShortcutTable.id, shortcutId),
-        ),
-      )
-      .returning()
+    const { deleteShortcutById } = useShortcutCrud(userId)
 
-    setResponseStatus(event, 201)
+    const data = await deleteShortcutById(shortcutId)
 
-    return { data: userShortcut[0] }
+    setResponseStatus(event, 200)
+
+    return data
   }
   catch (error: any) {
     throw parseError(error)
