@@ -185,6 +185,16 @@ export default defineNuxtConfig({
     devProxy: {
       host: 'localhost',
     },
+
+    // noExternals: true,
+    externals: {
+      inline: [
+        'import-in-the-middle',
+      ],
+    },
+    // externals: [
+    //   'import-in-the-middle',
+    // ],
   },
 
   pinia: {

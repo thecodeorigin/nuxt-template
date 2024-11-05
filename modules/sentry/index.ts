@@ -24,6 +24,7 @@ export default defineNuxtModule({
 
     await installModule('@sentry/nuxt/module', {
       sourceMapsUploadOptions: {
+        telemetry: false,
         org: process.env.SENTRY_ORGANIZATION,
         project: process.env.SENTRY_PROJECT,
         authToken: process.env.SENTRY_TOKEN,
