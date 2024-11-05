@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import crypto from 'node:crypto'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import type { VForm } from 'vuetify/components/VForm'
@@ -17,15 +18,15 @@ const emit = defineEmits<Emit>()
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
-const fullName = ref('')
-const userName = ref('')
+
 const email = ref('')
-const company = ref('')
+const phone = ref('')
+const fullName = ref('')
 const country = ref()
-const contact = ref('')
-const role = ref()
-const plan = ref()
+const language = ref()
 const status = ref()
+const address = ref('')
+const city = ref('')
 
 // 👉 drawer close
 function closeNavigationDrawer() {
@@ -41,17 +42,22 @@ function onSubmit() {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
       emit('userData', {
-        id: 0,
-        fullName: fullName.value,
-        company: company.value,
-        role: role.value,
-        username: userName.value,
-        country: country.value,
-        contact: contact.value,
+        id: crypto.randomUUID(),
         email: email.value,
-        currentPlan: plan.value,
-        status: status.value,
+        phone: phone.value,
+        provider: '',
+        full_name: fullName.value,
         avatar: '',
+        role_id: '',
+        organization_id: '2de22df6-8773-478b-8895-2f2efd9f76e1',
+        country: country.value,
+        language: language.value,
+        organization: '',
+        postcode: '',
+        status: status.value,
+        address: '',
+        city: '',
+        email_verified: null,
       })
       emit('update:isDrawerOpen', false)
       nextTick(() => {
@@ -104,16 +110,6 @@ function handleDrawerModelValueUpdate(val: boolean) {
                 />
               </VCol>
 
-              <!-- 👉 Username -->
-              <VCol cols="12">
-                <VTextField
-                  v-model="userName"
-                  :rules="[requiredValidator]"
-                  label="Username"
-                  placeholder="Johndoe"
-                />
-              </VCol>
-
               <!-- 👉 Email -->
               <VCol cols="12">
                 <VTextField
@@ -124,15 +120,26 @@ function handleDrawerModelValueUpdate(val: boolean) {
                 />
               </VCol>
 
-              <!-- 👉 company -->
+              <!-- 👉 Phone -->
               <VCol cols="12">
+                <VTextField
+                  v-model="phone"
+                  type="number"
+                  :rules="[requiredValidator]"
+                  label="Phone Number"
+                  placeholder="+1-541-754-3010"
+                />
+              </VCol>
+
+              <!-- 👉 Company -->
+              <!-- <VCol cols="12">
                 <VTextField
                   v-model="company"
                   :rules="[requiredValidator]"
                   label="Company"
                   placeholder="Pixinvent"
                 />
-              </VCol>
+              </VCol> -->
 
               <!-- 👉 Country -->
               <VCol cols="12">
@@ -140,43 +147,30 @@ function handleDrawerModelValueUpdate(val: boolean) {
                   v-model="country"
                   label="Select Country"
                   placeholder="Select Country"
-                  :rules="[requiredValidator]"
                   :items="['United States', 'United Kingdom', 'France']"
                 />
               </VCol>
 
-              <!-- 👉 Contact -->
+              <!-- 👉 Language -->
               <VCol cols="12">
-                <VTextField
-                  v-model="contact"
-                  type="number"
-                  :rules="[requiredValidator]"
-                  label="Contact"
-                  placeholder="+1-541-754-3010"
+                <VSelect
+                  v-model="language"
+                  label="Select Language"
+                  placeholder="Select Language"
+                  :items="['English', 'French', 'Spanish']"
                 />
               </VCol>
 
               <!-- 👉 Role -->
-              <VCol cols="12">
+              <!-- <VCol cols="12">
                 <VSelect
-                  v-model="role"
+                  v-model="roleId"
                   label="Select Role"
                   placeholder="Select Role"
                   :rules="[requiredValidator]"
                   :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']"
                 />
-              </VCol>
-
-              <!-- 👉 Plan -->
-              <VCol cols="12">
-                <VSelect
-                  v-model="plan"
-                  label="Select Plan"
-                  placeholder="Select Plan"
-                  :rules="[requiredValidator]"
-                  :items="['Basic', 'Company', 'Enterprise', 'Team']"
-                />
-              </VCol>
+              </VCol> -->
 
               <!-- 👉 Status -->
               <VCol cols="12">
@@ -184,8 +178,25 @@ function handleDrawerModelValueUpdate(val: boolean) {
                   v-model="status"
                   label="Select Status"
                   placeholder="Select Status"
-                  :rules="[requiredValidator]"
                   :items="[{ title: 'Active', value: 'Active' }, { title: 'Inactive', value: 'Inactive' }, { title: 'Pending', value: 'Pending' }]"
+                />
+              </VCol>
+
+              <!-- 👉 Address -->
+              <VCol cols="12">
+                <VTextField
+                  v-model="address"
+                  label="Address"
+                  placeholder="123, Main Road, Your City"
+                />
+              </VCol>
+
+              <!-- 👉 City -->
+              <VCol cols="12">
+                <VTextField
+                  v-model="city"
+                  label="City"
+                  placeholder="New York"
                 />
               </VCol>
 

@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     return response
   }
   catch (error: any) {
+    console.error('Error creating user', error)
     throw parseError(error)
   }
 })
