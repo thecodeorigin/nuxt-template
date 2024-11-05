@@ -148,6 +148,7 @@ export default defineNuxtConfig({
     '@base': fileURLToPath(new URL('./app', import.meta.url)),
     // Bug fix:
     // 'vue-toastification': 'vue-toastification/dist/index.mjs',
+    'import-in-the-middle': fileURLToPath(new URL('./node_modules/import-in-the-middle', import.meta.url)),
   },
 
   // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
@@ -185,16 +186,6 @@ export default defineNuxtConfig({
     devProxy: {
       host: 'localhost',
     },
-
-    // noExternals: true,
-    externals: {
-      inline: [
-        'import-in-the-middle',
-      ],
-    },
-    // externals: [
-    //   'import-in-the-middle',
-    // ],
   },
 
   pinia: {
