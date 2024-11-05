@@ -33,11 +33,11 @@ export function useUserCrud() {
       },
       limit: options.limit,
       offset: options.limit * (options.page - 1),
-      orderBy(schema, { asc, desc }) {
-        return options.sortAsc
-          ? asc((schema as any)[options.sortBy])
-          : desc((schema as any)[options.sortBy])
-      },
+      // orderBy(schema, { asc, desc }) {
+      //   return options.sortAsc
+      //     ? asc((schema as any)[options.sortBy])
+      //     : desc((schema as any)[options.sortBy])
+      // },
       where(schema, { or, ilike }) {
         if (options.keyword && options.keywordLower) {
           return or(
