@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AddNewUserDrawer from '@base/components/users/AddNewUserDrawer.vue'
+import AddNewUserDrawer from '~/components/users/UserDrawer.vue'
 
 definePageMeta({
   action: 'manage',

@@ -57,7 +57,7 @@ onChange(async (selectedFiles: FileList | null) => {
 
   const ext = file.name.split('.').pop()
   const filename = file.name.replace(/\s/g, '_')
-  const imageUrl = await uploadToS3(file, `landing-page/${filename || `${Date.now()}.${ext}`}`)
+  const imageUrl = await uploadToS3(file, `sanntour/${filename || `${Date.now()}.${ext}`}`)
 
   emit('update:modelValue', imageUrl)
 })
