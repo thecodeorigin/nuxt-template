@@ -66,7 +66,14 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function deleteUser(userId: string) {
-
+    try {
+      await $api(`/api/users/${userId}`, {
+        method: 'DELETE',
+      })
+    }
+    catch (error) {
+      console.error('Error deleting user:', error)
+    }
   }
 
   return {

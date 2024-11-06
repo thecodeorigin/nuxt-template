@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import AddNewUserDrawer from '@base/components/users/AddNewUserDrawer.vue'
 import { type User, useUserStore } from '@base/stores/admin/user'
+import { DRAWER_ACTION_TYPES } from '~/constant/organization'
+import type { DrawerConfig } from '~/utils/types'
 
 definePageMeta({
   sidebar: {
@@ -13,24 +14,121 @@ const userStore = useUserStore()
 const { userList, userDetail, totalUsers } = storeToRefs(userStore)
 const { fetchUserList, fetchUserDetail, updateUser, deleteUser, createUser } = userStore
 
-const currentUserId = ref<string>('adeadb89-ce6c-4396-ab28-e4451ce0f456')
-const currentUserName = ref<string>('')
-const isAddNewUserDrawerVisible = ref(false)
+const currentUserId = ref<string>('')
+const currentUserData = ref<Partial<User>>({
+  id: '',
+  email: '',
+  phone: '',
+  provider: '',
+  full_name: '',
+  avatar_url: '',
+  role_id: '',
+  organization_id: null,
+  country: '',
+  language: '',
+  postcode: '',
+  status: '',
+  address: '',
+  city: '',
+  email_verified: null,
+})
 
-async function handleUpdateUserName(userId: string, userName: string) {
-  await updateUser(userId, { full_name: userName })
+const currentDrawerConfig = ref<DrawerConfig>({
+  isVisible: false,
+  type: DRAWER_ACTION_TYPES.ADD,
+})
 
-  currentUserName.value = ''
+function handleResetUserData() {
+  currentUserData.value = {
+    id: '',
+    email: '',
+    phone: '',
+    provider: '',
+    full_name: '',
+    avatar_url: '',
+    role_id: '',
+    organization_id: null,
+    country: '',
+    language: '',
+    postcode: '',
+    status: '',
+    address: '',
+    city: '',
+    email_verified: null,
+  }
+}
 
-  await fetchUserList()
+async function handleFetchUserDetail(userId: string) {
+  await fetchUserDetail(userId)
+}
+
+function handleOpenAddDrawer() {
+  handleResetUserData()
+
+  currentDrawerConfig.value = {
+    isVisible: true,
+    type: DRAWER_ACTION_TYPES.ADD,
+  }
+}
+
+async function handleOpenEditDrawer(userId: string) {
+  await handleFetchUserDetail(userId)
+
+  currentUserData.value = {
+    id: userDetail.value?.id,
+    email: userDetail.value?.email,
+    phone: userDetail.value?.phone,
+    provider: userDetail.value?.provider,
+    full_name: userDetail.value?.full_name,
+    avatar_url: userDetail.value?.avatar_url,
+    role_id: userDetail.value?.role_id,
+    organization_id: userDetail.value?.organization_id,
+    country: userDetail.value?.country,
+    language: userDetail.value?.language,
+    postcode: userDetail.value?.postcode,
+    status: userDetail.value?.status,
+    address: userDetail.value?.address,
+    city: userDetail.value?.city,
+    email_verified: userDetail.value?.email_verified,
+  }
+
+  currentDrawerConfig.value = {
+    isVisible: true,
+    type: DRAWER_ACTION_TYPES.EDIT,
+  }
 }
 
 async function handleAddNewUser(userPayload: Partial<User>) {
   await createUser(userPayload)
+
+  await fetchUserList()
+}
+
+async function handleUpdateUser(userId: string, payload: Partial<User>) {
+  await updateUser(userId, payload)
+
+  handleResetUserData()
+
+  await fetchUserList()
+}
+
+async function handleUserChange(payload: Partial<User>, type: 'add' | 'edit') {
+  if (type === DRAWER_ACTION_TYPES.EDIT) {
+    const { id, ...body } = payload
+    await handleUpdateUser(id!, body)
+    nextTick(() => {
+      handleResetUserData()
+    })
+  }
+  else {
+    await handleAddNewUser(payload)
+  }
 }
 
 async function handleDeleteUser(userId: string) {
   await deleteUser(userId)
+
+  await fetchUserList()
 }
 
 useLazyAsyncData(
@@ -42,128 +140,123 @@ useLazyAsyncData(
 
 <template>
   <div>
-    <h1 class="text-center">
-      Test user
-    </h1>
-
     <div>
-      <h2 class="mb-2">
-        user list:
-      </h2>
-      <div v-if="userList.length > 0">
-        <p>
-          Total users: {{ totalUsers }}
-        </p>
-        <br>
-        <ul>
-          <li
-            v-for="user in userList"
-            :key="user.id"
+      <h1 class="text-center">
+        Test user
+      </h1>
+
+      <div>
+        <h2 class="mb-2">
+          user list:
+        </h2>
+        <div v-if="userList.length > 0">
+          <p>
+            Total users: {{ totalUsers }}
+          </p>
+          <br>
+
+          <ul>
+            <li
+              v-for="user in userList"
+              :key="user.id"
+            >
+              <div class="d-flex align-center justify-space-between">
+                <p>
+                  {{ user.full_name }}
+                </p>
+
+                <div class="d-flex align-center gap-2">
+                  <VBtn @click="handleOpenEditDrawer(user.id)">
+                    Edit
+                  </VBtn>
+
+                  <VBtn @click="handleDeleteUser(user.id)">
+                    Delete
+                  </VBtn>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div v-else>
+          No users
+        </div>
+      </div>
+
+      <div>
+        <h2 class="mb-2 mt-8 d-flex align-center">
+          user detail:
+        </h2>
+
+        <div class="mb-2 d-flex align-center gap-2">
+          <VTextField
+            v-model="currentUserId"
+            label="User ID"
+          />
+
+          <VBtn
+            @click="fetchUserDetail(currentUserId)"
           >
-            {{ user.full_name }}
-          </li>
-        </ul>
-      </div>
-      <div v-else>
-        No users
-      </div>
-    </div>
+            Fetch User
+          </VBtn>
+        </div>
 
-    <div>
-      <h2 class="mb-2 mt-8 d-flex align-center">
-        user detail:
-      </h2>
+        <div v-if="userDetail">
+          <p>
+            ID: {{ userDetail.id }}
+          </p>
+          <p>
+            Name: {{ userDetail.full_name }}
+          </p>
+          <p>
+            Email: {{ userDetail.email }}
+          </p>
+        </div>
 
-      <div class="mb-2 d-flex align-center gap-2">
-        <VTextField
-          v-model="currentUserId"
-          label="User ID"
-        />
+        <div v-else>
+          Not found
+        </div>
+      </div>
+
+      <div>
+        <h2 class="mb-2 mt-8 d-flex align-center">
+          user create:
+        </h2>
 
         <VBtn
-          @click="fetchUserDetail(currentUserId)"
+          @click="handleOpenAddDrawer()"
         >
-          Fetch User
+          Create User
         </VBtn>
       </div>
 
-      <div v-if="userDetail">
-        <p>
-          ID: {{ userDetail.id }}
-        </p>
-        <p>
-          Name: {{ userDetail.full_name }}
-        </p>
-        <p>
-          Email: {{ userDetail.email }}
-        </p>
-      </div>
+      <!-- <div>
+        <h2 class="mb-2 mt-8 d-flex align-center">
+          user delete:
+        </h2>
 
-      <div v-else>
-        Not found
-      </div>
+        <div class="mb-2 d-flex align-center gap-2">
+          <VTextField
+            v-model="currentUserId"
+            label="User ID"
+          />
+
+          <VBtn
+            @click="handleDeleteUser(currentUserId)"
+          >
+            Delete User
+          </VBtn>
+        </div>
+      </div> -->
     </div>
 
-    <div>
-      <h2 class="mb-2 mt-8 d-flex align-center">
-        user update:
-      </h2>
-
-      <div class="mb-2 d-flex align-center gap-2">
-        <VTextField
-          v-model="currentUserId"
-          label="User ID"
-        />
-
-        <VTextField
-          v-model="currentUserName"
-          label="User Name"
-        />
-
-        <VBtn
-          @click="handleUpdateUserName(currentUserId, currentUserName)"
-        >
-          Update User
-        </VBtn>
-      </div>
-    </div>
-
-    <div>
-      <h2 class="mb-2 mt-8 d-flex align-center">
-        user create:
-      </h2>
-
-      <VBtn
-        @click="isAddNewUserDrawerVisible = true"
-      >
-        Create User
-      </VBtn>
-    </div>
-
-    <div>
-      <h2 class="mb-2 mt-8 d-flex align-center">
-        user delete:
-      </h2>
-
-      <div class="mb-2 d-flex align-center gap-2">
-        <VTextField
-          v-model="currentUserId"
-          label="User ID"
-        />
-
-        <VBtn
-          @click="handleDeleteUser(currentUserId)"
-        >
-          Delete User
-        </VBtn>
-      </div>
-    </div>
+    <UserDrawer
+      v-model="currentUserData"
+      :drawer-config="currentDrawerConfig"
+      @update:is-drawer-open="currentDrawerConfig.isVisible = $event"
+      @update:model-value="handleUserChange"
+    />
   </div>
-
-  <AddNewUserDrawer
-    v-model:is-drawer-open="isAddNewUserDrawerVisible"
-    @user-data="handleAddNewUser"
-  />
 </template>
 
 <style lang="scss" scoped>
