@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import crypto from 'node:crypto'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import type { VForm } from 'vuetify/components/VForm'
@@ -42,14 +41,14 @@ function onSubmit() {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
       emit('userData', {
-        id: crypto.randomUUID(),
+        id: null,
         email: email.value,
         phone: phone.value,
-        provider: '',
+        provider: null,
         full_name: fullName.value,
         avatar: '',
         role_id: '',
-        organization_id: '2de22df6-8773-478b-8895-2f2efd9f76e1',
+        organization_id: null,
         country: country.value,
         language: language.value,
         organization: '',
