@@ -2,19 +2,18 @@ import type { InferSelectModel } from 'drizzle-orm'
 import type { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 
-
-type User = InferSelectModel<typeof sysUserTable>
+export type User = InferSelectModel<typeof sysUserTable>
 
 export const useUserStore = defineStore('user', () => {
   const userList = ref<User[]>([])
   const totalUsers = ref<number>(0)
   const userDetail = ref<User | null>(null)
 
-  async function fetchUserList(options: ParsedFilterQuery) {
+  async function fetchUserList(options?: ParsedFilterQuery) {
     try {
       const response = await $api<User[]>('/api/users', {
         method: 'GET',
-        params: options,
+        query: options,
       })
 
       userList.value = [...response.data]

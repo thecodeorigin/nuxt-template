@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
@@ -6,9 +7,14 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
+    const userData = {
+      id: crypto.randomUUID(),
+      ...body,
+    }
+
     const { createUser } = useUserCrud()
 
-    const response = await createUser(body)
+    const response = await createUser(userData)
 
     setResponseStatus(event, 201)
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AddNewUserDrawer from '@base/components/users/AddNewUserDrawer.vue'
-import { useUserStore } from '@base/stores/admin/user'
+import { type User, useUserStore } from '@base/stores/admin/user'
 
 definePageMeta({
   sidebar: {
