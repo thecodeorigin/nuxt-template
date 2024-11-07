@@ -83,6 +83,6 @@ export const usePermissionStore = defineStore('permission', () => {
     fetchPermissionDetail,
     createPermission,
     updatePermission,
-    deletePermission
+    deletePermission,
   }
 })
