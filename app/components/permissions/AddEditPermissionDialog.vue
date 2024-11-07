@@ -1,33 +1,53 @@
 <script setup lang="ts">
+import type { VForm } from 'vuetify/components/VForm'
+import type { Permission } from '~/stores/admin/permission'
+
 interface Props {
   isDialogVisible: boolean
-  permissionName?: string
+  permissionData?: Partial<Permission>
 }
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:permissionName', value: string): void
+  (e: 'update:permissionData', value: Partial<Permission>): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  permissionName: '',
-})
-
+const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
-const currentPermissionName = ref('')
+const isFormValid = ref(false)
+const refForm = ref<VForm>()
+
+const isPermissionDataEmpty = computed(() => {
+  const data = props.permissionData
+  return !data || Object.values(data).every(value => value === '')
+})
+
+const localPermissionData = ref<Partial<Permission>>({
+  id: '',
+  role_id: 'ecd82042-0cf5-4085-9f28-7a95cf341301', // TODO: select role
+  action: '',
+  subject: '',
+})
 
 function onReset() {
   emit('update:isDialogVisible', false)
-  currentPermissionName.value = ''
+
+  localPermissionData.value = {
+    id: '',
+    role_id: '',
+    action: '',
+    subject: '',
+  }
 }
 
 function onSubmit() {
   emit('update:isDialogVisible', false)
-  emit('update:permissionName', currentPermissionName.value)
+  emit('update:permissionData', localPermissionData.value)
 }
 
 watch(() => props, () => {
-  currentPermissionName.value = props.permissionName
+  if (props && props.permissionData)
+    localPermissionData.value = props.permissionData
 })
 </script>
 
@@ -49,39 +69,79 @@ watch(() => props, () => {
         <!-- 👉 Title -->
         <div class="text-center mb-6">
           <h4 class="text-h4 mb-2">
-            {{ props.permissionName ? 'Edit' : 'Add' }} Permission
+            {{ isPermissionDataEmpty ? 'Edit' : 'Add' }} Permission
           </h4>
 
           <p class="text-body-1">
-            {{ props.permissionName ? 'Edit' : 'Add' }}  permission as per your requirements.
+            {{ isPermissionDataEmpty ? 'Edit' : 'Add' }}  permission as per your requirements.
           </p>
         </div>
 
         <!-- 👉 Form -->
-        <VForm>
+        <VForm
+          ref="refForm"
+          v-model="isFormValid"
+          @submit.prevent="onSubmit"
+        >
           <VAlert
             type="warning"
             title="Warning!"
             variant="tonal"
             class="mb-6"
           >
-            By {{ props.permissionName ? 'editing' : 'adding' }} the permission name, you might break the system permissions functionality. Please ensure you're absolutely certain before proceeding.
+            By {{ isPermissionDataEmpty ? 'editing' : 'adding' }} the permission name, you might break the system permissions functionality. Please ensure you're absolutely certain before proceeding.
           </VAlert>
 
-          <!-- 👉 Role name -->
-          <div class="d-flex align-center gap-4 mb-4">
-            <VTextField
-              v-model="currentPermissionName"
-              density="compact"
-              placeholder="Enter Permission Name"
-            />
+          <!-- 👉 Role action -->
+          <div class="mb-4">
+            <div class="d-flex flex-column gap-2 mb-4">
+              <VTextField
+                v-model="localPermissionData.action"
+                density="compact"
+                placeholder="Enter Permission action"
+              />
+
+              <VTextField
+                v-model="localPermissionData.subject"
+                density="compact"
+                placeholder="Enter Permission subject"
+              />
+
+              <!-- TODO: select role after role CRUD -->
+              <!-- <VSelect
+                v-model="localPermissionData.role_id"
+                density="compact"
+                placeholder="Select Role"
+                :items="roles"
+                item-title="name"
+                item-value="id"
+              /> -->
+
+              <VSelect
+                v-model="localPermissionData.subject"
+                density="compact"
+                placeholder="Select Role"
+                :items="[
+                  {
+                    title: 'Category',
+                    value: 'category',
+                  },
+                  {
+                    title: 'Project',
+                    value: 'project',
+                  },
+                  {
+                    title: 'All',
+                    value: 'all',
+                  },
+                ]"
+              />
+            </div>
 
             <VBtn @click="onSubmit">
               Update
             </VBtn>
           </div>
-
-          <VCheckbox label="Set as core permission" />
         </VForm>
       </VCardText>
     </VCard>
