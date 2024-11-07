@@ -6,7 +6,7 @@ import type { LoggedInUser } from '../../../next-auth'
 async function _getUser(session: Session) {
   const { getUser: getUserByKey } = useUserCrud()
 
-  let user: LoggedInUser | null = null
+  let user: LoggedInUser | null | undefined = null
 
   if (session.user.email)
     user = (await getUserByKey('email', session.user.email)).data
@@ -58,12 +58,13 @@ export async function getUserBySession(session: Session) {
   if (cachedUser)
     return cachedUser
 
-  let user: LoggedInUser | null = await _getUser(session)
+  const user: LoggedInUser | null | undefined = await _getUser(session)
 
-  if (!user && session.user.provider !== 'credentials') {
-    await _createUser(session)
-
-    user = await _getUser(session)
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: ErrorMessage.UNAUTHORIZED,
+    })
   }
 
   await storage.setItem(sessionKey, user)

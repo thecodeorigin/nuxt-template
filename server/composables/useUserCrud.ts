@@ -82,7 +82,7 @@ export function useUserCrud() {
       },
     })
 
-    return { data: sysUser as LoggedInUser }
+    return { data: sysUser as LoggedInUser | undefined }
   }
 
   function getUserById(id: string) {
@@ -114,7 +114,7 @@ export function useUserCrud() {
 
     nitroApp.hooks.callHook('user:created', data)
 
-    return { data: omit(data, ['password']) }
+    return { data: omit(data, ['password']) as LoggedInUser }
   }
 
   async function deleteUserById(id: string) {
