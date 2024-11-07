@@ -1,4 +1,5 @@
 export enum ErrorMessage {
+  UNAUTHORIZED = 'Unauthorized!',
   CANNOT_FIND_ROLE = 'Cannot assign role and permissions to user!',
   INTERNAL_SERVER_ERROR = 'Internal server error!',
   INVALID_CREDENTIALS = 'Invalid signin credentials!',

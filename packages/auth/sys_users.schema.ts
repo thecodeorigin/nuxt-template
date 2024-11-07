@@ -6,11 +6,10 @@ import { sysOrganizationTable } from './sys_organizations.schema'
 
 export const sysUserTable = pgTable('sys_users', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  email: text('email'),
+  email: text('email').unique().notNull(),
   email_verified: timestamp('email_verified', { withTimezone: true }),
   phone: text('phone'),
   password: text('password'),
-  provider: varchar('provider'),
   full_name: text('full_name'),
   avatar_url: text('avatar_url'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),

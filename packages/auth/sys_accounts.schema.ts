@@ -11,7 +11,7 @@ export const sysAccountTable = pgTable(
       .references(() => sysUserTable.id, { onDelete: 'cascade' }),
     type: text('type').$type<AdapterAccountType>().notNull(),
     provider: text('provider').notNull(),
-    provider_account_id: text('provider_account_id').notNull(),
+    provider_account_id: text('provider_account_id').notNull().unique(),
     refresh_token: text('refresh_token'),
     access_token: text('access_token'),
     expires_at: integer('expires_at'),
