@@ -21,12 +21,29 @@ const emit = defineEmits<Emit>()
 
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
-
 const localOrganization = ref<Partial<Organization>>({
   id: '',
   name: '',
   avatar_url: '',
 })
+
+// 👉  Upload image
+const localFile = ref<File | null>(null)
+async function handleUploadImage() {
+  if (!localFile.value) {
+    return ''
+  }
+  try {
+    const ext = localFile.value.name.split('.').pop()
+    const filename = localFile.value.name.replace(/\s/g, '_')
+    const imageUrl = await uploadToS3(localFile.value, `sanntour/${filename || `${Date.now()}.${ext}`}`)
+
+    return localOrganization.value.avatar_url = imageUrl
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
 
 // 👉 Dialog confirmation
 const dialogConfig = ref<DialogConfig>({
@@ -44,8 +61,8 @@ function onConfirmDialog(value: boolean) {
       dialogConfig.value.isDialogVisible = false
     }
     else {
-      dialogConfig.value.isDialogVisible = false
       emit('update:isDrawerOpen', false)
+      dialogConfig.value.isDialogVisible = false
     }
   }
 }
@@ -75,8 +92,10 @@ function handleCloseDrawer() {
 
 // drawer submit
 function onSubmit() {
-  refForm.value?.validate().then(({ valid }) => {
+  refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
+      await handleUploadImage()
+
       if (props.drawerConfig.type === 'edit') {
         dialogConfig.value = {
           isDialogVisible: true,
@@ -156,9 +175,9 @@ watch(() => props.drawerConfig.isVisible, (val) => {
 
               <!-- 👉 Avatar -->
               <VCol cols="12">
-                <AppSingleDropZone
-                  v-model="localOrganization.avatar_url!"
-                  @update:model-value="localOrganization.avatar_url = $event"
+                <AppDropZoneSingle
+                  :model-value="localOrganization.avatar_url"
+                  @update:model-value="localFile = $event"
                 />
               </VCol>
 
