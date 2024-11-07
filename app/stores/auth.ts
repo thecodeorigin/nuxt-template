@@ -1,7 +1,8 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysPermissionTable } from '@base/server/db/schemas'
 import type { User } from 'next-auth'
-import type { Actions, Rule } from '~/stores/casl'
+import type { Actions, Rule } from '@base/stores/casl'
+import type { LoggedInUser } from '../../next-auth'
 
 type Permission = InferSelectModel<typeof sysPermissionTable>
 
@@ -12,6 +13,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function getCurrentUser() {
     return currentUser.value ?? (currentUser.value = await $api('/me'))
+  }
+
+  async function updateCurrentUser(payload: Partial<LoggedInUser>) {
+    return await $api(`/me`, {
+      method: 'PATCH',
+      body: payload,
+    })
   }
 
   function normalizeRules(permissions: Permission[]) {
@@ -50,6 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     getCurrentUser,
+    updateCurrentUser,
     isAuthenticated,
     currentUser,
     currentRole,

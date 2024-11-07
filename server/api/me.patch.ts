@@ -11,12 +11,9 @@ export default defineEventHandler(async (event) => {
     const sysUser = await updateUserByEmail(session.user!.email, body)
 
     const storage = useStorage('mongodb')
-    const sessionKey = getStorageSessionKey(sysUser.data.email!)
+    const sessionKey = getStorageSessionKey(session.user.providerAccountId)
 
-    storage.setItem(sessionKey, {
-      ...session,
-      user: sysUser.data,
-    })
+    await storage.setItem(sessionKey, sysUser.data)
 
     setResponseStatus(event, 201)
 

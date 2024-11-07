@@ -1,14 +1,16 @@
+import { cookieRef } from '@base/@layouts/stores/config'
+
 export default defineNuxtPlugin({
   name: 'vue-i18n',
   parallel: true,
   setup(nuxtApp) {
-    nuxtApp.hook('i18n:beforeLocaleSwitch', ({ oldLocale, newLocale, initialSetup, context }) => {
-      console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup, context)
-    })
+    const authStore = useAuthStore()
 
-    // called right after a new locale has been set
-    nuxtApp.hook('i18n:localeSwitched', ({ oldLocale, newLocale }) => {
-      console.log('onLanguageSwitched', oldLocale, newLocale)
+    if (authStore.currentUser?.language)
+      cookieRef('language', 'en').value = authStore.currentUser.language
+
+    nuxtApp.hook('i18n:localeSwitched', ({ newLocale }) => {
+      authStore.updateCurrentUser({ language: newLocale })
     })
   },
 })
