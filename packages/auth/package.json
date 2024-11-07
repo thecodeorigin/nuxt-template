@@ -1,0 +1,40 @@
+{
+  "name": "@thecodeorigin/auth",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Drizzle PostgreSQL adapter for Auth.js.",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/",
+    "access": "restricted"
+  },
+  "author": "thecodeorigin <contact@thecodeorigin.com>",
+  "homepage": "https://github.com/thecodeorigin/nuxt-template",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/thecodeorigin/nuxt-template.git",
+    "directory": ""
+  },
+  "keywords": [
+    "next-auth",
+    "@auth",
+    "Auth.js",
+    "next.js",
+    "oauth",
+    "drizzle"
+  ],
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*.ts"
+  },
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "dependencies": {
+    "@auth/core": "^0.37.3",
+    "@types/uuid": "^8.3.3",
+    "drizzle-kit": "^0.23.0",
+    "drizzle-orm": "^0.32.0",
+    "drizzle-zod": "^0.5.1",
+    "postgres": "^3.4.3",
+    "tsx": "^4.7.0"
+  }
+}

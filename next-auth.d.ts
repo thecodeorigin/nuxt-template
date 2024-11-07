@@ -1,6 +1,5 @@
 import type { DefaultSession } from 'next-auth'
 import type * as z from 'zod'
-import type { selectSysUserSchema } from '@base/server/db/schemas/sys_users.schema'
 import type { sysPermissionTable, sysRoleTable, sysUserTable } from '@base/server/db/schemas'
 
 export type LoggedInUser = Omit<typeof sysUserTable.$inferSelect & {
