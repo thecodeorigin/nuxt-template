@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+const { t, locale } = useI18n()
+
 const inputFileRef = ref<HTMLElement>()
 
 const authStore = useAuthStore()
@@ -15,6 +17,10 @@ const formData = ref({
   postcode: authStore.currentUser?.postcode || '',
   country: authStore.currentUser?.country || null,
   language: authStore.currentUser?.language || null,
+})
+
+watch(locale, (value) => {
+  formData.value.language = value
 })
 
 function resetForm() {
@@ -89,12 +95,13 @@ async function handleSubmit() {
     if (formFile.value && authStore.currentUser)
       avatarUrl = await uploadToS3(formFile.value, authStore.currentUser.id)
 
-    await $api(`/me`, {
-      method: 'PATCH',
-      body: {
-        ...formData.value,
-        avatar_url: avatarUrl,
-      },
+    await authStore.updateCurrentUser({
+      ...formData.value,
+      avatar_url: avatarUrl,
+    })
+
+    notifySuccess({
+      content: t('Account settings updated successfully'),
     })
   }
   catch (error) {
