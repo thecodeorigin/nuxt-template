@@ -45,11 +45,29 @@ const localUser = ref<Partial<User>>({
   country: '',
   language: '',
   postcode: '',
-  status: '',
+  status: 'pending',
   address: '',
   city: '',
   email_verified: null,
 })
+
+// 👉  Upload image
+const localFile = ref<File | null>(null)
+async function handleUploadImage() {
+  if (!localFile.value) {
+    return ''
+  }
+  try {
+    const ext = localFile.value.name.split('.').pop()
+    const filename = localFile.value.name.replace(/\s/g, '_')
+    const imageUrl = await uploadToS3(localFile.value, `sanntour/${filename || `${Date.now()}.${ext}`}`)
+
+    return localUser.value.avatar_url = imageUrl
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
 
 // 👉 Dialog confirmation
 const dialogConfig = ref<DialogConfig>({
@@ -117,7 +135,7 @@ function onSubmit() {
           country: localUser.value.country,
           language: localUser.value.language,
           postcode: localUser.value.postcode,
-          status: localUser.value.status,
+          status: localUser.value.status && localUser.value.status?.length > 0 ? localUser.value.status : 'pending',
           address: localUser.value.address,
           city: localUser.value.city,
           role_id: '4b181352-d30c-4d63-83b6-7ce842caa873', // TODO: update role when CRUD for role
@@ -205,7 +223,6 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
                 <VTextField
                   v-model="localUser.phone"
                   type="number"
-                  :rules="[requiredValidator]"
                   label="Phone Number"
                   placeholder="+1-541-754-3010"
                 />
@@ -217,7 +234,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
                   v-model="localUser.organization_id"
                   label="Select Organization"
                   placeholder="Select Organization"
-                  :items="[{ id: '', name: 'No Organization' }, ...localOrganization]"
+                  :items="[{ id: null, name: 'No Organization' }, ...localOrganization]"
                   item-title="name"
                   item-value="id"
                 />
@@ -273,9 +290,9 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
 
               <!-- 👉 Avatar -->
               <VCol cols="12">
-                <AppSingleDropZone
-                  v-model="localUser.avatar_url!"
-                  @update:model-value="localUser.avatar_url = $event"
+                <AppDropZoneSingle
+                  :model-value="localUser.avatar_url!"
+                  @update:model-value="localFile = $event"
                 />
               </VCol>
 
