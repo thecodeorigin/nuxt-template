@@ -5,7 +5,9 @@ import FacebookProvider from 'next-auth/providers/facebook'
 import TwitterProvider from 'next-auth/providers/twitter'
 import AppleProvider from 'next-auth/providers/apple'
 import DiscordProvider from 'next-auth/providers/discord'
+import { sysAccountTable } from '@thecodeorigin/auth'
 import type { LoggedInUser } from '../../../next-auth'
+import { db } from '../../utils/db'
 import { NuxtAuthHandler } from '#auth'
 
 const runtimeConfig = useRuntimeConfig()
@@ -69,6 +71,37 @@ export default NuxtAuthHandler({
     signIn: '/auth/login',
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (!user)
+        return false
+
+      if (account) {
+        await db.insert(sysAccountTable).values({
+          user_id: account.userId,
+          type: account.type,
+          provider: account.provider,
+          provider_account_id: account.providerAccountId,
+          refresh_token: account.refreshToken,
+          access_token: account.accessToken,
+          expires_at: account.expiresAt,
+          token_type: account.tokenType,
+          scope: account.scope,
+          id_token: account.idToken,
+          session_state: account.sessionState,
+        } as typeof sysAccountTable.$inferInsert)
+          .onConflictDoUpdate({
+            target: [sysAccountTable.provider_account_id],
+            set: {
+              refresh_token: account.refreshToken,
+              access_token: account.accessToken,
+              id_token: account.idToken,
+              session_state: account.sessionState,
+            } as typeof sysAccountTable.$inferInsert,
+          })
+      }
+
+      return true
+    },
     jwt({ token, user, account }) {
       if (account?.providerAccountId) {
         token.providerAccountId = account?.providerAccountId || user.id
@@ -77,21 +110,16 @@ export default NuxtAuthHandler({
         token.provider = account?.provider || 'credentials'
       }
 
-      if (account?.provider !== 'credentials') {
-        // token.accessToken = account?.access_token // TODO: add database adapter
-      }
-
       return token
     },
     session({ session, token }) {
       return {
         ...session,
         user: {
-          providerAccountId: token.providerAccountId,
           email: token.email,
           phone: token.phone,
           provider: token.provider,
-          // accessToken: token.accessToken,
+          providerAccountId: token.providerAccountId,
         },
       }
     },

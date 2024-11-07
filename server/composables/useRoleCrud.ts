@@ -1,5 +1,5 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
-import { sysRoleTable } from '@base/server/db/schemas/sys_roles.schema'
+import { sysRoleTable } from '@base/server/db/schemas'
 import { useCrud } from './useCrud'
 
 export function useRoleCrud() {

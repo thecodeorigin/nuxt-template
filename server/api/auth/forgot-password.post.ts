@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import { eq } from 'drizzle-orm'
-import { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
+import { sysUserTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {
