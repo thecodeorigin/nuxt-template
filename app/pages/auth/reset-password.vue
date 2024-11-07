@@ -4,6 +4,11 @@ import authV1ResetPasswordMaskLight from '@base/images/pages/auth-v1-reset-passw
 
 const authV1ResetPasswordMask = useGenerateImageVariant(authV1ResetPasswordMaskLight, authV1ResetPasswordMaskDark)
 
+definePageMeta({
+  layout: 'blank',
+  public: true,
+})
+
 const form = ref({
   newPassword: '',
   confirmPassword: '',
@@ -12,13 +17,42 @@ const form = ref({
 const isPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
 
-definePageMeta({
-  layout: 'blank',
-  public: true,
-
-})
-
+const { t } = useI18n()
+const route = useRoute()
 const config = useRuntimeConfig()
+
+const token = computed(() => route.query.token as string)
+
+async function resetPassword() {
+  if (!form.value.newPassword || !form.value.confirmPassword)
+    return
+
+  try {
+    loading()
+
+    await $api('/auth/reset-password', {
+      method: 'POST',
+      body: {
+        token: token.value,
+        password: form.value.newPassword,
+        confirmPassword: form.value.confirmPassword,
+        type: 'reset',
+      },
+    })
+
+    notifySuccess({
+      content: t('Your password has been reset successfully!'),
+    })
+
+    navigateTo('/auth/login')
+  }
+  catch (error: any) {
+    notifyError({ content: error.message })
+  }
+  finally {
+    loading.close()
+  }
+}
 </script>
 
 <template>
@@ -37,7 +71,6 @@ const config = useRuntimeConfig()
                 width="auto"
                 height="24"
               >
-
               <h1 class="app-logo-title">
                 {{ config.public.theme.appName }}
               </h1>
@@ -88,6 +121,7 @@ const config = useRuntimeConfig()
               <VBtn
                 block
                 type="submit"
+                @click="resetPassword"
               >
                 Set New Password
               </VBtn>

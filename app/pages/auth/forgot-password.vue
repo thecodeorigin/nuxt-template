@@ -23,6 +23,7 @@ definePageMeta({
   unauthenticatedOnly: true,
 })
 
+const { t } = useI18n()
 const config = useRuntimeConfig()
 
 async function sendResetLink() {
@@ -38,6 +39,12 @@ async function sendResetLink() {
         type: 'reset',
       },
     })
+
+    notifySuccess({
+      content: t('An email has been sent to your email address with instructions to reset your password!'),
+    })
+
+    navigateTo('/auth/login')
   }
   catch (error: any) {
     notifyError({ content: error.message })
