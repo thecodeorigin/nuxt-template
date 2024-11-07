@@ -11,3 +11,5 @@ export interface DialogConfig {
   label: string
   type: DialogType
 }
+
+export type DrawerActionTypes = 'add' | 'edit'

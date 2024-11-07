@@ -6,7 +6,10 @@ export default defineEventHandler(async (event) => {
 
     const { getUsersPaginated } = useUserCrud()
 
-    const response = await getUsersPaginated(getFilter(event))
+    const filterOptions: ParsedFilterQuery = getFilter(event)
+    filterOptions.sortBy = filterOptions.sortBy || 'created_at'
+
+    const response = await getUsersPaginated(filterOptions)
 
     setResponseStatus(event, 200)
 
