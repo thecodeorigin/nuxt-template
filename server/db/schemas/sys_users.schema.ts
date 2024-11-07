@@ -1,9 +1,8 @@
 import { relations } from 'drizzle-orm/relations'
+import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { userDeviceTable } from './user_devices.schema'
 import { userShortcutTable } from './user_shortcuts.schema'
 
-import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm/relations'
 import { userStatus } from './enum.schema'
 import { sysRoleTable } from './sys_roles.schema'
 import { sysOrganizationTable } from './sys_organizations.schema'
@@ -41,4 +40,3 @@ export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
   userShortcuts: many(userShortcutTable),
   userDevices: many(userDeviceTable),
 }))
-

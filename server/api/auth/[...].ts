@@ -73,6 +73,37 @@ export default NuxtAuthHandler({
     error: '/auth/login',
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (!user)
+        return false
+
+      if (account) {
+        await db.insert(sysAccountTable).values({
+          user_id: account.userId,
+          type: account.type,
+          provider: account.provider,
+          provider_account_id: account.providerAccountId,
+          refresh_token: account.refreshToken,
+          access_token: account.accessToken,
+          expires_at: account.expiresAt,
+          token_type: account.tokenType,
+          scope: account.scope,
+          id_token: account.idToken,
+          session_state: account.sessionState,
+        } as typeof sysAccountTable.$inferInsert)
+          .onConflictDoUpdate({
+            target: [sysAccountTable.provider_account_id],
+            set: {
+              refresh_token: account.refreshToken,
+              access_token: account.accessToken,
+              id_token: account.idToken,
+              session_state: account.sessionState,
+            } as typeof sysAccountTable.$inferInsert,
+          })
+      }
+
+      return true
+    },
     jwt({ token, user, account }) {
       if (account?.providerAccountId) {
         token.providerAccountId = account?.providerAccountId || user.id
