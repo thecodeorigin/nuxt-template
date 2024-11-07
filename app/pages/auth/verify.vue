@@ -34,7 +34,7 @@ async function handleVerify() {
     })
 
     notifySuccess({
-      content: t('Another confirmation email has been sent to your email address!'),
+      content: t('Your email has been verified successfully!'),
     })
 
     navigateTo(redirectTo.value)

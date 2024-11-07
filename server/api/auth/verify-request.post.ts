@@ -48,6 +48,12 @@ export default defineEventHandler(async (event) => {
     await updateUserByEmail(email, { email_verified: new Date() })
 
     setResponseStatus(event, 201)
+
+    return {
+      data: {
+        message: 'Email verified successfully',
+      },
+    }
   }
   catch (error: any) {
     throw parseError(error)

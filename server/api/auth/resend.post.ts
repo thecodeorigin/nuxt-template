@@ -46,6 +46,14 @@ export default defineEventHandler(async (event) => {
       subject: 'Email Verification',
       text: `Please click on the link to verify your email: ${runtimeConfig.public.appBaseUrl}/auth/verify?token=${token}&type=verify&redirect_to=/auth/login`,
     })
+
+    setResponseStatus(event, 200)
+
+    return {
+      data: {
+        message: 'Another confirmation email has been sent to your email address!',
+      },
+    }
   }
   catch (error: any) {
     throw parseError(error)

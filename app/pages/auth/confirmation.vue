@@ -19,8 +19,8 @@ const currentEmail = computed(() => route.query.email as string)
 if (!currentEmail.value)
   navigateTo('/')
 
-const canResendConfirmation = ref(false)
-const resendInterval = ref(60)
+const canResendConfirmation = ref(true)
+const resendInterval = ref(0)
 
 function startInterval() {
   canResendConfirmation.value = false
@@ -36,8 +36,6 @@ function startInterval() {
     }
   }, 1000)
 }
-
-onMounted(startInterval)
 
 async function resendConfirmation() {
   if (!canResendConfirmation.value)

@@ -58,6 +58,12 @@ export default defineEventHandler(async (event) => {
     await updateUserByEmail(email, { password: hashedPassword })
 
     setResponseStatus(event, 201)
+
+    return {
+      data: {
+        message: 'Password reset successfully',
+      },
+    }
   }
   catch (error: any) {
     throw parseError(error)

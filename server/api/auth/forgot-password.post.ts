@@ -39,6 +39,14 @@ export default defineEventHandler(async (event) => {
       subject: 'Password Reset',
       text: `Please click on the link to reset your password: ${runtimeConfig.public.appBaseUrl}/auth/reset-password?token=${token}&type=reset&redirect_to=/auth/login`,
     })
+
+    setResponseStatus(event, 200)
+
+    return {
+      data: {
+        message: 'Password reset link has been sent to your email',
+      },
+    }
   }
   catch (error: any) {
     throw parseError(error)
