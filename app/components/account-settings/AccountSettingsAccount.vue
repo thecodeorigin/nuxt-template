@@ -114,10 +114,14 @@ async function handleSubmit() {
               rounded
               size="100"
               class="me-6 bg-grey-100"
-              :image="formData.avatar_url"
               @click="inputFileRef?.click()"
             >
+              <VImg
+                v-if="formData.avatar_url"
+                :src="formData.avatar_url"
+              />
               <VIcon
+                v-else
                 icon="ri-user-3-line text-grey-700"
               />
             </VAvatar>
@@ -299,7 +303,9 @@ async function handleSubmit() {
                   chips
                   closable-chips
                   placeholder="Select Language"
-                  :items="['English', 'Spanish', 'Arabic', 'Hindi', 'Urdu']"
+                  :items="[{ label: 'English', value: 'en' }, { label: 'Tiếng Việt', value: 'vi' }]"
+                  item-title="label"
+                  item-value="value"
                   data-test="language-select"
                 />
               </VCol>

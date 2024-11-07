@@ -8,6 +8,8 @@ definePageMeta({
   middleware(to) {
     if (to.name === 'settings')
       return navigateTo({ name: 'settings-tab', params: { tab: 'account' } })
+    else if (to.name === 'settings-tab' && to.params.tab === 'undefined')
+      return navigateTo({ name: 'settings-tab', params: { tab: 'account' } })
   },
 })
 
