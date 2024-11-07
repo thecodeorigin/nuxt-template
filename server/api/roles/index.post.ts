@@ -1,4 +1,4 @@
-import { sysRoleTable } from '@base/server/db/schemas/sys_roles.schema'
+import { sysRoleTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {

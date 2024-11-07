@@ -1,7 +1,6 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { sysUserTable } from './sys_users.schema'
+import { sysUserTable } from '@thecodeorigin/auth'
 
 export const userDeviceTable = pgTable('user_devices', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -10,10 +9,6 @@ export const userDeviceTable = pgTable('user_devices', {
   token_device: text('token_device'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
-
-export const insertUserDeviceSchema = createInsertSchema(userDeviceTable)
-
-export const selectUserDeviceSchema = createSelectSchema(userDeviceTable)
 
 export const userDeviceRelations = relations(userDeviceTable, ({ one }) => ({
   owner: one(sysUserTable, {

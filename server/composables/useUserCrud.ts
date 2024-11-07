@@ -1,5 +1,5 @@
 import { count, ilike, or } from 'drizzle-orm'
-import { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
+import { sysUserTable } from '@base/server/db/schemas'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { LoggedInUser } from '../../next-auth'
 import { useCrud } from './useCrud'

@@ -1,5 +1,5 @@
 import { count } from 'drizzle-orm'
-import { sysOrganizationTable } from '@base/server/db/schemas/sys_organizations.schema'
+import { sysOrganizationTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {
