@@ -29,7 +29,7 @@ export const sysUserTable = pgTable('sys_users', {
   city: text('city'),
 })
 
-export const sysUserRelations = relations(sysUserTable, ({ one }) => ({
+export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
   role: one(sysRoleTable, {
     fields: [sysUserTable.role_id],
     references: [sysRoleTable.id],
