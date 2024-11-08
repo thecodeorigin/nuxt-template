@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type User, useUserStore } from '@base/stores/admin/user'
+import { useRoleStore } from '~/stores/admin/role'
 
 definePageMeta({
   sidebar: {
@@ -7,34 +7,15 @@ definePageMeta({
     icon: { icon: 'ri-id-card-line' },
   },
 })
+const roleStore = useRoleStore()
+const { roleList, totalRoles, roleDetail } = storeToRefs(roleStore)
+const { fetchRoles, fetchRoleDetail } = roleStore
 
-const userStore = useUserStore()
-const { userList, userDetail, totalUsers } = storeToRefs(userStore)
-const { fetchUserList, fetchUserDetail, updateUser, deleteUser, createUser } = userStore
-
-const currentUserId = ref<string>('adeadb89-ce6c-4396-ab28-e4451ce0f456')
-const currentUserName = ref<string>('')
-const isAddNewUserDrawerVisible = ref(false)
-
-async function handleUpdateUserName(userId: string, userName: string) {
-  await updateUser(userId, { full_name: userName })
-
-  currentUserName.value = ''
-
-  await fetchUserList()
-}
-
-async function handleAddNewUser(userPayload: Partial<User>) {
-  await createUser(userPayload)
-}
-
-async function handleDeleteUser(userId: string) {
-  await deleteUser(userId)
-}
+const currentRoleId = ref<string>('')
 
 useLazyAsyncData(
   async () => {
-    await fetchUserList()
+    await fetchRoles()
   },
 )
 </script>
@@ -42,59 +23,58 @@ useLazyAsyncData(
 <template>
   <div>
     <h1 class="text-center">
-      Test Permissions
+      Test Role
     </h1>
-
+    createRole
     <div>
       <h2 class="mb-2">
-        Permission list:
+        Role list:
       </h2>
-      <div v-if="userList.length > 0">
+      <div v-if="roleList.length > 0">
         <p>
-          Total permissions: {{ totalUsers }}
+          Total Roles: {{ totalRoles }}
         </p>
         <br>
         <ul>
           <li
-            v-for="user in userList"
-            :key="user.id"
+            v-for="role in roleList"
+            :key="role.id"
           >
-            {{ user.full_name }}
+            {{ role.name }}
+            <br>
+            {{ role.id }}
           </li>
         </ul>
       </div>
       <div v-else>
-        No permissions
+        No Role
       </div>
     </div>
 
     <div>
       <h2 class="mb-2 mt-8 d-flex align-center">
-        Permission detail:
+        Role detail:
       </h2>
 
       <div class="mb-2 d-flex align-center gap-2">
         <VTextField
-          v-model="currentUserId"
+          v-model="currentRoleId"
           label="User ID"
         />
 
         <VBtn
-          @click="fetchUserDetail(currentUserId)"
+          @click="fetchRoleDetail(currentRoleId)"
         >
-          Fetch User
+          Fetch Role
         </VBtn>
       </div>
 
-      <div v-if="userDetail">
+      <div v-if="roleDetail">
         <p>
-          ID: {{ userDetail.id }}
+          ID: {{ roleDetail.id }}
         </p>
         <p>
-          Name: {{ userDetail.full_name }}
-        </p>
-        <p>
-          Email: {{ userDetail.email }}
+          Name: {{ roleDetail.name }}
         </p>
       </div>
 
@@ -105,58 +85,17 @@ useLazyAsyncData(
 
     <div>
       <h2 class="mb-2 mt-8 d-flex align-center">
-        Permission update:
+        Role create:
       </h2>
 
-      <div class="mb-2 d-flex align-center gap-2">
-        <VTextField
-          v-model="currentUserId"
-          label="User ID"
-        />
-
-        <VTextField
-          v-model="currentUserName"
-          label="User Name"
-        />
-
-        <VBtn
-          @click="handleUpdateUserName(currentUserId, currentUserName)"
-        >
-          Permission update
-        </VBtn>
-      </div>
-    </div>
-
-    <div>
-      <h2 class="mb-2 mt-8 d-flex align-center">
-        Permissions create:
-      </h2>
-
-      <VBtn
-        @click="isAddNewUserDrawerVisible = true"
-      >
-        Permission create
+      <VBtn>
+        Role create
       </VBtn>
     </div>
 
-    <div>
-      <h2 class="mb-2 mt-8 d-flex align-center">
-        Permissions delete:
-      </h2>
-
-      <div class="mb-2 d-flex align-center gap-2">
-        <VTextField
-          v-model="currentUserId"
-          label="User ID"
-        />
-
-        <VBtn
-          @click="handleDeleteUser(currentUserId)"
-        >
-          Delete User
-        </VBtn>
-      </div>
-    </div>
+    <!-- <AddEditRoleDialog
+      :is-dialog-visible="true"
+    /> -->
   </div>
 </template>
 
