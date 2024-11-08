@@ -6,7 +6,10 @@ export default defineEventHandler(async (event) => {
 
     const { getRolesPaginated } = useRoleCrud()
 
-    const sysRoles = await getRolesPaginated(getFilter(event))
+    const filterOptions: ParsedFilterQuery = getFilter(event)
+    filterOptions.sortBy = filterOptions.sortBy || 'name'
+
+    const sysRoles = await getRolesPaginated(filterOptions)
 
     return sysRoles
   }

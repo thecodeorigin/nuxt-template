@@ -11,12 +11,12 @@ export const useUserStore = defineStore('user', () => {
 
   async function fetchUserList(options?: ParsedFilterQuery) {
     try {
-      const response = await $api<User[]>('/api/users', {
+      const response = await $api('/api/users', {
         method: 'GET',
         query: options,
       })
 
-      userList.value = [...response.data]
+      userList.value = response.data
       totalUsers.value = response.total
     }
     catch (error) {

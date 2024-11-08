@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { on } from 'node:events'
 import type { VForm } from 'vuetify/components/VForm'
 import type { Permission } from '~/stores/admin/permission'
+import { useRoleStore } from '~/stores/admin/role'
 
 interface Props {
   isDialogVisible: boolean
@@ -14,6 +16,10 @@ interface Emit {
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
+const roleStore = useRoleStore()
+const { roleList } = storeToRefs(roleStore)
+const { fetchRoles } = roleStore
+
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 
@@ -24,7 +30,7 @@ const isPermissionDataEmpty = computed(() => {
 
 const localPermissionData = ref<Partial<Permission>>({
   id: '',
-  role_id: '', // TODO: select role
+  role_id: '',
   action: '',
   subject: '',
 })
@@ -35,35 +41,36 @@ function onReset() {
   localPermissionData.value = {
     id: '',
     role_id: '',
-    action: 'read',
-    subject: 'category',
+    action: '',
+    subject: '',
   }
 }
 
 function onSubmit() {
-  emit('update:isDialogVisible', false)
-  emit('update:permissionData', props.permissionData
-    ? localPermissionData.value
-    : {
-        role_id: localPermissionData.value.role_id,
-        action: localPermissionData.value.action,
-        subject: localPermissionData.value.subject,
-      })
+  refForm.value?.validate().then(({ valid }) => {
+    if (valid) {
+      emit('update:permissionData', props.permissionData
+        ? localPermissionData.value
+        : {
+            role_id: localPermissionData.value.role_id,
+            action: localPermissionData.value.action,
+            subject: localPermissionData.value.subject,
+          })
+
+      onReset()
+    }
+  })
 }
 
 watch(() => props.permissionData, (newPermissionData) => {
   if (newPermissionData) {
     localPermissionData.value = { ...newPermissionData }
   }
-  else {
-    localPermissionData.value = {
-      id: '',
-      role_id: 'ecd82042-0cf5-4085-9f28-7a95cf341301', // TODO: select role
-      action: 'read',
-      subject: 'category',
-    }
-  }
 }, { immediate: true })
+
+onMounted(async () => {
+  await fetchRoles()
+})
 </script>
 
 <template>
@@ -140,21 +147,15 @@ watch(() => props.permissionData, (newPermissionData) => {
                 ]"
               />
 
-              <!-- <VTextField
-                v-model="localPermissionData.subject"
-                density="compact"
-                placeholder="Enter Permission subject"
-              /> -->
-
-              <!-- TODO: select role after role CRUD -->
-              <!-- <VSelect
+              <VSelect
                 v-model="localPermissionData.role_id"
                 density="compact"
-                placeholder="Select Role"
-                :items="roles"
+                label="Select Role"
+                :rules="[requiredValidator]"
+                :items="roleList"
                 item-title="name"
                 item-value="id"
-              /> -->
+              />
 
               <VSelect
                 v-model="localPermissionData.subject"

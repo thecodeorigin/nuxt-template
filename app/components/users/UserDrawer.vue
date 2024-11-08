@@ -4,6 +4,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import type { VForm } from 'vuetify/components/VForm'
 import { type Organization, useOrganizationStore } from '~/stores/admin/organization'
+import { useRoleStore } from '~/stores/admin/role'
 import type { User } from '~/stores/admin/user'
 import type { DialogConfig, DrawerConfig } from '~/utils/types'
 
@@ -19,6 +20,10 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
+
+const roleStore = useRoleStore()
+const { roleList } = storeToRefs(roleStore)
+const { fetchRoles } = roleStore
 
 const organizationStore = useOrganizationStore()
 const { organizationList } = storeToRefs(organizationStore)
@@ -55,7 +60,7 @@ const localUser = ref<Partial<User>>({
 const localFile = ref<File | null>(null)
 async function handleUploadImage() {
   if (!localFile.value) {
-    return ''
+    return
   }
   try {
     const ext = localFile.value.name.split('.').pop()
@@ -116,12 +121,15 @@ function handleCloseDrawer() {
 
 // drawer submit
 function onSubmit() {
-  refForm.value?.validate().then(({ valid }) => {
+  refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
+      await handleUploadImage()
+      localFile.value = null
+
       if (props.drawerConfig.type === 'edit') {
         dialogConfig.value = {
           isDialogVisible: true,
-          title: 'Delete Member',
+          title: 'Update Member',
           label: 'Are you sure you want to update this user?',
           type: 'warning',
         }
@@ -138,7 +146,7 @@ function onSubmit() {
           status: localUser.value.status && localUser.value.status?.length > 0 ? localUser.value.status : 'pending',
           address: localUser.value.address,
           city: localUser.value.city,
-          role_id: '4b181352-d30c-4d63-83b6-7ce842caa873', // TODO: update role when CRUD for role
+          role_id: localUser.value.role_id,
           organization_id: localUser.value.organization_id,
           email_verified: localUser.value.email_verified,
         }, 'add')
@@ -165,6 +173,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
     }
 
     await fetchOrganizations()
+    await fetchRoles()
   }
 }, {
   deep: true,
@@ -198,6 +207,19 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
             @submit.prevent="onSubmit"
           >
             <VRow>
+              <!-- 👉 Role -->
+              <VCol cols="12">
+                <VSelect
+                  v-model="localUser.role_id"
+                  label="Select Role"
+                  :rules="[requiredValidator]"
+                  placeholder="Select Role"
+                  :items="roleList"
+                  item-title="name"
+                  item-value="id"
+                />
+              </VCol>
+
               <!-- 👉 Full name -->
               <VCol cols="12">
                 <VTextField
