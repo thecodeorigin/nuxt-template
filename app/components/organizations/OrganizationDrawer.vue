@@ -31,7 +31,7 @@ const localOrganization = ref<Partial<Organization>>({
 const localFile = ref<File | null>(null)
 async function handleUploadImage() {
   if (!localFile.value) {
-    return ''
+    return
   }
   try {
     const ext = localFile.value.name.split('.').pop()
@@ -74,7 +74,7 @@ function handleCloseDrawer() {
     if (refForm.value) {
       dialogConfig.value = {
         isDialogVisible: true,
-        title: 'Discard New Member',
+        title: 'Discard New Organization',
         label: 'Are you sure you want to discard this new organization?',
         type: 'info',
       }
@@ -95,11 +95,12 @@ function onSubmit() {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
       await handleUploadImage()
+      localFile.value = null
 
       if (props.drawerConfig.type === 'edit') {
         dialogConfig.value = {
           isDialogVisible: true,
-          title: 'Delete Member',
+          title: 'Update Organization',
           label: 'Are you sure you want to update this organization?',
           type: 'warning',
         }

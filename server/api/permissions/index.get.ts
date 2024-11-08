@@ -14,7 +14,6 @@ export default defineEventHandler(async (event) => {
     return sysPermissions
   }
   catch (error: any) {
-    console.log('««««« error »»»»»', error)
     throw parseError(error)
   }
 })
