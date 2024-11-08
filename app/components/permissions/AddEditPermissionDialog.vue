@@ -24,7 +24,7 @@ const isPermissionDataEmpty = computed(() => {
 
 const localPermissionData = ref<Partial<Permission>>({
   id: '',
-  role_id: 'ecd82042-0cf5-4085-9f28-7a95cf341301', // TODO: select role
+  role_id: '', // TODO: select role
   action: '',
   subject: '',
 })
@@ -35,20 +35,35 @@ function onReset() {
   localPermissionData.value = {
     id: '',
     role_id: '',
-    action: '',
-    subject: '',
+    action: 'read',
+    subject: 'category',
   }
 }
 
 function onSubmit() {
   emit('update:isDialogVisible', false)
-  emit('update:permissionData', localPermissionData.value)
+  emit('update:permissionData', props.permissionData
+    ? localPermissionData.value
+    : {
+        role_id: localPermissionData.value.role_id,
+        action: localPermissionData.value.action,
+        subject: localPermissionData.value.subject,
+      })
 }
 
-watch(() => props, () => {
-  if (props && props.permissionData)
-    localPermissionData.value = props.permissionData
-})
+watch(() => props.permissionData, (newPermissionData) => {
+  if (newPermissionData) {
+    localPermissionData.value = { ...newPermissionData }
+  }
+  else {
+    localPermissionData.value = {
+      id: '',
+      role_id: 'ecd82042-0cf5-4085-9f28-7a95cf341301', // TODO: select role
+      action: 'read',
+      subject: 'category',
+    }
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -69,11 +84,11 @@ watch(() => props, () => {
         <!-- 👉 Title -->
         <div class="text-center mb-6">
           <h4 class="text-h4 mb-2">
-            {{ isPermissionDataEmpty ? 'Edit' : 'Add' }} Permission
+            {{ isPermissionDataEmpty ? 'Add' : 'Edit' }} Permission
           </h4>
 
           <p class="text-body-1">
-            {{ isPermissionDataEmpty ? 'Edit' : 'Add' }}  permission as per your requirements.
+            {{ isPermissionDataEmpty ? 'Add' : 'Edit' }}  permission as per your requirements.
           </p>
         </div>
 
@@ -94,18 +109,42 @@ watch(() => props, () => {
 
           <!-- 👉 Role action -->
           <div class="mb-4">
-            <div class="d-flex flex-column gap-2 mb-4">
-              <VTextField
+            <div class="d-flex flex-column gap-4 mb-4">
+              <VSelect
                 v-model="localPermissionData.action"
                 density="compact"
-                placeholder="Enter Permission action"
+                :rules="[requiredValidator]"
+                label="Select Action"
+                placeholder="Select Action"
+                :items="[
+                  {
+                    title: 'Create',
+                    value: 'create',
+                  },
+                  {
+                    title: 'Read',
+                    value: 'read',
+                  },
+                  {
+                    title: 'Update',
+                    value: 'update',
+                  },
+                  {
+                    title: 'Delete',
+                    value: 'delete',
+                  },
+                  {
+                    title: 'Manage',
+                    value: 'manage',
+                  },
+                ]"
               />
 
-              <VTextField
+              <!-- <VTextField
                 v-model="localPermissionData.subject"
                 density="compact"
                 placeholder="Enter Permission subject"
-              />
+              /> -->
 
               <!-- TODO: select role after role CRUD -->
               <!-- <VSelect
@@ -120,7 +159,8 @@ watch(() => props, () => {
               <VSelect
                 v-model="localPermissionData.subject"
                 density="compact"
-                placeholder="Select Role"
+                :rules="[requiredValidator]"
+                label="Select Subject"
                 :items="[
                   {
                     title: 'Category',
@@ -139,7 +179,7 @@ watch(() => props, () => {
             </div>
 
             <VBtn @click="onSubmit">
-              Update
+              {{ isPermissionDataEmpty ? 'Add' : 'Edit' }}
             </VBtn>
           </div>
         </VForm>

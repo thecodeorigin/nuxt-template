@@ -57,6 +57,7 @@ function oncancel() {
         {{ props.label }}
       </VCardText>
 
+      <!-- 👉 dialog action buttons -->
       <VCardText class="d-flex justify-end flex-wrap gap-4">
         <VBtn
           color="error"
@@ -64,6 +65,7 @@ function oncancel() {
         >
           Cancel
         </VBtn>
+
         <VBtn
           color="success"
           @click="onConfirmation"

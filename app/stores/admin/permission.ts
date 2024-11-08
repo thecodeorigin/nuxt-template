@@ -50,6 +50,31 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
+  async function updatePermission(permissionId: string, body: Partial<Permission>) {
+    try {
+      const response = await $api(`/api/permissions/${permissionId}`, {
+        method: 'PATCH',
+        body,
+      })
+
+      return response
+    }
+    catch (error) {
+      console.error('Error updating permission:', error)
+    }
+  }
+
+  async function deletePermission(permissionId: string) {
+    try {
+      await $api(`/api/permissions/${permissionId}`, {
+        method: 'DELETE',
+      })
+    }
+    catch (error) {
+      console.error('Error deleting permission:', error)
+    }
+  }
+
   return {
     permissionList,
     permissionDetail,
@@ -57,5 +82,7 @@ export const usePermissionStore = defineStore('permission', () => {
     fetchPermissions,
     fetchPermissionDetail,
     createPermission,
+    updatePermission,
+    deletePermission
   }
 })
