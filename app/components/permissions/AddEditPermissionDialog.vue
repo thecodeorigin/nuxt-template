@@ -41,8 +41,8 @@ function onReset() {
   localPermissionData.value = {
     id: '',
     role_id: '',
-    action: 'read',
-    subject: 'category',
+    action: '',
+    subject: '',
   }
 }
 
