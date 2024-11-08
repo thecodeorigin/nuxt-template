@@ -1,5 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { sysNotificationTable } from '@base/server/db/schemas/sys_notifications.schema.js'
+import type { sysNotificationTable } from '@base/server/db/schemas'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 
 type Notification = InferSelectModel<typeof sysNotificationTable>

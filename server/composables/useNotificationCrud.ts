@@ -1,5 +1,5 @@
 import { and, eq, isNotNull, isNull } from 'drizzle-orm'
-import { sysNotificationTable } from '@base/server/db/schemas/sys_notifications.schema'
+import { sysNotificationTable } from '@base/server/db/schemas'
 import { useCrud } from '@base/server/composables/useCrud'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 

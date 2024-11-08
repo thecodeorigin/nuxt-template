@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { createHmac } from 'node:crypto'
 import bcrypt from 'bcrypt'
 import { eq } from 'drizzle-orm'
-import { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
+import { sysUserTable } from '@base/server/db/schemas'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {

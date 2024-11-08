@@ -1,4 +1,4 @@
-import type { sysOrganizationTable } from '@base/server/db/schemas/sys_organizations.schema'
+import type { sysOrganizationTable } from '@base/server/db/schemas'
 import type { InferSelectModel } from 'drizzle-orm'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 

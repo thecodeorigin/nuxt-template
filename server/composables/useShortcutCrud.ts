@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
-import { userShortcutTable } from '@base/server/db/schemas/user_shortcuts.schema'
+import { userShortcutTable } from '@base/server/db/schemas'
 import { useCrud } from './useCrud'
 
 export function useShortcutCrud(userId: string) {

@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -85,7 +85,6 @@
     "@sindresorhus/is": "6.3.0",
     "@stylistic/stylelint-config": "1.0.1",
     "@stylistic/stylelint-plugin": "2.1.1",
-    "@thecodeorigin/auth": "workspace:*",
     "@thecodeorigin/eslint-config": "workspace:*",
     "@tiptap/extension-character-count": "2.3.0",
     "@tiptap/extension-highlight": "2.3.0",

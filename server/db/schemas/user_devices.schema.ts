@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { sysUserTable } from '@thecodeorigin/auth'
+import { sysUserTable } from './sys_users.schema'
 
 export const userDeviceTable = pgTable('user_devices', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),

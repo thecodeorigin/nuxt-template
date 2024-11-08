@@ -1,5 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { sysUserTable } from '@base/server/db/schemas/sys_users.schema'
+import type { sysUserTable } from '@base/server/db/schemas'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 
 export type User = InferSelectModel<typeof sysUserTable>

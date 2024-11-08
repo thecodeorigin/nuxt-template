@@ -114,9 +114,6 @@ importers:
       '@stylistic/stylelint-plugin':
         specifier: 2.1.1
         version: 2.1.1(stylelint@16.2.1(typescript@5.4.5))
-      '@thecodeorigin/auth':
-        specifier: workspace:*
-        version: link:packages/auth
       '@thecodeorigin/eslint-config':
         specifier: workspace:*
         version: link:packages/config/eslint

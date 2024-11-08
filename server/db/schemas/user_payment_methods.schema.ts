@@ -1,6 +1,6 @@
 import { date, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { sysUserTable } from '@thecodeorigin/auth'
+import { sysUserTable } from './sys_users.schema'
 
 export const userPaymentMethodTable = pgTable('user_payment_methods', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),

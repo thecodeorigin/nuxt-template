@@ -1,6 +1,6 @@
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { sysUserTable } from '@thecodeorigin/auth'
+import { sysUserTable } from './sys_users.schema'
 
 export const userShortcutTable = pgTable('user_shortcuts', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),

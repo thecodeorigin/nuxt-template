@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm'
-import { userDeviceTable } from '@base/server/db/schemas/user_devices.schema'
+import { userDeviceTable } from '@base/server/db/schemas'
 import { useCrud } from './useCrud'
 
 interface QueryRestrict {

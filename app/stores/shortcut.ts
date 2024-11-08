@@ -1,5 +1,5 @@
 import type * as z from 'zod'
-import type { selectUserShortcutSchema } from '@base/server/db/schemas/user_shortcuts.schema'
+import type { selectUserShortcutSchema } from '@base/server/db/schemas'
 
 export type RawShortcut = z.infer<typeof selectUserShortcutSchema>
 
