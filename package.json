@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@antfu/utils": "0.7.7",
+    "@auth/core": "^0.37.3",
     "@aws-sdk/client-s3": "^3.637.0",
     "@aws-sdk/s3-request-presigner": "^3.637.0",
     "@casl/ability": "6.7.1",
@@ -104,6 +105,7 @@
     "@types/node": "20.12.7",
     "@types/nodemailer": "^6.4.16",
     "@types/pdfmake": "^0.2.9",
+    "@types/uuid": "^8.3.3",
     "@types/webfontloader": "1.6.38",
     "@typescript-eslint/eslint-plugin": "7.7.1",
     "@typescript-eslint/parser": "7.7.1",
@@ -118,6 +120,9 @@
     "date-fns": "^4.1.0",
     "docx": "^8.5.0",
     "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.23.0",
+    "drizzle-orm": "^0.32.0",
+    "drizzle-zod": "^0.5.1",
     "eslint": "8.57.0",
     "execa": "^9.3.0",
     "firebase": "^10.12.4",
@@ -138,6 +143,7 @@
     "pinia": "2.1.7",
     "postcss-html": "1.6.0",
     "postcss-scss": "4.0.9",
+    "postgres": "^3.4.3",
     "prismjs": "1.29.0",
     "puppeteer": "^23.4.1",
     "rimraf": "^6.0.1",
