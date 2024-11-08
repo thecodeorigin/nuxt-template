@@ -35,6 +35,12 @@ function handleResetOrganizationData() {
   }
 }
 
+// 👉 Fetch Organization Detail
+async function handleFetchOrganizationDetail(organizationId: string) {
+  await fetchOrganizationDetail(organizationId)
+}
+
+// 👉 Open Add Drawer and Create
 function handleOpenAddDrawer() {
   handleResetOrganizationData()
 
@@ -44,6 +50,13 @@ function handleOpenAddDrawer() {
   }
 }
 
+async function handleCreateOrganization(organizationPayload: Partial<Organization>) {
+  await createOrganization(organizationPayload)
+
+  await fetchOrganizations()
+}
+
+// 👉 Open Edit Drawer And Update
 async function handleOpenEditDrawer(organizationId: string) {
   await handleFetchOrganizationDetail(organizationId)
 
@@ -59,16 +72,6 @@ async function handleOpenEditDrawer(organizationId: string) {
   }
 }
 
-async function handleFetchOrganizationDetail(organizationId: string) {
-  await fetchOrganizationDetail(organizationId)
-}
-
-async function handleCreateOrganization(organizationPayload: Partial<Organization>) {
-  await createOrganization(organizationPayload)
-
-  await fetchOrganizations()
-}
-
 async function handleUpdateOrganization(organizationId: string, payload: Partial<Organization>) {
   await updateOrganization(organizationId, payload)
 
@@ -77,6 +80,7 @@ async function handleUpdateOrganization(organizationId: string, payload: Partial
   await fetchOrganizations()
 }
 
+// 👉 Create or Update
 async function handleOrganizationChange(payload: Partial<Organization>, type: DrawerActionTypes) {
   if (type === DRAWER_ACTION_TYPES.EDIT) {
     const { id, ...body } = payload
@@ -90,10 +94,20 @@ async function handleOrganizationChange(payload: Partial<Organization>, type: Dr
   }
 }
 
-async function handleDeleteOrganization(organizationId: string) {
-  await deleteOrganization(organizationId)
+// 👉 Delete
+const isDeleteDialogVisible = ref(false)
 
-  await fetchOrganizations()
+function handleOpenDeleteDialog(permissionId: string) {
+  isDeleteDialogVisible.value = true
+  currentOrganizationId.value = permissionId
+}
+
+async function handleConfirmDeleteOrganization(isConfirm: boolean) {
+  if (isConfirm) {
+    await deleteOrganization(currentOrganizationId.value)
+
+    await fetchOrganizations()
+  }
 }
 
 useLazyAsyncData(
@@ -136,7 +150,7 @@ useLazyAsyncData(
                 </VBtn>
 
                 <VBtn
-                  @click="handleDeleteOrganization(organization.id)"
+                  @click="handleOpenDeleteDialog(organization.id)"
                 >
                   Delete
                 </VBtn>
@@ -197,6 +211,15 @@ useLazyAsyncData(
       :drawer-config="currentDrawerConfig"
       @update:is-drawer-open="currentDrawerConfig.isVisible = $event"
       @update:model-value="handleOrganizationChange"
+    />
+
+    <AppDialog
+      :is-dialog-visible="isDeleteDialogVisible"
+      title="Delete user"
+      label="Are you sure you want to delete this user?"
+      type="warning"
+      @confirm="handleConfirmDeleteOrganization($event)"
+      @update:is-dialog-visible="isDeleteDialogVisible = $event"
     />
   </div>
 </template>
