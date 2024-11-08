@@ -3,7 +3,7 @@ import type { $Fetch } from 'ofetch'
 export const $api = $fetch.create({
   retry: 1,
   retryDelay: 3000,
-  retryStatusCodes: [500, 503, 504],
+  retryStatusCodes: [503, 504],
   // Request interceptor
   async onRequest({ options }) {
     // Set baseUrl for all API calls
