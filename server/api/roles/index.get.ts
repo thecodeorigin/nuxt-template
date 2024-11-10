@@ -1,4 +1,4 @@
-import { useRoleCrud } from '@base/server/composables/useRoleCrud'
+import { useRoleCrud } from '~~/server/composables/useRoleCrud'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const filterOptions: ParsedFilterQuery = getFilter(event)
     filterOptions.sortBy = filterOptions.sortBy || 'name'
+    filterOptions.limit = 100
 
     const sysRoles = await getRolesPaginated(filterOptions)
 

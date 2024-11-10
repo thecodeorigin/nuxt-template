@@ -50,6 +50,31 @@ export const useRoleStore = defineStore('role', () => {
     }
   }
 
+  async function updateRole(roleId: string, body: Partial<Role>) {
+    try {
+      const response = await $api(`/api/roles/${roleId}`, {
+        method: 'PATCH',
+        body,
+      })
+
+      return response
+    }
+    catch (error) {
+      console.error('Error updating role:', error)
+    }
+  }
+
+  async function deleteRole(roleId: string) {
+    try {
+      await $api(`/api/roles/${roleId}`, {
+        method: 'DELETE',
+      })
+    }
+    catch (error) {
+      console.error('Error deleting role:', error)
+    }
+  }
+
   return {
     roleList,
     totalRoles,
@@ -57,5 +82,7 @@ export const useRoleStore = defineStore('role', () => {
     fetchRoles,
     fetchRoleDetail,
     createRole,
+    updateRole,
+    deleteRole,
   }
 })

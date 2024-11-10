@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { on } from 'node:events'
 import type { VForm } from 'vuetify/components/VForm'
 import type { Permission } from '~/stores/admin/permission'
 import { useRoleStore } from '~/stores/admin/role'
@@ -37,6 +36,8 @@ const localPermissionData = ref<Partial<Permission>>({
 
 function onReset() {
   emit('update:isDialogVisible', false)
+
+  refForm.value?.reset()
 
   localPermissionData.value = {
     id: '',
