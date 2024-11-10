@@ -77,7 +77,9 @@ async function handleOpenEditDialog(permissionId: string) {
 async function handlePermissionChange(payload: Partial<Permission>) {
   if (currentDialogAction.value === DRAWER_ACTION_TYPES.EDIT) {
     const { id, ...body } = payload
+
     await updatePermission(id!, body)
+
     nextTick(() => {
       handleResetPermissionData()
     })
