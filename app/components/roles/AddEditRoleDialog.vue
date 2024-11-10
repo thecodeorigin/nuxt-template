@@ -1,171 +1,121 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components/VForm'
-
-interface Permission {
-  name: string
-  read: boolean
-  write: boolean
-  create: boolean
-}
-
-interface Roles {
-  name: string
-  permissions: Permission[]
-}
+import { usePermissionStore } from '~/stores/admin/permission'
+import { type Role, useRoleStore } from '~/stores/admin/role'
 
 interface Props {
-  rolePermissions?: Roles
   isDialogVisible: boolean
+  roleData?: Partial<Role>
 }
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:rolePermissions', value: Roles): void
+  (e: 'update:rolePermissions', value: Partial<Role>): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  rolePermissions: () => ({
-    name: '',
-    permissions: [],
-  }),
-})
-
+const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
-// 👉 Permission List
-const permissions = ref<Permission[]>([
-  {
-    name: 'User Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Content Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Disputes Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Database Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Financial Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Reporting',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'API Control',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Repository Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Payroll',
-    read: false,
-    write: false,
-    create: false,
-  },
-])
+const roleStore = useRoleStore()
+const { roleList } = storeToRefs(roleStore)
+const permissionStore = usePermissionStore()
+const { permissionList } = storeToRefs(permissionStore)
+
+const refPermissionForm = ref<VForm>()
+const isFormValid = ref(false)
 
 const isSelectAll = ref(false)
-const role = ref('')
-const refPermissionForm = ref<VForm>()
-
-const checkedCount = computed(() => {
-  let counter = 0
-
-  permissions.value.forEach((permission) => {
-    Object.entries(permission).forEach(([key, value]) => {
-      if (key !== 'name' && value)
-        counter++
-    })
-  })
-
-  return counter
+const localRoleData = ref<Partial<Role>>({
+  id: '',
+  name: '',
 })
 
-const isIndeterminate = computed(() => checkedCount.value > 0 && checkedCount.value < (permissions.value.length * 3))
+// const checkedCount = computed(() => {
+//   let counter = 0
 
-// select all
-watch(isSelectAll, (val) => {
-  permissions.value = permissions.value.map(permission => ({
-    ...permission,
-    read: val,
-    write: val,
-    create: val,
-  }))
-})
+//   permissions.value.forEach((permission) => {
+//     Object.entries(permission).forEach(([key, value]) => {
+//       if (key !== 'name' && value)
+//         counter++
+//     })
+//   })
 
-// if Indeterminate is false, then set isSelectAll to false
-watch(isIndeterminate, () => {
-  if (!isIndeterminate.value)
-    isSelectAll.value = false
-})
+//   return counter
+// })
 
-// if all permissions are checked, then set isSelectAll to true
-watch(permissions, () => {
-  if (checkedCount.value === (permissions.value.length * 3))
-    isSelectAll.value = true
-}, { deep: true })
+// const isIndeterminate = computed(() => checkedCount.value > 0 && checkedCount.value < (permissions.value.length * 3))
 
-// if rolePermissions is not empty, then set permissions
-watch(() => props, () => {
-  if (props.rolePermissions && props.rolePermissions.permissions.length) {
-    role.value = props.rolePermissions.name
-    permissions.value = permissions.value.map((permission) => {
-      const rolePermission = props.rolePermissions?.permissions.find(item => item.name === permission.name)
+// // select all
+// watch(isSelectAll, (val) => {
+//   permissions.value = permissions.value.map(permission => ({
+//     ...permission,
+//     read: val,
+//     write: val,
+//     create: val,
+//   }))
+// })
 
-      if (rolePermission) {
-        return {
-          ...permission,
-          ...rolePermission,
-        }
-      }
+// // if Indeterminate is false, then set isSelectAll to false
+// watch(isIndeterminate, () => {
+//   if (!isIndeterminate.value)
+//     isSelectAll.value = false
+// })
 
-      return permission
-    })
-  }
-})
+// // if all permissions are checked, then set isSelectAll to true
+// watch(permissions, () => {
+//   if (checkedCount.value === (permissions.value.length * 3))
+//     isSelectAll.value = true
+// }, { deep: true })
 
-function onSubmit() {
-  const rolePermissions = {
-    name: role.value,
-    permissions: permissions.value,
-  }
+// // if rolePermissions is not empty, then set permissions
+// watch(() => props, () => {
+//   if (props.rolePermissions && props.rolePermissions.permissions.length) {
+//     role.value = props.rolePermissions.name
+//     permissions.value = permissions.value.map((permission) => {
+//       const rolePermission = props.rolePermissions?.permissions.find(item => item.name === permission.name)
 
-  emit('update:rolePermissions', rolePermissions)
-  emit('update:isDialogVisible', false)
-  isSelectAll.value = false
-  refPermissionForm.value?.reset()
-}
+//       if (rolePermission) {
+//         return {
+//           ...permission,
+//           ...rolePermission,
+//         }
+//       }
+
+//       return permission
+//     })
+//   }
+// })
 
 function onReset() {
   emit('update:isDialogVisible', false)
+
   isSelectAll.value = false
   refPermissionForm.value?.reset()
+
+  localRoleData.value = {
+    id: '',
+    name: '',
+  }
 }
+
+function onSubmit() {
+  refPermissionForm.value?.validate().then(({ valid }) => {
+    if (valid) {
+      emit('update:rolePermissions', props.roleData
+        ? localRoleData.value
+        : {
+            name: localRoleData.value.name,
+          })
+
+      onReset()
+    }
+  })
+}
+
+watch(() => props.roleData, (newRoleData) => {
+  if (newRoleData) {
+    localRoleData.value = { ...newRoleData }
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -186,19 +136,16 @@ function onReset() {
         <!-- 👉 Title -->
         <div class="text-center mb-10">
           <h4 class="text-h4 mb-2">
-            {{ props.rolePermissions.name ? 'Edit' : 'Add' }} Role
+            {{ !props.roleData ? 'Add' : 'Edit' }} Role
           </h4>
-
-          <p class="text-body-1">
-            {{ props.rolePermissions.name ? 'Edit' : 'Add' }} Role
-          </p>
         </div>
 
         <!-- 👉 Form -->
-        <VForm ref="refPermissionForm">
+        <VForm ref="refPermissionForm" v-model="isFormValid" @submit.prevent>
           <!-- 👉 Role name -->
           <VTextField
-            v-model="role"
+            v-model="localRoleData.name"
+            :rules="[requiredValidator]"
             label="Role Name"
             placeholder="Enter Role Name"
           />
@@ -211,9 +158,9 @@ function onReset() {
 
           <VTable class="permission-table text-no-wrap">
             <!-- 👉 Admin  -->
-            <tr>
+            <!-- <tr>
               <td class="text-h6">
-                Administrator Access
+                Admin
               </td>
               <td colspan="3">
                 <div class="d-flex justify-end">
@@ -224,16 +171,16 @@ function onReset() {
                   />
                 </div>
               </td>
-            </tr>
+            </tr> -->
 
             <!-- 👉 Other permission loop -->
-            <template
-              v-for="permission in permissions"
-              :key="permission.name"
+            <!-- <template
+              v-for="permission in permissionList"
+              :key="permission.id"
             >
               <tr>
                 <td class="text-h6">
-                  {{ permission.name }}
+                  {{ permission.action }}
                 </td>
                 <td style="inline-size: 5.75rem;">
                   <div class="d-flex justify-end">
@@ -260,7 +207,7 @@ function onReset() {
                   </div>
                 </td>
               </tr>
-            </template>
+            </template> -->
           </VTable>
 
           <!-- 👉 Actions button -->

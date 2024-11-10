@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const filterOptions: ParsedFilterQuery = getFilter(event)
     filterOptions.sortBy = filterOptions.sortBy || 'action'
+    filterOptions.limit = 100
 
     const sysPermissions = await getPermissionsPaginated(filterOptions)
 
