@@ -246,6 +246,9 @@ importers:
       h3:
         specifier: ^1.13.0
         version: 1.13.0
+      import-in-the-middle:
+        specifier: ^1.11.2
+        version: 1.11.2
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
