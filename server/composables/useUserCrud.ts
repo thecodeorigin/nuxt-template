@@ -31,6 +31,9 @@ export function useUserCrud() {
       columns: {
         password: false,
       },
+      with: {
+        role: true,
+      },
       limit: options.limit,
       offset: options.limit * (options.page - 1),
       orderBy(schema, { asc, desc }) {
