@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components/VForm'
 import { usePermissionStore } from '~/stores/admin/permission'
-import { type Role, useRoleStore } from '~/stores/admin/role'
 
 interface Props {
   isDialogVisible: boolean
@@ -15,10 +14,9 @@ interface Emit {
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
-const roleStore = useRoleStore()
-const { roleList } = storeToRefs(roleStore)
 const permissionStore = usePermissionStore()
 const { permissionList } = storeToRefs(permissionStore)
+const { fetchPermissions } = permissionStore
 
 const refPermissionForm = ref<VForm>()
 const isFormValid = ref(false)
@@ -29,20 +27,32 @@ const localRoleData = ref<Partial<Role>>({
   name: '',
 })
 
-// const checkedCount = computed(() => {
-//   let counter = 0
-
-//   permissions.value.forEach((permission) => {
-//     Object.entries(permission).forEach(([key, value]) => {
-//       if (key !== 'name' && value)
-//         counter++
-//     })
-//   })
-
-//   return counter
-// })
-
-// const isIndeterminate = computed(() => checkedCount.value > 0 && checkedCount.value < (permissions.value.length * 3))
+const permissions = [
+  {
+    action: 'Read',
+    subject: 'All',
+    value: {
+      action: 'read',
+      subject: 'all',
+    },
+  },
+  {
+    action: 'Read',
+    subject: 'Category',
+    value: {
+      action: 'read',
+      subject: 'category',
+    },
+  },
+  {
+    action: 'Create',
+    subject: 'All',
+    value: {
+      action: 'create',
+      subject: 'all',
+    },
+  },
+]
 
 // // select all
 // watch(isSelectAll, (val) => {
@@ -116,11 +126,15 @@ watch(() => props.roleData, (newRoleData) => {
     localRoleData.value = { ...newRoleData }
   }
 }, { immediate: true })
+
+onMounted(() => {
+  fetchPermissions()
+})
 </script>
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900"
+    :width="$vuetify.display.smAndDown ? '100%' : 900"
     :model-value="props.isDialogVisible"
     @update:model-value="onReset"
   >
@@ -146,69 +160,59 @@ watch(() => props.roleData, (newRoleData) => {
           <VTextField
             v-model="localRoleData.name"
             :rules="[requiredValidator]"
+            class="mb-6"
             label="Role Name"
             placeholder="Enter Role Name"
           />
 
-          <h5 class="text-h5 my-6">
-            Role Permissions
-          </h5>
+          <!-- 👉 Role filter -->
+          <VRow>
+            <VCol cols="12" md="4" class="d-flex align-center">
+              <h5 class="text-h5">
+                Role Permissions
+              </h5>
+            </VCol>
 
-          <!-- 👉 Role Permissions -->
+            <VCol cols="12" md="8">
+              <div class="d-flex align-center gap-3 flex-wrap">
+                <p>
+                  Select:
+                </p>
 
-          <VTable class="permission-table text-no-wrap">
-            <!-- 👉 Admin  -->
-            <!-- <tr>
-              <td class="text-h6">
-                Admin
-              </td>
-              <td colspan="3">
-                <div class="d-flex justify-end">
-                  <VCheckbox
-                    v-model="isSelectAll"
-                    v-model:indeterminate="isIndeterminate"
-                    label="Select All"
+                <VBtn
+                  color="secondary"
+                  variant="text"
+                  text="All"
+                />
+
+                <VBtn
+                  color="secondary"
+                  variant="text"
+                  text="None"
+                />
+
+                <div class="flex-grow-1">
+                  <VTextField
+                    v-model="search"
+                    placeholder="Search"
+                    density="compact"
+                    prepend-inner-icon="ri-search-line"
                   />
                 </div>
-              </td>
-            </tr> -->
+              </div>
+            </VCol>
+          </VRow>
 
-            <!-- 👉 Other permission loop -->
-            <!-- <template
-              v-for="permission in permissionList"
-              :key="permission.id"
-            >
-              <tr>
-                <td class="text-h6">
-                  {{ permission.action }}
-                </td>
-                <td style="inline-size: 5.75rem;">
-                  <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.read"
-                      label="Read"
-                    />
-                  </div>
-                </td>
-                <td style="inline-size: 5.75rem;">
-                  <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.write"
-                      label="Write"
-                    />
-                  </div>
-                </td>
-                <td style="inline-size: 5.75rem;">
-                  <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.create"
-                      label="Create"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </template> -->
-          </VTable>
+          <!-- 👉 Role Permissions -->
+          <div class="mt-6 d-flex flex-wrap gap-3">
+            <div v-for="permission in permissionList" :key="permission.id" class="d-flex align-center gap-2 flex-wrap border px-3 py-2">
+              <VLabel>
+                <VCheckboxBtn />
+
+                {{ permission.action }}:{{ permission.subject }}
+              </VLabel>
+            </div>
+          </div>
 
           <!-- 👉 Actions button -->
           <div class="d-flex align-center justify-center gap-3 mt-6">
@@ -230,23 +234,5 @@ watch(() => props.roleData, (newRoleData) => {
   </VDialog>
 </template>
 
-<style lang="scss">
-.permission-table {
-  td {
-    border-block-end: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-    padding-block: 0.625rem;
-
-    .v-checkbox {
-      min-inline-size: 4.75rem;
-    }
-
-    &:not(:first-child) {
-      padding-inline: 0.75rem;
-    }
-
-    .v-label {
-      white-space: nowrap;
-    }
-  }
-}
+<style lang="scss" scoped>
 </style>
