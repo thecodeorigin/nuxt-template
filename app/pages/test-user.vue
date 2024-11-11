@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type User, useUserStore } from '@base/stores/admin/user'
+import { type Role, useRoleStore } from '@base/stores/admin/role'
 import { DRAWER_ACTION_TYPES } from '~/constant/organization'
 import type { DrawerConfig } from '~/utils/types'
 
@@ -38,6 +39,10 @@ function updateOptions(options: any) {
 const userStore = useUserStore()
 const { userList, userDetail, totalUsers } = storeToRefs(userStore)
 const { fetchUserList, fetchUserDetail, updateUser, deleteUser, createUser } = userStore
+
+const roleStore = useRoleStore()
+const { roleList } = storeToRefs(roleStore)
+const { fetchRoles } = roleStore
 
 const currentUserId = ref<string>('')
 const currentUserData = ref<Partial<User>>({
@@ -207,7 +212,14 @@ async function handleConfirmDeleteUser(isConfirm: boolean) {
 
 useLazyAsyncData(
   async () => {
-    await fetchUserList()
+    await fetchUserList({
+      // limit: itemsPerPage.value,
+      // page: page.value,
+      // keyword: searchQuery.value,
+      // page: page.value,
+      // sortBy: sortBy.value,
+    })
+    await fetchRoles()
   },
 )
 </script>
@@ -218,91 +230,6 @@ useLazyAsyncData(
       <h1 class="text-center">
         Test user
       </h1>
-
-      <div>
-        <h2 class="mb-2">
-          user list:
-        </h2>
-        <div v-if="userList.length > 0">
-          <p>
-            Total users: {{ totalUsers }}
-          </p>
-          <br>
-
-          <ul>
-            <li
-              v-for="user in userList"
-              :key="user.id"
-            >
-              <div class="d-flex align-center justify-space-between">
-                <p>
-                  {{ user.full_name }}
-                </p>
-
-                <div class="d-flex align-center gap-2">
-                  <VBtn @click="handleOpenEditDrawer(user.id)">
-                    Edit
-                  </VBtn>
-
-                  <VBtn @click="handleOpenDeleteDialog(user.id)">
-                    Delete
-                  </VBtn>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-          No users
-        </div>
-      </div>
-
-      <div>
-        <h2 class="mb-2 mt-8 d-flex align-center">
-          user detail:
-        </h2>
-
-        <div class="mb-2 d-flex align-center gap-2">
-          <VTextField
-            v-model="currentUserId"
-            label="User ID"
-          />
-
-          <VBtn
-            @click="fetchUserDetail(currentUserId)"
-          >
-            Fetch User
-          </VBtn>
-        </div>
-
-        <div v-if="userDetail">
-          <p>
-            ID: {{ userDetail.id }}
-          </p>
-          <p>
-            Name: {{ userDetail.full_name }}
-          </p>
-          <p>
-            Email: {{ userDetail.email }}
-          </p>
-        </div>
-
-        <div v-else>
-          Not found
-        </div>
-      </div>
-
-      <div>
-        <h2 class="mb-2 mt-8 d-flex align-center">
-          user create:
-        </h2>
-
-        <VBtn
-          @click="handleOpenAddDrawer()"
-        >
-          Create User
-        </VBtn>
-      </div>
     </div>
 
     <VCard class="mb-6">
@@ -492,6 +419,7 @@ useLazyAsyncData(
       @update:model-value="handleUserChange"
     />
 
+    <!-- 👉 Delete User Dialog -->
     <AppDialog
       :is-dialog-visible="isDeleteDialogVisible"
       title="Delete user"
@@ -504,5 +432,7 @@ useLazyAsyncData(
 </template>
 
 <style lang="scss" scoped>
-
+.app-user-search-filter {
+  inline-size: 15.625rem;
+}
 </style>
