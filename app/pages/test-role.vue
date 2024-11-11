@@ -17,7 +17,7 @@ interface RoleDialog {
 
 const roleStore = useRoleStore()
 const { roleList, totalRoles, roleDetail } = storeToRefs(roleStore)
-const { fetchRoles, fetchRoleDetail, createRole, updateRole, deleteRole } = roleStore
+const { fetchRoles, fetchRoleDetail, createRole, updateRole, deleteRole, joinRolePermissions } = roleStore
 
 const currentRoleId = ref<string>('')
 const currentRoleData = ref<Partial<Role>>({
@@ -106,6 +106,7 @@ async function handleConfirmDeleteRole(isConfirm: boolean) {
 useLazyAsyncData(
   async () => {
     await fetchRoles()
+    await joinRolePermissions()
   },
 )
 </script>

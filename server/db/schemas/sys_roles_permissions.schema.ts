@@ -4,7 +4,7 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { sysRoleTable } from './sys_roles.schema'
 import { sysPermissionTable } from './sys_permissions.schema'
 
-export const sysRolePermissionsTable = pgTable('sys_role_permissions', {
+export const sysRolePermissionsTable = pgTable('sys_roles_permissions', {
   role_id: uuid('role_id')
     .references(() => sysRoleTable.id, { onDelete: 'cascade', onUpdate: 'cascade' })
     .notNull(),
