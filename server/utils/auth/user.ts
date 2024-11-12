@@ -45,20 +45,10 @@ async function _createUser(session: Session) {
 }
 
 export async function getUserBySession(session: Session) {
-  const storage = useStorage('mongodb')
-
-  let cachedUser = null
-  let sessionKey = ''
-
-  if (session.user?.providerAccountId) {
-    sessionKey = getStorageSessionKey(session.user.providerAccountId)
-    cachedUser = await storage.getItem<LoggedInUser | null>(sessionKey)
-  }
-
-  if (cachedUser)
-    return cachedUser
-
-  const user: LoggedInUser | null | undefined = await _getUser(session)
+  const user = await tryWithCache(
+    getStorageSessionKey(session.user.providerAccountId),
+    () => _getUser(session),
+  )
 
   if (!user) {
     throw createError({
@@ -66,8 +56,6 @@ export async function getUserBySession(session: Session) {
       statusMessage: ErrorMessage.UNAUTHORIZED,
     })
   }
-
-  await storage.setItem(sessionKey, user)
 
   return user
 }

@@ -2,21 +2,29 @@ import type Stripe from 'stripe'
 import { minBy } from 'lodash-es'
 
 export async function getStripeCustomerByEmail(email: string) {
-  const { data: customers } = await stripeAdmin.customers.list({
-    email,
-  })
+  return tryWithCache(
+    getStorageStripeKey(`customer:${email}`),
+    async () => {
+      const { data: customers } = await stripeAdmin.customers.list({
+        email,
+      })
 
-  if (customers.length === 0)
-    return
+      if (customers.length === 0)
+        return
 
-  return customers[0]
+      return customers[0]
+    },
+  )
 }
 
 export function getStripeCustomerSubscriptions(customerId: string) {
-  return stripeAdmin.subscriptions.list({
-    customer: customerId,
-    expand: [],
-  })
+  return tryWithCache(
+    getStorageStripeKey(`customer:${customerId}:subscriptions`),
+    () => stripeAdmin.subscriptions.list({
+      customer: customerId,
+      expand: [],
+    }),
+  )
 }
 
 export function createStripeCustomer(payload: {
@@ -55,10 +63,16 @@ export async function createStripeCustomerOnSignup(email: string) {
   }
 }
 
-export function updateStripeCustomer(customerId: string, customer: Stripe.CustomerUpdateParams) {
-  return stripeAdmin.customers.update(customerId, customer)
+export async function updateStripeCustomer(customerId: string, customer: Stripe.CustomerUpdateParams) {
+  const response = await stripeAdmin.customers.update(customerId, customer)
+
+  clearCache(getStorageStripeKey(`customer:${response.email}`))
+
+  return response
 }
 
 export function upsertCustomer(customer: Stripe.CustomerCreateParams) {
+  clearCache(getStorageStripeKey(`customer:${customer.email}`))
+
   return stripeAdmin.customers.create(customer)
 }

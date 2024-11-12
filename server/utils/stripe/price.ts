@@ -1,19 +1,28 @@
 // TODO: remove this
 export function getStripeFreePrices(productId: string) {
-  return stripeAdmin.prices.list({
-    product: productId,
-    lookup_keys: ['free'],
-  })
+  return tryWithCache(
+    getStorageStripeKey(`product:${productId}:price:free`),
+    () => stripeAdmin.prices.list({
+      product: productId,
+      lookup_keys: ['free'],
+    }),
+  )
 }
 
 export function getStripeAllPrices(productId: string) {
-  return stripeAdmin.prices.list({
-    product: productId,
-  })
+  return tryWithCache(
+    getStorageStripeKey(`product:${productId}:price:all`),
+    () => stripeAdmin.prices.list({
+      product: productId,
+    }),
+  )
 }
 
 export function getStripePrice(priceId: string) {
-  return stripeAdmin.prices.retrieve(priceId)
+  return tryWithCache(
+    getStorageStripeKey(`price:${priceId}`),
+    () => stripeAdmin.prices.retrieve(priceId),
+  )
 }
 
 export function createStripePrice(payload: {
@@ -44,6 +53,8 @@ export function updateStripePrice(priceId: string, payload: {
   lookup_key: 'free' | 'basic' | 'premium' | 'custom'
   active?: boolean
 }) {
+  clearCache(getStorageStripeKey(`price:${priceId}`))
+
   return stripeAdmin.prices.update(priceId, {
     lookup_key: payload.lookup_key,
     active: typeof payload.active === 'boolean' ? payload.active : true,
