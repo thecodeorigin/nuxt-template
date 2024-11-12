@@ -6,6 +6,8 @@ import { userShortcutTable } from './user_shortcuts.schema'
 import { userStatus } from './enum.schema'
 import { sysRoleTable } from './sys_roles.schema'
 import { sysOrganizationTable } from './sys_organizations.schema'
+import { userOrderTable } from './user_orders.schema'
+import { userPaymentTable } from './user_payments.schema'
 
 export const sysUserTable = pgTable('sys_users', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -39,4 +41,6 @@ export const sysUserRelations = relations(sysUserTable, ({ one, many }) => ({
   }),
   userShortcuts: many(userShortcutTable),
   userDevices: many(userDeviceTable),
+  orders: many(userOrderTable),
+  payments: many(userPaymentTable),
 }))

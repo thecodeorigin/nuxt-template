@@ -1,3 +1,7 @@
+export * from './enum.schema'
+
+export * from './payment_provider_transactions.schema'
+
 export * from './sys_accounts.schema'
 
 export * from './sys_authenticators.schema'
@@ -20,6 +24,8 @@ export * from './sys_users.schema'
 
 export * from './user_devices.schema'
 
-export * from './user_payment_methods.schema'
+export * from './user_orders.schema'
+
+export * from './user_payments.schema'
 
 export * from './user_shortcuts.schema'
