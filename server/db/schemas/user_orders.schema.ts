@@ -1,22 +1,23 @@
-import { date, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { sysUserTable } from './sys_users.schema'
+import { userPaymentTable } from './user_payments.schema'
 
-export const userPaymentMethodTable = pgTable('user_payment_methods', {
+export const userOrderTable = pgTable('user_orders', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  number: text('number').notNull(),
-  placeholder: text('placeholder').notNull(),
-  cvv: numeric('cvv').notNull(),
-  expires_at: date('expires_at').notNull(),
   user_id: uuid('user_id')
     .references(() => sysUserTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
 
-export const userPaymentMethodRelations = relations(userPaymentMethodTable, ({ one }) => ({
-  owner: one(sysUserTable, {
-    fields: [userPaymentMethodTable.user_id],
+export const userOrderRelations = relations(userOrderTable, ({ one }) => ({
+  payment: one(userPaymentTable, {
+    fields: [userOrderTable.id],
+    references: [userPaymentTable.order_id],
+  }),
+  user: one(sysUserTable, {
+    fields: [userOrderTable.user_id],
     references: [sysUserTable.id],
   }),
 }))
