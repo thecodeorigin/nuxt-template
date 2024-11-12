@@ -43,6 +43,31 @@ async function handleSubscribe(priceId: string, subscribed = false) {
     window.open(url, '_self')
   }
 }
+
+const { t } = useI18n()
+
+async function vnpay() {
+  try {
+    loading()
+
+    const { data } = await $api('/payments/vnpay/checkout', {
+      method: 'POST',
+      body: {
+        productId: '123456',
+      },
+    })
+
+    window.open(data.paymentUrl, '_blank')
+  }
+  catch {
+    notifyError({
+      content: t('An error has occured, please try again later'),
+    })
+  }
+  finally {
+    loading.close()
+  }
+}
 </script>
 
 <template>
@@ -119,6 +144,79 @@ async function handleSubscribe(priceId: string, subscribed = false) {
                 />
                 <div data-test="pricing-features" class="text-truncate">
                   {{ feature }}
+                </div>
+              </VListItemTitle>
+            </VListItem>
+          </VList>
+        </VCardText>
+      </VCard>
+    </VCol>
+
+    <VCol
+      v-bind="props"
+    >
+      <!-- 👉  Card -->
+      <VCard
+        flat
+        border
+      >
+        <VCardText class="position-relative text-center">
+          <div>
+            <div class="d-flex align-center">
+              <h1 data-test="pricing-price" class="text-h3 text-primary font-weight-bold">
+                {{ new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: ('vnd').toUpperCase(),
+                }).format(20000000 / 100) }}
+              </h1>
+              <span class="text-body-1 font-weight-medium align-self-end">/{{ $t('month') }}</span>
+            </div>
+          </div>
+
+          <!-- 👉 Plan actions -->
+          <VBtn
+            :active="false"
+            block
+            color="primary"
+            class="mt-4"
+            @click="vnpay()"
+          >
+            {{ $t('Upgrade') }}
+          </VBtn>
+        </VCardText>
+        <!-- 👉 Plan features -->
+        <VCardText class="pt-2">
+          <VList class="card-list pb-5">
+            <!-- title package includes color black -->
+            <VListItemTitle class="mb-3 font-weight-medium">
+              {{ $t('Package Includes') }}
+            </VListItemTitle>
+
+            <VListItem>
+              <template #prepend />
+
+              <VListItemTitle class="text-body-1 d-flex align-center">
+                <VIcon
+                  :size="14"
+                  icon="mdi-check"
+                  class="me-2 icon-check"
+                />
+                <div data-test="pricing-features" class="text-truncate">
+                  Nộp tiền tháng
+                </div>
+              </VListItemTitle>
+            </VListItem>
+            <VListItem>
+              <template #prepend />
+
+              <VListItemTitle class="text-body-1 d-flex align-center">
+                <VIcon
+                  :size="14"
+                  icon="mdi-check"
+                  class="me-2 icon-check"
+                />
+                <div data-test="pricing-features" class="text-truncate">
+                  VNPAY
                 </div>
               </VListItemTitle>
             </VListItem>
