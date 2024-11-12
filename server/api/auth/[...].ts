@@ -73,34 +73,9 @@ export default NuxtAuthHandler({
     error: '/auth/login',
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user }) {
       if (!user)
         return false
-
-      if (account) {
-        await db.insert(sysAccountTable).values({
-          user_id: account.userId,
-          type: account.type,
-          provider: account.provider,
-          provider_account_id: account.providerAccountId,
-          refresh_token: account.refreshToken,
-          access_token: account.accessToken,
-          expires_at: account.expiresAt,
-          token_type: account.tokenType,
-          scope: account.scope,
-          id_token: account.idToken,
-          session_state: account.sessionState,
-        } as typeof sysAccountTable.$inferInsert)
-          .onConflictDoUpdate({
-            target: [sysAccountTable.provider_account_id],
-            set: {
-              refresh_token: account.refreshToken,
-              access_token: account.accessToken,
-              id_token: account.idToken,
-              session_state: account.sessionState,
-            } as typeof sysAccountTable.$inferInsert,
-          })
-      }
 
       return true
     },
@@ -128,45 +103,37 @@ export default NuxtAuthHandler({
   },
   events: {
     async signIn({ user, account }) {
-      if (user.email && account?.providerAccountId) {
-        const storage = useStorage('mongodb')
-        const sessionKey = getStorageSessionKey(account.providerAccountId)
+      if (account?.providerAccountId) {
+        await tryWithCache(
+          getStorageSessionKey(account.providerAccountId),
+          async () => {
+            if (!user.email)
+              return
 
-        const { getUserByEmail, createUser } = useUserCrud()
+            const { getUserByEmail, createUser } = useUserCrud()
 
-        const sysUser = await getUserByEmail(user.email)
+            const sysUser = await getUserByEmail(user.email)
 
-        if (!sysUser.data) {
-          sysUser.data = (await createUser({
-            email: user.email,
-            full_name: user.name,
-            avatar_url: user.image,
-            phone: user.phone,
-            email_verified: new Date(),
-          })).data
-        }
+            if (!sysUser.data) {
+              sysUser.data = (await createUser({
+                email: user.email,
+                full_name: user.name,
+                avatar_url: user.image,
+                phone: user.phone,
+                email_verified: new Date(),
+              })).data
+            }
 
-        if (!sysUser.data)
-          return
+            if (!sysUser.data)
+              return
 
-        if (account && account.provider !== 'credentials') {
-          try {
-            await db.insert(sysAccountTable).values({
-              user_id: sysUser.data.id,
-              type: account.type,
-              provider: account.provider,
-              provider_account_id: account.providerAccountId,
-              refresh_token: account.refresh_token,
-              access_token: account.access_token,
-              expires_at: account.expires_at,
-              token_type: account.token_type,
-              scope: account.scope,
-              id_token: account.id_token,
-              session_state: account.session_state,
-            } as typeof sysAccountTable.$inferInsert)
-              .onConflictDoUpdate({
-                target: sysAccountTable.provider_account_id,
-                set: {
+            if (account && account.provider !== 'credentials') {
+              try {
+                await db.insert(sysAccountTable).values({
+                  user_id: sysUser.data.id,
+                  type: account.type,
+                  provider: account.provider,
+                  provider_account_id: account.providerAccountId,
                   refresh_token: account.refresh_token,
                   access_token: account.access_token,
                   expires_at: account.expires_at,
@@ -174,23 +141,33 @@ export default NuxtAuthHandler({
                   scope: account.scope,
                   id_token: account.id_token,
                   session_state: account.session_state,
-                } as typeof sysAccountTable.$inferInsert,
-              })
-          }
-          catch (error: any) {
-            console.error(error)
-          }
-        }
+                } as typeof sysAccountTable.$inferInsert)
+                  .onConflictDoUpdate({
+                    target: sysAccountTable.provider_account_id,
+                    set: {
+                      refresh_token: account.refresh_token,
+                      access_token: account.access_token,
+                      expires_at: account.expires_at,
+                      token_type: account.token_type,
+                      scope: account.scope,
+                      id_token: account.id_token,
+                      session_state: account.session_state,
+                    } as typeof sysAccountTable.$inferInsert,
+                  })
+              }
+              catch (error: any) {
+                console.error(error)
+              }
+            }
 
-        await storage.setItem(sessionKey, sysUser.data)
+            return sysUser.data
+          },
+        )
       }
     },
     async signOut({ token }) {
       if (token.providerAccountId) {
-        const storage = useStorage('mongodb')
-        const sessionKey = getStorageSessionKey(token.providerAccountId)
-
-        await storage.removeItem(sessionKey)
+        await clearCache(getStorageSessionKey(token.providerAccountId))
       }
     },
   },

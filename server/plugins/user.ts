@@ -19,10 +19,6 @@ export default defineNitroPlugin((nitroApp) => {
     ])
   })
 
-  nitroApp.hooks.hook('session:cache:clear', async ({ providerAccountId }) => {
-    const storage = useStorage('mongodb')
-    const sessionKey = getStorageSessionKey(providerAccountId)
-
-    await storage.removeItem(sessionKey)
-  })
+  nitroApp.hooks.hook('session:cache:clear', ({ providerAccountId }) =>
+    clearCache(getStorageSessionKey(providerAccountId)))
 })

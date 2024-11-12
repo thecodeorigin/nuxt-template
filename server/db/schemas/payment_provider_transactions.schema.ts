@@ -1,4 +1,4 @@
-import { date, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { sysUserTable } from './sys_users.schema'
 import { userPaymentTable } from './user_payments.schema'
