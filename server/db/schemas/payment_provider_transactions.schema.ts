@@ -6,9 +6,9 @@ import { userPaymentTable } from './user_payments.schema'
 export const paymentProviderTransactionTable = pgTable('payment_provider_transactions', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   provider: text('provider').notNull(),
-  provider_transaction_id: text('provider_transaction_id').notNull(), // vnp_TransactionNo
+  provider_transaction_id: text('provider_transaction_id'), // vnp_TransactionNo
   provider_transaction_status: text('provider_transaction_status').notNull(), // vnp_TransactionStatus
-  provider_transaction_resolved_at: timestamp('provider_transaction_resolved_at', { withTimezone: true }).notNull(), // vnp_PayDate
+  provider_transaction_resolved_at: timestamp('provider_transaction_resolved_at', { withTimezone: true }), // vnp_PayDate
   provider_transaction_info: text('provider_transaction_info').notNull(), // vnp_OrderInfo
   payment_id: uuid('payment_id')
     .references(() => userPaymentTable.id, { onDelete: 'no action', onUpdate: 'no action' }).notNull(),
