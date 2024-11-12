@@ -5,6 +5,7 @@ import ScrollToTop from '@base/@core/components/ScrollToTop.vue'
 import initCore from '@base/@core/initCore'
 import { initConfigStore, useConfigStore } from '@base/@core/stores/config'
 import { hexToRgb } from '@base/@core/utils/colorConverter'
+import { isInBrowser } from '@/utils/detectBrowser'
 
 // ℹ️ Sync current theme with initial loader theme
 initCore()
@@ -21,12 +22,14 @@ if (isMobile)
 const notificationStore = useMessageStore()
 
 onBeforeMount(async () => {
-  onMessage(getMessaging(), () => {
+  if (isInBrowser()) {
+    onMessage(getMessaging(), () => {
     // TODO: Handle incoming messages
-    // console.log('Client message:', payload)
+
     // const linkSplits = payload.fcmOptions?.link?.split('/projects/')
     // notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
-  })
+    })
+  }
 })
 </script>
 
