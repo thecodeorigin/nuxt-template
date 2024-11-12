@@ -21,19 +21,28 @@ export async function createStripeSubscription(customerId: string, priceId: stri
 }
 
 export function updateStripeSubscription(subscriptionId: string, subscription: Stripe.SubscriptionUpdateParams) {
+  clearCache(getStorageStripeKey(`subscription:${subscriptionId}`))
+
   return stripeAdmin.subscriptions.update(subscriptionId, subscription)
 }
 
 export function cancelStripeSubscription(subscriptionId: string) {
+  clearCache(getStorageStripeKey(`subscription:${subscriptionId}`))
+
   return stripeAdmin.subscriptions.cancel(subscriptionId)
 }
 
 export function resumeStripeSubscription(subscriptionId: string) {
+  clearCache(getStorageStripeKey(`subscription:${subscriptionId}`))
+
   return stripeAdmin.subscriptions.resume(subscriptionId, {
     billing_cycle_anchor: 'now',
   })
 }
 
-export function getStripeSubscriptionById(subscriptionId: string) {
-  return stripeAdmin.subscriptions.retrieve(subscriptionId)
+export async function getStripeSubscriptionById(subscriptionId: string) {
+  return tryWithCache(
+    getStorageStripeKey(`subscription:${subscriptionId}`),
+    () => stripeAdmin.subscriptions.retrieve(subscriptionId),
+  )
 }

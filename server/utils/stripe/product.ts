@@ -1,11 +1,17 @@
 export function getStripeProduct(productId: string) {
-  return stripeAdmin.products.retrieve(productId)
+  return tryWithCache(
+    getStorageStripeKey(`product:${productId}`),
+    () => stripeAdmin.products.retrieve(productId),
+  )
 }
 
 export function getStripeAllProducts() {
-  return stripeAdmin.products.search({
-    query: `metadata[\'lookup_key\']:\'${process.env.STRIPE_PRODUCT_LOOKUP_KEY}\'`,
-  })
+  return tryWithCache(
+    getStorageStripeKey(`product:all`),
+    () => stripeAdmin.products.search({
+      query: `metadata[\'lookup_key\']:\'${process.env.STRIPE_PRODUCT_LOOKUP_KEY}\'`,
+    }),
+  )
 }
 
 export function createStripeProduct(payload: {
@@ -28,6 +34,8 @@ export function updateStripeProduct(productId: string, payload: {
   description: string
   features: string[]
 }) {
+  clearCache(getStorageStripeKey(`product:${productId}`))
+
   return stripeAdmin.products.update(productId, {
     name: payload.name,
     description: payload.description,
