@@ -6,8 +6,7 @@ export const $api = $fetch.create({
   retryStatusCodes: [503, 504],
   // Request interceptor
   async onRequest({ options }) {
-    // Set baseUrl for all API calls
-    options.baseURL = useRuntimeConfig().public.apiBaseUrl || '/api'
+    options.baseURL = String(useRuntimeConfig().public.apiBaseUrl || '/api')
 
     options.headers = {
       ...options.headers,

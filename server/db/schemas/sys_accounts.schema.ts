@@ -1,4 +1,4 @@
-import { integer, pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core'
+import { integer, pgTable, text, uuid } from 'drizzle-orm/pg-core'
 import type { AdapterAccountType } from '@auth/core/adapters'
 import { sysUserTable } from './sys_users.schema'
 

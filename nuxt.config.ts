@@ -128,8 +128,6 @@ export default defineNuxtConfig({
 
   imports: {
     dirs: [
-      // './app/@core/utils',
-      // './app/@core/composable',
       fileURLToPath(new URL('./app/@core/utils', import.meta.url)),
       fileURLToPath(new URL('./app/@core/composable', import.meta.url)),
     ],
