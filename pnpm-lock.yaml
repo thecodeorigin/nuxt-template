@@ -363,6 +363,9 @@ importers:
       vitest:
         specifier: ^2.1.1
         version: 2.1.1(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4)
+      vnpay:
+        specifier: ^1.6.0
+        version: 1.6.0
       vue:
         specifier: ^3.5.8
         version: 3.5.8(typescript@5.4.5)
@@ -5530,6 +5533,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@10.1.0:
@@ -6796,6 +6800,12 @@ packages:
 
   module-details-from-path@1.0.3:
     resolution: {integrity: sha512-ySViT69/76t8VhE1xXHK6Ch4NcDd26gx0MzKXLO+F7NOtnqH68d9zF94nT8ZWSxXh8ELOERsnJO/sWt1xZYw5A==}
+
+  moment-timezone@0.5.46:
+    resolution: {integrity: sha512-ZXm9b36esbe7OmdABqIWJuBBiLLwAjrN7CE+7sYdCCx82Nabt1wHDj8TVseS59QIlfFPbOoiBPm6ca9BioG4hw==}
+
+  moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   mongodb-connection-string-url@3.0.1:
     resolution: {integrity: sha512-XqMGwRX0Lgn05TDB4PyG2h2kKO/FfWJyCzYQbIhXUxz7ETt0I/FqHjUeqj37irJ+Dl1ZtU82uYyj14u2XsZKfg==}
@@ -9004,6 +9014,9 @@ packages:
         optional: true
       jsdom:
         optional: true
+
+  vnpay@1.6.0:
+    resolution: {integrity: sha512-+y1tdsJ1ClPC0cVGCG6v5lDi5rZZSzfUe1I670d4tqzxvHdgPbgmrYuH4LpLOEuiFs0Nwum9Thw7DfWgbztjBA==}
 
   vscode-jsonrpc@6.0.0:
     resolution: {integrity: sha512-wnJA4BnEjOSyFMvjZdpiOwhSq9uDoK8e/kpRJDTaMYzwlkrhG1fwDIZI94CLsLzlCK5cIbMMtFlJlfR57Lavmg==}
@@ -17305,6 +17318,12 @@ snapshots:
 
   module-details-from-path@1.0.3: {}
 
+  moment-timezone@0.5.46:
+    dependencies:
+      moment: 2.30.1
+
+  moment@2.30.1: {}
+
   mongodb-connection-string-url@3.0.1:
     dependencies:
       '@types/whatwg-url': 11.0.5
@@ -19854,6 +19873,10 @@ snapshots:
       - sugarss
       - supports-color
       - terser
+
+  vnpay@1.6.0:
+    dependencies:
+      moment-timezone: 0.5.46
 
   vscode-jsonrpc@6.0.0: {}
 
