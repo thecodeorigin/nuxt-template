@@ -13,7 +13,7 @@ export function parseError(error: any) {
   }
 
   return createError({
-    statusCode: 500,
+    statusCode: error.statusCode || 500,
     statusMessage: error.message,
     data: error,
   })
