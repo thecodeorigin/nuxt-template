@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
     return response
   }
   catch (error) {
-    console.log('««««« Error »»»»»', error)
     throw parseError(error)
   }
 })
