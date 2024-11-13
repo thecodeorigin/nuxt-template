@@ -1,8 +1,14 @@
-import { createHmac } from 'node:crypto'
-import { stringify } from 'node:querystring'
-import { Buffer } from 'node:buffer'
 import { eq } from 'drizzle-orm'
-import type { IReceive_vnp_Params } from '~/utils/types/vnpay'
+import type { VerifyIpnCall } from 'vnpay'
+import {
+  InpOrderAlreadyConfirmed,
+  IpnFailChecksum,
+  IpnInvalidAmount,
+  IpnOrderNotFound,
+  IpnSuccess,
+  IpnUnknownError,
+} from 'vnpay'
+import { vnpayAdmin } from '~~/server/utils'
 import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '~~/server/db/schemas'
 
 function convertToSQLDateWithTimezone(input: string): Date {
@@ -21,58 +27,47 @@ function convertToSQLDateWithTimezone(input: string): Date {
 
   return dateInUTC
 }
-// TODO: what if they using return URL?
+
 export default defineEventHandler(async (event) => {
   try {
-    const VNP_HASHSECRET = process.env.VNP_HASHSECRET
-    const VNP_TMNCODE = process.env.VNP_TMNCODE
-    if (!VNP_HASHSECRET || !VNP_TMNCODE) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: 'VNPAY CREDENTIALS NOT FOUND',
-      })
-    }
+    const { isSuccess, isVerified, vnp_TxnRef, vnp_TransactionNo, vnp_Amount, vnp_PayDate }: VerifyIpnCall = vnpayAdmin.verifyIpnCall(getQuery(event))
+    setResponseStatus(event, 200)
 
-    const vnp_Params: IReceive_vnp_Params = getQuery(event)
+    if (!isVerified)
+      return IpnFailChecksum
 
-    const hash = vnp_Params.vnp_SecureHash
-    delete (vnp_Params as { vnp_SecureHash?: string }).vnp_SecureHash
-    delete (vnp_Params as { vnp_SecureHashType?: string }).vnp_SecureHashType
+    const { user_payments, payment_provider_transactions } = (await db.select()
+      .from(userPaymentTable)
+      .where(eq(userPaymentTable.id, vnp_TxnRef))
+      .innerJoin(paymentProviderTransactionTable, eq(paymentProviderTransactionTable.payment_id, userPaymentTable.id)))[0]
 
-    if (vnp_Params.vnp_TmnCode !== VNP_TMNCODE) {
-      setResponseStatus(event, 200)
-      return { RspCode: '97', Message: 'Fail checksum' }
-    }
+    if (!user_payments)
+      return IpnOrderNotFound
 
-    const signData = stringify(vnp_Params as unknown as Record<string, string>)
-    const buffer = new Uint8Array(Buffer.from(signData, 'utf-8'))
-    const signed = createHmac('sha512', VNP_HASHSECRET).update(buffer).digest('hex')
+    if (user_payments.amount !== vnp_Amount.toString())
+      return IpnInvalidAmount
 
-    if (signed !== hash) {
-      setResponseStatus(event, 200)
-      return { RspCode: '97', Message: 'Fail checksum' }
-    }
+    if (payment_provider_transactions.provider_transaction_status !== PaymentStatus.PENDING)
+      return InpOrderAlreadyConfirmed
 
-    const transactionStatus = vnp_Params.vnp_TransactionStatus === '00' ? PaymentStatus.RESOLVED : PaymentStatus.FAILED
-    const transactionDate = convertToSQLDateWithTimezone(vnp_Params.vnp_PayDate)
+    const transactionStatus = isSuccess ? PaymentStatus.RESOLVED : PaymentStatus.FAILED
+    const transactionDate = convertToSQLDateWithTimezone(vnp_PayDate?.toString() || '')
 
-    // TODO: What if the transaction is already resolved?
     await db.transaction(async (db) => {
-      const paymentProviderTransaction = (await db.update(paymentProviderTransactionTable).set({
-        provider_transaction_id: vnp_Params.vnp_TransactionNo,
+      await db.update(paymentProviderTransactionTable).set({
+        provider_transaction_id: vnp_TransactionNo?.toString(),
         provider_transaction_status: transactionStatus,
         provider_transaction_resolved_at: transactionDate,
-      }).where(eq(paymentProviderTransactionTable.id, vnp_Params.vnp_TxnRef)).returning())[0]
+      }).where(eq(paymentProviderTransactionTable.id, payment_provider_transactions.id))
 
       await db.update(userPaymentTable).set({
         status: transactionStatus,
-      }).where(eq(userPaymentTable.id, paymentProviderTransaction.payment_id))
+      }).where(eq(userPaymentTable.id, user_payments.id))
     })
 
-    setResponseStatus(event, 200)
-    return { RspCode: '00', Message: 'Success' }
+    return IpnSuccess
   }
-  catch (error: any) {
-    throw parseError(error)
+  catch {
+    return IpnUnknownError
   }
 })

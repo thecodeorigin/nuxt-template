@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
       vnp_OrderInfo: paymentProviderTransaction.provider_transaction_info,
       vnp_OrderType: ProductCode.Other,
       vnp_ReturnUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/vnpay/callback`,
-      vnp_TxnRef: paymentProviderTransaction.id,
+      vnp_TxnRef: userPayment.id,
     })
 
     setResponseStatus(event, 200)
