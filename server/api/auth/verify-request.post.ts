@@ -3,17 +3,17 @@ import { createHmac } from 'node:crypto'
 import { eq } from 'drizzle-orm'
 import { sysUserTable } from '@base/server/db/schemas'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { token, type }: { token: string, type: string } = await readBody(event)
-
-    if (type !== 'verify' || !token) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.INVALID_VERIFICATION_URL,
-      })
-    }
+    const { token } = await readValidatedBody(
+      event,
+      z.object({
+        token: z.string().min(1, ErrorMessage.INVALID_VERIFICATION_URL),
+        type: z.enum(['verify'], { message: ErrorMessage.INVALID_VERIFICATION_URL }),
+      }).parse,
+    )
 
     const runtimeConfig = useRuntimeConfig()
 

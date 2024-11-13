@@ -4,24 +4,23 @@ import bcrypt from 'bcrypt'
 import { eq } from 'drizzle-orm'
 import { sysUserTable } from '@base/server/db/schemas'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { token, password, confirmPassword, type }: { token: string, password: string, confirmPassword: string, type: string } = await readBody(event)
-
-    if (type !== 'reset' || !token) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.INVALID_VERIFICATION_URL,
+    const { token, password } = await readValidatedBody(
+      event,
+      z.object({
+        token: z.string().email().min(1, ErrorMessage.INVALID_VERIFICATION_URL),
+        type: z.enum(['reset'], { message: ErrorMessage.INVALID_VERIFICATION_URL }),
+        password: z.string().min(6, ErrorMessage.INVALID_CREDENTIALS),
+        confirmPassword: z.string().min(6, ErrorMessage.INVALID_CREDENTIALS),
       })
-    }
-
-    if (!password || password !== confirmPassword) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.PASSWORD_MISMATCH,
-      })
-    }
+        .refine(data => data.password === data.confirmPassword, {
+          message: ErrorMessage.PASSWORD_MISMATCH,
+        })
+        .parse,
+    )
 
     const runtimeConfig = useRuntimeConfig()
 

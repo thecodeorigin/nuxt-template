@@ -1,10 +1,12 @@
 import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
+import { createInsertSchema } from 'drizzle-zod'
+import { userShortcutTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {
     const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
 
-    const body = await readBody(event)
+    const body = await readValidatedBody(event, createInsertSchema(userShortcutTable).partial().parse)
 
     const { createShortcut } = useShortcutCrud(userId)
 

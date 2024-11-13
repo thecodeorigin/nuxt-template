@@ -1,4 +1,6 @@
 import { useNotificationCrud } from '@base/server/composables/useNotificationCrud'
+import { createInsertSchema } from 'drizzle-zod'
+import { sysNotificationTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -7,7 +9,7 @@ export default defineEventHandler(async (event) => {
     const queryRestrict = { user_id: userId }
     const { updateNotificationById } = useNotificationCrud(queryRestrict)
 
-    const body = await readBody(event)
+    const body = await readValidatedBody(event, createInsertSchema(sysNotificationTable).partial().parse)
 
     if (body && body.read_at) {
       body.read_at = new Date(body.read_at)

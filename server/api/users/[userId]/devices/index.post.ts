@@ -1,4 +1,5 @@
 import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   const { session, userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
@@ -6,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const nitroApp = useNitroApp()
 
   try {
-    const { token } = await readBody(event)
+    const { token } = await readValidatedBody(event, z.object({ token: z.string() }).parse)
 
     const { getUserDeviceToken, createUserDeviceToken } = useUserDeviceCrud({ user_id: userId })
     const dataTokenExists = await getUserDeviceToken(token)

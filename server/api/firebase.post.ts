@@ -1,12 +1,13 @@
 import admin from 'firebase-admin'
 import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { user_id } = await readBody(event)
-
-    if (!user_id)
-      return { message: 'User id is required' }
+    const { user_id } = await readValidatedBody(
+      event,
+      z.object({ user_id: z.string().min(1, 'User ID is required!') }).parse,
+    )
 
     const service = getFirebaseServiceAccount()
 

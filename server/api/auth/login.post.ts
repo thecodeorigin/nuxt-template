@@ -1,21 +1,18 @@
 import bcrypt from 'bcrypt'
-import { eq, or } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { omit } from 'lodash-es'
 import { sysUserTable } from '@base/server/db/schemas'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { email, phone, password } = await readBody(event)
-
-    if (!(email || phone) || !password) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: ErrorMessage.INVALID_CREDENTIALS,
-        data: {
-          email: [ErrorMessage.INVALID_CREDENTIALS],
-        },
-      })
-    }
+    const { email, password } = await readValidatedBody(
+      event,
+      z.object({
+        email: z.string().email().min(1, ErrorMessage.INVALID_CREDENTIALS),
+        password: z.string().min(6, ErrorMessage.INVALID_CREDENTIALS),
+      }).parse,
+    )
 
     const sysUser = await db.query.sysUserTable.findFirst({
       columns: {

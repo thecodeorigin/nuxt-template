@@ -3,20 +3,19 @@ import { Buffer } from 'node:buffer'
 import bcrypt from 'bcrypt'
 import { useRoleCrud } from '@base/server/composables/useRoleCrud'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { email, phone, password, provider = 'credentials' } = await readBody(event)
-
-    if (!(email || phone) || !password) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: ErrorMessage.INVALID_CREDENTIALS,
-        data: {
-          email: [ErrorMessage.INVALID_CREDENTIALS],
-        },
-      })
-    }
+    const { email, password, phone, provider } = await readValidatedBody(
+      event,
+      z.object({
+        provider: z.enum(['credentials'], { message: 'Invalid sign in provider' }).optional(),
+        email: z.string().email().min(1, ErrorMessage.INVALID_CREDENTIALS),
+        phone: z.string().optional(),
+        password: z.string().min(6, ErrorMessage.INVALID_CREDENTIALS),
+      }).parse,
+    )
 
     const { getRoleByName } = useRoleCrud()
 

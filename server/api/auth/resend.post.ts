@@ -2,17 +2,17 @@ import { createHmac } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import { eq } from 'drizzle-orm'
 import { sysUserTable } from '@base/server/db/schemas'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { email, type }: { email: string, type: string } = await readBody(event)
-
-    if (type !== 'resend' || !email) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.INVALID_VERIFICATION_URL,
-      })
-    }
+    const { email } = await readValidatedBody(
+      event,
+      z.object({
+        email: z.string().email().min(1, ErrorMessage.INVALID_VERIFICATION_URL),
+        type: z.enum(['resend'], { message: ErrorMessage.INVALID_VERIFICATION_URL }),
+      }).parse,
+    )
 
     const sysUser = await db.query.sysUserTable.findFirst({
       columns: {

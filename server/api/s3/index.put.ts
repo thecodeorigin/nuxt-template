@@ -1,10 +1,13 @@
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   await defineEventOptions(event, { auth: true })
 
-  const body = await readBody(event)
+  const body = await readValidatedBody(event, z.object({
+    filename: z.string().min(1).max(512),
+  }).parse)
 
   const uploadUrl = await getSignedUrl(
     s3,
