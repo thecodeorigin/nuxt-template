@@ -135,5 +135,6 @@
   "Permissions": "Permissions",
   "Roles": "Roles",
   "Users": "Users",
-  "Are you sure you want to delete this shortcut?": "Bạn có chắc chắn muốn xóa phím tắt này không?"
+  "Are you sure you want to delete this shortcut?": "Are you sure you want to delete this shortcut?",
+  "Account settings updated successfully": "Account settings updated successfully"
 }
