@@ -1,7 +1,7 @@
-export function getStripeProduct(productId: string) {
+export function getStripeProduct(productUId: string) {
   return tryWithCache(
-    getStorageStripeKey(`product:${productId}`),
-    () => stripeAdmin.products.retrieve(productId),
+    getStorageStripeKey(`product:${productUId}`),
+    () => stripeAdmin.products.retrieve(productUId),
   )
 }
 
@@ -29,20 +29,20 @@ export function createStripeProduct(payload: {
   })
 }
 
-export function updateStripeProduct(productId: string, payload: {
+export function updateStripeProduct(productUId: string, payload: {
   name: string
   description: string
   features: string[]
 }) {
-  clearCache(getStorageStripeKey(`product:${productId}`))
+  clearCache(getStorageStripeKey(`product:${productUId}`))
 
-  return stripeAdmin.products.update(productId, {
+  return stripeAdmin.products.update(productUId, {
     name: payload.name,
     description: payload.description,
     marketing_features: payload.features.map(feature => ({ name: feature })),
   })
 }
 
-export function deleteStripeProduct(productId: string) {
-  return stripeAdmin.products.del(productId)
+export function deleteStripeProduct(productUId: string) {
+  return stripeAdmin.products.del(productUId)
 }

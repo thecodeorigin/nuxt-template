@@ -1,7 +1,7 @@
 import type Stripe from 'stripe'
 
-export async function createStripeSubscription(customerId: string, priceId: string) {
-  const subscriptions = await getStripeCustomerSubscriptions(customerId)
+export async function createStripeSubscription(customerUId: string, priceId: string) {
+  const subscriptions = await getStripeCustomerSubscriptions(customerUId)
 
   if (subscriptions.data.length > 0) {
     const sub = subscriptions.data.find(s => s.items.data.some(i => i.price.id === priceId))
@@ -13,36 +13,36 @@ export async function createStripeSubscription(customerId: string, priceId: stri
   }
   else {
     return stripeAdmin.subscriptions.create({
-      customer: customerId,
+      customer: customerUId,
       items: [{ price: priceId }],
       collection_method: 'charge_automatically',
     })
   }
 }
 
-export function updateStripeSubscription(subscriptionId: string, subscription: Stripe.SubscriptionUpdateParams) {
-  clearCache(getStorageStripeKey(`subscription:${subscriptionId}`))
+export function updateStripeSubscription(subscriptionUId: string, subscription: Stripe.SubscriptionUpdateParams) {
+  clearCache(getStorageStripeKey(`subscription:${subscriptionUId}`))
 
-  return stripeAdmin.subscriptions.update(subscriptionId, subscription)
+  return stripeAdmin.subscriptions.update(subscriptionUId, subscription)
 }
 
-export function cancelStripeSubscription(subscriptionId: string) {
-  clearCache(getStorageStripeKey(`subscription:${subscriptionId}`))
+export function cancelStripeSubscription(subscriptionUId: string) {
+  clearCache(getStorageStripeKey(`subscription:${subscriptionUId}`))
 
-  return stripeAdmin.subscriptions.cancel(subscriptionId)
+  return stripeAdmin.subscriptions.cancel(subscriptionUId)
 }
 
-export function resumeStripeSubscription(subscriptionId: string) {
-  clearCache(getStorageStripeKey(`subscription:${subscriptionId}`))
+export function resumeStripeSubscription(subscriptionUId: string) {
+  clearCache(getStorageStripeKey(`subscription:${subscriptionUId}`))
 
-  return stripeAdmin.subscriptions.resume(subscriptionId, {
+  return stripeAdmin.subscriptions.resume(subscriptionUId, {
     billing_cycle_anchor: 'now',
   })
 }
 
-export async function getStripeSubscriptionById(subscriptionId: string) {
+export async function getStripeSubscriptionById(subscriptionUId: string) {
   return tryWithCache(
-    getStorageStripeKey(`subscription:${subscriptionId}`),
-    () => stripeAdmin.subscriptions.retrieve(subscriptionId),
+    getStorageStripeKey(`subscription:${subscriptionUId}`),
+    () => stripeAdmin.subscriptions.retrieve(subscriptionUId),
   )
 }

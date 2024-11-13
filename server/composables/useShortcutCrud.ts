@@ -3,7 +3,7 @@ import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import { userShortcutTable } from '@base/server/db/schemas'
 import { useCrud } from './useCrud'
 
-export function useShortcutCrud(userId: string) {
+export function useShortcutCrud(userUId: string) {
   const {
     getRecordsPaginated,
     getRecordByKey,
@@ -13,7 +13,7 @@ export function useShortcutCrud(userId: string) {
     countRecords,
   } = useCrud(userShortcutTable, {
     searchBy: ['route'],
-    queryRestrict: () => eq(userShortcutTable.user_id, userId),
+    queryRestrict: () => eq(userShortcutTable.user_id, userUId),
   })
 
   async function getShortcutsPaginated(options: ParsedFilterQuery) {

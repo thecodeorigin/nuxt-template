@@ -17,11 +17,11 @@ export async function getStripeCustomerByEmail(email: string) {
   )
 }
 
-export function getStripeCustomerSubscriptions(customerId: string) {
+export function getStripeCustomerSubscriptions(customerUId: string) {
   return tryWithCache(
-    getStorageStripeKey(`customer:${customerId}:subscriptions`),
+    getStorageStripeKey(`customer:${customerUId}:subscriptions`),
     () => stripeAdmin.subscriptions.list({
-      customer: customerId,
+      customer: customerUId,
       expand: [],
     }),
   )
@@ -63,8 +63,8 @@ export async function createStripeCustomerOnSignup(email: string) {
   }
 }
 
-export async function updateStripeCustomer(customerId: string, customer: Stripe.CustomerUpdateParams) {
-  const response = await stripeAdmin.customers.update(customerId, customer)
+export async function updateStripeCustomer(customerUId: string, customer: Stripe.CustomerUpdateParams) {
+  const response = await stripeAdmin.customers.update(customerUId, customer)
 
   clearCache(getStorageStripeKey(`customer:${response.email}`))
 

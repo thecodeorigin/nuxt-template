@@ -4,13 +4,13 @@ import { createInsertSchema } from 'drizzle-zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
+    const { userUId } = await defineEventOptions(event, { auth: true, params: ['userUId'] })
 
     const body = await readValidatedBody(event, createInsertSchema(sysUserTable).partial().parse)
 
     const { updateUserById } = useUserCrud()
 
-    const response = await updateUserById(userId, body)
+    const response = await updateUserById(userUId, body)
 
     setResponseStatus(event, 201)
 

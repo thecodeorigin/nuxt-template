@@ -2,9 +2,9 @@ import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
+    const { userUId } = await defineEventOptions(event, { auth: true, params: ['userUId'] })
 
-    const { getShortcutsPaginated } = useShortcutCrud(userId)
+    const { getShortcutsPaginated } = useShortcutCrud(userUId)
 
     const userShortcuts = await getShortcutsPaginated({
       ...getFilter(event),

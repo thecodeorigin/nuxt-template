@@ -15,7 +15,7 @@ function calculateTrialEndUnixTimestamp(trialPeriodDays?: number | null) {
   return Math.floor(trialEnd.getTime() / 1000) // Convert to Unix timestamp in seconds
 };
 
-export async function createStripeCheckoutSession(customerId: string, priceId: string, redirectPath: string) {
+export async function createStripeCheckoutSession(customerUId: string, priceId: string, redirectPath: string) {
   const price = await getStripePrice(priceId)
 
   return stripeAdmin.checkout.sessions.create({
@@ -33,7 +33,7 @@ export async function createStripeCheckoutSession(customerId: string, priceId: s
     allow_promotion_codes: true,
     payment_method_collection: 'if_required',
     billing_address_collection: 'auto',
-    customer: customerId,
+    customer: customerUId,
     customer_update: {
       address: 'auto',
     },

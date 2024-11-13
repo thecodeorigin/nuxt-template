@@ -2,19 +2,19 @@ import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
-  const { session, userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
+  const { session, userUId } = await defineEventOptions(event, { auth: true, params: ['userUId'] })
 
   const nitroApp = useNitroApp()
 
   try {
     const { token } = await readValidatedBody(event, z.object({ token: z.string() }).parse)
 
-    const { getUserDeviceToken, createUserDeviceToken } = useUserDeviceCrud({ user_id: userId })
+    const { getUserDeviceToken, createUserDeviceToken } = useUserDeviceCrud({ user_id: userUId })
     const dataTokenExists = await getUserDeviceToken(token)
 
     if (!dataTokenExists?.data) {
       const tokenRegistered = await createUserDeviceToken({
-        user_id: userId,
+        user_id: userUId,
         token_device: token,
       })
       return { message: 'Token registration successful', token: tokenRegistered.data.token_device }

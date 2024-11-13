@@ -3,13 +3,13 @@ import { sysOrganizationTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { organizationId } = await defineEventOptions(event, { auth: true, params: ['organizationId'] })
+    const { organizationUId } = await defineEventOptions(event, { auth: true, params: ['organizationUId'] })
 
-    const sysOrganization = await db.select().from(sysOrganizationTable)
+    const sysOrganization = await db.delete(sysOrganizationTable)
       .where(
-        eq(sysOrganizationTable.id, organizationId),
+        eq(sysOrganizationTable.id, organizationUId),
       )
-      .limit(1)
+      .returning()
 
     setResponseStatus(event, 201)
 

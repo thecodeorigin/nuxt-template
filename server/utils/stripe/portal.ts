@@ -1,8 +1,8 @@
-export function createStripeSelfServicePortal(customerId: string, currentPath: string) {
+export function createStripeSelfServicePortal(customerUId: string, currentPath: string) {
   return tryWithCache(
-    getStorageStripeKey(`customer:${customerId}:portal`),
+    getStorageStripeKey(`customer:${customerUId}:portal`),
     () => stripeAdmin.billingPortal.sessions.create({
-      customer: customerId,
+      customer: customerUId,
       return_url: getURL(currentPath),
     }),
   )

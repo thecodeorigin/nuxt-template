@@ -4,9 +4,9 @@ import { sysNotificationTable } from '@base/server/db/schemas'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { userId, notificationId } = await defineEventOptions(event, { auth: true, params: ['userId', 'notificationId'] })
+    const { userUId, notificationUId } = await defineEventOptions(event, { auth: true, params: ['userUId', 'notificationUId'] })
 
-    const queryRestrict = { user_id: userId }
+    const queryRestrict = { user_id: userUId }
     const { updateNotificationById } = useNotificationCrud(queryRestrict)
 
     const body = await readValidatedBody(event, createInsertSchema(sysNotificationTable).partial().parse)
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
       body.read_at = new Date(body.read_at)
     }
 
-    const data = await updateNotificationById(notificationId, body)
+    const data = await updateNotificationById(notificationUId, body)
 
     setResponseStatus(event, 200)
 

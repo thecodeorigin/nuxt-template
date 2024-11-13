@@ -1,19 +1,19 @@
 // TODO: remove this
-export function getStripeFreePrices(productId: string) {
+export function getStripeFreePrices(productUId: string) {
   return tryWithCache(
-    getStorageStripeKey(`product:${productId}:price:free`),
+    getStorageStripeKey(`product:${productUId}:price:free`),
     () => stripeAdmin.prices.list({
-      product: productId,
+      product: productUId,
       lookup_keys: ['free'],
     }),
   )
 }
 
-export function getStripeAllPrices(productId: string) {
+export function getStripeAllPrices(productUId: string) {
   return tryWithCache(
-    getStorageStripeKey(`product:${productId}:price:all`),
+    getStorageStripeKey(`product:${productUId}:price:all`),
     () => stripeAdmin.prices.list({
-      product: productId,
+      product: productUId,
     }),
   )
 }

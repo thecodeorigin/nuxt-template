@@ -3,11 +3,11 @@ import { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.sche
 
 export default defineEventHandler(async (event) => {
   try {
-    const { permissionId } = await defineEventOptions(event, { auth: true, params: ['permissionId'] })
+    const { permissionUId } = await defineEventOptions(event, { auth: true, params: ['permissionUId'] })
 
     const sysPermission = await db.select().from(sysPermissionTable)
       .where(
-        eq(sysPermissionTable.id, permissionId),
+        eq(sysPermissionTable.id, permissionUId),
       )
       .limit(1)
 

@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import type { Session } from 'next-auth'
+import { z } from 'zod'
 import { getServerSession } from '#auth'
 
 interface RouteOptions<U extends boolean, P extends string[]> {
@@ -41,6 +42,9 @@ export async function defineEventOptions<
   if (options?.params) {
     for (const param of options.params) {
       result[param] = getParam(event, param) as any
+
+      if (param.endsWith('UId'))
+        z.string().uuid().parse(result[param])
     }
   }
 

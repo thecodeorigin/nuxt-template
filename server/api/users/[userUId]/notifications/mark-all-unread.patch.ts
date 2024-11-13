@@ -2,9 +2,9 @@ import { useNotificationCrud } from '@base/server/composables/useNotificationCru
 
 export default defineEventHandler(async (event) => {
   try {
-    const { userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })
+    const { userUId } = await defineEventOptions(event, { auth: true, params: ['userUId'] })
 
-    const queryRestrict = { user_id: userId, markAllUnread: true }
+    const queryRestrict = { user_id: userUId, markAllUnread: true }
     const { markAllUnread } = useNotificationCrud(queryRestrict)
     const response = await markAllUnread()
 
