@@ -2,7 +2,7 @@ export default defineNuxtPlugin({
   name: 'auth',
   parallel: true,
   setup(nuxtApp) {
-    nuxtApp.hook('session:cache:refresh', async () => {
+    nuxtApp.hook('session:refresh', async () => {
       const authStore = useAuthStore()
 
       if (authStore.isAuthenticated) {

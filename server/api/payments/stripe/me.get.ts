@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
       subscriptions.push(subscription)
   }
   else {
-    subscriptions = (await getStripeCustomerSubscriptions(customer.id)).data
+    subscriptions = await getStripeCustomerSubscriptions(customer.id)
   }
 
   const activeSubscriptions = filter(subscriptions, { status: 'active' })

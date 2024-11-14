@@ -2,19 +2,27 @@
 export function getStripeFreePrices(productUId: string) {
   return tryWithCache(
     getStorageStripeKey(`product:${productUId}:price:free`),
-    () => stripeAdmin.prices.list({
-      product: productUId,
-      lookup_keys: ['free'],
-    }),
+    async () => {
+      const response = await stripeAdmin.prices.list({
+        product: productUId,
+        lookup_keys: ['free'],
+      })
+
+      return response.data
+    },
   )
 }
 
 export function getStripeAllPrices(productUId: string) {
   return tryWithCache(
     getStorageStripeKey(`product:${productUId}:price:all`),
-    () => stripeAdmin.prices.list({
-      product: productUId,
-    }),
+    async () => {
+      const response = await stripeAdmin.prices.list({
+        product: productUId,
+      })
+
+      return response.data
+    },
   )
 }
 

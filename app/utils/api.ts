@@ -1,4 +1,4 @@
-import type { $Fetch } from 'ofetch'
+import type { $Fetch } from 'nitropack'
 
 export const $api = $fetch.create({
   retry: 1,
@@ -14,7 +14,6 @@ export const $api = $fetch.create({
     }
   },
   async onResponseError(error) {
-    const nuxtApp = useNuxtApp()
     const authStore = useAuthStore()
 
     switch (error.response?.status) {
@@ -34,8 +33,6 @@ export const $api = $fetch.create({
         }
         break
       default:
-        await nuxtApp.hooks.callHook('session:cache:refresh')
-
         notifyError({
           content: error.response?.statusText || 'Internal Server Error',
         })

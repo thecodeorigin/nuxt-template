@@ -20,10 +20,14 @@ export async function getStripeCustomerByEmail(email: string) {
 export function getStripeCustomerSubscriptions(customerUId: string) {
   return tryWithCache(
     getStorageStripeKey(`customer:${customerUId}:subscriptions`),
-    () => stripeAdmin.subscriptions.list({
-      customer: customerUId,
-      expand: [],
-    }),
+    async () => {
+      const response = await stripeAdmin.subscriptions.list({
+        customer: customerUId,
+        expand: [],
+      })
+
+      return response.data
+    },
   )
 }
 
@@ -42,11 +46,11 @@ export function createStripeCustomer(payload: {
 export async function createStripeCustomerOnSignup(email: string) {
   const stripeCustomer = await createStripeCustomer({ email })
 
-  const { data } = await getStripeAllProducts()
+  const products = await getStripeAllProducts()
 
-  const prices = await getStripeAllPrices(data[0].id!)
+  const prices = await getStripeAllPrices(products[0].id!)
 
-  const freePrice = minBy(prices.data, 'unit_amount')
+  const freePrice = minBy(prices, 'unit_amount')
 
   if (!freePrice) {
     throw createError({

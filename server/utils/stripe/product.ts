@@ -8,9 +8,13 @@ export function getStripeProduct(productUId: string) {
 export function getStripeAllProducts() {
   return tryWithCache(
     getStorageStripeKey(`product:all`),
-    () => stripeAdmin.products.search({
-      query: `metadata[\'lookup_key\']:\'${process.env.STRIPE_PRODUCT_LOOKUP_KEY}\'`,
-    }),
+    async () => {
+      const response = await stripeAdmin.products.search({
+        query: `metadata[\'lookup_key\']:\'${process.env.STRIPE_PRODUCT_LOOKUP_KEY}\'`,
+      })
+
+      return response.data
+    },
   )
 }
 

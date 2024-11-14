@@ -29,7 +29,7 @@ declare global {
 
 declare module '#app' {
   interface RuntimeNuxtHooks {
-    'session:cache:refresh': () => HookResult
+    'session:refresh': () => HookResult
   }
 }
 
