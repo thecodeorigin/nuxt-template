@@ -16,7 +16,7 @@ export async function tryWithCache<T>(key: string, getter: () => Promise<T | und
 
   const result = await getter()
 
-  if (result)
+  if (Array.isArray(result) ? result.length : result)
     await storage.setItem(key, result as any)
 
   return result as T
