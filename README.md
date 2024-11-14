@@ -9,7 +9,7 @@ Nuxt 3 template is a opinionated template for Nuxt 3 project. It includes the fo
 - [Vuetify](https://vuetifyjs.com) for component library
 - [Nuxt i18n](https://i18n.nuxtjs.org) for internationalization
 - [Nuxt Auth](https://auth.sidebase.io) for authentication
-- [Drizzle ORM](https://drizzle.dev) for Database communication
+- [Drizzle ORM](https://orm.drizzle.team) for Database communication
 - [CASL](https://casl.js.org) for Access Control
 - [Firebase Notification](https://firebase.google.com) for push notification
 
