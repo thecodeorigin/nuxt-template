@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { cloneDeep, debounce } from 'lodash-es'
 import { VForm } from 'vuetify/components/VForm'
 import { usePermissionStore } from '~/stores/admin/permission'
+import type { PivotRolePermission, Role } from '~/stores/admin/role'
 
 interface Props {
   isDialogVisible: boolean
-  roleData?: Partial<Role>
+  roleData?: Partial<PivotRolePermission>
 }
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:rolePermissions', value: Partial<Role>): void
+  (e: 'update:rolePermissions', value: Partial<PivotRolePermission>): void
 }
 
 const props = defineProps<Props>()
@@ -21,89 +23,61 @@ const { fetchPermissions } = permissionStore
 const refPermissionForm = ref<VForm>()
 const isFormValid = ref(false)
 
-const isSelectAll = ref(false)
-const localRoleData = ref<Partial<Role>>({
+const localRoleData = ref<Partial<PivotRolePermission>>({
   id: '',
   name: '',
+  permissions: [],
 })
 
-const permissions = [
-  {
-    action: 'Read',
-    subject: 'All',
-    value: {
-      action: 'read',
-      subject: 'all',
-    },
-  },
-  {
-    action: 'Read',
-    subject: 'Category',
-    value: {
-      action: 'read',
-      subject: 'category',
-    },
-  },
-  {
-    action: 'Create',
-    subject: 'All',
-    value: {
-      action: 'create',
-      subject: 'all',
-    },
-  },
-]
+// 👉 Fetch Query
+const queryKeyword = ref('')
+const queryOptions = ref<ParsedFilterQuery> ({
+  keyword: '',
+  keywordLower: '',
+  sortBy: 'action',
+  sortAsc: true,
+  limit: 10,
+  page: 1,
+  withCount: true,
+})
 
-// // select all
-// watch(isSelectAll, (val) => {
-//   permissions.value = permissions.value.map(permission => ({
-//     ...permission,
-//     read: val,
-//     write: val,
-//     create: val,
-//   }))
-// })
+const handleSearch = debounce((keyword: string) => {
+  queryOptions.value.keyword = keyword
+}, 1000)
 
-// // if Indeterminate is false, then set isSelectAll to false
-// watch(isIndeterminate, () => {
-//   if (!isIndeterminate.value)
-//     isSelectAll.value = false
-// })
+watch(queryKeyword, (newValue) => {
+  handleSearch(newValue)
+})
 
-// // if all permissions are checked, then set isSelectAll to true
-// watch(permissions, () => {
-//   if (checkedCount.value === (permissions.value.length * 3))
-//     isSelectAll.value = true
-// }, { deep: true })
+watch(queryOptions.value, async () => {
+  await fetchPermissions(queryOptions.value)
+})
 
-// // if rolePermissions is not empty, then set permissions
-// watch(() => props, () => {
-//   if (props.rolePermissions && props.rolePermissions.permissions.length) {
-//     role.value = props.rolePermissions.name
-//     permissions.value = permissions.value.map((permission) => {
-//       const rolePermission = props.rolePermissions?.permissions.find(item => item.name === permission.name)
+// 👉 select all and none
+const isSelectAll = computed(() => {
+  return (
+    localRoleData.value.permissions?.length === permissionList.value.length
+  )
+})
 
-//       if (rolePermission) {
-//         return {
-//           ...permission,
-//           ...rolePermission,
-//         }
-//       }
+function handleCheckAllPermissions() {
+  localRoleData.value.permissions = [...permissionList.value]
+}
 
-//       return permission
-//     })
-//   }
-// })
+function handleCheckNonePermissions() {
+  localRoleData.value.permissions = []
+}
 
+// 👉 Submit
 function onReset() {
   emit('update:isDialogVisible', false)
 
-  isSelectAll.value = false
   refPermissionForm.value?.reset()
 
   localRoleData.value = {
     id: '',
     name: '',
+    permissions: [],
   }
 }
 
@@ -114,6 +88,7 @@ function onSubmit() {
         ? localRoleData.value
         : {
             name: localRoleData.value.name,
+            permissions: localRoleData.value.permissions,
           })
 
       onReset()
@@ -123,12 +98,26 @@ function onSubmit() {
 
 watch(() => props.roleData, (newRoleData) => {
   if (newRoleData) {
-    localRoleData.value = { ...newRoleData }
+    localRoleData.value = {
+      id: newRoleData.id,
+      name: newRoleData.name,
+      permissions: permissionList.value.filter(permission =>
+        newRoleData.permissions?.some(p => p.id === permission.id),
+      ),
+    }
   }
 }, { immediate: true })
 
-onMounted(() => {
-  fetchPermissions()
+onMounted(async () => {
+  await fetchPermissions()
+
+  if (props.roleData) {
+    localRoleData.value.permissions = permissionList.value.filter(permission =>
+      props.roleData?.permissions?.some(p =>
+        p.id === permission.id,
+      ),
+    )
+  }
 })
 </script>
 
@@ -169,7 +158,7 @@ onMounted(() => {
           <VRow>
             <VCol cols="12" md="4" class="d-flex align-center">
               <h5 class="text-h5">
-                Role Permissions
+                Permissions
               </h5>
             </VCol>
 
@@ -180,20 +169,22 @@ onMounted(() => {
                 </p>
 
                 <VBtn
-                  color="secondary"
+                  :color="isSelectAll ? 'primary' : 'secondary'"
                   variant="text"
                   text="All"
+                  @click="handleCheckAllPermissions"
                 />
 
                 <VBtn
-                  color="secondary"
+                  :color="localRoleData?.permissions?.length === 0 ? 'primary' : 'secondary'"
                   variant="text"
                   text="None"
+                  @click="handleCheckNonePermissions"
                 />
 
                 <div class="flex-grow-1">
                   <VTextField
-                    v-model="search"
+                    v-model="queryKeyword"
                     placeholder="Search"
                     density="compact"
                     prepend-inner-icon="ri-search-line"
@@ -204,12 +195,22 @@ onMounted(() => {
           </VRow>
 
           <!-- 👉 Role Permissions -->
-          <div class="mt-6 d-flex flex-wrap gap-3">
-            <div v-for="permission in permissionList" :key="permission.id" class="d-flex align-center gap-2 flex-wrap border px-3 py-2">
+          <div class="mt-6 d-flex flex-wrap gap-3 permission-container">
+            <div v-for="permission in permissionList" :key="permission.id" class="d-flex align-center gap-2 flex-wrap">
               <VLabel>
-                <VCheckboxBtn />
-
-                {{ permission.action }}:{{ permission.subject }}
+                <VCheckbox
+                  v-model="localRoleData.permissions"
+                  :value="permission"
+                  class="border pa-2"
+                  :class="{ 'border border-primary text-primary': localRoleData?.permissions && localRoleData?.permissions.some(p => p.id === permission.id) }"
+                  multiple
+                >
+                  <template #label>
+                    <span class="pr-3" :class="{ 'text-primary': localRoleData?.permissions && localRoleData?.permissions.some(p => p.id === permission.id) }">
+                      {{ permission.action }} : {{ permission.subject }}
+                    </span>
+                  </template>
+                </VCheckbox>
               </VLabel>
             </div>
           </div>
@@ -235,4 +236,7 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.permission-container {
+  min-block-size: 150px;
+}
 </style>

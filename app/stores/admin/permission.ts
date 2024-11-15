@@ -1,13 +1,18 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
+import type { RolePermission } from './role'
 
 export type Permission = InferSelectModel<typeof sysPermissionTable>
 
+export interface PermissionWithRelations extends Permission {
+  rolePermission: RolePermission[]
+}
+
 export const usePermissionStore = defineStore('permission', () => {
-  const permissionList = ref<Permission[]>([])
+  const permissionList = ref<PermissionWithRelations[]>([])
   const totalPermissions = ref(0)
-  const permissionDetail = ref<Permission | null>(null)
+  const permissionDetail = ref<PermissionWithRelations | null>(null)
 
   async function fetchPermissions(options?: ParsedFilterQuery) {
     try {

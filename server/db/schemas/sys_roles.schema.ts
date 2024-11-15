@@ -5,7 +5,7 @@ import { sysRoleUserTable } from './sys_role_user.schema'
 
 export const sysRoleTable = pgTable('sys_roles', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
 })
 
 export const sysRoleRelations = relations(sysRoleTable, ({ many }) => ({

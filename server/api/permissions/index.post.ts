@@ -1,4 +1,4 @@
-import { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
+import { usePermissionCrud } from '~~/server/composables/usePermissionCrud'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,13 +6,17 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysPermission = await db.insert(sysPermissionTable)
-      .values(body)
-      .returning()
+    const { createPermission } = usePermissionCrud()
+
+    const sysPermission = await createPermission(body)
 
     setResponseStatus(event, 201)
 
-    return { data: sysPermission[0] }
+    return {
+      status: 'success',
+      message: 'Permission has been created successfully',
+      data: sysPermission,
+    }
   }
   catch (error: any) {
     throw parseError(error)

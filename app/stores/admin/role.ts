@@ -1,13 +1,19 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysRoleTable } from '@base/server/db/schemas/sys_roles.schema'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import type { Permission } from './permission'
+import type { sysRolePermissionTable } from '~~/server/db/schemas'
 
 export type Role = InferSelectModel<typeof sysRoleTable>
+export type RolePermission = InferSelectModel<typeof sysRolePermissionTable>
+export interface PivotRolePermission extends Partial<Role> {
+  permissions: Permission[]
+}
 
 export const useRoleStore = defineStore('role', () => {
   const roleList = ref<Role[]>([])
   const totalRoles = ref<number>(0)
-  const roleDetail = ref<Role | null>(null)
+  const roleDetail = ref<RoleWithRelations | null>(null)
 
   async function fetchRoles(options?: ParsedFilterQuery) {
     try {
@@ -29,7 +35,7 @@ export const useRoleStore = defineStore('role', () => {
         method: 'GET',
       })
 
-      roleDetail.value = response.data
+      roleDetail.value = response
     }
     catch (error) {
       console.error('Error fetching role detail:', error)

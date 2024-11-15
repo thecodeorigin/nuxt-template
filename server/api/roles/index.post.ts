@@ -1,4 +1,4 @@
-import { sysRoleTable } from '@base/server/db/schemas'
+import { useRoleCrud } from '~~/server/composables/useRoleCrud'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,13 +6,13 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysRole = await db.insert(sysRoleTable)
-      .values(body)
-      .returning()
+    const { createRole } = useRoleCrud()
+
+    const response = await createRole(body)
 
     setResponseStatus(event, 201)
 
-    return { data: sysRole[0] }
+    return response.data
   }
   catch (error: any) {
     throw parseError(error)

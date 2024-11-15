@@ -20,9 +20,10 @@ const { roleList, totalRoles, roleDetail } = storeToRefs(roleStore)
 const { fetchRoles, fetchRoleDetail, createRole, updateRole, deleteRole, joinRolePermissions } = roleStore
 
 const currentRoleId = ref<string>('')
-const currentRoleData = ref<Partial<Role>>({
+const currentRoleData = ref<Partial<PivotRolePermission>>({
   id: '',
   name: '',
+  permissions: [],
 })
 const currentDialogAction = ref<DrawerActionTypes>('add')
 const currentDialogConfig = ref<RoleDialog>({
@@ -58,6 +59,7 @@ async function handleOpenEditDialog(roleId: string) {
   currentRoleData.value = {
     id: roleDetail.value?.id,
     name: roleDetail.value?.name,
+    permissions: cloneDeep(roleDetail.value?.permissions),
   }
 
   currentDialogConfig.value = {
@@ -67,7 +69,7 @@ async function handleOpenEditDialog(roleId: string) {
 }
 
 // 👉 Create or Update
-async function handleRoleChange(data: Partial<Role>) {
+async function handleRoleChange(data: Partial<PivotRolePermission>) {
   if (currentDialogAction.value === DRAWER_ACTION_TYPES.EDIT) {
     const { id, ...body } = data
 
@@ -215,7 +217,3 @@ useLazyAsyncData(
     />
   </div>
 </template>
-
-<style lang="scss" scoped>
-
-</style>
