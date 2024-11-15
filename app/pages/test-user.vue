@@ -305,7 +305,15 @@ useLazyAsyncData(
           </div>
           <!-- 👉 Add user button -->
           <VBtn @click="handleOpenAddDrawer()">
-            Add New User
+            <template v-if="$vuetify.display.xs">
+              <VIcon icon="ri-add-line" />
+            </template>
+            <template v-else-if="$vuetify.display.mdAndDown">
+              <span>Add</span>   <VIcon icon="ri-add-line" />
+            </template>
+            <template v-else>
+              Add New User
+            </template>
           </VBtn>
         </div>
       </VCardText>
