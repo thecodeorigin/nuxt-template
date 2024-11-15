@@ -195,7 +195,7 @@ function editPermission(value: RoleDetails) {
 </script>
 
 <template>
-  <VRow>
+  <VRow class="card-container">
     <!-- 👉 Roles -->
     <VCol
       v-for="item in roles"
@@ -309,3 +309,11 @@ function editPermission(value: RoleDetails) {
     v-model:role-permissions="roleDetail"
   />
 </template>
+
+<style lang="scss" scoped>
+.card-container {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-bottom: 2rem;
+}
+</style>

@@ -8,7 +8,9 @@ export const sysPermissionTable = pgTable('sys_permissions', {
   role_id: uuid('role_id').references(() => sysRoleTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
   action: permissionAction('action').default('read').notNull(),
   subject: text('subject').notNull(),
-})
+}, table => ({
+  uniqueActionSubject: unique().on(table.action, table.subject),
+}))
 
 export const sysPermissionRelations = relations(sysPermissionTable, ({ one }) => ({
   role: one(sysRoleTable, {
