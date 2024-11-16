@@ -23,7 +23,7 @@ function convertToSQLDateWithTimezone(input: string): Date {
 
   // Create a Date object in UTC by adjusting for GMT+7
   const dateInGMT7 = new Date(Date.UTC(year, month, day, hours, minutes, seconds))
-  const offsetInMilliseconds = -7 * 60 * 60 * 1000 // Convert from GMT+7 to UTC
+  const offsetInMilliseconds = 7 * 60 * 60 * 1000 // Convert from GMT+7 to UTC
   const dateInUTC = new Date(dateInGMT7.getTime() - offsetInMilliseconds)
 
   return dateInUTC
