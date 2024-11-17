@@ -1,6 +1,5 @@
 import type { Session, User } from 'next-auth'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
-import { useRoleCrud } from '@base/server/composables/useRoleCrud'
 import type { LoggedInUser } from '../../../next-auth'
 
 async function _getUser(session: Session) {
@@ -14,34 +13,6 @@ async function _getUser(session: Session) {
     user = (await getUserByKey('phone', session.user.phone)).data
 
   return user
-}
-
-async function _createUser(session: Session) {
-  const { getRoleByName } = useRoleCrud()
-
-  const userRole = await getRoleByName('User')
-
-  if (!userRole.data?.id) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: ErrorMessage.CANNOT_FIND_ROLE,
-    })
-  }
-
-  const { createUser } = useUserCrud()
-
-  await createUser({
-    email: session.user.email || '',
-    phone: session.user.phone || '',
-    password: '',
-    language: '',
-    country: '',
-    city: '',
-    postcode: '',
-    address: '',
-    organization: '',
-    role_id: userRole.data.id,
-  })
 }
 
 export async function getUserBySession(session: Session) {

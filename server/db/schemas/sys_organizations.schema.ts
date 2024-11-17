@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm/relations'
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
-import { sysUserTable } from './sys_users.schema'
+import { sysOrganizationUserTable } from './sys_organization_user.schema'
 
 export const sysOrganizationTable = pgTable('sys_organizations', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -11,5 +11,5 @@ export const sysOrganizationTable = pgTable('sys_organizations', {
 })
 
 export const sysOrganizationRelations = relations(sysOrganizationTable, ({ many }) => ({
-  users: many(sysUserTable),
+  users: many(sysOrganizationUserTable),
 }))

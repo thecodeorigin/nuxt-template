@@ -1,11 +1,11 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import { sysRoleTable } from '@base/server/db/schemas'
+import { eq } from 'drizzle-orm'
 import { useCrud } from './useCrud'
 
 export function useRoleCrud() {
   const {
     getRecordsPaginated,
-    getRecordByKey,
     createRecord,
     updateRecordByKey,
     deleteRecordByKey,
@@ -21,15 +21,25 @@ export function useRoleCrud() {
   }
 
   async function getRoleById(id: string) {
-    const { data } = await getRecordByKey('id', id)
+    const data = await db.query.sysRoleTable.findFirst({
+      where: sysRoleTable => eq(sysRoleTable.id, id),
+      with: {
+        permissions: true,
+      },
+    })
 
-    return { data }
+    return data
   }
 
   async function getRoleByName(name: string) {
-    const { data } = await getRecordByKey('name', name)
+    const data = await db.query.sysRoleTable.findFirst({
+      where: sysRoleTable => eq(sysRoleTable.name, name),
+      with: {
+        permissions: true,
+      },
+    })
 
-    return { data }
+    return data
   }
 
   async function updateRoleById(id: string, body: any) {

@@ -2,18 +2,17 @@ import { rand, randAvatar, randCountryCode, randEmail, randFullName, randLanguag
 import type { InferSelectModel } from 'drizzle-orm'
 import bcrypt from 'bcrypt'
 import type { sysRoleTable } from '../schemas'
-import { sysUserTable } from '../schemas'
+import { sysRoleUserTable, sysUserTable } from '../schemas'
 import { db } from '../../utils/db'
 
 export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding users...')
 
-  const editorRole = roles.find(role => role.name === 'User')
+  const userRole = roles.find(role => role.name === 'User')
 
   const testUser = {
     email: 'test@gmail.com',
     password: await bcrypt.hash('123456', 10),
-    role_id: editorRole!.id,
   }
 
   const users = await Promise.all(Array.from({ length: 15 }).fill(null).map(
@@ -29,13 +28,18 @@ export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) 
       postcode: '',
       address: '',
       organization: '',
-      role_id: rand(roles).id,
     }),
   ))
 
   users[0].email = testUser.email
   users[0].password = testUser.password
-  users[0].role_id = testUser.role_id
 
-  return await db.insert(sysUserTable).values(users).returning()
+  const data = await db.insert(sysUserTable).values(users).returning()
+
+  await db.insert(sysRoleUserTable).values(data.map(user => ({
+    role_id: userRole!.id,
+    user_id: user.id,
+  })))
+
+  return data
 }

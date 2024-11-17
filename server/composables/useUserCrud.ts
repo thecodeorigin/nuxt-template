@@ -64,9 +64,23 @@ export function useUserCrud() {
         password: false,
       },
       with: {
-        role: {
+        roles: {
           with: {
-            permissions: true,
+            role: {
+              with: {
+                permissions: true,
+              },
+            },
+          },
+        },
+        organizations: {
+          with: {
+            organization: {
+              columns: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },

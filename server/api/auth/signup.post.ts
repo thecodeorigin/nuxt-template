@@ -1,7 +1,6 @@
 import { createHmac } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import bcrypt from 'bcrypt'
-import { useRoleCrud } from '@base/server/composables/useRoleCrud'
 import { useUserCrud } from '@base/server/composables/useUserCrud'
 import { z } from 'zod'
 
@@ -17,17 +16,6 @@ export default defineEventHandler(async (event) => {
       }).parse,
     )
 
-    const { getRoleByName } = useRoleCrud()
-
-    const userRole = await getRoleByName('User')
-
-    if (!userRole.data?.id) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: ErrorMessage.CANNOT_FIND_ROLE,
-      })
-    }
-
     const { createUser } = useUserCrud()
 
     const sysUser = await createUser({
@@ -41,7 +29,6 @@ export default defineEventHandler(async (event) => {
       address: '',
       organization: '',
       provider,
-      role_id: userRole.data.id,
       email_verified: provider === 'credentials' ? null : new Date(),
     })
 

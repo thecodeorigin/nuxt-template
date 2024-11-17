@@ -1,6 +1,6 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysRoleTable } from '../schemas'
-import { sysPermissionTable } from '../schemas'
+import { sysPermissionTable, sysRolePermissionTable } from '../schemas'
 import { db } from '../../utils/db'
 
 export async function seedPermissions(roles: InferSelectModel<typeof sysRoleTable>[]) {
@@ -10,11 +10,21 @@ export async function seedPermissions(roles: InferSelectModel<typeof sysRoleTabl
   const userRole = roles.find(role => role.name === 'User')
   const visitorRole = roles.find(role => role.name === 'Visitor')
 
-  return await db.insert(sysPermissionTable).values([
-    { role_id: adminRole!.id, action: 'manage' as const, subject: 'all' as const },
-    { role_id: userRole!.id, action: 'manage' as const, subject: 'Project' as const },
-    { role_id: visitorRole!.id, action: 'read' as const, subject: 'Project' as const },
-    { role_id: userRole!.id, action: 'manage' as const, subject: 'Category' as const },
-    { role_id: visitorRole!.id, action: 'read' as const, subject: 'Category' as const },
-  ].filter(Boolean))
+  const data = await db.insert(sysPermissionTable).values([
+    { action: 'manage' as const, subject: 'all' as const },
+    { action: 'manage' as const, subject: 'Project' as const },
+    { action: 'manage' as const, subject: 'Category' as const },
+    { action: 'read' as const, subject: 'Project' as const },
+    { action: 'read' as const, subject: 'Category' as const },
+  ].filter(Boolean)).returning()
+
+  await db.insert(sysRolePermissionTable).values([
+    { role_id: adminRole!.id, permission_id: data[0].id },
+    { role_id: userRole!.id, permission_id: data[1].id },
+    { role_id: userRole!.id, permission_id: data[2].id },
+    { role_id: visitorRole!.id, permission_id: data[3].id },
+    { role_id: visitorRole!.id, permission_id: data[4].id },
+  ])
+
+  return data
 }
