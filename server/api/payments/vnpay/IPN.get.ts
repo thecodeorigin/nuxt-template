@@ -8,8 +8,7 @@ import {
   IpnSuccess,
   IpnUnknownError,
 } from 'vnpay'
-import { vnpayAdmin } from '~~/server/utils'
-import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '~~/server/db/schemas'
+import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
 
 function convertToSQLDateWithTimezone(input: string): Date {
   // Extract date and time components from the input (assuming GMT+7)
