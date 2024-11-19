@@ -2,7 +2,6 @@ import { eq } from 'drizzle-orm'
 import { format } from 'date-fns'
 import { ProductCode, VnpLocale } from 'vnpay'
 import { PaymentStatus, paymentProviderTransactionTable, sysUserTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
-import { vnpayAdmin } from '~~/server/utils'
 
 export default defineEventHandler(async (event) => {
   try {
