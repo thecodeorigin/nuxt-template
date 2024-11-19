@@ -5,24 +5,25 @@ import type { Permission } from './permission'
 import type { sysRolePermissionTable } from '~~/server/db/schemas'
 
 export type Role = InferSelectModel<typeof sysRoleTable>
+
 export type RolePermission = InferSelectModel<typeof sysRolePermissionTable>
+
+export type RoleWithPermissions = Role & {
+  permissions: Array<{
+    permission: Pick<Permission, 'id' | 'subject' | 'action'>
+  }>
+}
+
 export interface PivotRolePermission extends Partial<Role> {
   permissions: Permission[]
 }
 
 export const useRoleStore = defineStore('role', () => {
-  const roleList = ref<Role[]>([])
-  const totalRoles = ref<number>(0)
-  const roleDetail = ref<RoleWithRelations | null>(null)
-
   async function fetchRoles(options?: ParsedFilterQuery) {
     try {
-      const response = await $api('/api/roles', {
+      return await $api<{ total: number, data: RoleWithPermissions[] }>('/roles', {
         query: options,
       })
-
-      roleList.value = response.data
-      totalRoles.value = response.total
     }
     catch (error) {
       console.error('Error fetching roles:', error)
@@ -31,39 +32,33 @@ export const useRoleStore = defineStore('role', () => {
 
   async function fetchRoleDetail(roleId: string) {
     try {
-      const response = await $api(`/api/roles/${roleId}`, {
+      return await $api(`/roles/${roleId}`, {
         method: 'GET',
       })
-
-      roleDetail.value = response
     }
     catch (error) {
       console.error('Error fetching role detail:', error)
     }
   }
 
-  async function createRole(body: Partial<Role>) {
+  async function createRole(body: { id: string, name: string, permissions: string[] }) {
     try {
-      const response = await $api<Role>('/api/roles', {
+      return await $api<Role>('/roles', {
         method: 'POST',
-        body,
+        body: omit(body, ['id']),
       })
-
-      return response
     }
     catch (error) {
       console.error('Error creating role:', error)
     }
   }
 
-  async function updateRole(roleId: string, body: Partial<Role>) {
+  async function updateRole(roleId: string, body: { id: string, name: string, permissions: string[] }) {
     try {
-      const response = await $api(`/api/roles/${roleId}`, {
+      return await $api(`/roles/${roleId}`, {
         method: 'PATCH',
         body,
       })
-
-      return response
     }
     catch (error) {
       console.error('Error updating role:', error)
@@ -72,7 +67,7 @@ export const useRoleStore = defineStore('role', () => {
 
   async function deleteRole(roleId: string) {
     try {
-      await $api(`/api/roles/${roleId}`, {
+      return await $api(`/roles/${roleId}`, {
         method: 'DELETE',
       })
     }
@@ -82,9 +77,6 @@ export const useRoleStore = defineStore('role', () => {
   }
 
   return {
-    roleList,
-    totalRoles,
-    roleDetail,
     fetchRoles,
     fetchRoleDetail,
     createRole,

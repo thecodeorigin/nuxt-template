@@ -1,196 +1,63 @@
 <script setup lang="ts">
-import avatar1 from '@base/images/avatars/avatar-1.png'
-import avatar10 from '@base/images/avatars/avatar-10.png'
-import avatar2 from '@base/images/avatars/avatar-2.png'
-import avatar3 from '@base/images/avatars/avatar-3.png'
-import avatar4 from '@base/images/avatars/avatar-4.png'
-import avatar5 from '@base/images/avatars/avatar-5.png'
-import avatar6 from '@base/images/avatars/avatar-6.png'
-import avatar7 from '@base/images/avatars/avatar-7.png'
-import avatar8 from '@base/images/avatars/avatar-8.png'
-import avatar9 from '@base/images/avatars/avatar-9.png'
 import poseM from '@base/images/pages/pose_m1.png'
 
+import type { RoleWithPermissions } from '@base/stores/admin/role'
+import type { Permission } from '@base/stores/admin/permission'
 import AddEditRoleDialog from './AddEditRoleDialog.vue'
 
-interface Permission {
-  name: string
-  read: boolean
-  write: boolean
-  create: boolean
-}
-
-interface RoleDetails {
-  name: string
+defineProps<{
+  roles: RoleWithPermissions[]
   permissions: Permission[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'edit', payload: { id: string, name: string, permissions: string[] }): void
+  (e: 'create', payload: { id: string, name: string, permissions: string[] }): void
+  (e: 'delete', payload: RoleWithPermissions): void
+}>()
+
+const dialogVisible = ref(false)
+
+const roleSelected = ref<RoleWithPermissions | null>(null)
+
+watch(dialogVisible, (value) => {
+  if (!value) {
+    roleSelected.value = null
+  }
+})
+
+function handleCreate() {
+  dialogVisible.value = true
 }
 
-interface Roles {
-  role: string
-  users: string[]
-  details: RoleDetails
+function handleEdit(role: RoleWithPermissions) {
+  dialogVisible.value = true
+
+  roleSelected.value = role
 }
 
-// 👉 Roles List
-const roles = ref<Roles[]>([
-  {
-    role: 'Administrator',
-    users: [avatar1, avatar2, avatar3, avatar4],
-    details: {
-      name: 'Administrator',
-      permissions: [
-        {
-          name: 'User Management',
-          read: true,
-          write: true,
-          create: true,
-        },
-        {
-          name: 'Disputes Management',
-          read: true,
-          write: true,
-          create: true,
-        },
-        {
-          name: 'API Control',
-          read: true,
-          write: true,
-          create: true,
-        },
-      ],
-    },
-  },
-  {
-    role: 'Manager',
-    users: [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7],
-    details: {
-      name: 'Manager',
-      permissions: [
-        {
-          name: 'Reporting',
-          read: true,
-          write: true,
-          create: false,
-        },
-        {
-          name: 'Payroll',
-          read: true,
-          write: true,
-          create: true,
-        },
-        {
-          name: 'User Management',
-          read: true,
-          write: true,
-          create: true,
-        },
-      ],
-    },
-  },
-  {
-    role: 'Users',
-    users: [avatar1, avatar2, avatar3, avatar4, avatar5],
-    details: {
-      name: 'Users',
-      permissions: [
-        {
-          name: 'User Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-        {
-          name: 'Content Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-        {
-          name: 'Disputes Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-        {
-          name: 'Database Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-      ],
-    },
-  },
-  {
-    role: 'Support',
-    users: [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6],
-    details: {
-      name: 'Support',
-      permissions: [
-        {
-          name: 'Repository Management',
-          read: true,
-          write: true,
-          create: false,
-        },
-        {
-          name: 'Content Management',
-          read: true,
-          write: true,
-          create: false,
-        },
-        {
-          name: 'Database Management',
-          read: true,
-          write: true,
-          create: false,
-        },
-      ],
-    },
-  },
-  {
-    role: 'Restricted User',
-    users: [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8, avatar9, avatar10],
-    details: {
-      name: 'Restricted User',
-      permissions: [
-        {
-          name: 'User Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-        {
-          name: 'Content Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-        {
-          name: 'Disputes Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-        {
-          name: 'Database Management',
-          read: true,
-          write: false,
-          create: false,
-        },
-      ],
-    },
-  },
-])
+async function handleDelete(role: RoleWithPermissions) {
+  try {
+    await confirmation({
+      title: 'Delete Role',
+      body: 'Are you sure you want to delete this role?',
+    })
 
-const isRoleDialogVisible = ref(false)
+    emit('delete', role)
+  }
+  catch {}
+}
 
-const roleDetail = ref<RoleDetails>()
+function handleSubmitEdit(role: { id: string, name: string, permissions: string[] }) {
+  emit('edit', role)
 
-const isAddRoleDialogVisible = ref(false)
+  dialogVisible.value = false
+}
 
-function editPermission(value: RoleDetails) {
-  isRoleDialogVisible.value = true
-  roleDetail.value = value
+function handleSubmitCreate(role: { id: string, name: string, permissions: string[] }) {
+  emit('create', role)
+
+  dialogVisible.value = false
 }
 </script>
 
@@ -198,19 +65,19 @@ function editPermission(value: RoleDetails) {
   <VRow class="card-container">
     <!-- 👉 Roles -->
     <VCol
-      v-for="item in roles"
-      :key="item.role"
+      v-for="role in roles"
+      :key="role.id"
       cols="12"
       sm="6"
       lg="4"
     >
       <VCard>
         <VCardText class="d-flex align-center pb-4">
-          <span>Total {{ item.users.length }} users</span>
+          <span>{{ $t('Total {number} permissions', { number: role.permissions.length }) }}</span>
 
           <VSpacer />
 
-          <div class="v-avatar-group">
+          <!-- <div class="v-avatar-group">
             <template
               v-for="(user, index) in item.users"
               :key="user"
@@ -235,28 +102,29 @@ function editPermission(value: RoleDetails) {
                 +{{ item.users.length - 3 }}
               </span>
             </VAvatar>
-          </div>
+          </div> -->
         </VCardText>
 
         <VCardText>
           <div class="d-flex justify-space-between align-end">
             <div>
               <h5 class="text-h5 mb-1">
-                {{ item.role }}
+                {{ role.name }}
               </h5>
               <a
                 href="javascript:void(0)"
-                @click="editPermission(item.details)"
+                @click="handleEdit(role)"
               >
-                Edit Role
+                {{ $t('Edit Role') }}
               </a>
             </div>
 
             <IconBtn
               color="secondary"
               class="mt-n2"
+              @click="handleDelete(role)"
             >
-              <VIcon icon="ri-file-copy-line" />
+              <VIcon icon="ri-delete-bin-7-line" />
             </IconBtn>
           </div>
         </VCardText>
@@ -291,29 +159,35 @@ function editPermission(value: RoleDetails) {
             <VCardText class="d-flex flex-column align-end justify-end gap-4">
               <VBtn
                 size="small"
-                @click="isAddRoleDialogVisible = true"
+                @click="handleCreate"
               >
-                Add Role
+                Create Role
               </VBtn>
               <span class="text-end">Add new role, if it doesn't exist.</span>
             </VCardText>
           </VCol>
         </VRow>
       </VCard>
-      <AddEditRoleDialog v-model:is-dialog-visible="isAddRoleDialogVisible" />
+      <AddEditRoleDialog
+        v-model="dialogVisible"
+        :role="roleSelected"
+        :permissions="permissions"
+        @edit="handleSubmitEdit"
+      />
     </VCol>
   </VRow>
 
   <AddEditRoleDialog
-    v-model:is-dialog-visible="isRoleDialogVisible"
-    v-model:role-permissions="roleDetail"
+    v-model="dialogVisible"
+    :permissions="permissions"
+    @create="handleSubmitCreate"
   />
 </template>
 
 <style lang="scss" scoped>
 .card-container {
   max-height: 600px;
-  overflow-y: auto;
   margin-bottom: 2rem;
+  overflow-y: auto;
 }
 </style>

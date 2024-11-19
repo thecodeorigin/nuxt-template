@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { VForm } from 'vuetify/components/VForm'
-import { useRoleStore } from '@base/stores/admin/role'
 
 import type { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
 import type { InferSelectModel } from 'drizzle-orm'
-import { usePermissionStore } from '@base/stores/admin/permission'
 import { cloneDeep } from 'lodash-es'
 import { PermissionAction, PermissionScope } from '@base/server/db/schemas'
 import { requiredValidator } from '#imports'
@@ -63,12 +61,10 @@ async function handleSubmit() {
       const { valid } = await formTemplate.value.validate()
 
       if (valid) {
-        if (formData.value.id) {
+        if (formData.value.id)
           emit('edit', formData.value)
-        }
-        else {
+        else
           emit('create', formData.value)
-        }
       }
     }
   }
