@@ -10,9 +10,7 @@ export default defineEventHandler(async (event) => {
     filterOptions.sortBy = filterOptions.sortBy || 'action'
     filterOptions.limit = 100
 
-    const sysPermissions = await getPermissionsPaginated(filterOptions)
-
-    return sysPermissions
+    return await getPermissionsPaginated(filterOptions)
   }
   catch (error: any) {
     throw parseError(error)
