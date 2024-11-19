@@ -1,187 +1,193 @@
 <script setup lang="ts">
 import type { VForm } from 'vuetify/components/VForm'
-import type { Permission } from '~/stores/admin/permission'
-import { useRoleStore } from '~/stores/admin/role'
+import { useRoleStore } from '@base/stores/admin/role'
 
-interface Props {
-  isDialogVisible: boolean
-  permissionData?: Partial<Permission>
-}
-interface Emit {
-  (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:permissionData', value: Partial<Permission>): void
-}
+import type { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
+import type { InferSelectModel } from 'drizzle-orm'
+import { usePermissionStore } from '@base/stores/admin/permission'
+import { cloneDeep } from 'lodash-es'
+import { PermissionAction, PermissionScope } from '@base/server/db/schemas'
+import { requiredValidator } from '#imports'
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+type Permission = InferSelectModel<typeof sysPermissionTable>
 
-const roleStore = useRoleStore()
-const { roleList } = storeToRefs(roleStore)
-const { fetchRoles } = roleStore
+const props = defineProps<{
+  permission?: Permission | null
+}>()
 
-const isFormValid = ref(false)
-const refForm = ref<VForm>()
+const emit = defineEmits<{
+  (e: 'edit', payload: Permission): void
+  (e: 'create', payload: Permission): void
+  (e: 'cancel'): void
+}>()
 
-const isPermissionDataEmpty = computed(() => {
-  const data = props.permissionData
-  return !data || Object.values(data).every(value => value === '')
+const modelValue = defineModel<boolean>({
+  default: false,
 })
 
-const localPermissionData = ref<Partial<Permission>>({
-  id: '',
-  role_id: '',
-  action: '',
-  subject: '',
-})
+const formTemplate = useTemplateRef('formRef')
 
-function onReset() {
-  emit('update:isDialogVisible', false)
-
-  refForm.value?.reset()
-
-  localPermissionData.value = {
+function getDefaultFormData(): Permission {
+  return {
     id: '',
-    role_id: '',
-    action: '',
+    action: PermissionAction.READ,
     subject: '',
+    scope: PermissionScope.ALL,
+    scope_value: '',
   }
 }
 
-function onSubmit() {
-  refForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-      emit('update:permissionData', props.permissionData
-        ? localPermissionData.value
-        : {
-            role_id: localPermissionData.value.role_id,
-            action: localPermissionData.value.action,
-            subject: localPermissionData.value.subject,
-          })
+const formData = ref(getDefaultFormData())
 
-      onReset()
-    }
-  })
-}
-
-watch(() => props.permissionData, (newPermissionData) => {
-  if (newPermissionData) {
-    localPermissionData.value = { ...newPermissionData }
+watch(modelValue, (value) => {
+  if (!value) {
+    formData.value = getDefaultFormData()
   }
-}, { immediate: true })
-
-onMounted(async () => {
-  await fetchRoles()
 })
+
+syncRef(computed(() => props.permission), formData, {
+  direction: 'ltr',
+  transform: {
+    ltr(left) {
+      if (left)
+        return cloneDeep(left)
+
+      return getDefaultFormData()
+    },
+  },
+})
+
+async function handleSubmit() {
+  try {
+    if (formTemplate.value) {
+      const { valid } = await formTemplate.value.validate()
+
+      if (valid) {
+        if (formData.value.id) {
+          emit('edit', formData.value)
+        }
+        else {
+          emit('create', formData.value)
+        }
+      }
+    }
+  }
+  catch {}
+}
 </script>
 
 <template>
   <VDialog
+    v-model="modelValue"
     :width="$vuetify.display.smAndDown ? 'auto' : 600"
-    :model-value="props.isDialogVisible"
-    @update:model-value="onReset"
   >
     <VCard class="pa-sm-8 pa-5">
       <!-- 👉 dialog close btn -->
       <DialogCloseBtn
         variant="text"
         size="default"
-        @click="onReset"
+        @click="modelValue = false"
       />
 
       <VCardText class="mt-5">
-        <!-- 👉 Title -->
         <div class="text-center mb-6">
           <h4 class="text-h4 mb-2">
-            {{ isPermissionDataEmpty ? 'Add' : 'Edit' }} Permission
+            {{ permission ? $t('Edit Permission') : $t('Create Permission') }}
           </h4>
-
-          <p class="text-body-1">
-            {{ isPermissionDataEmpty ? 'Add' : 'Edit' }}  permission as per your requirements.
-          </p>
         </div>
 
-        <!-- 👉 Form -->
         <VForm
-          ref="refForm"
-          v-model="isFormValid"
-          @submit.prevent="onSubmit"
+          ref="formRef"
+          @submit.prevent="handleSubmit"
         >
           <VAlert
             type="warning"
-            title="Warning!"
+            :title="$t('Be careful!')"
             variant="tonal"
             class="mb-6"
           >
-            By {{ isPermissionDataEmpty ? 'editing' : 'adding' }} the permission name, you might break the system permissions functionality. Please ensure you're absolutely certain before proceeding.
+            {{
+              $t('By modifying permission, you might break the system permissions functionality. Please ensure you\'re absolutely certain before proceeding.')
+            }}
           </VAlert>
 
           <!-- 👉 Role action -->
           <div class="mb-4">
             <div class="d-flex flex-column gap-4 mb-4">
               <VSelect
-                v-model="localPermissionData.action"
+                v-model="formData.action"
                 density="compact"
+                :label="$t('Select Permission')"
+                :placeholder="$t('Select Permission')"
                 :rules="[requiredValidator]"
-                label="Select Action"
-                placeholder="Select Action"
                 :items="[
                   {
-                    title: 'Create',
-                    value: 'create',
+                    title: $t('Create'),
+                    value: PermissionAction.CREATE,
                   },
                   {
-                    title: 'Read',
-                    value: 'read',
+                    title: $t('Read'),
+                    value: PermissionAction.READ,
                   },
                   {
-                    title: 'Update',
-                    value: 'update',
+                    title: $t('Update'),
+                    value: PermissionAction.UPDATE,
                   },
                   {
-                    title: 'Delete',
-                    value: 'delete',
+                    title: $t('Delete'),
+                    value: PermissionAction.DELETE,
                   },
                   {
-                    title: 'Manage',
-                    value: 'manage',
+                    title: $t('Manage'),
+                    value: PermissionAction.MANAGE,
                   },
                 ]"
               />
 
-              <VSelect
-                v-model="localPermissionData.role_id"
-                density="compact"
-                label="Select Role"
+              <VTextField
+                v-model="formData.subject"
+                placeholder="Post, Category, User, etc."
+                :label="$t('Fill Module Name')"
                 :rules="[requiredValidator]"
-                :items="roleList"
-                item-title="name"
-                item-value="id"
               />
 
               <VSelect
-                v-model="localPermissionData.subject"
+                v-model="formData.scope"
                 density="compact"
+                :label="$t('Select Scope')"
+                :placeholder="$t('Select Scope')"
                 :rules="[requiredValidator]"
-                label="Select Subject"
                 :items="[
                   {
-                    title: 'Category',
-                    value: 'category',
+                    title: $t('All'),
+                    value: PermissionScope.ALL,
                   },
                   {
-                    title: 'Project',
-                    value: 'project',
+                    title: $t('Organization'),
+                    value: PermissionScope.ORGANIZATION,
                   },
                   {
-                    title: 'All',
-                    value: 'all',
+                    title: $t('Creator'),
+                    value: PermissionScope.SELF,
+                  },
+                  {
+                    title: $t('Custom'),
+                    value: PermissionScope.CUSTOM,
                   },
                 ]"
+              />
+
+              <VTextField
+                v-if="formData.scope === PermissionScope.CUSTOM"
+                v-model="formData.scope_value"
+                placeholder="Post, Category, User, etc."
+                :label="$t('Fill Scope Value')"
+                :rules="[requiredValidator]"
               />
             </div>
 
-            <VBtn @click="onSubmit">
-              {{ isPermissionDataEmpty ? 'Add' : 'Edit' }}
+            <VBtn type="submit">
+              {{ permission ? $t('Update') : $t('Submit') }}
             </VBtn>
           </div>
         </VForm>

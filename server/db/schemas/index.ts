@@ -37,5 +37,3 @@ export * from './user_orders.schema'
 export * from './user_payments.schema'
 
 export * from './user_shortcuts.schema'
-
-export * from './sys_roles_permissions.schema'

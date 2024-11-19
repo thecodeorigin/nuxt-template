@@ -8,15 +8,11 @@ export default defineEventHandler(async (event) => {
 
     const { createPermission } = usePermissionCrud()
 
-    const sysPermission = await createPermission(body)
+    const response = await createPermission(body)
 
     setResponseStatus(event, 201)
 
-    return {
-      status: 'success',
-      message: 'Permission has been created successfully',
-      data: sysPermission,
-    }
+    return response
   }
   catch (error: any) {
     throw parseError(error)

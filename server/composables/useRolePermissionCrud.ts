@@ -1,5 +1,5 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
-import { sysRolePermissionsTable } from '@base/server/db/schemas/sys_roles_permissions.schema'
+import { sysRolePermissionTable } from '@base/server/db/schemas/sys_role_permission.schema'
 import { and, eq, ilike, or } from 'drizzle-orm'
 import { sysPermissionTable, sysRoleTable } from '../db/schemas'
 import { useCrud } from './useCrud'
@@ -7,7 +7,7 @@ import { useCrud } from './useCrud'
 export function useRolePermissionCrud() {
   const {
     getRecordsPaginated,
-  } = useCrud(sysRolePermissionsTable)
+  } = useCrud(sysRolePermissionTable)
 
   async function getRolePermissions(options: ParsedFilterQuery) {
     const { data, total } = await getRecordsPaginated(options)
@@ -28,11 +28,11 @@ export function useRolePermissionCrud() {
           // Check if this mapping already exists
           const existingMapping = await db
             .select()
-            .from(sysRolePermissionsTable)
+            .from(sysRolePermissionTable)
             .where(
               and(
-                eq(sysRolePermissionsTable.role_id, role.id),
-                eq(sysRolePermissionsTable.permission_id, permission.id),
+                eq(sysRolePermissionTable.role_id, role.id),
+                eq(sysRolePermissionTable.permission_id, permission.id),
               ),
             )
 
@@ -48,26 +48,24 @@ export function useRolePermissionCrud() {
     }
 
     if (rolePermissions.length > 0) {
-      await db.insert(sysRolePermissionsTable).values(rolePermissions)
+      await db.insert(sysRolePermissionTable).values(rolePermissions)
     }
   }
 
   async function getJoinRolePermissions() {
     const rolePermissions = await db
       .select({
-        role_id: sysRolePermissionsTable.role_id,
-        permission_id: sysRolePermissionsTable.permission_id,
+        role_id: sysRolePermissionTable.role_id,
+        permission_id: sysRolePermissionTable.permission_id,
         role_name: sysRoleTable.name,
         permission_action: sysPermissionTable.action,
       })
-      .from(sysRolePermissionsTable)
-      .innerJoin(sysRoleTable, eq(sysRolePermissionsTable.role_id, sysRoleTable.id))
-      .innerJoin(sysPermissionTable, eq(sysRolePermissionsTable.permission_id, sysPermissionTable.id))
+      .from(sysRolePermissionTable)
+      .innerJoin(sysRoleTable, eq(sysRolePermissionTable.role_id, sysRoleTable.id))
+      .innerJoin(sysPermissionTable, eq(sysRolePermissionTable.permission_id, sysPermissionTable.id))
 
     return rolePermissions
   }
-
-  
 
   return { getRolePermissions, getJoinRolePermissions, syncRolesPermissions }
 }

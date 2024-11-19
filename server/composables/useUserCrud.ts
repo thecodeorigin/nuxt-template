@@ -32,7 +32,11 @@ export function useUserCrud() {
         password: false,
       },
       with: {
-        role: true,
+        roles: {
+          with: {
+            role: true,
+          },
+        },
       },
       limit: options.limit,
       offset: options.limit * (options.page - 1),

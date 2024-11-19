@@ -1,5 +1,4 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
 import type { RolePermission } from './role'
 
@@ -10,18 +9,11 @@ export interface PermissionWithRelations extends Permission {
 }
 
 export const usePermissionStore = defineStore('permission', () => {
-  const permissionList = ref<PermissionWithRelations[]>([])
-  const totalPermissions = ref(0)
-  const permissionDetail = ref<PermissionWithRelations | null>(null)
-
-  async function fetchPermissions(options?: ParsedFilterQuery) {
+  async function fetchPermissions(options?: { page: number, limit: number, keyword: string }) {
     try {
-      const response = await $api('/api/permissions', {
+      return $api<{ total: number, data: Permission[] }>('/permissions', {
         query: options,
       })
-
-      permissionList.value = response.data
-      totalPermissions.value = response.total
     }
     catch (error) {
       console.error('Error fetching permissions:', error)
@@ -30,25 +22,21 @@ export const usePermissionStore = defineStore('permission', () => {
 
   async function fetchPermissionDetail(permissionId: string) {
     try {
-      const response = await $api(`/api/permissions/${permissionId}`, {
+      return $api(`/permissions/${permissionId}`, {
         method: 'GET',
       })
-
-      permissionDetail.value = response.data
     }
     catch (error) {
       console.error('Error fetching permission detail:', error)
     }
   }
 
-  async function createPermission(body: Partial<Permission>) {
+  async function createPermission(body: Permission) {
     try {
-      const response = await $api('/api/permissions', {
+      return $api('/permissions', {
         method: 'POST',
-        body,
+        body: omit(body, ['id']),
       })
-
-      return response
     }
     catch (error) {
       console.error('Error creating permission:', error)
@@ -57,12 +45,10 @@ export const usePermissionStore = defineStore('permission', () => {
 
   async function updatePermission(permissionId: string, body: Partial<Permission>) {
     try {
-      const response = await $api(`/api/permissions/${permissionId}`, {
+      return $api(`/permissions/${permissionId}`, {
         method: 'PATCH',
         body,
       })
-
-      return response
     }
     catch (error) {
       console.error('Error updating permission:', error)
@@ -71,7 +57,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
   async function deletePermission(permissionId: string) {
     try {
-      await $api(`/api/permissions/${permissionId}`, {
+      return $api(`/permissions/${permissionId}`, {
         method: 'DELETE',
       })
     }
@@ -81,9 +67,6 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   return {
-    permissionList,
-    permissionDetail,
-    totalPermissions,
     fetchPermissions,
     fetchPermissionDetail,
     createPermission,
