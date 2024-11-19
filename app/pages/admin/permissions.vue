@@ -12,6 +12,8 @@ definePageMeta({
   },
 })
 
+const { t } = useI18n()
+
 const permissionStore = usePermissionStore()
 
 const formQuery = ref({
@@ -61,6 +63,10 @@ async function handleSubmitEdit(permission: Permission) {
   permissionSelected.value = null
   dialogVisible.value = false
 
+  notifySuccess({
+    content: t('Permission updated successfully'),
+  })
+
   resetQuery()
   await reFetchPermissions()
 }
@@ -69,6 +75,10 @@ async function handleSubmitCreate(permission: Permission) {
   await permissionStore.createPermission(permission)
 
   dialogVisible.value = false
+
+  notifySuccess({
+    content: t('Permission created successfully'),
+  })
 
   resetQuery()
   await reFetchPermissions()
@@ -87,6 +97,10 @@ async function handleDeletePermission(permission: Permission) {
     })
 
     await permissionStore.deletePermission(permission.id)
+
+    notifySuccess({
+      content: t('Permission deleted successfully'),
+    })
 
     resetQuery()
     await reFetchPermissions()

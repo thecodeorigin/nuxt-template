@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import RoleCards from '@base/components/roles/RoleCards.vue'
-import UserList from '@base/components/roles/UserList.vue'
+import type { RoleWithPermissions } from '@base/stores/admin/role'
+import { useRoleStore } from '@base/stores/admin/role'
+import { usePermissionStore } from '~/stores/admin/permission'
+// import UserList from '@base/components/roles/UserList.vue'
 
 definePageMeta({
-  action: 'manage',
-  subject: 'role',
   sidebar: {
     title: 'Roles',
     icon: { icon: 'ri-shield-user-line' },
@@ -17,6 +18,47 @@ const route = useRoute()
 
 if (route.meta.sidebar)
   route.meta.sidebar.title = t('Roles')
+
+const roleStore = useRoleStore()
+const permissionStore = usePermissionStore()
+
+const { data: roleData, refresh: reFetchRoles } = useLazyAsyncData('roles', () => roleStore.fetchRoles(), {
+  server: false,
+})
+
+const { data: permissionData } = useLazyAsyncData('permissions', () => permissionStore.fetchPermissions({ page: 1, limit: 100, keyword: '' }), {
+  server: false,
+})
+
+async function handleSubmitEdit(role: { id: string, name: string, permissions: string[] }) {
+  await roleStore.updateRole(role.id, role)
+
+  notifySuccess({
+    content: t('Role updated successfully'),
+  })
+
+  await reFetchRoles()
+}
+
+async function handleSubmitCreate(role: { id: string, name: string, permissions: string[] }) {
+  await roleStore.createRole(role)
+
+  notifySuccess({
+    content: t('Role created successfully'),
+  })
+
+  await reFetchRoles()
+}
+
+async function handleSubmitDelete(role: RoleWithPermissions) {
+  await roleStore.deleteRole(role.id)
+
+  notifySuccess({
+    content: t('Role deleted successfully'),
+  })
+
+  await reFetchRoles()
+}
 </script>
 
 <template>
@@ -32,19 +74,13 @@ if (route.meta.sidebar)
 
     <!-- 👉 Roles Cards -->
     <VCol cols="12">
-      <RoleCards />
-    </VCol>
-
-    <VCol cols="12">
-      <h4 class="text-h4 mt-6 mb-1">
-        Total users with their roles
-      </h4>
-      <p class="text-body-1 mb-6">
-        Find all of your company's administrator accounts and their associate roles.
-      </p>
-
-      <!-- 👉 User List  -->
-      <UserList />
+      <RoleCards
+        :roles="roleData?.data || []"
+        :permissions="permissionData?.data || []"
+        @edit="handleSubmitEdit"
+        @create="handleSubmitCreate"
+        @delete="handleSubmitDelete"
+      />
     </VCol>
   </VRow>
 </template>

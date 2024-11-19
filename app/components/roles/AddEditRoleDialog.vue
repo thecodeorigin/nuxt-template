@@ -1,213 +1,127 @@
 <script setup lang="ts">
-import { cloneDeep, debounce } from 'lodash-es'
+import { debounce, values } from 'lodash-es'
 import { VForm } from 'vuetify/components/VForm'
-import { usePermissionStore } from '~/stores/admin/permission'
-import type { PivotRolePermission, Role } from '~/stores/admin/role'
+import { usePermissionStore } from '@base/stores/admin/permission'
+import type { Permission } from '@base/stores/admin/permission'
+import type { PivotRolePermission, RoleWithPermissions } from '~/stores/admin/role'
+import { requiredValidator } from '#imports'
 
-interface Props {
-  isDialogVisible: boolean
-  roleData?: Partial<PivotRolePermission>
-}
-interface Emit {
-  (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:rolePermissions', value: Partial<PivotRolePermission>): void
-}
+const props = defineProps<{
+  role?: RoleWithPermissions | null
+  permissions: Permission[]
+}>()
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const emit = defineEmits<{
+  (e: 'edit', payload: ReturnType<typeof getDefaultFormData>): void
+  (e: 'create', payload: ReturnType<typeof getDefaultFormData>): void
+}>()
 
-const permissionStore = usePermissionStore()
-const { permissionList } = storeToRefs(permissionStore)
-const { fetchPermissions } = permissionStore
-
-const refPermissionForm = ref<VForm>()
-const isFormValid = ref(false)
-
-const localRoleData = ref<Partial<PivotRolePermission>>({
-  id: '',
-  name: '',
-  permissions: [],
+const modelValue = defineModel<boolean>({
+  default: false,
 })
 
-// 👉 Fetch Query
-const queryKeyword = ref('')
-const queryOptions = ref<ParsedFilterQuery> ({
-  keyword: '',
-  keywordLower: '',
-  sortBy: 'action',
-  sortAsc: true,
-  limit: 10,
-  page: 1,
-  withCount: true,
-})
-
-const handleSearch = debounce((keyword: string) => {
-  queryOptions.value.keyword = keyword
-}, 1000)
-
-watch(queryKeyword, (newValue) => {
-  handleSearch(newValue)
-})
-
-watch(queryOptions.value, async () => {
-  await fetchPermissions(queryOptions.value)
-})
-
-// 👉 select all and none
-const isSelectAll = computed(() => {
-  return (
-    localRoleData.value.permissions?.length === permissionList.value.length
-  )
-})
-
-function handleCheckAllPermissions() {
-  localRoleData.value.permissions = [...permissionList.value]
-}
-
-function handleCheckNonePermissions() {
-  localRoleData.value.permissions = []
-}
-
-// 👉 Submit
-function onReset() {
-  emit('update:isDialogVisible', false)
-
-  refPermissionForm.value?.reset()
-
-  localRoleData.value = {
+function getDefaultFormData(): { id: string, name: string, permissions: string[] } {
+  return {
     id: '',
     name: '',
     permissions: [],
   }
 }
 
-function onSubmit() {
-  refPermissionForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-      emit('update:rolePermissions', props.roleData
-        ? localRoleData.value
-        : {
-            name: localRoleData.value.name,
-            permissions: localRoleData.value.permissions,
-          })
+const formData = ref(getDefaultFormData())
 
-      onReset()
+syncRef(computed(() => props.role), formData, {
+  direction: 'ltr',
+  transform: {
+    ltr(left) {
+      if (left) {
+        return {
+          id: left.id,
+          name: left.name,
+          permissions: left.permissions.map(p => p.permission.id),
+        }
+      }
+
+      return getDefaultFormData()
+    },
+  },
+})
+
+watch(modelValue, (value) => {
+  if (!value) {
+    formData.value = {
+      id: '',
+      name: '',
+      permissions: [],
     }
-  })
-}
-
-watch(() => props.roleData, (newRoleData) => {
-  if (newRoleData) {
-    localRoleData.value = {
-      id: newRoleData.id,
-      name: newRoleData.name,
-      permissions: permissionList.value.filter(permission =>
-        newRoleData.permissions?.some(p => p.id === permission.id),
-      ),
-    }
-  }
-}, { immediate: true })
-
-onMounted(async () => {
-  await fetchPermissions()
-
-  if (props.roleData) {
-    localRoleData.value.permissions = permissionList.value.filter(permission =>
-      props.roleData?.permissions?.some(p =>
-        p.id === permission.id,
-      ),
-    )
   }
 })
+
+const formTemplate = useTemplateRef('formRef')
+
+async function handleSubmit() {
+  try {
+    if (formTemplate.value) {
+      const { valid } = await formTemplate.value.validate()
+
+      if (valid) {
+        if (formData.value.id)
+          emit('edit', formData.value)
+        else
+          emit('create', formData.value)
+      }
+    }
+  }
+  catch {}
+}
 </script>
 
 <template>
   <VDialog
+    v-model="modelValue"
     :width="$vuetify.display.smAndDown ? '100%' : 900"
-    :model-value="props.isDialogVisible"
-    @update:model-value="onReset"
   >
     <VCard class="pa-sm-11 pa-3">
       <!-- 👉 dialog close btn -->
       <DialogCloseBtn
         variant="text"
         size="default"
-        @click="onReset"
+        @click="modelValue = false"
       />
 
       <VCardText>
         <!-- 👉 Title -->
         <div class="text-center mb-10">
           <h4 class="text-h4 mb-2">
-            {{ !props.roleData ? 'Add' : 'Edit' }} Role
+            {{ role ? $t('Edit Role') : $t('Create Role') }}
           </h4>
         </div>
 
         <!-- 👉 Form -->
-        <VForm ref="refPermissionForm" v-model="isFormValid" @submit.prevent>
+        <VForm ref="formRef" @submit.prevent="handleSubmit">
           <!-- 👉 Role name -->
           <VTextField
-            v-model="localRoleData.name"
+            v-model="formData.name"
             :rules="[requiredValidator]"
             class="mb-6"
             label="Role Name"
             placeholder="Enter Role Name"
           />
 
-          <!-- 👉 Role filter -->
-          <VRow>
-            <VCol cols="12" md="4" class="d-flex align-center">
-              <h5 class="text-h5">
-                Permissions
-              </h5>
-            </VCol>
-
-            <VCol cols="12" md="8">
-              <div class="d-flex align-center gap-3 flex-wrap">
-                <p>
-                  Select:
-                </p>
-
-                <VBtn
-                  :color="isSelectAll ? 'primary' : 'secondary'"
-                  variant="text"
-                  text="All"
-                  @click="handleCheckAllPermissions"
-                />
-
-                <VBtn
-                  :color="localRoleData?.permissions?.length === 0 ? 'primary' : 'secondary'"
-                  variant="text"
-                  text="None"
-                  @click="handleCheckNonePermissions"
-                />
-
-                <div class="flex-grow-1">
-                  <VTextField
-                    v-model="queryKeyword"
-                    placeholder="Search"
-                    density="compact"
-                    prepend-inner-icon="ri-search-line"
-                  />
-                </div>
-              </div>
-            </VCol>
-          </VRow>
-
           <!-- 👉 Role Permissions -->
           <div class="mt-6 d-flex flex-wrap gap-3 permission-container">
-            <div v-for="permission in permissionList" :key="permission.id" class="d-flex align-center gap-2 flex-wrap">
+            <div v-for="permission in permissions" :key="permission.id" class="d-flex align-center gap-2 flex-wrap">
               <VLabel>
                 <VCheckbox
-                  v-model="localRoleData.permissions"
-                  :value="permission"
+                  v-model="formData.permissions"
+                  :value="permission.id"
                   class="border pa-2"
-                  :class="{ 'border border-primary text-primary': localRoleData?.permissions && localRoleData?.permissions.some(p => p.id === permission.id) }"
+                  :class="{ 'border border-primary text-primary': formData.permissions.includes(permission.id) }"
                   multiple
                 >
                   <template #label>
-                    <span class="pr-3" :class="{ 'text-primary': localRoleData?.permissions && localRoleData?.permissions.some(p => p.id === permission.id) }">
-                      {{ permission.action }} : {{ permission.subject }}
+                    <span class="pr-3" :class="{ 'text-primary': formData.permissions.includes(permission.id) }">
+                      {{ permission.action }}:{{ permission.subject }}
                     </span>
                   </template>
                 </VCheckbox>
@@ -217,16 +131,16 @@ onMounted(async () => {
 
           <!-- 👉 Actions button -->
           <div class="d-flex align-center justify-center gap-3 mt-6">
-            <VBtn @click="onSubmit">
-              Submit
+            <VBtn type="submit">
+              {{ role ? $t('Update Role') : $t('Create Role') }}
             </VBtn>
 
             <VBtn
               color="secondary"
               variant="outlined"
-              @click="onReset"
+              @click="modelValue = false"
             >
-              Cancel
+              {{ $t('Cancel') }}
             </VBtn>
           </div>
         </VForm>

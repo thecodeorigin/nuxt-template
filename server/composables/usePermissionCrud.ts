@@ -44,7 +44,7 @@ export function usePermissionCrud() {
       },
     })
 
-    const { total } = await getPermissionCount()
+    const { total } = await countRecords()
 
     return {
       data: sysPermissions,
@@ -76,16 +76,11 @@ export function usePermissionCrud() {
     return { data }
   }
 
-  function getPermissionCount() {
-    return countRecords()
-  }
-
   return {
     getPermissionsPaginated,
     getPermissionById,
     createPermission,
     updatePermissionById,
     deletePermissionById,
-    getPermissionCount,
   }
 }
