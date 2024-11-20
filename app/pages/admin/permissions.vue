@@ -32,10 +32,11 @@ function resetQuery() {
 const { data: permissionData, status: permissionStatus, refresh: reFetchPermissions } = useLazyAsyncData(
   'permissions',
   () => permissionStore.fetchPermissions(formQuery.value),
-  {
-    watch: [formQuery],
-  },
 )
+
+watch(formQuery, () => {
+  reFetchPermissions()
+}, { deep: true })
 
 const permissionSelected = ref<Permission | null>(null)
 
@@ -52,16 +53,30 @@ function handleUpdateOptions(options: any) {
 
 const dialogVisible = ref(false)
 
-function handleEditPermission(permission: Permission) {
+async function handleAddPermission() {
+  permissionSelected.value = null
+
+  await nextTick()
+
+  dialogVisible.value = true
+}
+
+async function handleEditPermission(permission: Permission) {
   permissionSelected.value = permission
+
+  await nextTick()
+
   dialogVisible.value = true
 }
 
 async function handleSubmitEdit(permission: Permission) {
   await permissionStore.updatePermission(permission.id, permission)
 
-  permissionSelected.value = null
   dialogVisible.value = false
+
+  await nextTick()
+
+  permissionSelected.value = null
 
   notifySuccess({
     content: t('Permission updated successfully'),
@@ -84,9 +99,12 @@ async function handleSubmitCreate(permission: Permission) {
   await reFetchPermissions()
 }
 
-function handleCancelEdit() {
-  permissionSelected.value = null
+async function handleCancelEdit() {
   dialogVisible.value = false
+
+  await nextTick()
+
+  permissionSelected.value = null
 }
 
 async function handleDeletePermission(permission: Permission) {
@@ -124,7 +142,7 @@ async function handleDeletePermission(permission: Permission) {
 
         <VBtn
           density="default"
-          @click="dialogVisible = true"
+          @click="handleAddPermission"
         >
           Add Permission
         </VBtn>

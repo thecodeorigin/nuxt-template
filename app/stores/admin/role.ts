@@ -1,8 +1,8 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysRoleTable } from '@base/server/db/schemas/sys_roles.schema'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import type { sysRolePermissionTable } from '@base/server/db/schemas'
 import type { Permission } from './permission'
-import type { sysRolePermissionTable } from '~~/server/db/schemas'
 
 export type Role = InferSelectModel<typeof sysRoleTable>
 

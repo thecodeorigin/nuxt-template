@@ -1,9 +1,9 @@
 import type { Session, User } from 'next-auth'
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 import type { LoggedInUser } from '../../../next-auth'
 
 async function _getUser(session: Session) {
-  const { getUser: getUserByKey } = useUserCrud()
+  const { getUser: getUserByKey } = useUser()
 
   let user: LoggedInUser | null | undefined = null
 

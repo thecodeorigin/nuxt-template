@@ -3,7 +3,7 @@ import { debounce, values } from 'lodash-es'
 import { VForm } from 'vuetify/components/VForm'
 import { usePermissionStore } from '@base/stores/admin/permission'
 import type { Permission } from '@base/stores/admin/permission'
-import type { PivotRolePermission, RoleWithPermissions } from '~/stores/admin/role'
+import type { PivotRolePermission, RoleWithPermissions } from '@base/stores/admin/role'
 import { requiredValidator } from '#imports'
 
 const props = defineProps<{

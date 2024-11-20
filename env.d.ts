@@ -4,8 +4,8 @@ import type { Page } from 'puppeteer'
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
 import type { z } from 'zod'
 import type { HookResult } from '@nuxt/schema'
+import type { Actions } from '@base/stores/casl'
 import type { sysUserTable } from './server/db/schemas'
-import type { Actions } from '~/stores/casl'
 
 declare module 'vue-router' {
   interface RouteMeta {

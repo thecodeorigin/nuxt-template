@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { type Organization, useOrganizationStore } from '@base/stores/admin/organization'
-import { DRAWER_ACTION_TYPES } from '~/constant/organization'
-import type { DrawerConfig } from '~/utils/types'
-import type { DrawerActionTypes } from '~/utils/types/landing-page'
+import { DRAWER_ACTION_TYPES } from '@base/constant/organization'
+import type { DrawerConfig } from '@base/utils/types'
+import type { DrawerActionTypes } from '@base/utils/types/landing-page'
 
 definePageMeta({
   sidebar: {

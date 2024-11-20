@@ -1,14 +1,14 @@
-import { useRoleCrud } from '~~/server/composables/useRoleCrud'
+import { useRole } from '@base/server/composables/useRole'
 
 export default defineEventHandler(async (event) => {
   try {
     const { roleUId } = await defineEventOptions(event, { auth: true, params: ['roleUId'] })
 
-    const { getRoleById } = useRoleCrud()
+    const { getRoleById } = useRole()
 
-    const response = await getRoleById(roleUId)
+    const sysRole = await getRoleById(roleUId)
 
-    return response.data
+    return { data: sysRole }
   }
   catch (error: any) {
     throw parseError(error)

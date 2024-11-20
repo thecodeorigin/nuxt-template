@@ -1,16 +1,17 @@
-import { useRoleCrud } from '@base/server/composables/useRoleCrud'
+import { useRole } from '@base/server/composables/useRole'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const { getRolesPaginated } = useRoleCrud()
+    const { getRoles } = useRole()
 
-    const filterOptions: ParsedFilterQuery = getFilter(event)
-    filterOptions.sortBy = filterOptions.sortBy || 'name'
-    filterOptions.limit = 100
-
-    return await getRolesPaginated(filterOptions)
+    return await getRoles(
+      getFilter(event, {
+        sortBy: 'name',
+        limit: 100,
+      }),
+    )
   }
   catch (error: any) {
     throw parseError(error)
