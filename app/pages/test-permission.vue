@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type Permission, usePermissionStore } from '@base/stores/admin/permission'
-import { DRAWER_ACTION_TYPES } from '~/constant/organization'
-import type { DrawerActionTypes } from '~/utils/types'
+import { DRAWER_ACTION_TYPES } from '@base/constant/organization'
+import type { DrawerActionTypes } from '@base/utils/types'
 
 definePageMeta({
   sidebar: {

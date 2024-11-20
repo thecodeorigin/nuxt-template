@@ -2,7 +2,7 @@
 import RoleCards from '@base/components/roles/RoleCards.vue'
 import type { RoleWithPermissions } from '@base/stores/admin/role'
 import { useRoleStore } from '@base/stores/admin/role'
-import { usePermissionStore } from '~/stores/admin/permission'
+import { usePermissionStore } from '@base/stores/admin/permission'
 // import UserList from '@base/components/roles/UserList.vue'
 
 definePageMeta({

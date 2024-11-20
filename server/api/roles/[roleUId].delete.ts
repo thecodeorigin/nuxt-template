@@ -1,19 +1,12 @@
-import { useRoleCrud } from '~~/server/composables/useRoleCrud'
+import { useRole } from '@base/server/composables/useRole'
 
 export default defineEventHandler(async (event) => {
   try {
     const { roleUId } = await defineEventOptions(event, { auth: true, params: ['roleUId'] })
 
-    const { deleteRoleById } = useRoleCrud()
+    const { deleteRoleById } = useRole()
 
-    const sysRole = await deleteRoleById(roleUId)
-
-    setResponseStatus(event, 201)
-
-    return {
-      status: 'success',
-      message: sysRole.message,
-    }
+    await deleteRoleById(roleUId)
   }
   catch (error: any) {
     throw parseError(error)

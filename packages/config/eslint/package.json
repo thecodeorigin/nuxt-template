@@ -21,7 +21,7 @@
   "main": "./index.mjs",
   "types": "./index.d.ts",
   "dependencies": {
-    "@antfu/eslint-config": "^2.22.0",
+    "@antfu/eslint-config": "^3.9.2",
     "@antfu/eslint-config-vue": "0.43.1"
   }
 }

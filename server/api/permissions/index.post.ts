@@ -1,4 +1,4 @@
-import { usePermissionCrud } from '~~/server/composables/usePermissionCrud'
+import { usePermission } from '@base/server/composables/usePermission'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const { createPermission } = usePermissionCrud()
+    const { createPermission } = usePermission()
 
     const response = await createPermission(body)
 

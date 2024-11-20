@@ -1,32 +1,25 @@
-import { count, ilike, or } from 'drizzle-orm'
+import { count, eq, ilike, or } from 'drizzle-orm'
 import { sysUserTable } from '@base/server/db/schemas'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { LoggedInUser } from '../../next-auth'
-import { useCrud } from './useCrud'
 
-export function useUserCrud() {
+export function useUser() {
   const nitroApp = useNitroApp()
 
-  const {
-    createRecord,
-    updateRecordByKey,
-    deleteRecordByKey,
-  } = useCrud(sysUserTable)
+  async function getUserCount(options?: ParsedFilterQuery) {
+    const data = await db.select({ total: count() }).from(sysUserTable).where(
+      or(
+        ilike(sysUserTable.full_name, `%${options?.keyword || ''}%`),
+        ilike(sysUserTable.email, `%${options?.keyword || ''}%`),
+        ilike(sysUserTable.full_name, `%${options?.keywordLower || ''}%`),
+        ilike(sysUserTable.email, `%${options?.keywordLower || ''}%`),
+      ),
+    )
 
-  async function getUsersCount(options: ParsedFilterQuery) {
-    return (
-      await db.select({ count: count() }).from(sysUserTable).where(
-        or(
-          ilike(sysUserTable.full_name, `%${options.keyword}%`),
-          ilike(sysUserTable.email, `%${options.keyword}%`),
-          ilike(sysUserTable.full_name, `%${options.keywordLower}%`),
-          ilike(sysUserTable.email, `%${options.keywordLower}%`),
-        ),
-      )
-    )[0] || { count: 0 }
+    return data[0]
   }
 
-  async function getUsersPaginated(options: ParsedFilterQuery) {
+  async function getUsers(options: ParsedFilterQuery) {
     const sysUsers = await db.query.sysUserTable.findMany({
       columns: {
         password: false,
@@ -57,11 +50,13 @@ export function useUserCrud() {
       },
     })
 
-    const { count } = await getUsersCount(options)
+    const { total } = options.withCount
+      ? await getUserCount(options)
+      : { total: sysUsers.length }
 
     return {
       data: sysUsers,
-      total: count,
+      total,
     }
   }
 
@@ -114,46 +109,41 @@ export function useUserCrud() {
     return getUser('email', email)
   }
 
-  function getUserByPhone(phone: string) {
-    return getUser('phone', phone)
+  async function updateUser(type: 'id' | 'email', value: string, body: any) {
+    await db.update(sysUserTable).set(body).where(
+      eq(sysUserTable[type], value),
+    )
   }
 
   async function updateUserById(id: string, body: any) {
-    const { data } = await updateRecordByKey('id', id, body)
-
-    return { data: omit(data, ['password']) }
+    await updateUser('id', id, body)
   }
 
   async function updateUserByEmail(email: string, body: any) {
-    const { data } = await updateRecordByKey('email', email, body)
-
-    return { data: omit(data, ['password']) }
+    await updateUser('email', email, body)
   }
 
   async function createUser(body: any) {
-    const { data } = await createRecord(body)
+    const _data = await db.insert(sysUserTable).values(body).returning()
 
-    nitroApp.hooks.callHook('user:created', data)
+    nitroApp.hooks.callHook('user:created', _data[0])
 
-    return { data: omit(data, ['password']) as LoggedInUser }
+    return { data: omit(_data[0], ['password']) as LoggedInUser }
   }
 
   async function deleteUserById(id: string) {
-    const { data } = await deleteRecordByKey('id', id)
-
-    return { data: omit(data, ['password']) }
+    await db.delete(sysUserTable).where(eq(sysUserTable.id, id))
   }
 
   return {
-    getUsersPaginated,
+    getUsers,
     getUser,
     getUserById,
     getUserByEmail,
-    getUserByPhone,
     createUser,
     updateUserById,
     updateUserByEmail,
     deleteUserById,
-    getUsersCount,
+    getUserCount,
   }
 }

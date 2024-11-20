@@ -1,4 +1,4 @@
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 import { sysUserTable } from '@base/server/db/schemas'
 import { createInsertSchema } from 'drizzle-zod'
 
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const body = await readValidatedBody(event, createInsertSchema(sysUserTable).partial().parse)
 
-    const { createUser } = useUserCrud()
+    const { createUser } = useUser()
 
     const response = await createUser(body)
 

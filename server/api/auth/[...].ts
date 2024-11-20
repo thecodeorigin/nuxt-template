@@ -6,7 +6,7 @@ import TwitterProvider from 'next-auth/providers/twitter'
 import AppleProvider from 'next-auth/providers/apple'
 import DiscordProvider from 'next-auth/providers/discord'
 import { sysAccountTable } from '@base/server/db/schemas'
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 import type { LoggedInUser } from '../../../next-auth'
 import { db } from '../../utils/db'
 import { NuxtAuthHandler } from '#auth'
@@ -110,7 +110,7 @@ export default NuxtAuthHandler({
             if (!user.email)
               return
 
-            const { getUserByEmail, createUser } = useUserCrud()
+            const { getUserByEmail, createUser } = useUser()
 
             const sysUser = await getUserByEmail(user.email)
 

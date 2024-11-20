@@ -12,22 +12,22 @@ export interface ParsedFilterQuery {
   withCount: boolean
 }
 
-export function getFilter(event: H3Event) {
+export function getFilter(event: H3Event, defaultOptions: Partial<ParsedFilterQuery> = {}): ParsedFilterQuery {
   const query = getQuery(event)
 
-  const parsedQuery = (query.keyword || '') as string
-  const parsedQueryLower = (parsedQuery ?? '').toString().toLowerCase()
+  const parsedKeyword = (query.keyword || '') as string || defaultOptions.keyword
+  const parsedKeywordLower = (parsedKeyword ?? '').toString().toLowerCase() || defaultOptions.keywordLower
 
-  const parsedSortBy = destr<string>(query.sortBy)
-  const parsedSortAscending = destr<boolean>(query.sortAsc)
-  const parsedWithCount = destr<boolean>(query.withCount)
-  const parsedLimit = destr<number>(query.limit)
-  const parsedPage = destr<number>(query.page)
+  const parsedSortBy = destr<string>(query.sortBy) || defaultOptions.sortBy
+  const parsedSortAscending = destr<boolean>(query.sortAsc) || defaultOptions.sortAsc
+  const parsedWithCount = destr<boolean>(query.withCount) || defaultOptions.withCount
+  const parsedLimit = destr<number>(query.limit) || defaultOptions.limit
+  const parsedPage = destr<number>(query.page) || defaultOptions.page
 
   return {
     ...query,
-    keyword: parsedQuery,
-    keywordLower: parsedQueryLower,
+    keyword: parsedKeyword,
+    keywordLower: parsedKeywordLower,
     sortBy: parsedSortBy,
     sortAsc: parsedSortAscending,
     limit: parsedLimit,

@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import bcrypt from 'bcrypt'
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
       }).parse,
     )
 
-    const { createUser } = useUserCrud()
+    const { createUser } = useUser()
 
     const sysUser = await createUser({
       email,

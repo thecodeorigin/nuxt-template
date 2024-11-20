@@ -3,8 +3,8 @@ import { cloneDeep } from 'lodash-es'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import type { VForm } from 'vuetify/components/VForm'
-import type { Organization } from '~/stores/admin/organization'
-import type { DialogConfig, DrawerConfig } from '~/utils/types'
+import type { Organization } from '@base/stores/admin/organization'
+import type { DialogConfig, DrawerConfig } from '@base/utils/types'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void

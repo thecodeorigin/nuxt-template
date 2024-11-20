@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { VForm } from 'vuetify/components/VForm'
-
 import type { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
 import type { InferSelectModel } from 'drizzle-orm'
-import { cloneDeep } from 'lodash-es'
-import { PermissionAction, PermissionScope } from '@base/server/db/schemas'
 import { requiredValidator } from '#imports'
+import { PermissionAction, PermissionScope } from '@base/server/db/schemas'
+import { cloneDeep } from 'lodash-es'
 
 type Permission = InferSelectModel<typeof sysPermissionTable>
 

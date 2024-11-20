@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { DRAWER_ACTION_TYPES } from '~/constant/organization'
-import { type Role, useRoleStore } from '~/stores/admin/role'
-import type { DrawerActionTypes } from '~/utils/types'
+import { DRAWER_ACTION_TYPES } from '@base/constant/organization'
+import { type Role, useRoleStore } from '@base/stores/admin/role'
+import type { DrawerActionTypes } from '@base/utils/types'
 
 definePageMeta({
   sidebar: {

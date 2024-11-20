@@ -1,5 +1,4 @@
-import { eq } from 'drizzle-orm'
-import { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
+import { usePermission } from '@base/server/composables/usePermission'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -7,14 +6,9 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysPermission = await db.update(sysPermissionTable)
-      .set(body)
-      .where(eq(sysPermissionTable.id, permissionUId))
-      .returning()
+    const { updatePermissionById } = usePermission()
 
-    setResponseStatus(event, 201)
-
-    return { data: sysPermission }
+    return await updatePermissionById(permissionUId, body)
   }
   catch (error: any) {
     throw parseError(error)
