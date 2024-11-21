@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import RoleCards from '@base/components/roles/RoleCards.vue'
 import type { RoleWithPermissions } from '@base/stores/admin/role'
-import { useRoleStore } from '@base/stores/admin/role'
+import RoleCards from '@base/components/roles/RoleCards.vue'
 import { usePermissionStore } from '@base/stores/admin/permission'
+import { useRoleStore } from '@base/stores/admin/role'
+import { sortBy } from 'lodash-es'
 // import UserList from '@base/components/roles/UserList.vue'
 
 definePageMeta({
@@ -28,6 +29,12 @@ const { data: roleData, refresh: reFetchRoles } = useLazyAsyncData('roles', () =
 
 const { data: permissionData } = useLazyAsyncData('permissions', () => permissionStore.fetchPermissions({ page: 1, limit: 100, keyword: '' }), {
   server: false,
+  transform(permissionData) {
+    return {
+      ...permissionData,
+      data: sortBy(permissionData.data, ['subject', 'action']),
+    }
+  },
 })
 
 async function handleSubmitEdit(role: { id: string, name: string, permissions: string[] }) {
@@ -40,7 +47,7 @@ async function handleSubmitEdit(role: { id: string, name: string, permissions: s
   await reFetchRoles()
 }
 
-async function handleSubmitCreate(role: { id: string, name: string, permissions: string[] }) {
+async function handleSubmitCreate(role: { name: string, permissions: string[] }) {
   await roleStore.createRole(role)
 
   notifySuccess({

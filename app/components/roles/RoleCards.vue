@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import poseM from '@base/images/pages/pose_m1.png'
+import type { Permission } from '@base/stores/admin/permission'
 
 import type { RoleWithPermissions } from '@base/stores/admin/role'
-import type { Permission } from '@base/stores/admin/permission'
+import poseM from '@base/images/pages/pose_m1.png'
 import AddEditRoleDialog from './AddEditRoleDialog.vue'
 
 defineProps<{
@@ -12,7 +12,7 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: 'edit', payload: { id: string, name: string, permissions: string[] }): void
-  (e: 'create', payload: { id: string, name: string, permissions: string[] }): void
+  (e: 'create', payload: { name: string, permissions: string[] }): void
   (e: 'delete', payload: RoleWithPermissions): void
 }>()
 
@@ -54,7 +54,7 @@ function handleSubmitEdit(role: { id: string, name: string, permissions: string[
   dialogVisible.value = false
 }
 
-function handleSubmitCreate(role: { id: string, name: string, permissions: string[] }) {
+function handleSubmitCreate(role: { name: string, permissions: string[] }) {
   emit('create', role)
 
   dialogVisible.value = false
@@ -168,20 +168,16 @@ function handleSubmitCreate(role: { id: string, name: string, permissions: strin
           </VCol>
         </VRow>
       </VCard>
-      <AddEditRoleDialog
-        v-model="dialogVisible"
-        :role="roleSelected"
-        :permissions="permissions"
-        @edit="handleSubmitEdit"
-      />
     </VCol>
-  </VRow>
 
-  <AddEditRoleDialog
-    v-model="dialogVisible"
-    :permissions="permissions"
-    @create="handleSubmitCreate"
-  />
+    <AddEditRoleDialog
+      v-model="dialogVisible"
+      :role="roleSelected"
+      :permissions="permissions"
+      @edit="handleSubmitEdit"
+      @create="handleSubmitCreate"
+    />
+  </VRow>
 </template>
 
 <style lang="scss" scoped>
