@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash-es'
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-
+import type { DialogConfig, DrawerConfig } from '@base/utils/types'
 import type { VForm } from 'vuetify/components/VForm'
+
 import { type Organization, useOrganizationStore } from '@base/stores/admin/organization'
 import { useRoleStore } from '@base/stores/admin/role'
-import type { User } from '@base/stores/admin/user'
-import type { DialogConfig, DrawerConfig } from '@base/utils/types'
+import { cloneDeep } from 'lodash-es'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import type { User } from '~/stores/admin/userdsf'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void

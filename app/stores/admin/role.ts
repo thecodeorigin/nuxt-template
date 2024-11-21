@@ -25,7 +25,7 @@ export const useRoleStore = defineStore('role', () => {
     })
   }
 
-  async function fetchRoleDetail(roleId: string) {
+  async function fetchRole(roleId: string) {
     return await $api(`/roles/${roleId}`, {
       method: 'GET',
     })
@@ -53,7 +53,7 @@ export const useRoleStore = defineStore('role', () => {
 
   return {
     fetchRoles,
-    fetchRoleDetail,
+    fetchRole,
     createRole,
     updateRole,
     deleteRole,
