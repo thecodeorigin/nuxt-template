@@ -4,8 +4,7 @@ import type { UserWithRoles } from '@base/stores/admin/user'
 import { avatarText } from '#imports'
 import { useRoleStore } from '@base/stores/admin/role'
 import { useUserStore } from '@base/stores/admin/user'
-import { sortBy } from 'lodash-es'
-// import UserList from '@base/components/roles/UserList.vue'
+import { match } from 'ts-pattern'
 
 definePageMeta({
   sidebar: {
@@ -46,8 +45,10 @@ const headers = [
   { title: 'User', key: 'name' },
   { title: 'Email', key: 'email' },
   { title: 'Role', key: 'role' },
-  // { title: 'Plan', key: 'plan' },
   { title: 'Status', key: 'status' },
+  // TODO: user credits / subscriptions
+  // { title: 'Plan', key: 'plan' },
+  { title: 'Verified', key: 'email_verified' },
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
@@ -59,30 +60,10 @@ function handleUpdateOptions(options: any) {
 function resolveUserRoleVariant(role: string) {
   const roleLowerCase = role.toLowerCase()
 
-  if (roleLowerCase === 'subscriber')
-    return { color: 'success', icon: 'ri-user-line' }
-  if (roleLowerCase === 'author')
-    return { color: 'error', icon: 'ri-computer-line' }
-  if (roleLowerCase === 'maintainer')
-    return { color: 'info', icon: 'ri-pie-chart-line' }
-  if (roleLowerCase === 'editor')
-    return { color: 'warning', icon: 'ri-edit-box-line' }
-  if (roleLowerCase === 'admin')
-    return { color: 'primary', icon: 'ri-vip-crown-line' }
-
-  return { color: 'success', icon: 'ri-user-line' }
-}
-
-function resolveUserStatusVariant(stat: string) {
-  const statLowerCase = stat.toLowerCase()
-  if (statLowerCase === 'pending')
-    return 'warning'
-  if (statLowerCase === 'active')
-    return 'success'
-  if (statLowerCase === 'inactive')
-    return 'secondary'
-
-  return 'primary'
+  return match(roleLowerCase)
+    .with('admin', () => ({ color: 'primary', icon: 'ri-vip-crown-line' }))
+    .with('editor', () => ({ color: 'warning', icon: 'ri-edit-box-line' }))
+    .otherwise(() => ({ color: 'success', icon: 'ri-user-line' }))
 }
 
 async function handleDeleteUser(user: UserWithRoles) {
@@ -104,77 +85,25 @@ async function handleDeleteUser(user: UserWithRoles) {
   <VRow>
     <VCol cols="12">
       <VCard class="mb-6">
-        <VCardItem class="pb-4">
-          <VCardTitle>Filters</VCardTitle>
-        </VCardItem>
-        <VCardText>
-          <VRow>
-            <!-- 👉 Select Role -->
-            <VCol
-              cols="12"
-              sm="4"
-            >
-              <VSelect
-                v-model="selectedRole"
-                label="Select Role"
-                placeholder="Select Role"
-                :items="roleData?.data || []"
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <!-- 👉 Select Plan -->
-            <!-- <VCol
-              cols="12"
-              sm="4"
-            >
-              <VSelect
-                v-model="selectedPlan"
-                label="Select Plan"
-                placeholder="Select Plan"
-                :items="plans"
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol> -->
-            <!-- 👉 Select Status -->
-            <!-- <VCol
-              cols="12"
-              sm="4"
-            >
-              <VSelect
-                v-model="selectedStatus"
-                label="Select Status"
-                placeholder="Select Status"
-                :items="status"
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol> -->
-          </VRow>
-        </VCardText>
-
-        <VDivider />
-
         <VCardText class="d-flex flex-wrap gap-4 align-center">
           <!-- 👉 Export button -->
-          <VBtn
-            variant="outlined"
-            color="secondary"
-            prepend-icon="ri-upload-2-line"
-          >
-            Export
-          </VBtn>
+          <VSelect
+            v-model="selectedRole"
+            label="Select Role"
+            placeholder="Select Role"
+            :items="roleData?.data || []"
+            clearable
+            clear-icon="ri-close-line"
+          />
           <VSpacer />
           <div class="d-flex align-center gap-4 flex-wrap">
             <!-- 👉 Search  -->
-            <div class="app-user-search-filter">
-              <VTextField
-                v-model="userQuery.keyword"
-                placeholder="Search User"
-                density="compact"
-              />
-            </div>
+            <VTextField
+              v-model="userQuery.keyword"
+              placeholder="Search User"
+              density="compact"
+              style="min-width: 200px;"
+            />
             <!-- 👉 Add user button -->
             <VBtn>
               Add New User
@@ -228,21 +157,23 @@ async function handleDeleteUser(user: UserWithRoles) {
                 :color="resolveUserRoleVariant(item.roles[0]?.role.name || '').color"
                 size="22"
               />
-              <span class="text-capitalize text-high-emphasis">{{ item.roles[0]?.role.name || '' }}</span>
+              <span class="text-capitalize text-high-emphasis">
+                {{ item.roles[0]?.role.name || $t('No role') }}
+              </span>
             </div>
           </template>
-          <!-- TODO: user subscription -->
+          <!-- TODO: user credits / subscriptions -->
           <!-- <template #item.plan="{ item }">
             <span class="text-capitalize text-high-emphasis">{{ item.currentPlan }}</span>
           </template> -->
           <!-- Status -->
-          <template #item.status="{ item }">
+          <template #item.email_verified="{ item }">
             <VChip
-              :color="resolveUserStatusVariant(item.status || '')"
+              :color="item.email_verified ? 'success' : 'secondary'"
               size="small"
               class="text-capitalize"
             >
-              {{ item.status }}
+              {{ item.email_verified ? $t('Verified') : $t('Pending') }}
             </VChip>
           </template>
 
