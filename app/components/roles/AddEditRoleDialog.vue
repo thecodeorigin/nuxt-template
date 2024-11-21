@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { debounce, values } from 'lodash-es'
-import { VForm } from 'vuetify/components/VForm'
-import { usePermissionStore } from '@base/stores/admin/permission'
 import type { Permission } from '@base/stores/admin/permission'
-import type { PivotRolePermission, RoleWithPermissions } from '@base/stores/admin/role'
+import type { RoleWithPermissions } from '@base/stores/admin/role'
 import { requiredValidator } from '#imports'
+import { VForm } from 'vuetify/components/VForm'
 
 const props = defineProps<{
   role?: RoleWithPermissions | null
@@ -13,7 +11,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'edit', payload: ReturnType<typeof getDefaultFormData>): void
-  (e: 'create', payload: ReturnType<typeof getDefaultFormData>): void
+  (e: 'create', payload: Omit<ReturnType<typeof getDefaultFormData>, 'id'>): void
 }>()
 
 const modelValue = defineModel<boolean>({
@@ -29,6 +27,8 @@ function getDefaultFormData(): { id: string, name: string, permissions: string[]
 }
 
 const formData = ref(getDefaultFormData())
+
+const formTemplate = useTemplateRef('formRef')
 
 syncRef(computed(() => props.role), formData, {
   direction: 'ltr',
@@ -57,18 +57,26 @@ watch(modelValue, (value) => {
   }
 })
 
-const formTemplate = useTemplateRef('formRef')
-
 async function handleSubmit() {
   try {
     if (formTemplate.value) {
-      const { valid } = await formTemplate.value.validate()
+      const { valid, errors } = await formTemplate.value.validate()
 
       if (valid) {
-        if (formData.value.id)
+        if (formData.value.id) {
           emit('edit', formData.value)
-        else
-          emit('create', formData.value)
+        }
+        else {
+          emit('create', {
+            name: formData.value.name,
+            permissions: formData.value.permissions,
+          })
+        }
+      }
+      else if (errors.length) {
+        notifyWarning({
+          content: errors[0]?.errorMessages[0],
+        })
       }
     }
   }
@@ -98,7 +106,7 @@ async function handleSubmit() {
         </div>
 
         <!-- 👉 Form -->
-        <VForm ref="formRef" @submit.prevent="handleSubmit">
+        <VForm ref="formRef">
           <!-- 👉 Role name -->
           <VTextField
             v-model="formData.name"
@@ -114,14 +122,14 @@ async function handleSubmit() {
               <VLabel>
                 <VCheckbox
                   v-model="formData.permissions"
-                  :value="permission.id"
-                  class="border pa-2"
-                  :class="{ 'border border-primary text-primary': formData.permissions.includes(permission.id) }"
                   multiple
+                  :class="{ 'text-primary': formData.permissions.includes(permission.id) }"
+                  :value="permission.id"
+                  :rules="[requiredValidator(formData.permissions)]"
                 >
                   <template #label>
                     <span class="pr-3" :class="{ 'text-primary': formData.permissions.includes(permission.id) }">
-                      {{ permission.action }}:{{ permission.subject }}
+                      {{ permission.action.toLowerCase() }}:{{ permission.subject.toLowerCase() }}
                     </span>
                   </template>
                 </VCheckbox>
@@ -131,7 +139,7 @@ async function handleSubmit() {
 
           <!-- 👉 Actions button -->
           <div class="d-flex align-center justify-center gap-3 mt-6">
-            <VBtn type="submit">
+            <VBtn @click="handleSubmit">
               {{ role ? $t('Update Role') : $t('Create Role') }}
             </VBtn>
 

@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
     setResponseStatus(event, 201)
 
-    return response.data
+    return response
   }
   catch (error: any) {
     throw parseError(error)
