@@ -1,19 +1,14 @@
-import { eq } from 'drizzle-orm'
-import { sysRoleTable } from '@base/server/db/schemas'
+import { useRole } from '@base/server/composables/useRole'
 
 export default defineEventHandler(async (event) => {
   try {
     const { roleUId } = await defineEventOptions(event, { auth: true, params: ['roleUId'] })
 
-    const sysRole = await db.select().from(sysRoleTable)
-      .where(
-        eq(sysRoleTable.id, roleUId),
-      )
-      .limit(1)
+    const { getRoleById } = useRole()
 
-    setResponseStatus(event, 201)
+    const sysRole = await getRoleById(roleUId)
 
-    return { data: sysRole[0] }
+    return { data: sysRole }
   }
   catch (error: any) {
     throw parseError(error)

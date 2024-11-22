@@ -1,7 +1,7 @@
-import type * as z from 'zod'
-import type { selectUserShortcutSchema } from '@base/server/db/schemas'
+import type { InferSelectModel } from 'drizzle-orm'
+import type { userShortcutTable } from '@base/server/db/schemas'
 
-export type RawShortcut = z.infer<typeof selectUserShortcutSchema>
+export type RawShortcut = InferSelectModel<typeof userShortcutTable>
 
 export const useShortcutStore = defineStore('shortcut', () => {
   const authStore = useAuthStore()

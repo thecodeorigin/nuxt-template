@@ -3,7 +3,7 @@ import { createHmac } from 'node:crypto'
 import bcrypt from 'bcrypt'
 import { eq } from 'drizzle-orm'
 import { sysUserTable } from '@base/server/db/schemas'
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const { updateUserByEmail } = useUserCrud()
+    const { updateUserByEmail } = useUser()
 
     const hashedPassword = await bcrypt.hash(password, 10)
 

@@ -1,5 +1,4 @@
-import { eq } from 'drizzle-orm'
-import { sysRoleTable } from '@base/server/db/schemas'
+import { useRole } from '@base/server/composables/useRole'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -7,12 +6,9 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysRole = await db.update(sysRoleTable)
-      .set(body)
-      .where(eq(sysRoleTable.id, roleUId))
-      .returning()
+    const { updateRoleById } = useRole()
 
-    setResponseStatus(event, 201)
+    const sysRole = await updateRoleById(roleUId, body)
 
     return { data: sysRole }
   }
