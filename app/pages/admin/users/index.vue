@@ -106,7 +106,7 @@ async function handleDeleteUser(user: UserWithRoles) {
             />
             <!-- 👉 Add user button -->
             <VBtn>
-              Add New User
+              {{ $t('Add New User') }}
             </VBtn>
           </div>
         </VCardText>
@@ -138,12 +138,12 @@ async function handleDeleteUser(user: UserWithRoles) {
               </VAvatar>
 
               <div class="d-flex flex-column">
-                <!-- TODO: user detail page -->
-                <span
+                <NuxtLink
+                  :to="{ name: 'admin-users-id', params: { id: item.id } }"
                   class="text-link text-base font-weight-medium"
                 >
                   {{ item.full_name }}
-                </span>
+                </NuxtLink>
 
                 <span class="text-sm text-medium-emphasis">{{ item.email }}</span>
               </div>
