@@ -44,11 +44,21 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    await logEventToTelegram({
+      eventType: 'CREATE_USER',
+      details: sysUser,
+    })
+
     setResponseStatus(event, 201)
 
     return sysUser
   }
   catch (error: any) {
+    await logEventToTelegram({
+      eventType: 'CREATE_USER',
+      isError: true,
+      details: error,
+    })
     throw parseError(error)
   }
 })

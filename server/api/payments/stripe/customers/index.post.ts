@@ -3,9 +3,16 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
-  return await createStripeCustomer({
+  const response = await createStripeCustomer({
     name: body.name,
     email: body.email,
     phone: body.phone,
   })
+
+  await logEventToTelegram({
+    eventType: 'CREATE_STRIPE_CUSTOMER',
+    details: response,
+  })
+
+  return response
 })
