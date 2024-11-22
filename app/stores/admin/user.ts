@@ -19,7 +19,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function fetchUser(userId: string) {
-    return await $api(`/users/${userId}`, {
+    return await $api<{ data: UserWithRoles }>(`/users/${userId}`, {
       method: 'GET',
     })
   }
