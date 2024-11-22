@@ -61,6 +61,13 @@ export async function createStripeCustomerOnSignup(email: string) {
 
   console.log(`${email} (${stripeCustomer.id}) has signed up for ${freePrice.id} (${freePrice.unit_amount} ${freePrice.currency})`)
 
+  await logEventToTelegram({
+    eventType: 'CREATE_STRIPE_CUSTOMER_ON_SIGNUP',
+    details: {
+      email,
+    },
+  })
+
   return {
     customer: stripeCustomer,
     subscription: await createStripeSubscription(stripeCustomer.id, freePrice.id!),

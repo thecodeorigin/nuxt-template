@@ -8,6 +8,11 @@ export default defineEventHandler(async (event) => {
 
     const response = await deleteUserById(userUId)
 
+    await logEventToTelegram({
+      eventType: 'DELETE_USER',
+      details: response,
+    })
+
     setResponseStatus(event, 201)
 
     return response

@@ -9,6 +9,11 @@ export async function createStripeSubscription(customerUId: string, priceId: str
     if (sub?.status === 'paused')
       await resumeStripeSubscription(subscriptions[0].id)
 
+    await logEventToTelegram({
+      eventType: 'CREATE_STRIPE_SUBSCRIPTION',
+      details: sub,
+    })
+
     return sub
   }
   else {

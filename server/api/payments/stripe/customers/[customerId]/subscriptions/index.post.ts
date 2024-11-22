@@ -3,5 +3,12 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
-  return await createStripeSubscription(customerId, body.priceId)
+  const response = await createStripeSubscription(customerId, body.priceId)
+
+  await logEventToTelegram({
+    eventType: 'CREATE_STRIPE_SUBSCRIPTION',
+    details: response,
+  })
+
+  return response
 })
