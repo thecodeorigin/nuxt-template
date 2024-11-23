@@ -165,7 +165,6 @@ export default NuxtAuthHandler({
               details: {
                 provider: account.provider,
                 email: user.email,
-                phone: user.phone,
               },
             })
 
