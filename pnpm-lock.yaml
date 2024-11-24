@@ -99,6 +99,9 @@ importers:
       '@nuxtjs/i18n':
         specifier: ^8.5.5
         version: 8.5.5(magicast@0.3.5)(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
+      '@payos/node':
+        specifier: ^1.0.10
+        version: 1.0.10
       '@pinia/nuxt':
         specifier: ^0.5.1
         version: 0.5.1(magicast@0.3.5)(rollup@3.29.5)(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
@@ -2828,6 +2831,9 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
+  '@payos/node@1.0.10':
+    resolution: {integrity: sha512-dY+WHd6pLa558a1G8yv6oKfVe5QLTNyYnQBaSQtwvMAm/p0faKAnfXt04LNIwO9/4buas4ES+sDxc1bfX/mVbQ==}
+
   '@pinia/nuxt@0.5.1':
     resolution: {integrity: sha512-6wT6TqY81n+7/x3Yhf0yfaJVKkZU42AGqOR0T3+UvChcaOJhSma7OWPN64v+ptYlznat+fS1VTwNAcbi2lzHnw==}
 
@@ -4892,6 +4898,10 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+
+  crypto@1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
 
   css-declaration-sorter@7.2.0:
     resolution: {integrity: sha512-h70rUM+3PNFuaBDTLe8wF/cdWu+dOZmb7pJt8Z2sedYbAcQVQV/tEchueg3GWxwqS0cxtbxmaHEdkNACqcvsow==}
@@ -12599,6 +12609,13 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
+  '@payos/node@1.0.10':
+    dependencies:
+      axios: 1.6.8
+      crypto: 1.0.1
+    transitivePeerDependencies:
+      - debug
+
   '@pinia/nuxt@0.5.1(magicast@0.3.5)(rollup@3.29.5)(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
@@ -15263,6 +15280,8 @@ snapshots:
   crossws@0.2.4: {}
 
   crypto-js@4.2.0: {}
+
+  crypto@1.0.1: {}
 
   css-declaration-sorter@7.2.0(postcss@8.4.38):
     dependencies:
