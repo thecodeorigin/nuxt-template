@@ -23,3 +23,5 @@ export * from './stripe'
 export * from './url'
 
 export * from './vnpay'
+
+export * from './payos'
