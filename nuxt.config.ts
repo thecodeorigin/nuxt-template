@@ -249,6 +249,7 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-auth',
     '@pinia/nuxt',
     'nuxt-vuefire',
+    'nuxt-gtag',
     'nuxt-nodemailer',
   ],
 
@@ -263,6 +264,15 @@ export default defineNuxtConfig({
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
+  },
+
+  gtag: {
+    enabled: process.env.NODE_ENV === 'production',
+    tags: [
+      {
+        id: process.env.FIREBASE_MEASUREMENT_ID || '',
+      },
+    ],
   },
 
   nodemailer: process.env.NODE_ENV === 'development'
