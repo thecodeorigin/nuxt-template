@@ -45,6 +45,8 @@ async function resetPassword() {
     })
 
     navigateTo('/auth/login')
+
+    useTrackEvent('auth:reset-password')
   }
   catch (error: any) {
     notifyError({ content: error.message })

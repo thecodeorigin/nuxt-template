@@ -250,6 +250,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-vuefire',
     'nuxt-gtag',
+    'nuxt-module-hotjar',
     'nuxt-nodemailer',
   ],
 
@@ -273,6 +274,14 @@ export default defineNuxtConfig({
         id: process.env.FIREBASE_MEASUREMENT_ID || '',
       },
     ],
+  },
+
+  hotjar: {
+    hotjarId: process.env.HOTJAR_ID,
+    scriptVersion: 6,
+
+    // optionally you can turn on debug mode for development
+    debug: process.env.NODE_ENV === 'development',
   },
 
   nodemailer: process.env.NODE_ENV === 'development'

@@ -24,6 +24,8 @@ async function handleOpenStripePortal() {
       body: t('You will be redirected to the Stripe portal to manage your subscription!'),
     })
 
+    useTrackEvent('subscription:portal')
+
     if (import.meta.env.STRIPE_CUSTOMER_PORTAL_URL)
       window.location.href = import.meta.env.STRIPE_CUSTOMER_PORTAL_URL
     else

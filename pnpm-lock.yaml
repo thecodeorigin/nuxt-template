@@ -107,7 +107,7 @@ importers:
         version: 8.37.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.54.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)(encoding@0.1.13)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(pinia@2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5)))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       '@sidebase/nuxt-auth':
         specifier: ^0.9.4
-        version: 0.9.4(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)
+        version: 0.9.4(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)
       '@sindresorhus/is':
         specifier: 6.3.0
         version: 6.3.0
@@ -257,7 +257,7 @@ importers:
         version: 6.9.0(socks@2.8.3)
       next-auth:
         specifier: 4.21.1
-        version: 4.21.1(next@13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 4.21.1(next@13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       nodemailer:
         specifier: ^6.9.15
         version: 6.9.15
@@ -267,6 +267,9 @@ importers:
       nuxt-gtag:
         specifier: ^3.0.2
         version: 3.0.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
+      nuxt-module-hotjar:
+        specifier: ^1.3.2
+        version: 1.3.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       nuxt-nodemailer:
         specifier: ^1.1.2
         version: 1.1.2(magicast@0.3.5)(nodemailer@6.9.15)(rollup@3.29.5)(webpack-sources@3.2.3)
@@ -2163,6 +2166,9 @@ packages:
     resolution: {integrity: sha512-AiXO/bfe9bmxBjxxtYxFAXGZvMaN5s8kO+jBHAJCON8rJoB5YS/D6X7ZNc6XQkuHNmyl4CYaMI1fJ/Gn27RGGw==}
     engines: {node: '>=6'}
     hasBin: true
+
+  '@hotjar/browser@1.0.9':
+    resolution: {integrity: sha512-n9akDMod8BLGpYEQCrHwlYWWd63c1HlhUSXNIDfClZtKYXbUjIUOFlNZNNcUxgHTCsi4l2i+SWKsGsO0t93S8w==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -7147,6 +7153,9 @@ packages:
   nuxt-gtag@3.0.2:
     resolution: {integrity: sha512-0Spu/rffPxW7REebkjE22qQOuVZIQuyIuvd61InDdJU+d+gRIqWhrUuKBWdk43N/J1elj+cTK2kEdk5FQX7vdQ==}
 
+  nuxt-module-hotjar@1.3.2:
+    resolution: {integrity: sha512-4jRp5LIb8aS5jh+Mk6ihHfQ92bLWWtKuFmWUVeczM93gjRSObSkyi8w9XGRaceYH5+vVxAI02tVQ3/gT0M2XFA==}
+
   nuxt-nodemailer@1.1.2:
     resolution: {integrity: sha512-oYi0AnEZu56euRxJ/G7NAQLmRct9ORgKvxF3AcAbVlxfKJJQ7kNPZnlymQbzg9F/SLBlQgSE+mSQR/3Wz6JOIg==}
     peerDependencies:
@@ -11524,6 +11533,8 @@ snapshots:
       protobufjs: 7.3.2
       yargs: 17.7.2
 
+  '@hotjar/browser@1.0.9': {}
+
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -13026,13 +13037,13 @@ snapshots:
     optionalDependencies:
       pinia: 2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5))
 
-  '@sidebase/nuxt-auth@0.9.4(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)':
+  '@sidebase/nuxt-auth@0.9.4(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(next-auth@4.21.1(next@13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(rollup@3.29.5)(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       defu: 6.1.4
       h3: 1.13.0
       knitwork: 1.1.0
-      next-auth: 4.21.1(next@13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      next-auth: 4.21.1(next@13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       nitropack: 2.9.7(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(webpack-sources@3.2.3)
       requrl: 3.0.2
       scule: 1.3.0
@@ -17771,13 +17782,13 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  next-auth@4.21.1(next@13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  next-auth@4.21.1(next@13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0))(nodemailer@6.9.15)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@babel/runtime': 7.24.4
       '@panva/hkdf': 1.1.1
       cookie: 0.5.0
       jose: 4.15.5
-      next: 13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0)
+      next: 13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0)
       oauth: 0.9.15
       openid-client: 5.6.5
       preact: 10.12.1
@@ -17788,16 +17799,16 @@ snapshots:
     optionalDependencies:
       nodemailer: 6.9.15
 
-  next@13.5.6(@babel/core@7.24.8)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0):
+  next@13.5.6(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.75.0):
     dependencies:
       '@next/env': 13.5.6
       '@swc/helpers': 0.5.2
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001663
+      caniuse-lite: 1.0.30001684
       postcss: 8.4.38
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      styled-jsx: 5.1.1(@babel/core@7.24.8)(react@18.2.0)
+      styled-jsx: 5.1.1(@babel/core@7.26.0)(react@18.2.0)
       watchpack: 2.4.0
     optionalDependencies:
       '@next/swc-darwin-arm64': 13.5.6
@@ -17969,6 +17980,17 @@ snapshots:
       defu: 6.1.4
       pathe: 1.1.2
       ufo: 1.5.4
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+      - webpack-sources
+
+  nuxt-module-hotjar@1.3.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3):
+    dependencies:
+      '@hotjar/browser': 1.0.9
+      '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
+      defu: 6.1.4
     transitivePeerDependencies:
       - magicast
       - rollup
@@ -19445,12 +19467,12 @@ snapshots:
 
   style-search@0.1.0: {}
 
-  styled-jsx@5.1.1(@babel/core@7.24.8)(react@18.2.0):
+  styled-jsx@5.1.1(@babel/core@7.26.0)(react@18.2.0):
     dependencies:
       client-only: 0.0.1
       react: 18.2.0
     optionalDependencies:
-      '@babel/core': 7.24.8
+      '@babel/core': 7.26.0
 
   stylehacks@7.0.4(postcss@8.4.38):
     dependencies:

@@ -50,6 +50,10 @@ async function login(provider?: string) {
   try {
     loading()
 
+    useTrackEvent('auth:signup', {
+      method: provider
+    })
+
     if (provider) {
       await signIn(provider, { callbackUrl: '/' })
     }

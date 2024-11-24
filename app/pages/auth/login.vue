@@ -54,6 +54,10 @@ async function login(provider?: string) {
   try {
     loading()
 
+    useTrackEvent('auth:login', {
+      method: provider
+    })
+
     if (provider) {
       await signIn(provider, {
         callbackUrl: withQuery(route.query.to ? String(route.query.to) : '/', { loggedIn: true }),

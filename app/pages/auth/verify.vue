@@ -38,6 +38,8 @@ async function handleVerify() {
     })
 
     navigateTo(redirectTo.value)
+
+    useTrackEvent('auth:verify')
   }
   catch (error: any) {
     notifyError({

@@ -12,6 +12,7 @@ initConfigStore()
 
 const configStore = useConfigStore()
 
+const { initialize: initializeHotJar } = useHotjar()
 const { isMobile } = useDevice()
 const { global } = useTheme()
 
@@ -29,6 +30,8 @@ onBeforeMount(async () => {
     // notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
     })
   }
+
+  initializeHotJar()
 })
 </script>
 

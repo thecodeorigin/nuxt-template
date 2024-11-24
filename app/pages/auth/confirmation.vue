@@ -57,6 +57,8 @@ async function resendConfirmation() {
     notifySuccess({
       content: t('Another confirmation email has been sent to your email address!'),
     })
+
+    useTrackEvent('auth:confirmation')
   }
   catch {
     notifyError({

@@ -44,6 +44,8 @@ async function sendResetLink() {
       content: t('An email has been sent to your email address with instructions to reset your password!'),
     })
 
+    useTrackEvent('auth:forgot-password')
+
     navigateTo('/auth/login')
   }
   catch (error: any) {
