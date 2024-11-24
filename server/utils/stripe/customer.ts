@@ -44,6 +44,8 @@ export function createStripeCustomer(payload: {
 }
 
 export async function createStripeCustomerOnSignup(email: string) {
+  const nitroApp = useNitroApp()
+
   const stripeCustomer = await createStripeCustomer({ email })
 
   const products = await getStripeAllProducts()
@@ -61,10 +63,12 @@ export async function createStripeCustomerOnSignup(email: string) {
 
   console.log(`${email} (${stripeCustomer.id}) has signed up for ${freePrice.id} (${freePrice.unit_amount} ${freePrice.currency})`)
 
-  await logEventToTelegram({
-    eventType: 'CREATE_STRIPE_CUSTOMER_ON_SIGNUP',
-    details: {
+  nitroApp.hooks.callHook('logging:info', {
+    message: 'Stripe customer created on signup',
+    data: {
       email,
+      stripeCustomer,
+      freePrice,
     },
   })
 

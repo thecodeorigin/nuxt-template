@@ -1,6 +1,7 @@
 import { useUserCrud } from '@base/server/composables/useUserCrud'
 
 export default defineEventHandler(async (event) => {
+  const nitroApp = useNitroApp()
   try {
     const { userUId } = await defineEventOptions(event, { auth: true, params: ['userUId'] })
 
@@ -8,9 +9,9 @@ export default defineEventHandler(async (event) => {
 
     const response = await deleteUserById(userUId)
 
-    await logEventToTelegram({
-      eventType: 'DELETE_USER',
-      details: response,
+    nitroApp.hooks.callHook('logging:info', {
+      message: 'User deleted',
+      data: response,
     })
 
     setResponseStatus(event, 201)

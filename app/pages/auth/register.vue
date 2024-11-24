@@ -51,7 +51,7 @@ async function login(provider?: string) {
     loading()
 
     useTrackEvent('auth:signup', {
-      method: provider
+      method: provider,
     })
 
     if (provider) {

@@ -160,14 +160,6 @@ export default NuxtAuthHandler({
               }
             }
 
-            await logEventToTelegram({
-              eventType: 'LOGIN_SUCCESS',
-              details: {
-                provider: account.provider,
-                email: user.email,
-              },
-            })
-
             return sysUser.data
           },
         )
