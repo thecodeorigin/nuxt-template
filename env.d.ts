@@ -37,6 +37,7 @@ declare module 'nitropack' {
   interface NitroRuntimeHooks {
     'user:created': (data: typeof sysUserTable.$inferSelect) => void
     'session:cache:clear': (data: { providerAccountId: string }) => void
+    'logging:info': (data: { message: string, data?: any, isError?: boolean }) => void
   }
 }
 

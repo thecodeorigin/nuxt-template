@@ -1,18 +1,20 @@
 import type Stripe from 'stripe'
 
 export async function createStripeSubscription(customerUId: string, priceId: string) {
+  const nitroApp = useNitroApp()
+
   const subscriptions = await getStripeCustomerSubscriptions(customerUId)
 
   if (subscriptions.length > 0) {
     const sub = subscriptions.find(s => s.items.data.some(i => i.price.id === priceId))
 
-    if (sub?.status === 'paused')
+    if (sub?.status === 'paused') {
       await resumeStripeSubscription(subscriptions[0].id)
-
-    await logEventToTelegram({
-      eventType: 'CREATE_STRIPE_SUBSCRIPTION',
-      details: sub,
-    })
+      nitroApp.hooks.callHook('logging:info', {
+        message: 'Stripe subscription resumed',
+        data: sub,
+      })
+    }
 
     return sub
   }

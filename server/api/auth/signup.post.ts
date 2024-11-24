@@ -5,6 +5,7 @@ import { useUserCrud } from '@base/server/composables/useUserCrud'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
+  const nitroApp = useNitroApp()
   try {
     const { email, password, phone, provider } = await readValidatedBody(
       event,
@@ -44,9 +45,9 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    await logEventToTelegram({
-      eventType: 'CREATE_USER',
-      details: sysUser,
+    nitroApp.hooks.callHook('logging:info', {
+      message: 'User created',
+      data: sysUser,
     })
 
     setResponseStatus(event, 201)
@@ -54,11 +55,12 @@ export default defineEventHandler(async (event) => {
     return sysUser
   }
   catch (error: any) {
-    await logEventToTelegram({
-      eventType: 'CREATE_USER',
+    nitroApp.hooks.callHook('logging:info', {
+      message: 'Failed to create user',
+      data: error,
       isError: true,
-      details: error,
     })
+
     throw parseError(error)
   }
 })

@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const nitroApp = useNitroApp()
   await defineEventOptions(event, { auth: true })
 
   const body = await readBody(event)
@@ -9,9 +10,9 @@ export default defineEventHandler(async (event) => {
     phone: body.phone,
   })
 
-  await logEventToTelegram({
-    eventType: 'CREATE_STRIPE_CUSTOMER',
-    details: response,
+  nitroApp.hooks.callHook('logging:info', {
+    message: 'Stripe customer created',
+    data: response,
   })
 
   return response
