@@ -29,6 +29,7 @@ export enum PaymentStatus {
   FAILED = 'failed',
   RESOLVED = 'resolved',
   PENDING = 'pending',
+  CANCELLED = 'cancelled',
 }
 
 export const permissionAction = pgEnum('permission_action', enumToPgEnum(PermissionAction))
