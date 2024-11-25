@@ -6,13 +6,20 @@ import initCore from '@base/@core/initCore'
 import { initConfigStore, useConfigStore } from '@base/@core/stores/config'
 import { hexToRgb } from '@base/@core/utils/colorConverter'
 import { isInAppBrowser } from '@/utils/detectBrowser'
+
 // ℹ️ Sync current theme with initial loader theme
 initCore()
 initConfigStore()
-
+const runtimeConfig = useRuntimeConfig()
 const configStore = useConfigStore()
 
-const { initialize: initializeHotJar } = useHotjar()
+// Function to initialize Hotjar
+const initHotjarCallback = ref<() => void>()
+if (runtimeConfig.public.hotjarId) {
+  const { initialize } = useHotjar()
+  initHotjarCallback.value = initialize
+}
+
 const { isMobile } = useDevice()
 const { global } = useTheme()
 
@@ -31,7 +38,10 @@ onBeforeMount(async () => {
     })
   }
 
-  initializeHotJar()
+  // ℹ️ Initialize Hotjar
+  if (initHotjarCallback.value) {
+    initHotjarCallback.value()
+  }
 })
 </script>
 

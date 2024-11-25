@@ -52,6 +52,7 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
+
     auth: {
       secret: process.env.AUTH_SECRET,
     },
@@ -72,6 +73,7 @@ export default defineNuxtConfig({
       appVersion,
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+      hotjarId: process.env.HOTJAR_ID,
 
       theme: {
         appLogo: process.env.NUXT_PUBLIC_APP_LOGO || '/images/logo.svg',
@@ -250,7 +252,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-vuefire',
     'nuxt-gtag',
-    'nuxt-module-hotjar',
+    process.env.HOTJAR_ID && 'nuxt-module-hotjar',
     'nuxt-nodemailer',
   ],
 
@@ -276,13 +278,20 @@ export default defineNuxtConfig({
     ],
   },
 
-  hotjar: {
-    hotjarId: process.env.HOTJAR_ID,
-    scriptVersion: 6,
-
-    // optionally you can turn on debug mode for development
-    debug: process.env.NODE_ENV === 'development',
-  },
+  ...(() => {
+    if (process.env.HOTJAR_ID) {
+      return {
+        hotjar: {
+          hotjarId: process.env.HOTJAR_ID,
+          scriptVersion: 6,
+          debug: process.env.NODE_ENV === 'development',
+        },
+      }
+    }
+    else {
+      return {}
+    }
+  })(),
 
   nodemailer: process.env.NODE_ENV === 'development'
     ? {
