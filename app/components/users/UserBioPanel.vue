@@ -1,34 +1,21 @@
 <script setup lang="ts">
-import { avatarText, kFormatter } from '#imports'
-import type { UserWithRoles } from '~/stores/admin/user'
+import { type User, type UserWithRoles, useUserStore } from '@base/stores/admin/user'
+import UserDrawer from './UserDrawer.vue'
+import { avatarText } from '#imports'
 
 defineProps<{
   user: UserWithRoles
 }>()
 
-const standardPlan = {
-  plan: 'Standard',
-  price: 99,
-  benefits: ['10 Users', 'Up to 10GB storage', 'Basic Support'],
-}
-
 const isUserInfoEditDialogVisible = ref(false)
 const isUpgradePlanDialogVisible = ref(false)
 
-// 👉 Role variant resolver
-function resolveUserRoleVariant(role: string) {
-  if (role === 'subscriber')
-    return { color: 'primary', icon: 'ri-user-line' }
-  if (role === 'author')
-    return { color: 'warning', icon: 'ri-settings-2-line' }
-  if (role === 'maintainer')
-    return { color: 'success', icon: 'ri-database-2-line' }
-  if (role === 'editor')
-    return { color: 'info', icon: 'ri-pencil-line' }
-  if (role === 'admin')
-    return { color: 'error', icon: 'ri-server-line' }
+const route = useRoute('admin-users-id')
 
-  return { color: 'primary', icon: 'ri-user-line' }
+const userStore = useUserStore()
+
+async function handleSubmitEdit(payload: Partial<User>) {
+  await userStore.updateUser(route.params.id, payload)
 }
 </script>
 
@@ -62,14 +49,9 @@ function resolveUserRoleVariant(role: string) {
             {{ user.full_name }}
           </h5>
 
-          <!-- 👉 Role chip -->
-          <VChip
-            :color="resolveUserRoleVariant(user.roles[0]?.role.name || '').color"
-            size="small"
-            class="text-capitalize mt-4"
-          >
-            {{ user.roles[0]?.role.name || '' }}
-          </VChip>
+          <h6 class="text-body-1">
+            {{ user.email }}
+          </h6>
         </VCardText>
 
         <VCardText class="d-flex justify-center flex-wrap gap-6 pb-6">
@@ -88,12 +70,9 @@ function resolveUserRoleVariant(role: string) {
               />
             </VAvatar>
 
-            <div>
-              <h5 class="text-h5">
-                {{ kFormatter(456) }}
-              </h5>
-              <span>Task Done</span>
-            </div>
+            <h5 class="text-h5">
+              {{ $t('Verified') }}
+            </h5>
           </div>
 
           <!-- 👉 Done Project -->
@@ -107,34 +86,24 @@ function resolveUserRoleVariant(role: string) {
             >
               <VIcon
                 size="24"
-                icon="ri-briefcase-line"
+                icon="ri-shield-user-line"
               />
             </VAvatar>
 
-            <div>
-              <h5 class="text-h5">
-                {{ kFormatter(123) }}
-              </h5>
-              <span>Project Done</span>
-            </div>
+            <h5 class="text-h5">
+              {{ user.roles[0]?.role.name || $t('No role') }}
+            </h5>
           </div>
         </VCardText>
 
         <!-- 👉 Details -->
         <VCardText class="pb-6">
-          <h5 class="text-h5">
-            Details
-          </h5>
-
-          <VDivider class="my-4" />
-
-          <!-- 👉 User Details list -->
           <VList class="card-list">
             <VListItem>
               <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">Phone:</span>
+                <span class="font-weight-medium">{{ $t('Phone') }}:</span>
                 <span class="text-body-1">
-                  +{{ user.phone }}
+                  {{ user.phone }}
                 </span>
               </VListItemTitle>
             </VListItem>
@@ -142,16 +111,7 @@ function resolveUserRoleVariant(role: string) {
             <VListItem>
               <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">
-                  Billing Email:
-                </span>
-                <span class="text-body-1">{{ user.email }}</span>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">
-                  Status:
+                  {{ $t('Status') }}:
                 </span>
                 <span class="text-body-1 text-capitalize">{{ user.status }}</span>
               </VListItemTitle>
@@ -159,7 +119,7 @@ function resolveUserRoleVariant(role: string) {
 
             <VListItem>
               <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">Role: </span>
+                <span class="font-weight-medium">{{ $t('Role') }}: </span>
                 <span class="text-capitalize text-body-1">{{ user.roles[0]?.role.name || '' }}</span>
               </VListItemTitle>
             </VListItem>
@@ -167,7 +127,7 @@ function resolveUserRoleVariant(role: string) {
             <VListItem>
               <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">
-                  Country:
+                  {{ $t('Country') }}:
                 </span>
                 <span class="text-body-1">
                   {{ user.country }}
@@ -178,7 +138,7 @@ function resolveUserRoleVariant(role: string) {
             <VListItem>
               <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">
-                  ZIP Code:
+                  {{ $t('ZIP Code') }}:
                 </span>
                 <span class="text-body-1">{{ user.postcode }}</span>
               </VListItemTitle>
@@ -187,18 +147,9 @@ function resolveUserRoleVariant(role: string) {
             <VListItem>
               <VListItemTitle class="text-sm">
                 <span class="font-weight-medium">
-                  Language:
+                  {{ $t('Language') }}:
                 </span>
                 <span class="text-body-1">{{ user.language }}</span>
-              </VListItemTitle>
-            </VListItem>
-
-            <VListItem>
-              <VListItemTitle class="text-sm">
-                <span class="font-weight-medium">
-                  Country:
-                </span>
-                <span class="text-body-1">{{ user.country }}</span>
               </VListItemTitle>
             </VListItem>
           </VList>
@@ -211,13 +162,13 @@ function resolveUserRoleVariant(role: string) {
             class="me-4"
             @click="isUserInfoEditDialogVisible = true"
           >
-            Edit
+            {{ $t('Edit') }}
           </VBtn>
           <VBtn
             variant="outlined"
             color="error"
           >
-            Suspend
+            {{ $t('Suspend') }}
           </VBtn>
         </VCardText>
       </VCard>
@@ -225,9 +176,10 @@ function resolveUserRoleVariant(role: string) {
   </VRow>
 
   <!-- 👉 Edit user info dialog -->
-  <UserInfoEditDialog
-    v-model:is-dialog-visible="isUserInfoEditDialogVisible"
-    :user-data="user"
+  <UserDrawer
+    v-model="isUserInfoEditDialogVisible"
+    :user="user"
+    @edit="handleSubmitEdit"
   />
 
   <!-- 👉 Upgrade plan dialog -->

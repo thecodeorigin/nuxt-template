@@ -17,15 +17,14 @@ export const sysUserTable = pgTable('sys_users', {
   password: text('password'),
   full_name: text('full_name'),
   avatar_url: text('avatar_url'),
-  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  deleted_at: timestamp('deleted_at', { withTimezone: true }),
   country: varchar('country'),
   language: varchar('language').default('en'),
-  organization: text('organization'),
   postcode: varchar('postcode'),
   status: userStatus('status').default('pending'),
   address: text('address'),
   city: text('city'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  deleted_at: timestamp('deleted_at', { withTimezone: true }),
 })
 
 export const sysUserRelations = relations(sysUserTable, ({ many }) => ({

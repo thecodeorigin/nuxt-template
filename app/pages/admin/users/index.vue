@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { RoleWithPermissions } from '@base/stores/admin/role'
 import type { UserWithRoles } from '@base/stores/admin/user'
-import { avatarText } from '#imports'
 import { useRoleStore } from '@base/stores/admin/role'
 import { useUserStore } from '@base/stores/admin/user'
 import { match } from 'ts-pattern'
+import { avatarText } from '#imports'
 
 definePageMeta({
   sidebar: {
@@ -134,7 +134,7 @@ async function handleDeleteUser(user: UserWithRoles) {
                   v-if="item.avatar_url"
                   :src="item.avatar_url"
                 />
-                <span v-else>{{ avatarText(item.full_name || 'User') }}</span>
+                <span v-else>{{ avatarText(item.full_name || $t('User')) }}</span>
               </VAvatar>
 
               <div class="d-flex flex-column">
