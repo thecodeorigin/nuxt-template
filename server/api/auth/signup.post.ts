@@ -55,10 +55,9 @@ export default defineEventHandler(async (event) => {
     return sysUser
   }
   catch (error: any) {
-    nitroApp.hooks.callHook('logging:info', {
+    nitroApp.hooks.callHook('logging:error', {
       message: 'Failed to create user',
       data: error,
-      isError: true,
     })
 
     throw parseError(error)
