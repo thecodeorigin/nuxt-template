@@ -32,7 +32,7 @@ onBeforeMount(async () => {
   }
 
   // ℹ️ Initialize Hotjar
-  if (runtimeConfig.public.hotjarId) {
+  if (runtimeConfig.public.hotjar.projectId) {
     const { initialize } = useHotjar()
     initialize()
   }

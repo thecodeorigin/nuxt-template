@@ -73,7 +73,9 @@ export default defineNuxtConfig({
       appVersion,
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
-      hotjarId: process.env.HOTJAR_ID,
+      hotjar: {
+        projectId: process.env.HOTJAR_ID,
+      },
 
       theme: {
         appLogo: process.env.NUXT_PUBLIC_APP_LOGO || '/images/logo.svg',
