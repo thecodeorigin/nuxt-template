@@ -13,13 +13,6 @@ initConfigStore()
 const runtimeConfig = useRuntimeConfig()
 const configStore = useConfigStore()
 
-const initHotjarCallback = ref<() => void>()
-
-if (runtimeConfig.public.hotjarId) {
-  const { initialize } = useHotjar()
-  initHotjarCallback.value = initialize
-}
-
 const { isMobile } = useDevice()
 const { global } = useTheme()
 
@@ -39,8 +32,9 @@ onBeforeMount(async () => {
   }
 
   // ℹ️ Initialize Hotjar
-  if (initHotjarCallback.value) {
-    initHotjarCallback.value()
+  if (runtimeConfig.public.hotjarId) {
+    const { initialize } = useHotjar()
+    initialize()
   }
 })
 </script>
