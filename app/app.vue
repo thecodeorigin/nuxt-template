@@ -13,8 +13,8 @@ initConfigStore()
 const runtimeConfig = useRuntimeConfig()
 const configStore = useConfigStore()
 
-// Function to initialize Hotjar
 const initHotjarCallback = ref<() => void>()
+
 if (runtimeConfig.public.hotjarId) {
   const { initialize } = useHotjar()
   initHotjarCallback.value = initialize
