@@ -252,7 +252,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-vuefire',
     'nuxt-gtag',
-    process.env.HOTJAR_ID && 'nuxt-module-hotjar',
+    'nuxt-module-hotjar',
     'nuxt-nodemailer',
   ],
 
@@ -278,20 +278,11 @@ export default defineNuxtConfig({
     ],
   },
 
-  ...(() => {
-    if (process.env.HOTJAR_ID) {
-      return {
-        hotjar: {
-          hotjarId: process.env.HOTJAR_ID,
-          scriptVersion: 6,
-          debug: process.env.NODE_ENV === 'development',
-        },
-      }
-    }
-    else {
-      return {}
-    }
-  })(),
+  hotjar: {
+    hotjarId: process.env.HOTJAR_ID,
+    scriptVersion: 6,
+    debug: process.env.NODE_ENV === 'development',
+  },
 
   nodemailer: process.env.NODE_ENV === 'development'
     ? {
