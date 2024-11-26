@@ -4,7 +4,7 @@ import { createPayOSCheckout } from './createPayOSCheckout'
 import { createVNPayCheckout } from './createVNPayCheckout'
 
 export async function createPaymentCheckout(
-  provider: string,
+  provider: 'payos' | 'vnpay',
   payload: {
     clientIP?: string
     userEmail?: string
