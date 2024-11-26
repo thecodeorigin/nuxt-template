@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { RoleWithPermissions } from '@base/stores/admin/role'
-import type { UserWithRoles } from '@base/stores/admin/user'
+import type { User, UserWithRoles } from '@base/stores/admin/user'
+import { avatarText } from '#imports'
 import { useRoleStore } from '@base/stores/admin/role'
 import { useUserStore } from '@base/stores/admin/user'
 import { match } from 'ts-pattern'
-import { avatarText } from '#imports'
 
 definePageMeta({
+  action: 'manage',
+  subject: 'User',
   sidebar: {
     title: 'Users',
     icon: { icon: 'ri-id-card-line' },
@@ -35,7 +37,7 @@ const userQuery = ref({
   keyword: '',
 })
 
-const { data: userData, refresh: reFetchUsers } = useLazyAsyncData('users', () => userStore.fetchUsers(userQuery.value), {
+const { data: userData, refresh: reFetchUsers } = useLazyAsyncData('users', () => userStore.fetchUsers({ ...userQuery.value, withCount: true }), {
   server: false,
 })
 
@@ -79,6 +81,16 @@ async function handleDeleteUser(user: UserWithRoles) {
   }
   catch {}
 }
+
+const isCreateUserDrawerVisible = ref(false)
+
+async function handleSubmit(payload: Partial<User> & { roles: string[], organizations: string[] }) {
+  await userStore.createUser(payload)
+
+  isCreateUserDrawerVisible.value = false
+
+  reFetchUsers()
+}
 </script>
 
 <template>
@@ -104,8 +116,8 @@ async function handleDeleteUser(user: UserWithRoles) {
               density="compact"
               style="min-width: 200px;"
             />
-            <!-- 👉 Add user button -->
-            <VBtn>
+
+            <VBtn @click="isCreateUserDrawerVisible = true">
               {{ $t('Add New User') }}
             </VBtn>
           </div>
@@ -230,5 +242,9 @@ async function handleDeleteUser(user: UserWithRoles) {
       <!-- SECTION -->
       </VCard>
     </VCol>
+    <UserDrawer
+      v-model="isCreateUserDrawerVisible"
+      @create="handleSubmit"
+    />
   </VRow>
 </template>

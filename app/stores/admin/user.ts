@@ -24,14 +24,14 @@ export const useUserStore = defineStore('user', () => {
     })
   }
 
-  async function createUser(body: Partial<User> & { permissions?: string[] }) {
+  async function createUser(body: Partial<User> & { roles?: string[], organizations?: string[] }) {
     return await $api<User>('/users', {
       method: 'POST',
       body,
     })
   }
 
-  async function updateUser(userId: string, body: Partial<User> & { permissions?: string[] }) {
+  async function updateUser(userId: string, body: Partial<User> & { roles?: string[], organizations?: string[] }) {
     return await $api(`/users/${userId}`, {
       method: 'PATCH',
       body,

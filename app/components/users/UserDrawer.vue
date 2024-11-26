@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import type { User, UserWithRoles } from '@base/stores/admin/user'
+import { emailValidator, requiredValidator } from '#imports'
 import { useOrganizationStore } from '@base/stores/admin/organization'
 import { useRoleStore } from '@base/stores/admin/role'
 import { cloneDeep } from 'lodash-es'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import type { User, UserWithRoles } from '@base/stores/admin/user'
-import { emailValidator, requiredValidator } from '#imports'
 
 const props = defineProps<{
   user?: UserWithRoles
 }>()
 
 const emit = defineEmits<{
-  (e: 'edit', payload: Partial<User>): void
-  (e: 'create', payload: Partial<User>): void
+  (e: 'edit', payload: Partial<User> & { roles: string[], organizations: string[] }): void
+  (e: 'create', payload: Partial<User> & { roles: string[], organizations: string[] }): void
   (e: 'cancel'): void
 }>()
 
@@ -20,14 +20,21 @@ const modelValue = defineModel<boolean>('modelValue', {
   default: false,
 })
 
-// const roleStore = useRoleStore()
+const roleStore = useRoleStore()
 
-// const organizationStore = useOrganizationStore()
+const organizationStore = useOrganizationStore()
 
-function getDefaultFormData(): Partial<User> {
+const { data: roleData, execute: fetchRoles } = useAsyncData(() => roleStore.fetchRoles(), {
+  immediate: false,
+})
+
+const { data: organizationData, execute: fetchOrganizations } = useAsyncData(() => organizationStore.fetchOrganizations(), {
+  immediate: false,
+})
+
+function getDefaultFormData(): Partial<User> & { roles: string[], organizations: string[] } {
   return {
     email: '',
-    email_verified: new Date(),
     phone: '',
     password: '',
     full_name: '',
@@ -35,9 +42,11 @@ function getDefaultFormData(): Partial<User> {
     country: '',
     language: '',
     postcode: '',
-    status: 'resolved',
+    status: 'active',
     address: '',
     city: '',
+    roles: [],
+    organizations: [],
   }
 }
 
@@ -46,6 +55,10 @@ const formData = ref(getDefaultFormData())
 let syncStop: () => void
 watch(modelValue, (value) => {
   if (value) {
+    // non-block fetching
+    fetchRoles()
+    fetchOrganizations()
+
     syncStop = syncRef(computed(() => props.user), formData, {
       direction: 'ltr',
       transform: {
@@ -130,18 +143,17 @@ function handleCancel() {
           <!-- 👉 Form -->
           <VForm ref="formRef">
             <VRow>
-              <!-- TODO: Add Role -->
-              <!-- <VCol cols="12">
+              <VCol cols="12">
                 <VSelect
-                  v-model="formData.role_id"
+                  v-model="formData.roles"
                   label="Select Role"
-                  :rules="[requiredValidator]"
+                  multiple
+                  :items="roleData?.data || []"
                   placeholder="Select Role"
-                  :items="roleList"
                   item-title="name"
                   item-value="id"
                 />
-              </VCol> -->
+              </VCol>
 
               <!-- 👉 Full name -->
               <VCol cols="12">
@@ -173,17 +185,16 @@ function handleCancel() {
                 />
               </VCol>
 
-              <!-- TODO: Add Organization -->
-              <!-- <VCol cols="12">
+              <VCol cols="12">
                 <VSelect
-                  v-model="formData.organization_id"
+                  v-model="formData.organizations"
                   label="Select Organization"
                   placeholder="Select Organization"
-                  :items="[{ id: null, name: 'No Organization' }, ...localOrganization]"
+                  :items="organizationData?.data || []"
                   item-title="name"
                   item-value="id"
                 />
-              </VCol> -->
+              </VCol>
 
               <!-- 👉 Country -->
               <VCol cols="12">

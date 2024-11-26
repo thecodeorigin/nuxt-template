@@ -1,5 +1,5 @@
-import { relations } from 'drizzle-orm/relations'
 import { pgTable, text, uuid } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm/relations'
 import { sysRolePermissionTable } from './sys_role_permission.schema'
 import { sysRoleUserTable } from './sys_role_user.schema'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { avatarText } from '#imports'
 import { type User, type UserWithRoles, useUserStore } from '@base/stores/admin/user'
 import UserDrawer from './UserDrawer.vue'
-import { avatarText } from '#imports'
 
 defineProps<{
   user: UserWithRoles
@@ -14,7 +14,7 @@ const route = useRoute('admin-users-id')
 
 const userStore = useUserStore()
 
-async function handleSubmitEdit(payload: Partial<User>) {
+async function handleSubmitEdit(payload: Partial<User> & { roles: string[], organizations: string[] }) {
   await userStore.updateUser(route.params.id, payload)
 }
 </script>

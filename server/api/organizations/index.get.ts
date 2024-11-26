@@ -1,14 +1,17 @@
-import { useOrganizationCrud } from '@base/server/composables/useOrganizationCrud'
+import { useOrganization } from '@base/server/composables/useOrganization'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const { getOrganizationsPaginated } = useOrganizationCrud()
+    const { getOrganizations } = useOrganization()
 
-    const sysOrganizations = await getOrganizationsPaginated(getFilter(event))
-
-    return sysOrganizations
+    return await getOrganizations(
+      getFilter(event, {
+        sortBy: 'name',
+        limit: 100,
+      }),
+    )
   }
   catch (error: any) {
     throw parseError(error)
