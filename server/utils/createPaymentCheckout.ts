@@ -16,7 +16,7 @@ export async function createPaymentCheckout(
     if (!provider || !payload.userEmail) {
       throw createError({
         statusCode: 400,
-        statusMessage: ErrorMessage.INVALID_PARAMS,
+        statusMessage: ErrorMessage.INVALID_BODY,
       })
     }
 
@@ -92,7 +92,7 @@ export async function createPaymentCheckout(
       default:
         throw createError({
           statusCode: 400,
-          statusMessage: ErrorMessage.INVALID_PARAMS,
+          statusMessage: ErrorMessage.INVALID_BODY,
         })
     }
   }
