@@ -3,11 +3,13 @@ import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from
 
 export default defineEventHandler(async (event) => {
   try {
-    const { code, id, cancel, status, orderCode } = getQuery(event)
+    const { id } = getQuery(event)
     const runtimeConfig = useRuntimeConfig()
 
-    if (code !== '00' || !orderCode)
+    if (!id)
       throw new Error('Invalid Params')
+
+    const { status, transactions, orderCode } = await payOSAdmin.getPaymentLinkInformation(id as string)
 
     const { user_payments, payment_provider_transactions } = (await db.select()
       .from(paymentProviderTransactionTable)
@@ -26,7 +28,7 @@ export default defineEventHandler(async (event) => {
     const transactionStatus = status === 'PAID' ? PaymentStatus.RESOLVED : PaymentStatus.FAILED
 
     await db.transaction(async (db) => {
-      const date = new Date()
+      const date = new Date(transactions[0].transactionDateTime)
       await db.update(paymentProviderTransactionTable).set({
         provider_transaction_status: transactionStatus,
         provider_transaction_resolved_at: date,
