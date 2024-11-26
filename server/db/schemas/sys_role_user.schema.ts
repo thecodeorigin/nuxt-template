@@ -16,7 +16,7 @@ export const sysRoleUserRelation = relations(sysRoleUserTable, ({ one }) => ({
     references: [sysRoleTable.id],
   }),
   user: one(sysUserTable, {
-    fields: [sysRoleUserTable.role_id],
+    fields: [sysRoleUserTable.user_id],
     references: [sysUserTable.id],
   }),
 }))

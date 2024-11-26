@@ -7,6 +7,8 @@ import { sortBy } from 'lodash-es'
 // import UserList from '@base/components/roles/UserList.vue'
 
 definePageMeta({
+  action: 'manage',
+  subject: 'Role',
   sidebar: {
     title: 'Roles',
     icon: { icon: 'ri-shield-user-line' },

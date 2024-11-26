@@ -1,19 +1,14 @@
-import { eq } from 'drizzle-orm'
-import { sysOrganizationTable } from '@base/server/db/schemas'
+import { useOrganization } from '@base/server/composables/useOrganization'
 
 export default defineEventHandler(async (event) => {
   try {
     const { organizationUId } = await defineEventOptions(event, { auth: true, params: ['organizationUId'] })
 
-    const sysOrganization = await db.select().from(sysOrganizationTable)
-      .where(
-        eq(sysOrganizationTable.id, organizationUId),
-      )
-      .limit(1)
+    const { getOrganizationById } = useOrganization()
 
-    setResponseStatus(event, 201)
+    const sysOrganization = await getOrganizationById(organizationUId)
 
-    return { data: sysOrganization[0] }
+    return { data: sysOrganization }
   }
   catch (error: any) {
     throw parseError(error)

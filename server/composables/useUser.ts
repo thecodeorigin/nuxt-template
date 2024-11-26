@@ -1,6 +1,6 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { LoggedInUser } from '../../next-auth'
-import { sysUserTable } from '@base/server/db/schemas'
+import { sysOrganizationUserTable, sysRoleUserTable, sysUserTable } from '@base/server/db/schemas'
 import { count, eq, ilike, or } from 'drizzle-orm'
 
 export function useUser() {
@@ -110,9 +110,26 @@ export function useUser() {
   }
 
   async function updateUser(type: 'id' | 'email', value: string, body: any) {
-    await db.update(sysUserTable).set(body).where(
+    const data = await db.update(sysUserTable).set(body).where(
       eq(sysUserTable[type], value),
-    )
+    ).returning()
+
+    if (body.roles?.length) {
+      await db.delete(sysRoleUserTable).where(eq(sysRoleUserTable.user_id, data[0].id))
+      await db.insert(sysRoleUserTable).values(body.roles.map((roleId: string) => ({
+        role_id: roleId,
+        user_id: data[0].id,
+      })))
+    }
+
+    if (body.organizations?.length) {
+      await db.delete(sysOrganizationUserTable).where(eq(sysOrganizationUserTable.user_id, data[0].id))
+
+      await db.insert(sysOrganizationUserTable).values(body.organizations.map((organizationId: string) => ({
+        organization_id: organizationId,
+        user_id: data[0].id,
+      })))
+    }
   }
 
   async function updateUserById(id: string, body: any) {
@@ -125,6 +142,20 @@ export function useUser() {
 
   async function createUser(body: any) {
     const _data = await db.insert(sysUserTable).values(body).returning()
+
+    if (body.roles?.length) {
+      await db.insert(sysRoleUserTable).values(body.roles.map((rolesId: string) => ({
+        role_id: rolesId,
+        user_id: _data[0].id,
+      })))
+    }
+
+    if (body.organizations?.length) {
+      await db.insert(sysOrganizationUserTable).values(body.organizations.map((organizationId: string) => ({
+        organization_id: organizationId,
+        user_id: _data[0].id,
+      })))
+    }
 
     nitroApp.hooks.callHook('user:created', _data[0])
 

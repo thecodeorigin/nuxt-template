@@ -1,7 +1,7 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type { sysRoleTable } from '../schemas'
-import { sysPermissionTable, sysRolePermissionTable } from '../schemas'
 import { db } from '../../utils/db'
+import { sysPermissionTable, sysRolePermissionTable } from '../schemas'
 
 export async function seedPermissions(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding permissions...')
@@ -12,6 +12,9 @@ export async function seedPermissions(roles: InferSelectModel<typeof sysRoleTabl
 
   const data = await db.insert(sysPermissionTable).values([
     { action: 'manage' as const, subject: 'all' as const },
+    { action: 'manage' as const, subject: 'User' as const },
+    { action: 'manage' as const, subject: 'Role' as const },
+    { action: 'manage' as const, subject: 'Permission' as const },
     { action: 'manage' as const, subject: 'Project' as const },
     { action: 'manage' as const, subject: 'Category' as const },
     { action: 'read' as const, subject: 'Project' as const },

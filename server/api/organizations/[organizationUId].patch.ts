@@ -1,5 +1,4 @@
-import { eq } from 'drizzle-orm'
-import { sysOrganizationTable } from '@base/server/db/schemas'
+import { useOrganization } from '@base/server/composables/useOrganization'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -7,12 +6,9 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysOrganization = await db.update(sysOrganizationTable)
-      .set(body)
-      .where(eq(sysOrganizationTable.id, organizationUId))
-      .returning()
+    const { updateOrganizationById } = useOrganization()
 
-    setResponseStatus(event, 201)
+    const sysOrganization = await updateOrganizationById(organizationUId, body)
 
     return { data: sysOrganization }
   }

@@ -6,6 +6,8 @@ import { usePermissionStore } from '@base/stores/admin/permission'
 type Permission = InferSelectModel<typeof sysPermissionTable>
 
 definePageMeta({
+  action: 'manage',
+  subject: 'Permission',
   sidebar: {
     title: 'Permissions',
     icon: { icon: 'ri-lock-2-line' },

@@ -1,17 +1,12 @@
-import { count } from 'drizzle-orm'
-import { sysOrganizationTable } from '@base/server/db/schemas'
+import { useOrganization } from '@base/server/composables/useOrganization'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const sysRoleSubquery = db.select().from(sysOrganizationTable)
+    const { getOrganizationCount } = useOrganization()
 
-    const total = await db.select({ count: count() }).from(sysRoleSubquery.as('count'))
-
-    return {
-      total,
-    }
+    return await getOrganizationCount(getFilter(event))
   }
   catch (error: any) {
     throw parseError(error)

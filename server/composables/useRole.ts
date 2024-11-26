@@ -74,21 +74,25 @@ export function useRole() {
   async function createRole(body: any) {
     const data = await db.insert(sysRoleTable).values({ name: body.name }).returning({ id: sysRoleTable.id })
 
-    await db.insert(sysRolePermissionTable).values(body.permissions.map((permissionId: string) => ({
-      role_id: data[0].id,
-      permission_id: permissionId,
-    })))
+    if (body.permissions?.length) {
+      await db.insert(sysRolePermissionTable).values(body.permissions.map((permissionId: string) => ({
+        role_id: data[0].id,
+        permission_id: permissionId,
+      })))
+    }
   }
 
   async function updateRoleById(id: string, body: any) {
     await db.update(sysRoleTable).set({ name: body.name }).where(eq(sysRoleTable.id, id))
 
-    await db.delete(sysRolePermissionTable).where(eq(sysRolePermissionTable.role_id, id))
+    if (body.permissions?.length) {
+      await db.delete(sysRolePermissionTable).where(eq(sysRolePermissionTable.role_id, id))
 
-    await db.insert(sysRolePermissionTable).values(body.permissions.map((permissionId: string) => ({
-      role_id: id,
-      permission_id: permissionId,
-    })))
+      await db.insert(sysRolePermissionTable).values(body.permissions.map((permissionId: string) => ({
+        role_id: id,
+        permission_id: permissionId,
+      })))
+    }
   }
 
   async function deleteRoleById(id: string) {
