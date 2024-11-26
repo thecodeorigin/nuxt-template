@@ -252,6 +252,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@sidebase/nuxt-auth',
     '@pinia/nuxt',
+    'nuxt-security',
     'nuxt-vuefire',
     'nuxt-gtag',
     'nuxt-module-hotjar',
@@ -306,6 +307,20 @@ export default defineNuxtConfig({
   eslint: {
     config: {
       standalone: false,
+    },
+  },
+
+  security: {
+    hidePoweredBy: true,
+    rateLimiter: {
+      driver: {
+        name: 'mongodb',
+        options: {
+          connectionString: process.env.MONGODB_CONNECTION_STRING || '',
+          databaseName: process.env.MONGODB_DATABASE_NAME || '',
+          collectionName: 'rate-limiter',
+        },
+      },
     },
   },
 
