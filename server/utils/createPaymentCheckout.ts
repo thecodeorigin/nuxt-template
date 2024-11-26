@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { PaymentStatus, paymentProviderTransactionTable, sysUserTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
+import { createPayOSCheckout } from './createPayOSCheckout'
 import { createVNPayCheckout } from './createVNPayCheckout'
 
 export async function createPaymentCheckout(
@@ -26,8 +27,6 @@ export async function createPaymentCheckout(
         id: true,
         email: true,
         phone: true,
-        password: true,
-        email_verified: true,
       },
       where: eq(sysUserTable.email, payload.userEmail as string),
     })
@@ -76,6 +75,12 @@ export async function createPaymentCheckout(
     })
 
     switch (provider) {
+      case 'payos':
+        return await createPayOSCheckout({
+          date,
+          sysUser,
+          paymentProviderTransaction,
+        })
       case 'vnpay':
         return createVNPayCheckout({
           date,
