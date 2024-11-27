@@ -3,6 +3,8 @@ import { eq } from 'drizzle-orm'
 import { sysRoleUserTable } from '../db/schemas'
 
 export default defineNitroPlugin((nitroApp) => {
+  const config = useRuntimeConfig()
+
   nitroApp.hooks.hook('user:created', async (sysUser) => {
     const userRole = await db.query.sysRoleTable.findFirst({
       where: sysRoleTable => eq(sysRoleTable.name, 'User'),
@@ -20,7 +22,7 @@ export default defineNitroPlugin((nitroApp) => {
       user_id: sysUser.id,
     })
 
-    if (sysUser.email)
+    if (sysUser.email && config.features.subscription)
       await createStripeCustomerOnSignup(sysUser.email)
 
     const { createShortcut } = useShortcutCrud(sysUser.id)

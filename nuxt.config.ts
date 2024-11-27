@@ -52,6 +52,10 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
+    features: {
+      subscription: process.env.FEATURE_SUBSCRIPTION === 'true',
+      authorization: process.env.FEATURE_AUTHORIZATION === 'true',
+    },
 
     auth: {
       secret: process.env.AUTH_SECRET,
