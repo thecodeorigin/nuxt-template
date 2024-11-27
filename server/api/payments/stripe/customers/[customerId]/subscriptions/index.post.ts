@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   const response = await createStripeSubscription(customerId, body.priceId)
 
-  nitroApp.hooks.callHook('logging:info', {
+  nitroApp.hooks.callHook('log:info', {
     message: 'Stripe subscription created',
     data: response,
   })

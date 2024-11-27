@@ -10,7 +10,7 @@ export async function createStripeSubscription(customerUId: string, priceId: str
 
     if (sub?.status === 'paused') {
       await resumeStripeSubscription(subscriptions[0].id)
-      nitroApp.hooks.callHook('logging:info', {
+      nitroApp.hooks.callHook('log:info', {
         message: 'Stripe subscription resumed',
         data: sub,
       })

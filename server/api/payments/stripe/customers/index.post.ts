@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     phone: body.phone,
   })
 
-  nitroApp.hooks.callHook('logging:info', {
+  nitroApp.hooks.callHook('log:info', {
     message: 'Stripe customer created',
     data: response,
   })
