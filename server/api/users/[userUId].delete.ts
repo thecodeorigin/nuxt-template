@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
     const response = await deleteUserById(userUId)
 
-    nitroApp.hooks.callHook('logging:info', {
+    nitroApp.hooks.callHook('log:info', {
       message: 'User deleted',
       data: response,
     })
