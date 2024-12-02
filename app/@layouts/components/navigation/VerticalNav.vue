@@ -4,7 +4,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@base/@layouts/symbols'
 import type { NavItem } from '@base/@layouts/types'
-import { layoutConfig } from '@base/@layouts'
+import { layoutConfig } from '@base/config'
 import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle } from '#components'
 
 interface Props {

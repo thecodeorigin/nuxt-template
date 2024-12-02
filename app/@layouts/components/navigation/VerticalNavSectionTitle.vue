@@ -2,7 +2,7 @@
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import type { NavItem } from '@base/@layouts/types'
 import { getDynamicI18nProps } from '@base/@layouts/utils'
-import { layoutConfig } from '@base/@layouts'
+import { layoutConfig } from '@base/config'
 
 const props = defineProps<{
   item: NavItem

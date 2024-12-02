@@ -3,7 +3,7 @@ import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@base/@layouts/symbols'
 import type { NavItem } from '@base/@layouts/types'
 import { getDynamicI18nProps, isNavGroupActive, openGroups } from '@base/@layouts/utils'
-import { layoutConfig } from '@base/@layouts'
+import { layoutConfig } from '@base/config'
 import { VerticalNavLink } from '#components'
 
 defineOptions({

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { NavItem } from '@base/@layouts/types'
 import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@base/@layouts/utils'
-import { layoutConfig } from '@base/@layouts'
+import { layoutConfig } from '@base/config'
 import { NuxtLink } from '#components'
 
 interface Props {

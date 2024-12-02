@@ -19,8 +19,6 @@ const { global } = useTheme()
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
-const notificationStore = useMessageStore()
-
 onBeforeMount(async () => {
   if (!isInAppBrowser()) {
     onMessage(getMessaging(), () => {
@@ -49,12 +47,6 @@ onBeforeMount(async () => {
       </NuxtLayout>
 
       <ScrollToTop />
-
-      <ConfirmDialog
-        :model-value="Boolean(notificationStore.confirmationMessage)"
-        :message="notificationStore.confirmationMessage"
-        @confirm="notificationStore.resolveConfirmation"
-      />
     </VApp>
   </VLocaleProvider>
 </template>

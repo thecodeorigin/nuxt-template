@@ -44,7 +44,9 @@ const config = useRuntimeConfig()
     </template>
 
     <!-- 👉 Customizer -->
-    <!-- <TheCustomizer /> -->
+    <DevOnly>
+      <TheCustomizer />
+    </DevOnly>
   </HorizontalNavLayout>
 </template>
 

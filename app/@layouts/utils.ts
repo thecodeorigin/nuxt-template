@@ -1,5 +1,4 @@
 import type { RouteRecordNormalized, Router } from 'vue-router'
-import { layoutConfig } from '@base/@layouts/config'
 import { AppContentLayoutNav } from '@base/@layouts/enums'
 import { useLayoutConfigStore } from '@base/@layouts/stores/config'
 import type { NavItem, NavLinkProps } from '@base/@layouts/types'

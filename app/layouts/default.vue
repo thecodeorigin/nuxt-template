@@ -2,7 +2,6 @@
 import { useConfigStore } from '@base/@core/stores/config'
 import { AppContentLayoutNav } from '@base/@layouts/enums'
 import { switchToVerticalNavOnLtOverlayNavBreakpoint } from '@base/@layouts/utils'
-import { LazyDefaultLayoutWithHorizontalNav, LazyDefaultLayoutWithVerticalNav } from '#components'
 
 const configStore = useConfigStore()
 
@@ -16,12 +15,14 @@ injectSkinClasses()
 </script>
 
 <template>
-  <Component
-    v-bind="layoutAttrs"
-    :is="configStore.appContentLayoutNav === AppContentLayoutNav.Vertical ? LazyDefaultLayoutWithVerticalNav : LazyDefaultLayoutWithHorizontalNav"
-  >
-    <slot />
-  </Component>
+  <div>
+    <DefaultLayoutWithVerticalNav v-if="configStore.appContentLayoutNav === AppContentLayoutNav.Vertical" v-bind="layoutAttrs">
+      <slot />
+    </DefaultLayoutWithVerticalNav>
+    <DefaultLayoutWithHorizontalNav v-else v-bind="layoutAttrs">
+      <slot />
+    </DefaultLayoutWithHorizontalNav>
+  </div>
 </template>
 
 <style lang="scss">

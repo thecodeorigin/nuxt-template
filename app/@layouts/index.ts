@@ -1,6 +1,6 @@
 import type { PartialDeep } from 'type-fest'
 import type { Plugin } from 'vue'
-import { layoutConfig } from '@base/@layouts/config'
+import { layoutConfig } from '@base/config'
 import { cookieRef, useLayoutConfigStore } from '@base/@layouts/stores/config'
 import type { LayoutConfig } from '@base/@layouts/types'
 import { _setDirAttr } from '@base/@layouts/utils'
@@ -14,7 +14,7 @@ export function createLayouts(userConfig: PartialDeep<LayoutConfig>): Plugin {
     layoutConfig.app.overlayNavFromBreakpoint = userConfig.app?.overlayNavFromBreakpoint ?? layoutConfig.app.overlayNavFromBreakpoint
     layoutConfig.app.iconRenderer = userConfig.app?.iconRenderer as LayoutConfig['app']['iconRenderer'] ?? layoutConfig.app.iconRenderer
 
-    layoutConfig.verticalNav.defaultNavItemIconProps = userConfig.verticalNav?.defaultNavItemIconProps ?? layoutConfig.verticalNav.defaultNavItemIconProps
+    layoutConfig.verticalNav.defaultNavItemIconProps = userConfig.verticalNav?.defaultNavItemIconProps as LayoutConfig['verticalNav']['defaultNavItemIconProps'] ?? layoutConfig.verticalNav.defaultNavItemIconProps
 
     layoutConfig.icons.chevronDown = userConfig.icons?.chevronDown ?? layoutConfig.icons.chevronDown
     layoutConfig.icons.chevronRight = userConfig.icons?.chevronRight ?? layoutConfig.icons.chevronRight
