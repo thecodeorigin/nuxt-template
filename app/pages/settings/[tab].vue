@@ -8,11 +8,21 @@ const activeTab = computed({
   set: () => route.params.tab,
 })
 
-// tabs
-const tabs = [
-  { title: t('Account'), icon: 'ri-group-line', tab: 'account' },
-  { title: t('Billing & Plans'), icon: 'ri-bookmark-line', tab: 'billing-plans' },
-]
+const config = useRuntimeConfig()
+
+const tabs = computed(() => {
+  const _tabs = [
+    { title: t('Account'), icon: 'ri-group-line', tab: 'account' },
+  ]
+
+  if (config.features.credit)
+    _tabs.push({ title: t('Credit'), icon: 'ri-coins-line', tab: 'credit' })
+
+  if (config.features.subscription)
+    _tabs.push({ title: t('Subscription'), icon: 'ri-time-line', tab: 'subscription' })
+
+  return _tabs
+})
 
 definePageMeta({
   navActiveLink: 'settings-tab',
@@ -49,8 +59,12 @@ definePageMeta({
           <AccountSettingsAccount />
         </VWindowItem>
 
-        <VWindowItem value="billing-plans">
-          <LazyAccountSettingsBillingAndPlans />
+        <VWindowItem v-if="config.features.credit" value="credit">
+          <LazyAccountSettingsCredit />
+        </VWindowItem>
+
+        <VWindowItem v-if="config.features.subscription" value="subscription">
+          <LazyAccountSettingsSubscription />
         </VWindowItem>
       </VWindow>
     </ClientOnly>
