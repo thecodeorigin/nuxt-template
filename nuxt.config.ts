@@ -53,9 +53,9 @@ export default defineNuxtConfig({
   */
   runtimeConfig: {
     features: {
-      credit: process.env.FEATURE_CREDIT === 'true',
-      subscription: process.env.FEATURE_SUBSCRIPTION === 'true',
-      authorization: process.env.FEATURE_AUTHORIZATION === 'true',
+      credit: Boolean(process.env.FEATURE_CREDIT),
+      subscription: Boolean(process.env.FEATURE_SUBSCRIPTION),
+      authorization: Boolean(process.env.FEATURE_AUTHORIZATION),
     },
 
     auth: {

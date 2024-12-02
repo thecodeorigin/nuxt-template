@@ -10,6 +10,8 @@ export interface Rule {
 }
 
 export const useCaslStore = defineStore('casl', () => {
+  const config = useRuntimeConfig()
+
   const { currentPermissions } = useAuthStore()
 
   function reactiveAbility<T extends AnyAbility>(ability: T) {
@@ -26,8 +28,15 @@ export const useCaslStore = defineStore('casl', () => {
     ability.possibleRulesFor = (action: string, subject: SubjectType) => {
       return possibleRulesFor(action, subject)
     }
-    ability.can = ability.can.bind(ability)
-    ability.cannot = ability.cannot.bind(ability)
+
+    if (config.features.authorization) {
+      ability.can = ability.can.bind(ability)
+      ability.cannot = ability.cannot.bind(ability)
+    }
+    else {
+      ability.can = () => true
+      ability.cannot = () => false
+    }
 
     return ability
   }
