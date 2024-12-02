@@ -31,6 +31,11 @@ export enum PaymentStatus {
   PENDING = 'pending',
 }
 
+export enum CreditHistoryType {
+  TOPUP = 'topup',
+  SPEND = 'spend',
+}
+
 export const permissionAction = pgEnum('permission_action', enumToPgEnum(PermissionAction))
 
 export const permissionScope = pgEnum('permission_scope', enumToPgEnum(PermissionScope))
@@ -38,3 +43,5 @@ export const permissionScope = pgEnum('permission_scope', enumToPgEnum(Permissio
 export const userStatus = pgEnum('user_status', enumToPgEnum(UserStatus))
 
 export const paymentStatus = pgEnum('payment_status', enumToPgEnum(PaymentStatus))
+
+export const creditHistoryType = pgEnum('credit_history_type', enumToPgEnum(CreditHistoryType))
