@@ -52,12 +52,6 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
-    features: {
-      credit: Boolean(process.env.FEATURE_CREDIT),
-      subscription: Boolean(process.env.FEATURE_SUBSCRIPTION),
-      authorization: Boolean(process.env.FEATURE_AUTHORIZATION),
-    },
-
     auth: {
       secret: process.env.AUTH_SECRET,
     },
@@ -78,6 +72,13 @@ export default defineNuxtConfig({
       appVersion,
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+
+      features: {
+        credit: Boolean(process.env.FEATURE_CREDIT),
+        subscription: Boolean(process.env.FEATURE_SUBSCRIPTION),
+        authorization: Boolean(process.env.FEATURE_AUTHORIZATION),
+      },
+
       hotjar: {
         projectId: process.env.HOTJAR_ID,
       },

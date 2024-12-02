@@ -29,7 +29,7 @@ export const useCaslStore = defineStore('casl', () => {
       return possibleRulesFor(action, subject)
     }
 
-    if (config.features.authorization) {
+    if (config.public.features.authorization) {
       ability.can = ability.can.bind(ability)
       ability.cannot = ability.cannot.bind(ability)
     }

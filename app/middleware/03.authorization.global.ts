@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const config = useRuntimeConfig()
 
-  if (!config.features.authorization)
+  if (!config.public.features.authorization)
     return
 
   if (!canNavigate(to)) {

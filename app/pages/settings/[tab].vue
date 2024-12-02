@@ -15,10 +15,10 @@ const tabs = computed(() => {
     { title: t('Account'), icon: 'ri-group-line', tab: 'account' },
   ]
 
-  if (config.features.credit)
+  if (config.public.features.credit)
     _tabs.push({ title: t('Credit'), icon: 'ri-coins-line', tab: 'credit' })
 
-  if (config.features.subscription)
+  if (config.public.features.subscription)
     _tabs.push({ title: t('Subscription'), icon: 'ri-time-line', tab: 'subscription' })
 
   return _tabs
@@ -59,11 +59,11 @@ definePageMeta({
           <AccountSettingsAccount />
         </VWindowItem>
 
-        <VWindowItem v-if="config.features.credit" value="credit">
+        <VWindowItem v-if="config.public.features.credit" value="credit">
           <LazyAccountSettingsCredit />
         </VWindowItem>
 
-        <VWindowItem v-if="config.features.subscription" value="subscription">
+        <VWindowItem v-if="config.public.features.subscription" value="subscription">
           <LazyAccountSettingsSubscription />
         </VWindowItem>
       </VWindow>

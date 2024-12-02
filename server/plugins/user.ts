@@ -22,7 +22,7 @@ export default defineNitroPlugin((nitroApp) => {
       user_id: sysUser.id,
     })
 
-    if (sysUser.email && config.features.subscription)
+    if (sysUser.email && config.public.features.subscription)
       await createStripeCustomerOnSignup(sysUser.email)
 
     const { createShortcut } = useShortcutCrud(sysUser.id)
