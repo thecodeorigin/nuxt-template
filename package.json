@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -80,6 +80,7 @@
     "@nuxt/schema": "^3.13.2",
     "@nuxtjs/device": "^3.2.4",
     "@nuxtjs/i18n": "^8.5.5",
+    "@payos/node": "^1.0.10",
     "@pinia/nuxt": "^0.5.1",
     "@sentry/nuxt": "^8.36.0",
     "@sidebase/nuxt-auth": "^0.9.4",
