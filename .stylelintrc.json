@@ -5,7 +5,6 @@
     "@stylistic/stylelint-config"
   ],
   "plugins": [
-    "stylelint-use-logical-spec",
     "@stylistic/stylelint-plugin"
   ],
   "overrides": [
@@ -30,7 +29,6 @@
       }
     ],
     "@stylistic/indentation": 2,
-    "liberty/use-logical-spec": true,
     "selector-class-pattern": null,
     "color-function-notation": null,
     "annotation-no-unknown": [

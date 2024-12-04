@@ -122,6 +122,7 @@ function navigate(route: string) {
 .shortcut-icon:hover {
   background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity));
 }
+
 .shortcut-icon-close {
   position: absolute;
   top: 4px;
