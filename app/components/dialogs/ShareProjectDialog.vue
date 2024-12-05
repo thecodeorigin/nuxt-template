@@ -20,6 +20,8 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 
+const config = useRuntimeConfig()
+
 function dialogVisibleUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
 }
@@ -194,7 +196,7 @@ const membersList: Member[] = [
               size="20"
               class="me-2"
             />
-            <span>Public to Master - Thecodeorigin</span>
+            <span>Public to Master - {{ config.public.appCredit }}</span>
           </div>
 
           <VBtn prepend-icon="ri-link">

@@ -10,6 +10,8 @@ import mailchimp from '@base/images/icons/brands/mailchimp.png'
 import slack from '@base/images/icons/brands/slack.png'
 import twitter from '@base/images/icons/brands/twitter.png'
 
+const config = useRuntimeConfig()
+
 const connectedAccounts = ref([
   {
     logo: google,
@@ -49,18 +51,6 @@ const socialAccounts = ref([
     logo: facebook,
     name: 'Facebook',
     connected: false,
-  },
-  {
-    logo: twitter,
-    name: 'Twitter',
-    links: { username: '@Thecodeorigin', link: 'https://twitter.com/thecodeorigin' },
-    connected: true,
-  },
-  {
-    logo: linkedin,
-    name: 'LinkedIn',
-    links: { username: '@Thecodeorigin', link: 'https://www.linkedin.com/company/thecodeorigin' },
-    connected: true,
   },
   {
     logo: dribbble,

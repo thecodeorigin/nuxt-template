@@ -17,6 +17,8 @@ const { data: faqs, refresh: fetchFaqs } = await useLazyAsyncData(() => faqStore
 
 const { t } = useI18n()
 
+const config = useRuntimeConfig()
+
 const activeTab = ref('Payment')
 const activeQuestion = ref(1)
 watch(activeTab, () => activeQuestion.value = 0)
@@ -25,12 +27,12 @@ watch(faqSearchQuery, () => debounce(() => fetchFaqs(), 1000)())
 const contactUs = [
   {
     icon: 'ri-phone-line',
-    via: '(+84) 773 288 148',
+    via: '(+84) 123 456 789',
     tagLine: t('We are always happy to help!'),
   },
   {
     icon: 'ri-mail-line',
-    via: 'contact@thecodeorigin.com',
+    via: config.public.appCreditEmail,
     tagLine: t('Best way to get answer faster!'),
   },
 ]

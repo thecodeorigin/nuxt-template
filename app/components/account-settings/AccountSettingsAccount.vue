@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 const { t, locale } = useI18n()
 
+const config = useRuntimeConfig()
+
 const inputFileRef = ref<HTMLElement>()
 
 const authStore = useAuthStore()
@@ -214,7 +216,7 @@ async function handleSubmit() {
                 <VTextField
                   v-model="formData.organization"
                   :label="$t('Organization')"
-                  placeholder="Thecodeorigin"
+                  :placeholder="config.public.appCredit"
                   data-test="organization-input"
                 />
               </VCol>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
+const config = useRuntimeConfig()
+
 function VNodeCredit() {
   return h('div', {
     class: 'd-flex align-center text-base',
@@ -8,7 +10,7 @@ function VNodeCredit() {
       '© {year} Developed by {link}',
       {
         year: new Date().getFullYear(),
-        link: `<a href="https://thecodeorigin.com" target="_blank" rel="noopener noreferrer" class="text-primary ms-1">Thecodeorigin</a>`,
+        link: `<a href="${config.public.appCreditURL}" target="_blank" rel="noopener noreferrer" class="text-primary ms-1">${config.public.appCredit}</a>`,
       },
     ),
   })
