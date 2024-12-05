@@ -22,7 +22,7 @@ export const $api = $fetch.create({
           return
 
         try {
-          await authStore.signOut({ callbackUrl: '/auth/login' })
+          await authStore.signOut({ redirect: false, callbackUrl: '/auth/login' })
         }
         catch {}
         finally {
