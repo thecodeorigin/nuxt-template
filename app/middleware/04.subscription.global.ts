@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   const config = useRuntimeConfig()
 
-  if (to.meta.public && !config.public.features.subscription)
+  if (to.meta.public || !config.public.features.subscription)
     return
 
   const authStore = useAuthStore()
