@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/eslint-config",
   "type": "module",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/",
     "access": "restricted"
@@ -13,6 +13,10 @@
     "type": "git",
     "url": "git+ssh://git@github.com/thecodeorigin/nuxt-template.git",
     "directory": ""
+  },
+  "exports": {
+    ".": "./index.mjs",
+    "./pinia": "./pinia/index.mjs"
   },
   "main": "./index.mjs",
   "types": "./index.d.ts",

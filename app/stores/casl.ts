@@ -12,7 +12,7 @@ export interface Rule {
 export const useCaslStore = defineStore('casl', () => {
   const config = useRuntimeConfig()
 
-  const { currentPermissions } = useAuthStore()
+  const authStore = useAuthStore()
 
   function reactiveAbility<T extends AnyAbility>(ability: T) {
     if (Object.hasOwn(ability, 'possibleRulesFor')) {
@@ -42,7 +42,7 @@ export const useCaslStore = defineStore('casl', () => {
   }
 
   const ability = reactiveAbility(
-    createMongoAbility<[Actions, string]>(currentPermissions),
+    createMongoAbility<[Actions, string]>(authStore.currentPermissions),
   )
 
   return {
