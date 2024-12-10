@@ -14,10 +14,10 @@ export const $api = $fetch.create({
   },
   async onResponseError(error) {
     const authStore = useAuthStore()
-    const isRequestToOurWebsite = String(error.response.url).startsWith(String(useRuntimeConfig().public.appBaseUrl));
+    const isRequestFromExternalUrl = !String(error.response.url).startsWith(String(useRuntimeConfig().public.appBaseUrl));
     switch (error.response?.status) {
       case 401:
-        if (error.request.toString().includes('auth') || !isRequestToOurWebsite)
+        if (error.request.toString().includes('auth') || isRequestFromExternalUrl)
           return
 
         try {
