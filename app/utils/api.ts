@@ -1,5 +1,4 @@
 import type { $Fetch } from 'nitropack'
-
 export const $api = $fetch.create({
   retry: 1,
   retryDelay: 3000,
@@ -15,10 +14,10 @@ export const $api = $fetch.create({
   },
   async onResponseError(error) {
     const authStore = useAuthStore()
-
+    const isRequestToOurWebsite = String(error.response.url).startsWith(String(useRuntimeConfig().public.appBaseUrl));
     switch (error.response?.status) {
       case 401:
-        if (error.request.toString().includes('auth'))
+        if (error.request.toString().includes('auth') || !isRequestToOurWebsite)
           return
 
         try {
