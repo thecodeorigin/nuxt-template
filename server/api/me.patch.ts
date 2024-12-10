@@ -1,4 +1,4 @@
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 import { createInsertSchema } from 'drizzle-zod'
 import { sysUserTable } from '../db/schemas'
 
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     return tryWithCache(
       getStorageSessionKey(session.user.providerAccountId),
       async () => {
-        const { updateUserByEmail } = useUserCrud()
+        const { updateUserByEmail } = useUser()
 
         const sysUser = await updateUserByEmail(session.user!.email, body)
 

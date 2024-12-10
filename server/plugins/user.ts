@@ -1,4 +1,4 @@
-import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
+import { useShortcut } from '@base/server/composables/useShortcut'
 import { eq } from 'drizzle-orm'
 import { sysRoleUserTable } from '../db/schemas'
 
@@ -25,7 +25,7 @@ export default defineNitroPlugin((nitroApp) => {
     if (sysUser.email && config.public.features.subscription)
       await createStripeCustomerOnSignup(sysUser.email)
 
-    const { createShortcut } = useShortcutCrud(sysUser.id)
+    const { createShortcut } = useShortcut(sysUser.id)
 
     await Promise.all([
       createShortcut({

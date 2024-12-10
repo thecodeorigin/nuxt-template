@@ -1,4 +1,4 @@
-import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
+import { useUserDevice } from '@base/server/composables/useUserDevice'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   try {
     const { token } = await readValidatedBody(event, z.object({ token: z.string() }).parse)
 
-    const { getUserDeviceToken, createUserDeviceToken } = useUserDeviceCrud({ user_id: userUId })
+    const { getUserDeviceToken, createUserDeviceToken } = useUserDevice({ user_id: userUId })
     const dataTokenExists = await getUserDeviceToken(token)
 
     if (!dataTokenExists?.data) {

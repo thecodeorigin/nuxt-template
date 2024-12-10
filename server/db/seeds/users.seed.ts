@@ -1,14 +1,14 @@
-import { rand, randAvatar, randCountryCode, randEmail, randFullName, randLanguage, randPhoneNumber } from '@ngneat/falso'
 import type { InferSelectModel } from 'drizzle-orm'
-import bcrypt from 'bcrypt'
 import type { sysRoleTable } from '../schemas'
-import { sysRoleUserTable, sysUserTable } from '../schemas'
+import { randAvatar, randCountryCode, randEmail, randFullName, randLanguage, randPhoneNumber } from '@ngneat/falso'
+import bcrypt from 'bcrypt'
 import { db } from '../../utils/db'
+import { sysRoleUserTable, sysUserTable } from '../schemas'
 
 export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) {
   console.log('Seeding users...')
 
-  const userRole = roles.find(role => role.name === 'User')
+  const adminRole = roles.find(role => role.name === 'Admin')
 
   const testUser = {
     email: 'test@gmail.com',
@@ -37,7 +37,7 @@ export async function seedUsers(roles: InferSelectModel<typeof sysRoleTable>[]) 
   const data = await db.insert(sysUserTable).values(users).returning()
 
   await db.insert(sysRoleUserTable).values(data.map(user => ({
-    role_id: userRole!.id,
+    role_id: adminRole!.id,
     user_id: user.id,
   })))
 

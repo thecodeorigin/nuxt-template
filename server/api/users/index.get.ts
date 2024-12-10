@@ -1,19 +1,14 @@
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const { getUsersPaginated } = useUserCrud()
+    const { getUsers } = useUser()
 
-    const filterOptions: ParsedFilterQuery = getFilter(event)
-    filterOptions.sortBy = filterOptions.sortBy || 'created_at'
-
-    const response = await getUsersPaginated(filterOptions)
-
-    setResponseStatus(event, 200)
-
-    return response
+    return await getUsers(
+      getFilter(event, { sortBy: 'created_at' }),
+    )
   }
   catch (error: any) {
     throw parseError(error)

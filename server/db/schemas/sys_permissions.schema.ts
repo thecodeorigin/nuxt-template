@@ -1,4 +1,4 @@
-import { pgTable, text, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, unique, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { PermissionAction, PermissionScope, permissionAction, permissionScope } from './enum.schema'
 import { sysRolePermissionTable } from './sys_role_permission.schema'
@@ -9,7 +9,9 @@ export const sysPermissionTable = pgTable('sys_permissions', {
   subject: text('subject').notNull(),
   scope: permissionScope('scope').default(PermissionScope.ALL),
   scope_value: text('scope_value'),
-})
+}, table => ({
+  uniqueActionSubject: unique().on(table.action, table.subject),
+}))
 
 export const sysPermissionRelations = relations(sysPermissionTable, ({ many }) => ({
   roles: many(sysRolePermissionTable),

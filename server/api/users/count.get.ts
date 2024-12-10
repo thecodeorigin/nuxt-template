@@ -1,16 +1,12 @@
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const { getUsersCount } = useUserCrud()
+    const { getUserCount } = useUser()
 
-    const response = await getUsersCount()
-
-    setResponseStatus(event, 200)
-
-    return response
+    return await getUserCount()
   }
   catch (error: any) {
     throw parseError(error)

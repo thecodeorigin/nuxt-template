@@ -1,198 +1,138 @@
 <script setup lang="ts">
+import type { User, UserWithRoles } from '@base/stores/admin/user'
+import { emailValidator, requiredValidator } from '#imports'
+import { useOrganizationStore } from '@base/stores/admin/organization'
+import { useRoleStore } from '@base/stores/admin/role'
 import { cloneDeep } from 'lodash-es'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
-import type { VForm } from 'vuetify/components/VForm'
-import { type Organization, useOrganizationStore } from '~/stores/admin/organization'
-import { useRoleStore } from '~/stores/admin/role'
-import type { User } from '~/stores/admin/user'
-import type { DialogConfig, DrawerConfig } from '~/utils/types'
+const props = defineProps<{
+  user?: UserWithRoles
+}>()
 
-interface Emit {
-  (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'update:modelValue', value: Partial<User>, type: 'add' | 'edit'): void
-}
+const emit = defineEmits<{
+  (e: 'edit', payload: Partial<User> & { roles: string[], organizations: string[] }): void
+  (e: 'create', payload: Partial<User> & { roles: string[], organizations: string[] }): void
+  (e: 'cancel'): void
+}>()
 
-interface Props {
-  modelValue: Partial<User>
-  drawerConfig: DrawerConfig
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const modelValue = defineModel<boolean>('modelValue', {
+  default: false,
+})
 
 const roleStore = useRoleStore()
-const { roleList } = storeToRefs(roleStore)
-const { fetchRoles } = roleStore
 
 const organizationStore = useOrganizationStore()
-const { organizationList } = storeToRefs(organizationStore)
-const { fetchOrganizations } = organizationStore
-const localOrganization = computed(() =>
-  organizationList.value?.map((organization: Organization) => ({
-    id: organization.id,
-    name: organization.name,
-  })) || [],
-)
 
-const isFormValid = ref(false)
-const refForm = ref<VForm>()
+const { data: roleData, execute: fetchRoles } = useAsyncData(() => roleStore.fetchRoles(), {
+  immediate: false,
+})
 
-const localUser = ref<Partial<User>>({
-  id: '',
-  email: '',
-  phone: '',
-  provider: '',
-  full_name: '',
-  avatar_url: '',
-  role_id: '',
-  organization_id: null,
-  country: '',
-  language: '',
-  postcode: '',
-  status: 'pending',
-  address: '',
-  city: '',
-  email_verified: null,
+const { data: organizationData, execute: fetchOrganizations } = useAsyncData(() => organizationStore.fetchOrganizations(), {
+  immediate: false,
+})
+
+function getDefaultFormData(): Partial<User> & { roles: string[], organizations: string[] } {
+  return {
+    email: '',
+    phone: '',
+    password: '',
+    full_name: '',
+    avatar_url: '',
+    country: '',
+    language: '',
+    postcode: '',
+    status: 'active',
+    address: '',
+    city: '',
+    roles: [],
+    organizations: [],
+  }
+}
+
+const formData = ref(getDefaultFormData())
+
+let syncStop: () => void
+watch(modelValue, (value) => {
+  if (value) {
+    // non-block fetching
+    fetchRoles()
+    fetchOrganizations()
+
+    syncStop = syncRef(computed(() => props.user), formData, {
+      direction: 'ltr',
+      transform: {
+        ltr(left) {
+          if (left)
+            return cloneDeep(left)
+
+          return getDefaultFormData()
+        },
+      },
+    })
+  }
+  else {
+    syncStop()
+  }
 })
 
 // 👉  Upload image
-const localFile = ref<File | null>(null)
+const formFile = ref<File | null>(null)
+
 async function handleUploadImage() {
-  if (!localFile.value) {
+  if (!formFile.value) {
     return
   }
   try {
-    const ext = localFile.value.name.split('.').pop()
-    const filename = localFile.value.name.replace(/\s/g, '_')
-    const imageUrl = await uploadToS3(localFile.value, `sanntour/${filename || `${Date.now()}.${ext}`}`)
+    const ext = formFile.value.name.split('.').pop()
+    const filename = formFile.value.name.replace(/\s/g, '_')
+    const imageUrl = await uploadToS3(formFile.value, `sannatour/${filename || `${Date.now()}.${ext}`}`)
 
-    return localUser.value.avatar_url = imageUrl
+    return formData.value.avatar_url = imageUrl
   }
-  catch (error) {
-    console.error(error)
-  }
-}
-
-// 👉 Dialog confirmation
-const dialogConfig = ref<DialogConfig>({
-  isDialogVisible: false,
-  title: '',
-  label: '',
-  type: 'info',
-})
-
-function onConfirmDialog(value: boolean) {
-  if (value) {
-    if (props.drawerConfig.type === 'edit') {
-      emit('update:isDrawerOpen', false)
-      emit('update:modelValue', localUser.value, 'edit')
-      dialogConfig.value.isDialogVisible = false
-    }
-    else {
-      dialogConfig.value.isDialogVisible = false
-      emit('update:isDrawerOpen', false)
-    }
-  }
-}
-
-// 👉 Drawer
-// drawer close
-function handleCloseDrawer() {
-  if (props.drawerConfig.type === 'add') {
-    if (refForm.value) {
-      dialogConfig.value = {
-        isDialogVisible: true,
-        title: 'Discard New Member',
-        label: 'Are you sure you want to discard this new user?',
-        type: 'info',
-      }
-    }
-  }
-  else {
-    emit('update:isDrawerOpen', false)
-
-    nextTick(() => {
-      refForm.value?.reset()
-      refForm.value?.resetValidation()
+  catch {
+    notifyError({
+      content: 'Failed to upload image',
     })
   }
 }
 
-// drawer submit
-function onSubmit() {
-  refForm.value?.validate().then(async ({ valid }) => {
+const formTemplate = useTemplateRef('formRef')
+
+function handlesubmit() {
+  formTemplate.value?.validate().then(async ({ valid }) => {
     if (valid) {
       await handleUploadImage()
-      localFile.value = null
 
-      if (props.drawerConfig.type === 'edit') {
-        dialogConfig.value = {
-          isDialogVisible: true,
-          title: 'Update Member',
-          label: 'Are you sure you want to update this user?',
-          type: 'warning',
-        }
-      }
-      else {
-        emit('update:modelValue', {
-          email: localUser.value.email,
-          phone: localUser.value.phone,
-          full_name: localUser.value.full_name,
-          avatar_url: localUser.value.avatar_url,
-          country: localUser.value.country,
-          language: localUser.value.language,
-          postcode: localUser.value.postcode,
-          status: localUser.value.status && localUser.value.status?.length > 0 ? localUser.value.status : 'pending',
-          address: localUser.value.address,
-          city: localUser.value.city,
-          role_id: localUser.value.role_id,
-          organization_id: localUser.value.organization_id,
-          email_verified: localUser.value.email_verified,
-        }, 'add')
-
-        emit('update:isDrawerOpen', false)
-
-        nextTick(() => {
-          refForm.value?.reset()
-          refForm.value?.resetValidation()
-        })
+      if (valid) {
+        if (formData.value.id)
+          emit('edit', formData.value)
+        else
+          emit('create', formData.value)
       }
     }
   })
 }
 
-function handleDrawerModelValueUpdate(val: boolean) {
-  emit('update:isDrawerOpen', val)
+function handleCancel() {
+  modelValue.value = false
+
+  emit('cancel')
 }
-
-watch(() => props.drawerConfig.isVisible, async (val) => {
-  if (val) {
-    if (props.modelValue) {
-      localUser.value = cloneDeep(props.modelValue)
-    }
-
-    await fetchOrganizations()
-    await fetchRoles()
-  }
-}, {
-  deep: true,
-})
 </script>
 
 <template>
   <VNavigationDrawer
+    v-model="modelValue"
     temporary
     :width="400"
     location="end"
     class="scrollable-content"
-    :model-value="props.drawerConfig.isVisible"
-    @update:model-value="handleDrawerModelValueUpdate"
   >
     <!-- 👉 Title -->
     <AppDrawerHeaderSection
-      :title="drawerConfig.type === 'add' ? 'Add New User' : 'Edit Existing User'"
-      @cancel="handleCloseDrawer"
+      :title="user ? $t('Edit User') : $t('Add User')"
+      @cancel="handleCancel"
     />
 
     <VDivider />
@@ -201,20 +141,15 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm
-            ref="refForm"
-            v-model="isFormValid"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="formRef">
             <VRow>
-              <!-- 👉 Role -->
               <VCol cols="12">
                 <VSelect
-                  v-model="localUser.role_id"
+                  v-model="formData.roles"
                   label="Select Role"
-                  :rules="[requiredValidator]"
+                  multiple
+                  :items="roleData?.data || []"
                   placeholder="Select Role"
-                  :items="roleList"
                   item-title="name"
                   item-value="id"
                 />
@@ -223,7 +158,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Full name -->
               <VCol cols="12">
                 <VTextField
-                  v-model="localUser.full_name"
+                  v-model="formData.full_name"
                   :rules="[requiredValidator]"
                   label="Full Name"
                   placeholder="John Doe"
@@ -233,7 +168,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Email -->
               <VCol cols="12">
                 <VTextField
-                  v-model="localUser.email"
+                  v-model="formData.email"
                   :rules="[requiredValidator, emailValidator]"
                   label="Email"
                   placeholder="johndoe@email.com"
@@ -243,20 +178,19 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Phone -->
               <VCol cols="12">
                 <VTextField
-                  v-model="localUser.phone"
+                  v-model="formData.phone"
                   type="number"
                   label="Phone Number"
                   placeholder="+1-541-754-3010"
                 />
               </VCol>
 
-              <!-- 👉 Organization -->
               <VCol cols="12">
                 <VSelect
-                  v-model="localUser.organization_id"
+                  v-model="formData.organizations"
                   label="Select Organization"
                   placeholder="Select Organization"
-                  :items="[{ id: null, name: 'No Organization' }, ...localOrganization]"
+                  :items="organizationData?.data || []"
                   item-title="name"
                   item-value="id"
                 />
@@ -265,7 +199,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Country -->
               <VCol cols="12">
                 <VSelect
-                  v-model="localUser.country"
+                  v-model="formData.country"
                   label="Select Country"
                   placeholder="Select Country"
                   :items="['United States', 'United Kingdom', 'France']"
@@ -275,7 +209,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Language -->
               <VCol cols="12">
                 <VSelect
-                  v-model="localUser.language"
+                  v-model="formData.language"
                   label="Select Language"
                   placeholder="Select Language"
                   :items="['English', 'French', 'Spanish']"
@@ -285,7 +219,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Status -->
               <VCol cols="12">
                 <VSelect
-                  v-model="localUser.status"
+                  v-model="formData.status"
                   label="Select Status"
                   placeholder="Select Status"
                   :items="[{ title: 'Active', value: 'active' }, { title: 'Inactive', value: 'deactivated' }, { title: 'Pending', value: 'pending' }]"
@@ -295,7 +229,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Address -->
               <VCol cols="12">
                 <VTextField
-                  v-model="localUser.address"
+                  v-model="formData.address"
                   label="Address"
                   placeholder="123, Main Road, Your City"
                 />
@@ -304,7 +238,7 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 City -->
               <VCol cols="12">
                 <VTextField
-                  v-model="localUser.city"
+                  v-model="formData.city"
                   label="City"
                   placeholder="New York"
                 />
@@ -313,26 +247,25 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
               <!-- 👉 Avatar -->
               <VCol cols="12">
                 <AppDropZoneSingle
-                  :model-value="localUser.avatar_url!"
-                  @update:model-value="localFile = $event"
+                  :model-value="formData.avatar_url!"
+                  @update:model-value="formFile = $event"
                 />
               </VCol>
 
-              <!-- 👉 Submit and Cancel -->
-              <VCol cols="12">
+              <VCol cols="12" class="text-right">
                 <VBtn
-                  type="submit"
                   class="me-4"
+                  @click="handlesubmit"
                 >
-                  Submit
+                  {{ $t('Submit') }}
                 </VBtn>
                 <VBtn
                   type="reset"
                   variant="outlined"
                   color="error"
-                  @click="handleCloseDrawer"
+                  @click="handleCancel"
                 >
-                  Cancel
+                  {{ $t('Cancel') }}
                 </VBtn>
               </VCol>
             </VRow>
@@ -341,13 +274,4 @@ watch(() => props.drawerConfig.isVisible, async (val) => {
       </VCard>
     </PerfectScrollbar>
   </VNavigationDrawer>
-
-  <AppDialog
-    :is-dialog-visible="dialogConfig.isDialogVisible"
-    :title="dialogConfig.title"
-    :label="dialogConfig.label"
-    :type="dialogConfig.type"
-    @confirm="onConfirmDialog"
-    @update:is-dialog-visible="dialogConfig.isDialogVisible = $event"
-  />
 </template>

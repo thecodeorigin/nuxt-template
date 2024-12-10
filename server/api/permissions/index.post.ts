@@ -1,4 +1,4 @@
-import { sysPermissionTable } from '@base/server/db/schemas/sys_permissions.schema'
+import { usePermission } from '@base/server/composables/usePermission'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,13 +6,13 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysPermission = await db.insert(sysPermissionTable)
-      .values(body)
-      .returning()
+    const { createPermission } = usePermission()
+
+    const response = await createPermission(body)
 
     setResponseStatus(event, 201)
 
-    return { data: sysPermission[0] }
+    return response
   }
   catch (error: any) {
     throw parseError(error)

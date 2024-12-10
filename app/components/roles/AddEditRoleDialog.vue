@@ -1,280 +1,154 @@
 <script setup lang="ts">
+import type { Permission } from '@base/stores/admin/permission'
+import type { RoleWithPermissions } from '@base/stores/admin/role'
+import { requiredValidator } from '#imports'
 import { VForm } from 'vuetify/components/VForm'
 
-interface Permission {
-  name: string
-  read: boolean
-  write: boolean
-  create: boolean
-}
-
-interface Roles {
-  name: string
+const props = defineProps<{
+  role?: RoleWithPermissions | null
   permissions: Permission[]
-}
+}>()
 
-interface Props {
-  rolePermissions?: Roles
-  isDialogVisible: boolean
-}
-interface Emit {
-  (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:rolePermissions', value: Roles): void
-}
+const emit = defineEmits<{
+  (e: 'edit', payload: ReturnType<typeof getDefaultFormData>): void
+  (e: 'create', payload: Omit<ReturnType<typeof getDefaultFormData>, 'id'>): void
+}>()
 
-const props = withDefaults(defineProps<Props>(), {
-  rolePermissions: () => ({
+const modelValue = defineModel<boolean>({
+  default: false,
+})
+
+function getDefaultFormData(): { id: string, name: string, permissions: string[] } {
+  return {
+    id: '',
     name: '',
     permissions: [],
-  }),
-})
+  }
+}
 
-const emit = defineEmits<Emit>()
+const formData = ref(getDefaultFormData())
 
-// 👉 Permission List
-const permissions = ref<Permission[]>([
-  {
-    name: 'User Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Content Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Disputes Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Database Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Financial Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Reporting',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'API Control',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Repository Management',
-    read: false,
-    write: false,
-    create: false,
-  },
-  {
-    name: 'Payroll',
-    read: false,
-    write: false,
-    create: false,
-  },
-])
+const formTemplate = useTemplateRef('formRef')
 
-const isSelectAll = ref(false)
-const role = ref('')
-const refPermissionForm = ref<VForm>()
-
-const checkedCount = computed(() => {
-  let counter = 0
-
-  permissions.value.forEach((permission) => {
-    Object.entries(permission).forEach(([key, value]) => {
-      if (key !== 'name' && value)
-        counter++
-    })
-  })
-
-  return counter
-})
-
-const isIndeterminate = computed(() => checkedCount.value > 0 && checkedCount.value < (permissions.value.length * 3))
-
-// select all
-watch(isSelectAll, (val) => {
-  permissions.value = permissions.value.map(permission => ({
-    ...permission,
-    read: val,
-    write: val,
-    create: val,
-  }))
-})
-
-// if Indeterminate is false, then set isSelectAll to false
-watch(isIndeterminate, () => {
-  if (!isIndeterminate.value)
-    isSelectAll.value = false
-})
-
-// if all permissions are checked, then set isSelectAll to true
-watch(permissions, () => {
-  if (checkedCount.value === (permissions.value.length * 3))
-    isSelectAll.value = true
-}, { deep: true })
-
-// if rolePermissions is not empty, then set permissions
-watch(() => props, () => {
-  if (props.rolePermissions && props.rolePermissions.permissions.length) {
-    role.value = props.rolePermissions.name
-    permissions.value = permissions.value.map((permission) => {
-      const rolePermission = props.rolePermissions?.permissions.find(item => item.name === permission.name)
-
-      if (rolePermission) {
+syncRef(computed(() => props.role), formData, {
+  direction: 'ltr',
+  transform: {
+    ltr(left) {
+      if (left) {
         return {
-          ...permission,
-          ...rolePermission,
+          id: left.id,
+          name: left.name,
+          permissions: left.permissions.map(p => p.permission.id),
         }
       }
 
-      return permission
-    })
+      return getDefaultFormData()
+    },
+  },
+})
+
+watch(modelValue, (value) => {
+  if (!value) {
+    formData.value = {
+      id: '',
+      name: '',
+      permissions: [],
+    }
   }
 })
 
-function onSubmit() {
-  const rolePermissions = {
-    name: role.value,
-    permissions: permissions.value,
+async function handleSubmit() {
+  try {
+    if (formTemplate.value) {
+      const { valid, errors } = await formTemplate.value.validate()
+
+      if (valid) {
+        if (formData.value.id) {
+          emit('edit', formData.value)
+        }
+        else {
+          emit('create', {
+            name: formData.value.name,
+            permissions: formData.value.permissions,
+          })
+        }
+      }
+      else if (errors.length) {
+        notifyWarning({
+          content: errors[0]?.errorMessages[0],
+        })
+      }
+    }
   }
-
-  emit('update:rolePermissions', rolePermissions)
-  emit('update:isDialogVisible', false)
-  isSelectAll.value = false
-  refPermissionForm.value?.reset()
-}
-
-function onReset() {
-  emit('update:isDialogVisible', false)
-  isSelectAll.value = false
-  refPermissionForm.value?.reset()
+  catch {}
 }
 </script>
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900"
-    :model-value="props.isDialogVisible"
-    @update:model-value="onReset"
+    v-model="modelValue"
+    :width="$vuetify.display.smAndDown ? '100%' : 900"
   >
     <VCard class="pa-sm-11 pa-3">
       <!-- 👉 dialog close btn -->
       <DialogCloseBtn
         variant="text"
         size="default"
-        @click="onReset"
+        @click="modelValue = false"
       />
 
       <VCardText>
         <!-- 👉 Title -->
         <div class="text-center mb-10">
           <h4 class="text-h4 mb-2">
-            {{ props.rolePermissions.name ? 'Edit' : 'Add' }} Role
+            {{ role ? $t('Edit Role') : $t('Create Role') }}
           </h4>
-
-          <p class="text-body-1">
-            {{ props.rolePermissions.name ? 'Edit' : 'Add' }} Role
-          </p>
         </div>
 
         <!-- 👉 Form -->
-        <VForm ref="refPermissionForm">
+        <VForm ref="formRef">
           <!-- 👉 Role name -->
           <VTextField
-            v-model="role"
+            v-model="formData.name"
+            :rules="[requiredValidator]"
+            class="mb-6"
             label="Role Name"
             placeholder="Enter Role Name"
           />
 
-          <h5 class="text-h5 my-6">
-            Role Permissions
-          </h5>
-
           <!-- 👉 Role Permissions -->
-
-          <VTable class="permission-table text-no-wrap">
-            <!-- 👉 Admin  -->
-            <tr>
-              <td class="text-h6">
-                Administrator Access
-              </td>
-              <td colspan="3">
-                <div class="d-flex justify-end">
-                  <VCheckbox
-                    v-model="isSelectAll"
-                    v-model:indeterminate="isIndeterminate"
-                    label="Select All"
-                  />
-                </div>
-              </td>
-            </tr>
-
-            <!-- 👉 Other permission loop -->
-            <template
-              v-for="permission in permissions"
-              :key="permission.name"
-            >
-              <tr>
-                <td class="text-h6">
-                  {{ permission.name }}
-                </td>
-                <td style="inline-size: 5.75rem;">
-                  <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.read"
-                      label="Read"
-                    />
-                  </div>
-                </td>
-                <td style="inline-size: 5.75rem;">
-                  <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.write"
-                      label="Write"
-                    />
-                  </div>
-                </td>
-                <td style="inline-size: 5.75rem;">
-                  <div class="d-flex justify-end">
-                    <VCheckbox
-                      v-model="permission.create"
-                      label="Create"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </template>
-          </VTable>
+          <div class="mt-6 d-flex flex-wrap gap-3 permission-container">
+            <div v-for="permission in permissions" :key="permission.id" class="d-flex align-center gap-2 flex-wrap">
+              <VLabel>
+                <VCheckbox
+                  v-model="formData.permissions"
+                  multiple
+                  :class="{ 'text-primary': formData.permissions.includes(permission.id) }"
+                  :value="permission.id"
+                  :rules="[requiredValidator(formData.permissions)]"
+                >
+                  <template #label>
+                    <span class="pr-3" :class="{ 'text-primary': formData.permissions.includes(permission.id) }">
+                      {{ permission.action.toLowerCase() }}:{{ permission.subject.toLowerCase() }}
+                    </span>
+                  </template>
+                </VCheckbox>
+              </VLabel>
+            </div>
+          </div>
 
           <!-- 👉 Actions button -->
           <div class="d-flex align-center justify-center gap-3 mt-6">
-            <VBtn @click="onSubmit">
-              Submit
+            <VBtn @click="handleSubmit">
+              {{ role ? $t('Update Role') : $t('Create Role') }}
             </VBtn>
 
             <VBtn
               color="secondary"
               variant="outlined"
-              @click="onReset"
+              @click="modelValue = false"
             >
-              Cancel
+              {{ $t('Cancel') }}
             </VBtn>
           </div>
         </VForm>
@@ -283,23 +157,8 @@ function onReset() {
   </VDialog>
 </template>
 
-<style lang="scss">
-.permission-table {
-  td {
-    border-block-end: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-    padding-block: 0.625rem;
-
-    .v-checkbox {
-      min-inline-size: 4.75rem;
-    }
-
-    &:not(:first-child) {
-      padding-inline: 0.75rem;
-    }
-
-    .v-label {
-      white-space: nowrap;
-    }
-  }
+<style lang="scss" scoped>
+.permission-container {
+  min-block-size: 150px;
 }
 </style>

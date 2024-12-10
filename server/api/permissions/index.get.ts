@@ -1,17 +1,17 @@
-import { usePermissionCrud } from '@base/server/composables/usePermissionCrud'
+import { usePermission } from '@base/server/composables/usePermission'
 
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event, { auth: true })
 
-    const { getPermissionsPaginated } = usePermissionCrud()
+    const { getPermissions } = usePermission()
 
-    const filterOptions: ParsedFilterQuery = getFilter(event)
-    filterOptions.sortBy = filterOptions.sortBy || 'action'
-
-    const sysPermissions = await getPermissionsPaginated(filterOptions)
-
-    return sysPermissions
+    return await getPermissions(
+      getFilter(event, {
+        sortBy: 'action',
+        limit: 100,
+      }),
+    )
   }
   catch (error: any) {
     throw parseError(error)

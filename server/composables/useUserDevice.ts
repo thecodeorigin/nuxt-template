@@ -5,7 +5,7 @@ import { useCrud } from './useCrud'
 interface QueryRestrict {
   user_id: string | any
 }
-export function useUserDeviceCrud(queryRestrict: QueryRestrict) {
+export function useUserDevice(queryRestrict: QueryRestrict) {
   const { getRecordsPaginated, getRecordByKey, createRecord, deleteRecordByKey } = useCrud(userDeviceTable, {
     queryRestrict: () => and(
       ...[queryRestrict.user_id && eq(userDeviceTable.user_id, queryRestrict.user_id)].filter(Boolean),

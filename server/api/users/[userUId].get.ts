@@ -1,16 +1,12 @@
-import { useUserCrud } from '@base/server/composables/useUserCrud'
+import { useUser } from '@base/server/composables/useUser'
 
 export default defineEventHandler(async (event) => {
   try {
     const { userUId } = await defineEventOptions(event, { auth: true, params: ['userUId'] })
 
-    const { getUserById } = useUserCrud()
+    const { getUserById } = useUser()
 
-    const response = await getUserById(userUId)
-
-    setResponseStatus(event, 200)
-
-    return response.data
+    return await getUserById(userUId)
   }
   catch (error: any) {
     throw parseError(error)

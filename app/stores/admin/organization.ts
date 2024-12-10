@@ -1,86 +1,41 @@
 import type { sysOrganizationTable } from '@base/server/db/schemas'
-import type { InferSelectModel } from 'drizzle-orm'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import type { InferSelectModel } from 'drizzle-orm'
 
 export type Organization = InferSelectModel<typeof sysOrganizationTable>
 
 export const useOrganizationStore = defineStore('organization', () => {
-  const organizationList = ref<Organization[]>([])
-  const totalOrganizations = ref<number>(0)
-  const organizationDetail = ref<Organization | null>(null)
-
   async function fetchOrganizations(options?: ParsedFilterQuery) {
-    try {
-      const response = await $api<Organization[]>('/api/organizations', {
-        query: options,
-      })
-
-      if (response) {
-        organizationList.value = response.data
-        totalOrganizations.value = response.total
-      }
-    }
-    catch (error) {
-      console.error('Error fetching organizations:', error)
-    }
+    return $api<{ total: number, data: Organization[] }>('/organizations', {
+      query: options,
+    })
   }
 
   async function fetchOrganizationDetail(organizationId: string) {
-    try {
-      const response = await $api<Organization>(`/api/organizations/${organizationId}`, {
-        method: 'GET',
-      })
-
-      organizationDetail.value = response.data
-    }
-    catch (error) {
-      console.error('Error fetching organization detail:', error)
-    }
+    return $api<{ data: Organization }>(`/organizations/${organizationId}`)
   }
 
   async function createOrganization(body: Partial<Organization>) {
-    try {
-      const response = await $api<Organization>('/api/organizations', {
-        method: 'POST',
-        body,
-      })
-
-      return response
-    }
-    catch (error) {
-      console.error('Error creating organization:', error)
-    }
+    return await $api<{ data: Organization }>('/organizations', {
+      method: 'POST',
+      body,
+    })
   }
 
   async function updateOrganization(organizationId: string, body: Partial<Organization>) {
-    try {
-      const response = await $api<Organization>(`/api/organizations/${organizationId}`, {
-        method: 'PATCH',
-        body,
-      })
-
-      return response
-    }
-    catch (error) {
-      console.error('Error updating organization:', error)
-    }
+    return await $api<{ data: Organization }>(`/organizations/${organizationId}`, {
+      method: 'PATCH',
+      body,
+    })
   }
 
   async function deleteOrganization(organizationId: string) {
-    try {
-      await $api(`/api/organizations/${organizationId}`, {
-        method: 'DELETE',
-      })
-    }
-    catch (error) {
-      console.error('Error deleting organization:', error)
-    }
+    return await $api(`/organizations/${organizationId}`, {
+      method: 'DELETE',
+    })
   }
 
   return {
-    organizationList,
-    organizationDetail,
-    totalOrganizations,
     fetchOrganizations,
     fetchOrganizationDetail,
     updateOrganization,

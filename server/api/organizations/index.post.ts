@@ -1,4 +1,4 @@
-import { sysOrganizationTable } from '@base/server/db/schemas'
+import { useOrganization } from '@base/server/composables/useOrganization'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,13 +6,13 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event)
 
-    const sysOrganization = await db.insert(sysOrganizationTable)
-      .values(body)
-      .returning()
+    const { createOrganization } = useOrganization()
+
+    const response = await createOrganization(body)
 
     setResponseStatus(event, 201)
 
-    return { data: sysOrganization[0] }
+    return response
   }
   catch (error: any) {
     throw parseError(error)
