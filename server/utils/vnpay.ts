@@ -1,8 +1,8 @@
-import { VNPay, ignoreLogger } from 'vnpay'
+import { VNPay } from 'vnpay'
 
 export const vnpayAdmin = new VNPay({
-  tmnCode: process.env.VNP_TMNCODE!,
-  secureSecret: process.env.VNP_HASHSECRET!,
-  testMode: !process.env.DISABLE_TEST_MODE,
-  loggerFn: ignoreLogger,
+  tmnCode: process.env.VNPAY_TMNCODE!,
+  secureSecret: process.env.VNPAY_HASHSECRET!,
+  testMode: !process.env.VNPAY_DISABLE_TEST_MODE,
+  loggerFn: console.log,
 })
