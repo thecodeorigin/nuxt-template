@@ -1,5 +1,5 @@
 import admin from 'firebase-admin'
-import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
+import { useUserDevice } from '@base/server/composables/useUserDevice'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id })
+    const { getUserDeviceAllTokens } = useUserDevice({ user_id })
     const response = await getUserDeviceAllTokens({} as ParsedFilterQuery)
 
     if (response && response.total === 0) {

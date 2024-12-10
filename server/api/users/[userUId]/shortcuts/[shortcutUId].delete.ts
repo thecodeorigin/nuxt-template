@@ -1,10 +1,10 @@
-import { useShortcutCrud } from '@base/server/composables/useShortcutCrud'
+import { useShortcut } from '@base/server/composables/useShortcut'
 
 export default defineEventHandler(async (event) => {
   try {
     const { userUId, shortcutUId } = await defineEventOptions(event, { auth: true, params: ['userUId', 'shortcutUId'] })
 
-    const { deleteShortcutById } = useShortcutCrud(userUId)
+    const { deleteShortcutById } = useShortcut(userUId)
 
     const data = await deleteShortcutById(shortcutUId)
 

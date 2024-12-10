@@ -11,5 +11,5 @@ export const sysFaqCategoryTable = pgTable('sys_faq_categories', {
 })
 
 export const sysFaqCategoryRelations = relations(sysFaqCategoryTable, ({ many }) => ({
-  faqs: many(sysFaqTable),
+  questions: many(sysFaqTable),
 }))

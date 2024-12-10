@@ -3,7 +3,7 @@ import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import { userShortcutTable } from '@base/server/db/schemas'
 import { useCrud } from './useCrud'
 
-export function useShortcutCrud(userUId: string) {
+export function useShortcut(userUId: string) {
   const {
     getRecordsPaginated,
     getRecordByKey,

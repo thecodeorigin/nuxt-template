@@ -1,5 +1,5 @@
 import admin from 'firebase-admin'
-import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
+import { useUserDevice } from '@base/server/composables/useUserDevice'
 
 interface NotificationBody {
   user_id: string
@@ -19,7 +19,7 @@ export async function pushNotification(param: NotificationBody) {
     })
   }
 
-  const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id: param.user_id })
+  const { getUserDeviceAllTokens } = useUserDevice({ user_id: param.user_id })
   const response = await getUserDeviceAllTokens({} as ParsedFilterQuery)
 
   if (response && response.total === 0)

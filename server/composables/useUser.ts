@@ -1,7 +1,7 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
-import type { LoggedInUser } from '../../next-auth'
 import { sysOrganizationUserTable, sysRoleUserTable, sysUserTable } from '@base/server/db/schemas'
 import { count, eq, ilike, or } from 'drizzle-orm'
+import type { LoggedInUser } from '../../next-auth'
 
 export function useUser() {
   const nitroApp = useNitroApp()
