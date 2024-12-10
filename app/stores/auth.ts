@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
     return results
   }
 
-  const isAuthenticated = computed(() => Boolean(status.value === 'authenticated' && data.value?.user.providerAccountId))
+  const isAuthenticated = computed(() => Boolean(status.value === 'authenticated' && data.value?.user?.providerAccountId))
 
   const currentRole = computed(() => currentUser.value?.role || null)
 
