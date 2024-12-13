@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/browser'
 export default defineNuxtPlugin({
   name: 'sentry',
   parallel: true,
-  dependsOn: ['auth'],
   setup(nuxtApp) {
     const config = useRuntimeConfig()
 
@@ -12,9 +11,9 @@ export default defineNuxtPlugin({
         const scope = Sentry.getCurrentScope()
         const authStore = useAuthStore()
 
-        if (authStore.isAuthenticated && authStore.currentUser) {
+        if (authStore.isAuthenticated) {
           scope.setUser({
-            id: authStore.currentUser.id,
+            id: authStore.currentUser.sub,
             name: authStore.currentUser.name,
             email: authStore.currentUser.email || '',
           })

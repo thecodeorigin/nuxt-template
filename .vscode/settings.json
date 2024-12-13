@@ -48,7 +48,6 @@
     "stylelint",
     "touchless",
     "triggerer",
-    "vuetify",
     "nuxt"
   ],
   "commentAnchors.tags.anchors": {

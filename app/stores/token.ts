@@ -1,7 +1,7 @@
 export const useTokenDeviceStore = defineStore('token-device', () => {
   const authStore = useAuthStore()
 
-  const userId = computed(() => authStore.currentUser?.id || '')
+  const userId = computed(() => authStore.currentUser?.sub || '')
 
   const tokenDevice = ref<string | null>(null)
 

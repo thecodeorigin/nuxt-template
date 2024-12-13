@@ -1,6 +1,6 @@
-import type { InferSelectModel } from 'drizzle-orm'
 import type { sysNotificationTable } from '@base/server/db/schemas'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import type { InferSelectModel } from 'drizzle-orm'
 
 type Notification = InferSelectModel<typeof sysNotificationTable>
 interface CountNotifications {
@@ -9,7 +9,7 @@ interface CountNotifications {
 export const useNotificationStore = defineStore('notification', () => {
   const authStore = useAuthStore()
 
-  const userId = computed(() => authStore.currentUser?.id || '')
+  const userId = computed(() => authStore.currentUser?.sub || '')
 
   async function fetchNotifications(query: Partial<ParsedFilterQuery>) {
     return $api<Notification[]>(`/users/${userId.value}/notifications`, {

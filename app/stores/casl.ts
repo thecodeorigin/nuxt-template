@@ -1,6 +1,6 @@
+import type { PermissionAction } from '@base/server/db/schemas'
 import type { AnyAbility, SubjectType } from '@casl/ability'
 import { createMongoAbility } from '@casl/ability'
-import type { PermissionAction } from '@base/server/db/schemas'
 
 export type Actions = `${PermissionAction}`
 
@@ -42,7 +42,8 @@ export const useCaslStore = defineStore('casl', () => {
   }
 
   const ability = reactiveAbility(
-    createMongoAbility<[Actions, string]>(authStore.currentPermissions),
+    // TODO: Add permissions
+    createMongoAbility<[Actions, string]>([]),
   )
 
   return {

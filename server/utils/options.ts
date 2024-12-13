@@ -1,7 +1,8 @@
 import type { H3Event } from 'h3'
-import type { Session } from 'next-auth'
+import { useLogtoUser } from '#imports'
 import { z } from 'zod'
-import { getServerSession } from '#auth'
+
+type Session = any
 
 interface RouteOptions<U extends boolean, P extends string[]> {
   auth?: U
@@ -27,16 +28,16 @@ export async function defineEventOptions<
   const result = { session: null } as Result
 
   if (options?.auth) {
-    const session = await getServerSession(event)
+    const user = useLogtoUser()
 
-    if (!session) {
+    if (!user) {
       throw createError({
         statusCode: 401,
         statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
       })
     }
 
-    result.session = session as SessionType
+    result.session = user as SessionType
   }
 
   if (options?.params) {

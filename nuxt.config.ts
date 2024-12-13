@@ -1,11 +1,11 @@
 import { fileURLToPath } from 'node:url'
 
-import svgLoader from 'vite-svg-loader'
-
 import { version as appVersion } from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  extends: ['@nuxt/ui-pro'],
+
   future: {
     compatibilityVersion: 4,
   },
@@ -22,15 +22,15 @@ export default defineNuxtConfig({
       }],
     },
 
-    pageTransition: {
-      name: 'app-transition-slide-fade',
-      mode: 'out-in',
-    },
+    // pageTransition: {
+    //   name: 'app-transition-slide-fade',
+    //   mode: 'out-in',
+    // },
 
-    layoutTransition: {
-      name: 'app-transition-slide-fade',
-      mode: 'out-in',
-    },
+    // layoutTransition: {
+    //   name: 'app-transition-slide-fade',
+    //   mode: 'out-in',
+    // },
   },
 
   devServer: {
@@ -41,11 +41,23 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
-  css: [
-    '@base/@core/scss/template/index.scss',
-    '@base/styles/styles.scss',
-    '@base/plugins/iconify/icons.css',
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/fonts',
+    '@nuxt/ui',
+    '@nuxtjs/device',
+    '@nuxtjs/i18n',
+    '@vueuse/nuxt',
+    '@pinia/nuxt',
+    '@logto/nuxt',
+    'nuxt-security',
+    'nuxt-vuefire',
+    'nuxt-gtag',
+    'nuxt-module-hotjar',
+    'nuxt-nodemailer',
   ],
+
+  css: [],
 
   /*
     ❗ Please read the docs before updating runtimeConfig
@@ -54,6 +66,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     auth: {
       secret: process.env.AUTH_SECRET,
+    },
+
+    logto: {
+      endpoint: process.env.LOGTO_ENDPOINT,
+      appId: process.env.LOGTO_APP_ID,
+      appSecret: process.env.LOGTO_APP_SECRET,
+      cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
     },
 
     redis: {
@@ -107,43 +126,8 @@ export default defineNuxtConfig({
     },
   },
 
-  components: {
-    dirs: [
-      {
-        path: '@base/@core/components',
-        pathPrefix: false,
-      },
-      {
-        path: '@base/@layouts/components',
-        extensions: ['.tsx', '.vue'],
-        pathPrefix: false,
-      },
-      {
-        path: '@base/components',
-        extensions: ['.vue'],
-        pathPrefix: false,
-      },
-    ],
-  },
-
-  auth: {
-    baseURL: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-    globalAppMiddleware: false,
-
-    provider: {
-      type: 'authjs',
-    },
-  },
-
-  plugins: [
-    '@base/plugins/iconify/index.ts',
-  ],
-
   imports: {
-    dirs: [
-      fileURLToPath(new URL('./app/@core/utils', import.meta.url)),
-      fileURLToPath(new URL('./app/@core/composable', import.meta.url)),
-    ],
+    dirs: [],
   },
 
   experimental: {
@@ -151,18 +135,11 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@base/validators': fileURLToPath(new URL('./app/@core/utils/validators', import.meta.url)),
-    '@base/images': fileURLToPath(new URL('./app/assets/images/', import.meta.url)),
-    '@base/styles': fileURLToPath(new URL('./app/assets/styles/', import.meta.url)),
-    '@base/configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
     '@base/server': fileURLToPath(new URL('./server', import.meta.url)),
     '@base/modules': fileURLToPath(new URL('./modules', import.meta.url)),
     '@base': fileURLToPath(new URL('./app', import.meta.url)),
-    // Bug fix:
-    // 'vue-toastification': 'vue-toastification/dist/index.mjs',
   },
 
-  // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
   sourcemap: {
     server: true,
     client: true,
@@ -180,25 +157,6 @@ export default defineNuxtConfig({
     },
   },
 
-  vite: {
-    define: { 'process.env': {} },
-
-    build: {
-      chunkSizeWarningLimit: 5000,
-    },
-
-    optimizeDeps: {
-      exclude: ['vuetify'],
-      entries: [
-        './**/*.vue',
-      ],
-    },
-
-    plugins: [
-      svgLoader(),
-    ],
-  },
-
   nitro: {
     devProxy: {
       host: 'localhost',
@@ -207,6 +165,19 @@ export default defineNuxtConfig({
     replace: {
       'import-in-the-middle': fileURLToPath(new URL('./node_modules/import-in-the-middle', import.meta.url)),
     },
+  },
+
+  colorMode: {
+    disableTransition: true,
+  },
+
+  ui: {
+    safelistColors: ['primary', 'red', 'orange', 'green'],
+  },
+
+  routeRules: {
+    // Temporary workaround for prerender regression. see https://github.com/nuxt/nuxt/issues/27490
+    '/': { prerender: true },
   },
 
   pinia: {
@@ -253,21 +224,6 @@ export default defineNuxtConfig({
       },
     ],
   },
-
-  modules: [
-    '@vueuse/nuxt',
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxtjs/device',
-    '@nuxtjs/i18n',
-    '@sidebase/nuxt-auth',
-    '@pinia/nuxt',
-    'nuxt-security',
-    'nuxt-vuefire',
-    'nuxt-gtag',
-    'nuxt-module-hotjar',
-    'nuxt-nodemailer',
-  ],
 
   vuefire: {
     config: {

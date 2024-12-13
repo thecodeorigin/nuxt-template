@@ -1,10 +1,9 @@
-import { getMessaging, getToken } from 'firebase/messaging'
 import { isInAppBrowser } from '@/utils/detectBrowser'
+import { getMessaging, getToken } from 'firebase/messaging'
 
 export default defineNuxtPlugin({
   dependsOn: ['healthcheck'],
   setup(nuxtApp) {
-    const authStore = useAuthStore()
     const healthStore = useHealthStore()
     const tokenDeviceStore = useTokenDeviceStore()
 
@@ -12,19 +11,22 @@ export default defineNuxtPlugin({
 
     nuxtApp.hook('app:mounted', async () => {
       if (healthStore.isHealthy && !isInAppBrowser()) {
-        if (authStore.isAuthenticated) {
-          try {
-            if (Notification.permission !== 'granted')
-              await Notification.requestPermission()
+        const user = useLogtoUser()
 
-            if (Notification.permission === 'granted' && authStore.currentUser) {
-              const messaging = getMessaging()
-              const token = await getToken(messaging, { vapidKey: config.public.firebase.keyPair })
-              await tokenDeviceStore.setTokenDevice(token)
-            }
+        if (!user)
+          return
+
+        try {
+          if (Notification.permission !== 'granted')
+            await Notification.requestPermission()
+
+          if (Notification.permission === 'granted' && authStore.currentUser) {
+            const messaging = getMessaging()
+            const token = await getToken(messaging, { vapidKey: config.public.firebase.keyPair })
+            await tokenDeviceStore.setTokenDevice(token)
           }
-          catch {}
         }
+        catch {}
       }
     })
   },

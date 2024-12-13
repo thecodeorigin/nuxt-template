@@ -1,52 +1,45 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import { getMessaging, onMessage } from 'firebase/messaging'
-import ScrollToTop from '@base/@core/components/ScrollToTop.vue'
-import initCore from '@base/@core/initCore'
-import { initConfigStore, useConfigStore } from '@base/@core/stores/config'
-import { hexToRgb } from '@base/@core/utils/colorConverter'
-import { isInAppBrowser } from '@/utils/detectBrowser'
+const colorMode = useColorMode()
 
-// ℹ️ Sync current theme with initial loader theme
-initCore()
-initConfigStore()
-const runtimeConfig = useRuntimeConfig()
-const configStore = useConfigStore()
+const color = computed(() => colorMode.value === 'dark' ? '#111827' : 'white')
 
-const { isMobile } = useDevice()
-const { global } = useTheme()
-
-if (isMobile)
-  configStore.appContentLayoutNav = 'vertical'
-
-onBeforeMount(async () => {
-  if (!isInAppBrowser()) {
-    onMessage(getMessaging(), () => {
-    // TODO: Handle incoming messages
-    // console.log('Client message:', payload)
-    // const linkSplits = payload.fcmOptions?.link?.split('/projects/')
-    // notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
-    })
+useHead({
+  meta: [
+    { charset: 'utf-8' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { key: 'theme-color', name: 'theme-color', content: color }
+  ],
+  link: [
+    { rel: 'icon', href: '/favicon.ico' }
+  ],
+  htmlAttrs: {
+    lang: 'en'
   }
+})
 
-  // ℹ️ Initialize Hotjar
-  if (runtimeConfig.public.hotjar.projectId) {
-    const { initialize } = useHotjar()
-    initialize()
-  }
+const title = 'Nuxt UI Pro - Dashboard template'
+const description = 'Nuxt UI Pro is a collection of premium Vue components built on top of Nuxt UI to create beautiful & responsive Nuxt applications in minutes.'
+
+useSeoMeta({
+  title,
+  description,
+  ogTitle: title,
+  ogDescription: description,
+  ogImage: 'https://dashboard-template.nuxt.dev/social-card.png',
+  twitterImage: 'https://dashboard-template.nuxt.dev/social-card.png',
+  twitterCard: 'summary_large_image'
 })
 </script>
 
 <template>
-  <VLocaleProvider :rtl="configStore.isAppRTL">
-    <!-- ℹ️ This is required to set the background color of active nav link based on currently active global theme's primary -->
-    <VApp :style="`--v-global-theme-primary: ${hexToRgb(global.current.value.colors.primary)}`">
-      <NuxtLoadingIndicator />
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
+  <div>
+    <NuxtLoadingIndicator />
 
-      <ScrollToTop />
-    </VApp>
-  </VLocaleProvider>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+
+    <UNotifications />
+    <UModals />
+  </div>
 </template>
