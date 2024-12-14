@@ -8,7 +8,7 @@ export const useTokenDeviceStore = defineStore('token-device', () => {
   async function setTokenDevice(token: string) {
     try {
       tokenDevice.value = token
-      await $api(`/users/${userId.value}/devices`, {
+      await $api(`/api/users/${userId.value}/devices`, {
         method: 'POST',
         body: { token },
       })
@@ -20,7 +20,7 @@ export const useTokenDeviceStore = defineStore('token-device', () => {
 
   async function clearTokenDevice() {
     try {
-      await $api(`/users/${userId.value}/devices`, {
+      await $api(`/api/users/${userId.value}/devices`, {
         method: 'DELETE',
         body: { token: tokenDevice.value },
       })

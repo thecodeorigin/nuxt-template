@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const model = defineModel({
-  type: Boolean
+  type: Boolean,
 })
 
 const toast = useToast()
@@ -28,11 +28,11 @@ function onDelete() {
     :close-button="null"
     :ui="{
       icon: {
-        base: 'text-red-500 dark:text-red-400'
+        base: 'text-red-500 dark:text-red-400',
       } as any,
       footer: {
-        base: 'ml-16'
-      } as any
+        base: 'ml-16',
+      } as any,
     }"
   >
     <template #footer>

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, format } from 'date-fns'
-import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
+import { eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, format } from 'date-fns'
+import { VisArea, VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/vue'
 import type { Period, Range } from '~/types'
-
-const cardRef = ref<HTMLElement | null>(null)
 
 const props = defineProps({
   period: {
     type: String as PropType<Period>,
-    required: true
+    required: true,
   },
   range: {
     type: Object as PropType<Range>,
-    required: true
-  }
+    required: true,
+  },
 })
 
-type DataRecord = {
+const cardRef = ref<HTMLElement | null>(null)
+
+interface DataRecord {
   date: Date
   amount: number
 }
@@ -28,7 +28,7 @@ const { data } = await useAsyncData<DataRecord[]>(async () => {
   const dates = ({
     daily: eachDayOfInterval,
     weekly: eachWeekOfInterval,
-    monthly: eachMonthOfInterval
+    monthly: eachMonthOfInterval,
   })[props.period](props.range)
 
   const min = 1000
@@ -37,7 +37,7 @@ const { data } = await useAsyncData<DataRecord[]>(async () => {
   return dates.map(date => ({ date, amount: Math.floor(Math.random() * (max - min + 1)) + min }))
 }, {
   watch: [() => props.period, () => props.range],
-  default: () => []
+  default: () => [],
 })
 
 const x = (_: DataRecord, i: number) => i
@@ -47,15 +47,15 @@ const total = computed(() => data.value.reduce((acc: number, { amount }) => acc 
 
 const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
 
-const formatDate = (date: Date): string => {
+function formatDate(date: Date): string {
   return ({
     daily: format(date, 'd MMM'),
     weekly: format(date, 'd MMM'),
-    monthly: format(date, 'MMM yyy')
+    monthly: format(date, 'MMM yyy'),
   })[props.period]
 }
 
-const xTicks = (i: number) => {
+function xTicks(i: number) {
   if (i === 0 || i === data.value.length - 1 || !data.value[i]) {
     return ''
   }

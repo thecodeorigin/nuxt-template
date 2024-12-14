@@ -5,5 +5,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
 
   if (to.meta.auth && !authStore.isAuthenticated)
-    return navigateTo({ path: '/sign-in' })
+    return authStore.signIn()
 })

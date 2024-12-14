@@ -4,8 +4,8 @@ import type { NuxtError } from '#app'
 const props = defineProps({
   error: {
     type: Object as PropType<NuxtError>,
-    required: true
-  }
+    required: true,
+  },
 })
 
 useSeoMeta({
@@ -15,8 +15,12 @@ useSeoMeta({
 
 useHead({
   htmlAttrs: {
-    lang: 'en'
-  }
+    lang: 'en',
+  },
+})
+
+const errorMessage = computed(() => {
+  return props.error.message + (import.meta.env.DEV ? props.error.stack : '')
 })
 </script>
 
@@ -27,7 +31,7 @@ useHead({
         <UPage>
           <UPageError
             :name="error.name"
-            :message="error.message + error.stack"
+            :message="errorMessage"
             :status="error.statusCode"
           />
         </UPage>

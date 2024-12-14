@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { PaymentStatus, paymentProviderTransactionTable, sysUserTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
+import { PaymentStatus, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
 import { createPayOSCheckout } from './createPayOSCheckout'
 import { createVNPayCheckout } from './createVNPayCheckout'
 

@@ -2,7 +2,7 @@ import { sysFaqTable } from '../db/schemas/sys_faqs.schema'
 import { sysFaqCategoryTable } from '../db/schemas/sys_faq_categories.schema'
 import { useCrud } from './useCrud'
 
-export function useFaqCrud() {
+export function useFaq() {
   const { getRecordsPaginated: getRecordsFaqCategories } = useCrud(sysFaqCategoryTable)
 
   const { getRecordsPaginated } = useCrud(sysFaqTable, {

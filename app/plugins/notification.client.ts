@@ -1,5 +1,5 @@
-import { isInAppBrowser } from '@/utils/detectBrowser'
 import { getMessaging, getToken } from 'firebase/messaging'
+import { isInAppBrowser } from '@/utils/detectBrowser'
 
 export default defineNuxtPlugin({
   dependsOn: ['healthcheck'],

@@ -10,8 +10,8 @@ const links = [{
   to: '/',
   tooltip: {
     text: 'Home',
-    shortcuts: ['G', 'H']
-  }
+    shortcuts: ['G', 'H'],
+  },
 }, {
   id: 'inbox',
   label: 'Inbox',
@@ -20,8 +20,8 @@ const links = [{
   badge: '4',
   tooltip: {
     text: 'Inbox',
-    shortcuts: ['G', 'I']
-  }
+    shortcuts: ['G', 'I'],
+  },
 }, {
   id: 'users',
   label: 'Users',
@@ -29,8 +29,8 @@ const links = [{
   to: '/users',
   tooltip: {
     text: 'Users',
-    shortcuts: ['G', 'U']
-  }
+    shortcuts: ['G', 'U'],
+  },
 }, {
   id: 'settings',
   label: 'Settings',
@@ -39,34 +39,34 @@ const links = [{
   children: [{
     label: 'General',
     to: '/settings',
-    exact: true
+    exact: true,
   }, {
     label: 'Members',
-    to: '/settings/members'
+    to: '/settings/members',
   }, {
     label: 'Notifications',
-    to: '/settings/notifications'
+    to: '/settings/notifications',
   }],
   tooltip: {
     text: 'Settings',
-    shortcuts: ['G', 'S']
-  }
+    shortcuts: ['G', 'S'],
+  },
 }]
 
 const footerLinks = [{
   label: 'Invite people',
   icon: 'i-heroicons-plus',
-  to: '/settings/members'
+  to: '/settings/members',
 }, {
   label: 'Help & Support',
   icon: 'i-heroicons-question-mark-circle',
-  click: () => isHelpSlideoverOpen.value = true
+  click: () => isHelpSlideoverOpen.value = true,
 }]
 
 const groups = [{
   key: 'links',
   label: 'Go to',
-  commands: links.map(link => ({ ...link, shortcuts: link.tooltip?.shortcuts }))
+  commands: links.map(link => ({ ...link, shortcuts: link.tooltip?.shortcuts })),
 }, {
   key: 'code',
   label: 'Code',
@@ -76,8 +76,8 @@ const groups = [{
     icon: 'i-simple-icons-github',
     click: () => {
       window.open(`https://github.com/nuxt-ui-pro/dashboard/blob/main/pages${route.path === '/' ? '/index' : route.path}.vue`, '_blank')
-    }
-  }]
+    },
+  }],
 }]
 
 const defaultColors = ref(['green', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet'].map(color => ({ label: color, chip: color, click: () => appConfig.ui.primary = color })))

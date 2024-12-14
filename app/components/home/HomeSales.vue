@@ -4,37 +4,37 @@ const sales = [{
     name: 'Jordan Brown',
     email: 'jordan.brown@example.com',
     avatar: {
-      src: 'https://i.pravatar.cc/128?u=0'
-    }
+      src: 'https://i.pravatar.cc/128?u=0',
+    },
   },
-  price: 79
+  price: 79,
 }, {
   user: {
     name: 'Morgan Anderson',
     email: 'morgan.anderson@example.com',
     avatar: {
-      src: 'https://i.pravatar.cc/128?u=4'
-    }
+      src: 'https://i.pravatar.cc/128?u=4',
+    },
   },
-  price: 699
+  price: 699,
 }, {
   user: {
     name: 'Kelly Wilson',
     email: 'kelly.wilson@example.com',
     avatar: {
-      src: 'https://i.pravatar.cc/128?u=1'
-    }
+      src: 'https://i.pravatar.cc/128?u=1',
+    },
   },
-  price: 199
+  price: 199,
 }, {
   user: {
     name: 'Jamie Johnson',
     email: 'jamie.johnson@example.com',
     avatar: {
-      src: 'https://i.pravatar.cc/128?u=5'
-    }
+      src: 'https://i.pravatar.cc/128?u=5',
+    },
   },
-  price: 199
+  price: 199,
 }]
 
 const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format

@@ -52,11 +52,7 @@ You can use a remote database and fill in all the environment variables in the `
 pnpm db:start
 
 pnpm db:migrate
-
-pnpm db:seed
 ```
-
-> Please checkout the `server/db/seeds` folder to review all the seed data, especially the `users.seed.ts` file to get the default user credentials.
 
 You can stop or reset the database with the following commands:
 

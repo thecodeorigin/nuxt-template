@@ -19,7 +19,7 @@ export const noDestructuringPiniaStore = {
         if (node.id.type === 'ObjectPattern' && node.init.type === 'CallExpression') {
           const callee = node.init.callee
 
-          if (callee.name.startsWith('use') && callee.name.endsWith('Store')) {
+          if (callee.name?.startsWith('use') && callee.name?.endsWith('Store')) {
             context.report({
               node: node.id,
               messageId: 'noDestructuringPiniaStore',

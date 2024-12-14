@@ -38,7 +38,6 @@
     "db:preview": "drizzle-kit studio --port 3001",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
-    "db:seed": "jiti ./server/db/seeds/index.seed.ts",
     "db:clear": "rimraf ./docker/postgres",
     "db:start": "docker compose up -d",
     "db:stop": "docker-compose down",

@@ -14,7 +14,7 @@ declare module '#app' {
 
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
-    'session:cache:clear': (data: { providerAccountId: string }) => void
+    'session:cache:clear': (data: { sub: string }) => void
     'log:info': (data: { message: string, data?: any }) => void
     'log:error': (data: { message: string, data?: any }) => void
   }

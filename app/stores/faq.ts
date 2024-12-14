@@ -10,7 +10,7 @@ type Faqs = FaqCategory & {
 
 export const useFaqStore = defineStore('faq', () => {
   async function fetchFaqs(query: Partial<ParsedFilterQuery>) {
-    return $api<Faqs[]>('/faq', {
+    return $api<Faqs[]>('/api/faq', {
       query,
     })
   }

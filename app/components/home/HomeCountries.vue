@@ -2,35 +2,35 @@
 const countries = [{
   label: 'United States',
   value: 31,
-  color: 'red'
+  color: 'red',
 }, {
   label: 'Germany',
   value: 21,
-  color: 'orange'
+  color: 'orange',
 }, {
   label: 'Indonesia',
   value: 15,
-  color: 'yellow'
+  color: 'yellow',
 }, {
   label: 'France',
   value: 10,
-  color: 'green'
+  color: 'green',
 }, {
   label: 'Japan',
   value: 6,
-  color: 'teal'
+  color: 'teal',
 }, {
   label: 'India',
   value: 1,
-  color: 'blue'
+  color: 'blue',
 }, {
   label: 'Brazil',
   value: 1,
-  color: 'indigo'
+  color: 'indigo',
 }, {
   label: 'China',
   value: 1,
-  color: 'pink'
+  color: 'pink',
 }]
 </script>
 

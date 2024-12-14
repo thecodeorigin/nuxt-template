@@ -1,18 +1,10 @@
-import type { PermissionAction } from '@base/server/db/schemas'
 import type { AnyAbility, SubjectType } from '@casl/ability'
 import { createMongoAbility } from '@casl/ability'
-
-export type Actions = `${PermissionAction}`
-
-export interface Rule {
-  action: Actions
-  subject: string
-}
 
 export const useCaslStore = defineStore('casl', () => {
   const config = useRuntimeConfig()
 
-  const authStore = useAuthStore()
+  const scopes = useState('scopes', () => [])
 
   function reactiveAbility<T extends AnyAbility>(ability: T) {
     if (Object.hasOwn(ability, 'possibleRulesFor')) {
@@ -42,11 +34,19 @@ export const useCaslStore = defineStore('casl', () => {
   }
 
   const ability = reactiveAbility(
-    // TODO: Add permissions
-    createMongoAbility<[Actions, string]>([]),
+    createMongoAbility<[string, string]>(scopes.value),
   )
+
+  async function fetchScopes() {
+    scopes.value = await $api('/api/scopes')
+
+    ability.update(scopes.value)
+
+    return scopes.value
+  }
 
   return {
     ability,
+    fetchScopes,
   }
 })

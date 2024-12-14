@@ -3,21 +3,21 @@ import type { User } from '~/types'
 
 const defaultColumns = [{
   key: 'id',
-  label: '#'
+  label: '#',
 }, {
   key: 'name',
   label: 'Name',
-  sortable: true
+  sortable: true,
 }, {
   key: 'email',
   label: 'Email',
-  sortable: true
+  sortable: true,
 }, {
   key: 'location',
-  label: 'Location'
+  label: 'Location',
 }, {
   key: 'status',
-  label: 'Status'
+  label: 'Status',
 }]
 
 const q = ref('')
@@ -53,7 +53,8 @@ function onSelect(row: User) {
   const index = selected.value.findIndex(item => item.id === row.id)
   if (index === -1) {
     selected.value.push(row)
-  } else {
+  }
+  else {
     selected.value.splice(index, 1)
   }
 }
@@ -61,7 +62,7 @@ function onSelect(row: User) {
 defineShortcuts({
   '/': () => {
     input.value?.input?.focus()
-  }
+  },
 })
 </script>
 

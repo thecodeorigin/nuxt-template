@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+import { UserScope } from '@logto/node'
 
 import { version as appVersion } from './package.json'
 
@@ -73,6 +74,17 @@ export default defineNuxtConfig({
       appId: process.env.LOGTO_APP_ID,
       appSecret: process.env.LOGTO_APP_SECRET,
       cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
+      fetchUserInfo: true,
+      resources: [
+        process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+      ],
+      scopes: [
+        'create:upload',
+        UserScope.Identities,
+        UserScope.Email,
+        UserScope.Profile,
+        UserScope.Roles,
+      ],
     },
 
     redis: {
@@ -93,7 +105,7 @@ export default defineNuxtConfig({
       appCreditURL: process.env.NUXT_PUBLIC_APP_CREDIT_URL || 'http://thecodeorigin.com',
       appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
 
       features: {
         credit: Boolean(process.env.FEATURE_CREDIT),
@@ -132,6 +144,7 @@ export default defineNuxtConfig({
 
   experimental: {
     typedPages: true,
+    asyncContext: true,
   },
 
   alias: {
@@ -277,6 +290,11 @@ export default defineNuxtConfig({
   },
 
   security: {
+    headers: {
+      contentSecurityPolicy: {
+        'img-src': false,
+      },
+    },
     hidePoweredBy: true,
     rateLimiter: {
       driver: {

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useBreakpoints, breakpointsTailwind } from '@vueuse/core'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { DatePicker as VCalendarDatePicker } from 'v-calendar'
 // @ts-expect-error - no types available
 import type { DatePickerDate, DatePickerRangeObject } from 'v-calendar/dist/types/src/use/datePicker'
 import 'v-calendar/dist/style.css'
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 })
 
 const props = defineProps({
   modelValue: {
     type: [Date, Object] as PropType<DatePickerDate | DatePickerRangeObject | null>,
-    default: null
-  }
+    default: null,
+  },
 })
 
 const emit = defineEmits(['update:model-value', 'close'])
@@ -23,7 +23,7 @@ const date = computed({
   set: (value) => {
     emit('update:model-value', value)
     emit('close')
-  }
+  },
 })
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -35,7 +35,7 @@ const attrs = {
   'borderless': true,
   'color': 'primary',
   'is-dark': { selector: 'html', darkClass: 'dark' },
-  'first-day-of-week': 2
+  'first-day-of-week': 2,
 }
 </script>
 

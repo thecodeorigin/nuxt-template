@@ -13,7 +13,7 @@ services:
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME:-nuxt-pg}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - '${POSTGRES_PORT}:5432'
     restart: unless-stopped
 
   pgadmin:
@@ -22,21 +22,21 @@ services:
     depends_on:
       - postgres
     volumes:
-       - ./docker/pgadmin:/var/lib/pgadmin
+      - ./docker/pgadmin:/var/lib/pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@gmail.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - '${PGADMIN_PORT:-5050}:80'
     restart: unless-stopped
 
   mailhog:
     container_name: nuxt-mailhog
     image: mailhog/mailhog
     ports:
-      - "${SMTP_PORT:-1025}:1025"
-      - "${SMTP_WEB_PORT:-8025}:8025"
+      - '${SMTP_PORT:-1025}:1025'
+      - '${SMTP_WEB_PORT:-8025}:8025'
     restart: unless-stopped
 
 volumes:

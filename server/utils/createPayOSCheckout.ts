@@ -1,14 +1,16 @@
-import type { paymentProviderTransactionTable, sysUserTable } from '@base/server/db/schemas'
+import type { paymentProviderTransactionTable } from '@base/server/db/schemas'
 
 interface payOSCheckoutProps {
   date: Date
-  sysUser: Pick<typeof sysUserTable.$inferSelect, 'email' | 'phone'>
+  buyerEmail?: string
+  buyerPhone?: string
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
 }
 
 export async function createPayOSCheckout({
   date,
-  sysUser,
+  buyerEmail,
+  buyerPhone,
   paymentProviderTransaction,
 }: payOSCheckoutProps) {
   const runtimeConfig = useRuntimeConfig()
@@ -18,8 +20,8 @@ export async function createPayOSCheckout({
     description: paymentProviderTransaction.provider_transaction_info,
     cancelUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/payos/cancel`,
     returnUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/payos/callback`,
-    buyerEmail: sysUser.email,
-    buyerPhone: sysUser.phone!,
+    buyerEmail,
+    buyerPhone,
   })
 
   return checkoutUrl

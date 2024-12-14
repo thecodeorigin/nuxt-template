@@ -11,16 +11,19 @@ const state = reactive({
   avatar: '',
   bio: '',
   password_current: '',
-  password_new: ''
+  password_new: '',
 })
 
 const toast = useToast()
 
 function validate(state: any): FormError[] {
   const errors = []
-  if (!state.name) errors.push({ path: 'name', message: 'Please enter your name.' })
-  if (!state.email) errors.push({ path: 'email', message: 'Please enter your email.' })
-  if ((state.password_current && !state.password_new) || (!state.password_current && state.password_new)) errors.push({ path: 'password', message: 'Please enter a valid password.' })
+  if (!state.name)
+    errors.push({ path: 'name', message: 'Please enter your name.' })
+  if (!state.email)
+    errors.push({ path: 'email', message: 'Please enter your email.' })
+  if ((state.password_current && !state.password_new) || (!state.password_current && state.password_new))
+    errors.push({ path: 'password', message: 'Please enter a valid password.' })
   return errors
 }
 

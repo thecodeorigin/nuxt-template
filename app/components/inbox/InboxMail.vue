@@ -5,12 +5,12 @@ import type { Mail } from '~/types'
 defineProps({
   mail: {
     type: Object as PropType<Mail>,
-    required: true
+    required: true,
   },
   selected: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 </script>
 

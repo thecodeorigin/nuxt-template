@@ -27,13 +27,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@thecodeorigin"
+          cache: pnpm
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@thecodeorigin'
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Publish to GitHub Packages
         run: pnpm -r publish --publish-branch main --access public
-

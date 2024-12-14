@@ -5,14 +5,16 @@ const emit = defineEmits(['close'])
 
 const state = reactive({
   name: undefined,
-  email: undefined
+  email: undefined,
 })
 
 // https://ui.nuxt.com/components/form
-const validate = (state: any): FormError[] => {
+function validate(state: any): FormError[] {
   const errors = []
-  if (!state.name) errors.push({ path: 'name', message: 'Please enter a name.' })
-  if (!state.email) errors.push({ path: 'email', message: 'Please enter an email.' })
+  if (!state.name)
+    errors.push({ path: 'name', message: 'Please enter a name.' })
+  if (!state.email)
+    errors.push({ path: 'email', message: 'Please enter an email.' })
   return errors
 }
 

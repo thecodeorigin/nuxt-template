@@ -1,5 +1,7 @@
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin(async () => {
   const caslStore = useCaslStore()
+
+  await caslStore.fetchScopes()
 
   return {
     provide: {

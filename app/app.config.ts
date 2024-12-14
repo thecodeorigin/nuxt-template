@@ -4,8 +4,8 @@ export default defineAppConfig({
     gray: 'cool',
     tooltip: {
       default: {
-        openDelay: 500
-      }
-    }
-  }
+        openDelay: 500,
+      },
+    },
+  },
 })

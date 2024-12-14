@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sub, format, isSameDay, type Duration } from 'date-fns'
+import { type Duration, format, isSameDay, sub } from 'date-fns'
 import type { Range } from '~/types'
 
 const ranges = [
@@ -8,12 +8,12 @@ const ranges = [
   { label: 'Last 30 days', duration: { days: 30 } },
   { label: 'Last 3 months', duration: { months: 3 } },
   { label: 'Last 6 months', duration: { months: 6 } },
-  { label: 'Last year', duration: { years: 1 } }
+  { label: 'Last year', duration: { years: 1 } },
 ]
 
 const selected = defineModel({
   type: Object as PropType<Range>,
-  required: true
+  required: true,
 })
 
 function isRangeSelected(duration: Duration) {

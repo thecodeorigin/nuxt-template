@@ -8,7 +8,7 @@ interface QueryRestrict {
   markAllRead?: any
   markAllUnread?: any
 }
-export function useNotificationCrud(queryRestrict: QueryRestrict) {
+export function useNotification(queryRestrict: QueryRestrict) {
   const {
     countRecords,
     createRecord,

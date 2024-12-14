@@ -1,5 +1,5 @@
-export function getStorageSessionKey(providerAccountId: string) {
-  return `session:${providerAccountId}`
+export function getStorageSessionKey(sub: string) {
+  return `session:${sub}`
 }
 
 export function getStorageStripeKey(identifier: string) {

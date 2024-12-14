@@ -2,24 +2,24 @@
 import type { Mail } from '~/types'
 
 const tabItems = [{
-  label: 'All'
+  label: 'All',
 }, {
-  label: 'Unread'
+  label: 'Unread',
 }]
 const selectedTab = ref(0)
 
 const dropdownItems = [[{
   label: 'Mark as unread',
-  icon: 'i-heroicons-check-circle'
+  icon: 'i-heroicons-check-circle',
 }, {
   label: 'Mark as important',
-  icon: 'i-heroicons-exclamation-circle'
+  icon: 'i-heroicons-exclamation-circle',
 }], [{
   label: 'Star thread',
-  icon: 'i-heroicons-star'
+  icon: 'i-heroicons-star',
 }, {
   label: 'Mute thread',
-  icon: 'i-heroicons-pause-circle'
+  icon: 'i-heroicons-pause-circle',
 }]]
 
 const { data: mails } = await useFetch<Mail[]>('/api/mails', { default: () => [] })
@@ -43,7 +43,7 @@ const isMailPanelOpen = computed({
     if (!value) {
       selectedMail.value = null
     }
-  }
+  },
 })
 
 // Reset selected mail if it's not in the filtered mails
