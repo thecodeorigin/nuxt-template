@@ -2,6 +2,18 @@
 import { sub } from 'date-fns'
 import type { Period, Range } from '~/types'
 
+definePageMeta({
+  sidebar: {
+    order: 0,
+    label: 'Home',
+    icon: 'i-heroicons-home',
+    tooltip: {
+      text: 'Home',
+      shortcuts: ['G', 'H'],
+    },
+  }
+})
+
 const { isNotificationsSlideoverOpen } = useDashboard()
 
 const items = [[{

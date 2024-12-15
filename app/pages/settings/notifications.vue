@@ -1,4 +1,10 @@
 <script setup lang="ts">
+definePageMeta({
+  sidebar: {
+    label: 'Notifications',
+  }
+})
+
 const state = reactive<{ [key: string]: boolean }>({
   email: true,
   desktop: false,

@@ -1,3 +1,5 @@
+import type { UserInfoResponse } from "@logto/nuxt"
+
 export const useAuthStore = defineStore('auth', () => {
   const config = useRuntimeConfig()
 
@@ -5,11 +7,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const accessToken = useState<string | null>('accessToken', () => null)
 
-  const currentUser = useLogtoUser()
+  const currentUser = useLogtoUser() as UserInfoResponse | null
 
   const isAuthenticated = computed(() => Boolean(currentUser))
 
-  const currentRole = computed(() => currentUser.value?.role || null)
+  const currentRoles = computed(() => currentUser?.roles || null)
 
   async function fetchToken() {
     if (client && !accessToken.value && await client.isAuthenticated())
@@ -17,18 +19,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function signIn() {
-    return navigateTo({ path: '/sign-in' }, { external: true })
+    return navigateTo({ path: '/auth/signin' }, { external: true })
   }
 
   function signOut() {
-    return navigateTo({ path: '/sign-out' }, { external: true })
+    return navigateTo({ path: '/auth/signout' }, { external: true })
   }
 
   return {
     accessToken,
     isAuthenticated,
     currentUser,
-    currentRole,
+    currentRoles,
     signIn,
     signOut,
     fetchToken,

@@ -1,4 +1,15 @@
 <script setup lang="ts">
+definePageMeta({
+  sidebar: {
+    label: 'Settings',
+    icon: 'i-heroicons-cog-8-tooth',
+    tooltip: {
+      text: 'Settings',
+      shortcuts: ['G', 'S'],
+    },
+  }
+})
+
 const links = [[{
   label: 'General',
   icon: 'i-heroicons-user-circle',

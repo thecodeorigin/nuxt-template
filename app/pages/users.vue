@@ -1,5 +1,16 @@
 <script setup lang="ts">
-import type { User } from '~/types'
+import type { User } from '@base/types'
+
+definePageMeta({
+  sidebar: {
+    label: 'Users',
+    icon: 'i-heroicons-user-group',
+    tooltip: {
+      text: 'Users',
+      shortcuts: ['G', 'U'],
+    },
+  }
+})
 
 const defaultColumns = [{
   key: 'id',

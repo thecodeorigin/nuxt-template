@@ -17,5 +17,3 @@ export * from './user_devices.schema'
 export * from './user_orders.schema'
 
 export * from './user_payments.schema'
-
-export * from './user_shortcuts.schema'

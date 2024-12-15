@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import type { Mail } from '~/types'
 
+definePageMeta({
+  sidebar: {
+    label: 'Inbox',
+    icon: 'i-heroicons-inbox',
+    badge: '4',
+    tooltip: {
+      text: 'Inbox',
+      shortcuts: ['G', 'I'],
+    },
+  }
+})
+
 const tabItems = [{
   label: 'All',
 }, {

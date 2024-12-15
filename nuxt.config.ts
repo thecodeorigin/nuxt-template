@@ -47,6 +47,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/ui',
     '@nuxtjs/device',
+    '@nuxtjs/seo',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
     '@pinia/nuxt',
@@ -75,15 +76,23 @@ export default defineNuxtConfig({
       appSecret: process.env.LOGTO_APP_SECRET,
       cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
       fetchUserInfo: true,
+      pathnames: {
+        signIn: '/auth/signin',
+        signOut: '/auth/signout',
+        callback: '/auth/callback',
+      },
       resources: [
         process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
       ],
       scopes: [
         'create:upload',
+        UserScope.Profile,
         UserScope.Identities,
         UserScope.Email,
         UserScope.Profile,
         UserScope.Roles,
+        UserScope.Organizations,
+        UserScope.OrganizationRoles,
       ],
     },
 

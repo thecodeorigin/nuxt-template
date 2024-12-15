@@ -1,6 +1,11 @@
 import { sortBy } from 'lodash-es'
 import type { RouteRecordNormalized } from 'vue-router'
-import type { NavItem } from '@base/@layouts/types'
+import type { DashboardSidebarLink } from '#ui-pro/types'
+import type { Command } from '#ui/types'
+
+type NavItem = DashboardSidebarLink & Command & {
+  order?: number
+}
 
 export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[] {
   const { can } = useAbility()
@@ -12,7 +17,6 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
       continue
 
     const item = route.meta.sidebar as NavItem
-    const to = route
     const children = createRouteTree(route.children as RouteRecordNormalized[])
 
     if (children.length) {
@@ -21,14 +25,17 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
       ])
     }
 
-    if (!route.meta.action || !route.meta.subject || can(route.meta.action, route.meta.subject)) {
-      tree.push({
-        ...item,
-        action: route.meta.action,
-        subject: route.meta.subject,
-        to,
+    const canNavigate = !route.meta.action || !route.meta.subject || (
+      Array.isArray(route.meta.scopes)
+      && route.meta.scopes.some((scope: string) => {
+        const [action, subject] = scope.split(':') as [string, string]
+
+        return can(action, subject)
       })
-    }
+    )
+
+    if (canNavigate)
+      tree.push({ ...item, id: String(route.name || route.path), to: route })
 
     // filter routes in tree that are also in children
     tree = tree.filter((item) => {

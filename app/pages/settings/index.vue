@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '#ui/types'
 
+definePageMeta({
+  name: 'settings-index',
+  sidebar: {
+    label: 'General',
+    exact: true,
+  }
+})
+
 const fileRef = ref<HTMLInputElement>()
 const isDeleteAccountModalOpen = ref(false)
 
