@@ -25,7 +25,7 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
       ])
     }
 
-    const canNavigate = !route.meta.action || !route.meta.subject || (
+    const canNavigate = !route.meta.scopes || (
       Array.isArray(route.meta.scopes)
       && route.meta.scopes.some((scope: string) => {
         const [action, subject] = scope.split(':') as [string, string]

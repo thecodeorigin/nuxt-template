@@ -23,7 +23,7 @@ const mails = [{
     },
   },
   subject: 'Project Update',
-  body: 'I wanted to provide you with the latest update on the project. We\'ve made significant progress on the development front and I\'ve attached a detailed report for your review. Please let me know your thoughts and any areas for improvement.',
+  body: 'I wanted to provide you with the latest update on the project. We\'ve made significant progress on the development front and I\'ve attached a detailed report for your review. Please let me know your thoughts and any areas for improvement. I wanted to provide you with the latest update on the project. We\'ve made significant progress on the development front and I\'ve attached a detailed report for your review. Please let me know your thoughts and any areas for improvement. I wanted to provide you with the latest update on the project. We\'ve made significant progress on the development front and I\'ve attached a detailed report for your review. Please let me know your thoughts and any areas for improvement. I wanted to provide you with the latest update on the project. We\'ve made significant progress on the development front and I\'ve attached a detailed report for your review. Please let me know your thoughts and any areas for improvement.',
   date: sub(new Date(), { minutes: 7 }).toISOString(),
 }, {
   id: 3,

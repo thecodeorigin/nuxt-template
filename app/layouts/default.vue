@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const route = useRoute()
 const router = useRouter()
-const appConfig = useAppConfig()
 const { isHelpSlideoverOpen } = useDashboard()
 
 const links = computed(() => createRouteTree(router.getRoutes()))
@@ -20,21 +18,26 @@ const groups = [{
   key: 'links',
   label: 'Go to',
   commands: links.value.map(link => ({ ...link, shortcuts: link.tooltip?.shortcuts })),
-}, {
-  key: 'code',
-  label: 'Code',
-  commands: [{
-    id: 'source',
-    label: 'View page source',
-    icon: 'i-simple-icons-github',
-    click: () => {
-      window.open(`https://github.com/nuxt-ui-pro/dashboard/blob/main/pages${route.path === '/' ? '/index' : route.path}.vue`, '_blank')
-    },
-  }],
 }]
 
-const defaultColors = ref(['green', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet'].map(color => ({ label: color, chip: color, click: () => appConfig.ui.primary = color })))
-const colors = computed(() => defaultColors.value.map(color => ({ ...color, active: appConfig.ui.primary === color.label })))
+const breadcrumbs = useBreadcrumbItems()
+
+const { isNotificationsSlideoverOpen } = useDashboard()
+
+const items = [
+  [
+    {
+      label: 'New mail',
+      icon: 'i-heroicons-paper-airplane',
+      to: '/inbox',
+    },
+    {
+      label: 'New user',
+      icon: 'i-heroicons-user-plus',
+      to: '/users',
+    },
+  ],
+]
 </script>
 
 <template>
@@ -60,13 +63,6 @@ const colors = computed(() => defaultColors.value.map(color => ({ ...color, acti
 
         <UDashboardSidebarLinks :links="links" />
 
-        <UDivider />
-
-        <UDashboardSidebarLinks
-          :links="[{ label: 'Colors', draggable: true, children: colors }]"
-          @update:links="colors => defaultColors = colors"
-        />
-
         <div class="flex-1" />
 
         <UDashboardSidebarLinks :links="footerLinks" />
@@ -80,7 +76,51 @@ const colors = computed(() => defaultColors.value.map(color => ({ ...color, acti
       </UDashboardSidebar>
     </UDashboardPanel>
 
-    <slot />
+    <UDashboardPage>
+      <UDashboardPanel grow>
+        <UDashboardNavbar title="Home">
+          <template #left>
+            <UBreadcrumb :links="breadcrumbs" />
+          </template>
+          <template #right>
+            <UTooltip
+              text="Notifications"
+              :shortcuts="['N']"
+            >
+              <UButton
+                color="gray"
+                variant="ghost"
+                square
+                @click="isNotificationsSlideoverOpen = true"
+              >
+                <UChip
+                  color="red"
+                  inset
+                >
+                  <UIcon
+                    name="i-heroicons-bell"
+                    class="w-5 h-5"
+                  />
+                </UChip>
+              </UButton>
+            </UTooltip>
+
+            <UDropdown :items="items">
+              <UButton
+                icon="i-heroicons-plus"
+                color="white"
+                size="xs"
+                variant="outline"
+              >
+                Create
+              </UButton>
+            </UDropdown>
+          </template>
+        </UDashboardNavbar>
+
+        <slot />
+      </UDashboardPanel>
+    </UDashboardPage>
 
     <!-- ~/components/HelpSlideover.vue -->
     <HelpSlideover />

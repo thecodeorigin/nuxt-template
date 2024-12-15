@@ -2,15 +2,15 @@
 import type { Mail } from '~/types'
 
 definePageMeta({
-  sidebar: {
-    label: 'Inbox',
-    icon: 'i-heroicons-inbox',
-    badge: '4',
-    tooltip: {
-      text: 'Inbox',
-      shortcuts: ['G', 'I'],
-    },
-  }
+  // sidebar: {
+  //   label: 'Inbox',
+  //   icon: 'i-heroicons-inbox',
+  //   badge: '4',
+  //   tooltip: {
+  //     text: 'Inbox',
+  //     shortcuts: ['G', 'I'],
+  //   },
+  // },
 })
 
 const tabItems = [{
@@ -67,11 +67,12 @@ watch(filteredMails, () => {
 </script>
 
 <template>
-  <UDashboardPage>
+  <div class="flex flex-1 overflow-hidden">
     <UDashboardPanel
       id="inbox"
       :width="400"
       :resizable="{ min: 300, max: 500 }"
+      class="h-full"
     >
       <UDashboardNavbar
         title="Inbox"
@@ -98,6 +99,7 @@ watch(filteredMails, () => {
       collapsible
       grow
       side="right"
+      class="h-full"
     >
       <template v-if="selectedMail">
         <UDashboardNavbar>
@@ -198,5 +200,5 @@ watch(filteredMails, () => {
         />
       </div>
     </UDashboardPanel>
-  </UDashboardPage>
+  </div>
 </template>

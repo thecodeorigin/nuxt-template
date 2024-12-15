@@ -6,20 +6,36 @@ definePageMeta({
   sidebar: {
     label: 'General',
     exact: true,
-  }
+  },
 })
 
 const fileRef = ref<HTMLInputElement>()
 const isDeleteAccountModalOpen = ref(false)
 
-const state = reactive({
+const authStore = useAuthStore()
+
+const currentUser = computed(() => authStore.currentUser)
+
+const state = ref({
   name: 'Benjamin Canac',
   email: 'ben@nuxtlabs.com',
   username: 'benjamincanac',
   avatar: '',
-  bio: '',
-  password_current: '',
   password_new: '',
+})
+
+syncRef(currentUser, state, {
+  direction: 'ltr',
+  transform: {
+    ltr(left) {
+      return {
+        name: left?.name,
+        email: left?.email,
+        username: left?.username,
+        avatar: left?.image,
+      }
+    },
+  },
 })
 
 const toast = useToast()
@@ -42,7 +58,8 @@ function onFileChange(e: Event) {
     return
   }
 
-  state.avatar = URL.createObjectURL(input.files[0])
+  if (input.files[0])
+    state.value.avatar = URL.createObjectURL(input.files[0])
 }
 
 function onFileClick() {
@@ -134,12 +151,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             type="username"
             autocomplete="off"
             size="md"
-            input-class="ps-[77px]"
-          >
-            <template #leading>
-              <span class="text-gray-500 dark:text-gray-400 text-sm">nuxt.com/</span>
-            </template>
-          </UInput>
+          />
         </UFormGroup>
 
         <UFormGroup
@@ -172,34 +184,12 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         </UFormGroup>
 
         <UFormGroup
-          name="bio"
-          label="Bio"
-          description="Brief description for your profile. URLs are hyperlinked."
-          class="grid grid-cols-2 gap-2"
-          :ui="{ container: '' }"
-        >
-          <UTextarea
-            v-model="state.bio"
-            :rows="5"
-            autoresize
-            size="md"
-          />
-        </UFormGroup>
-
-        <UFormGroup
           name="password"
           label="Password"
           description="Confirm your current password before setting a new one."
           class="grid grid-cols-2 gap-2"
           :ui="{ container: '' }"
         >
-          <UInput
-            id="password"
-            v-model="state.password_current"
-            type="password"
-            placeholder="Current password"
-            size="md"
-          />
           <UInput
             id="password_new"
             v-model="state.password_new"
