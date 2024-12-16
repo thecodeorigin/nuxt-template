@@ -1,5 +1,10 @@
-export default defineNuxtRouteMiddleware(() => {
+export default defineNuxtRouteMiddleware(async (to) => {
+  if (to.meta.public)
+    return
+
   const healthStore = useHealthStore()
+
+  await healthStore.fetchHealthCheck()
 
   if (!healthStore.isHealthy) {
     throw createError({

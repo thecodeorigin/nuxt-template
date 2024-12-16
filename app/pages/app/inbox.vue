@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Mail } from '~/types'
+import type { Mail } from '@base/types'
 
 definePageMeta({
   // sidebar: {

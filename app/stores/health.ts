@@ -1,5 +1,5 @@
 export const useHealthStore = defineStore('health', () => {
-  const isHealthy = ref(false)
+  const isHealthy = ref(true)
 
   async function fetchHealthCheck() {
     try {

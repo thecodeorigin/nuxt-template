@@ -1,9 +1,9 @@
 import { getMessaging, getToken } from 'firebase/messaging'
-import { isInAppBrowser } from '@/utils/detectBrowser'
+import { isInAppBrowser } from '@base/utils/detectBrowser'
 
 export default defineNuxtPlugin({
-  dependsOn: ['healthcheck'],
   setup(nuxtApp) {
+    const authStore = useAuthStore()
     const healthStore = useHealthStore()
     const tokenDeviceStore = useTokenDeviceStore()
 

@@ -1,0 +1,54 @@
+diff --git a/modules/pro/index.ts b/modules/pro/index.ts
+index f94fcf63980331d78946e45356da970132695ba4..8bb63c89f86d7b532bcceab5b4c1545f32f006a9 100644
+--- a/modules/pro/index.ts
++++ b/modules/pro/index.ts
+@@ -1,13 +1,7 @@
+-import { consola } from 'consola'
+-import { colors } from 'consola/utils'
+ import { createResolver, defineNuxtModule, addImportsDir, hasNuxtModule, addComponentsDir, addPlugin } from '@nuxt/kit'
+ import { defu } from 'defu'
+ 
+-import pkg from '../../package.json'
+-import { validateLicense } from './license'
+-
+ export interface ModuleOptions {
+-  license?: string
+   routerOptions?: boolean
+   content?: boolean
+   customScrollbars?: boolean
+@@ -22,7 +16,6 @@ export default defineNuxtModule({
+     }
+   },
+   defaults: {
+-    license: '',
+     routerOptions: undefined as boolean | undefined,
+     content: false,
+     customScrollbars: true
+@@ -98,24 +91,5 @@ export default defineNuxtModule({
+         (Array.isArray(tailwindConfig.content) ? tailwindConfig.content : tailwindConfig.content.files).push(resolver.resolve('./runtime/components/**/*.{vue,mjs,ts}'))
+       })
+     }
+-
+-    /**
+-     * License
+-     */
+-    const theme = pkg.theme || { env: 'NUXT_UI_PRO_LICENSE', link: 'https://ui.nuxt.com/pro' }
+-    const key = process.env[theme.env] || (nuxt.options as any).uiPro?.license
+-    if (nuxt.options.dev || nuxt.options._prepare || nuxt.options.test) {
+-      if (nuxt.options.dev && !key) {
+-        consola.box(
+-          colors.greenBright('Nuxt UI Pro') + '\n\n'
+-          + `Missing \`${theme.env}\` env variable, please add it to your \`.env\`.` + '\n\n'
+-          + colors.blueBright(`Purchase Nuxt UI Pro at ${theme.link} to build your app in production.`)
+-        )
+-      }
+-      return
+-    }
+-    nuxt.hook('build:before', async () => {
+-      await validateLicense({ key, theme, dir: nuxt.options.rootDir })
+-    })
+   }
+ })
+diff --git a/modules/pro/license.ts b/modules/pro/license.ts
+deleted file mode 100644
+index d5cb1a39726f6681433099f8300b04bafaf26f83..0000000000000000000000000000000000000000

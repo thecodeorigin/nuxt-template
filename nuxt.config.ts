@@ -11,6 +11,11 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
+  site: {
+    url: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
+    name: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
+  },
+
   app: {
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
@@ -43,9 +48,12 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    '@nuxt/content',
     '@nuxt/eslint',
     '@nuxt/fonts',
+    '@nuxt/image',
     '@nuxt/ui',
+    '@nuxthq/studio',
     '@nuxtjs/device',
     '@nuxtjs/seo',
     '@nuxtjs/i18n',
@@ -53,10 +61,11 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@logto/nuxt',
     'nuxt-security',
-    'nuxt-vuefire',
     'nuxt-gtag',
+    'nuxt-og-image',
     'nuxt-module-hotjar',
     'nuxt-nodemailer',
+    'nuxt-vuefire',
   ],
 
   css: [],
@@ -187,6 +196,22 @@ export default defineNuxtConfig({
     replace: {
       'import-in-the-middle': fileURLToPath(new URL('./node_modules/import-in-the-middle', import.meta.url)),
     },
+
+    prerender: {
+      routes: [
+        '/',
+        '/docs',
+      ],
+
+      crawlLinks: true,
+    },
+  },
+
+  routeRules: {
+    '/app/**': { prerender: false },
+    '/auth/**': { prerender: false },
+    '/api/search.json': { prerender: true },
+    '/docs': { redirect: '/docs/getting-started', prerender: false },
   },
 
   colorMode: {
@@ -195,11 +220,6 @@ export default defineNuxtConfig({
 
   ui: {
     safelistColors: ['primary', 'red', 'orange', 'green'],
-  },
-
-  routeRules: {
-    // Temporary workaround for prerender regression. see https://github.com/nuxt/nuxt/issues/27490
-    '/': { prerender: true },
   },
 
   pinia: {

@@ -1,4 +1,5 @@
-import type { Avatar } from '#ui/types'
+import type { ParsedContent } from '@nuxt/content'
+import type { Avatar, Badge, Link } from '#ui/types'
 
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced'
 
@@ -40,4 +41,17 @@ export type Period = 'daily' | 'weekly' | 'monthly'
 export interface Range {
   start: Date
   end: Date
+}
+
+export interface BlogPost extends ParsedContent {
+  title: string
+  description: string
+  date: string
+  image?: HTMLImageElement
+  badge?: Badge
+  authors?: ({
+    name: string
+    description?: string
+    avatar: Avatar
+  } & Link)[]
 }
