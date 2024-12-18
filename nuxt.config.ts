@@ -54,7 +54,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/ui',
     '@nuxthq/studio',
-    '@nuxthub/core',
     '@nuxtjs/device',
     '@nuxtjs/seo',
     '@nuxtjs/i18n',
@@ -207,7 +206,7 @@ export default defineNuxtConfig({
     '/app/**': { prerender: false },
     '/auth/**': { prerender: false },
     '/api/search.json': { prerender: true },
-    '/docs': { redirect: '/docs/getting-started', prerender: false },
+    '/docs': { redirect: '/docs/getting-started' },
   },
 
   colorMode: {
