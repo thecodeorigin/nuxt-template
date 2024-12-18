@@ -34,7 +34,7 @@ jobs:
         run: npx vercel env pull .env --yes --environment=preview --git-branch=next --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Project Artifacts
-        run: pnpm build
+        run: npx vercel build --yes --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         run: npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
