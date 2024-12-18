@@ -62,3 +62,5 @@ server/db/schemas/mjs
 server/db/migrations
 
 areas
+
+.vercel
