@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Link Vercel Project
+        run: npx vercel link --yes --scope=${{ secrets.VERCEL_ORG_ID }} --project=${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Pull Vercel Environment Information
         run: npx vercel env pull .env --yes --environment=preview --git-branch=next --token=${{ secrets.VERCEL_TOKEN }}
 
