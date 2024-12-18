@@ -1,4 +1,4 @@
-name: Vercel Preview Deployment
+name: Vercel Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -25,24 +25,21 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@thecodeorigin'
 
-      - name: Install Vercel CLI
-        run: pnpm add --g vercel@latest
-
       - name: Install dependencies
         run: pnpm install
 
       - name: Build Project Artifacts
         run: |
           if [ "${{ github.ref }}" != "refs/heads/main" ]; then
-            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+            npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
           else
-            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+            npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
           fi
 
       - name: Deploy Project Artifacts to Vercel
         run: |
           if [ "${{ github.ref }}" != "refs/heads/main" ]; then
-            vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+            npx vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
           else
-            vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+            npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
           fi
