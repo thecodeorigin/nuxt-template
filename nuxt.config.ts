@@ -54,6 +54,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/ui',
     '@nuxthq/studio',
+    '@nuxthub/core',
     '@nuxtjs/device',
     '@nuxtjs/seo',
     '@nuxtjs/i18n',

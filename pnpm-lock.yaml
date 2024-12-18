@@ -94,7 +94,7 @@ importers:
         version: 7.2.0
       '@nuxt/content':
         specifier: ^2.13.4
-        version: 2.13.4(ioredis@5.4.1)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
+        version: 2.13.4(ioredis@5.4.1)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       '@nuxt/eslint':
         specifier: ^0.5.7
         version: 0.5.7(eslint@8.57.0)(magicast@0.3.5)(rollup@3.29.5)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
@@ -116,6 +116,9 @@ importers:
       '@nuxthq/studio':
         specifier: ^2.2.1
         version: 2.2.1(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
+      '@nuxthub/core':
+        specifier: ^0.8.10
+        version: 0.8.10(ioredis@5.4.1)(magicast@0.3.5)(rollup@3.29.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
       '@nuxtjs/device':
         specifier: ^3.2.4
         version: 3.2.4
@@ -139,7 +142,7 @@ importers:
         version: 0.5.1(magicast@0.3.5)(rollup@3.29.5)(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       '@sentry/nuxt':
         specifier: ^8.36.0
-        version: 8.37.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.54.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)(encoding@0.1.13)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(pinia@2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5)))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
+        version: 8.37.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.54.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)(encoding@0.1.13)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(pinia@2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5)))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       '@sindresorhus/is':
         specifier: 6.3.0
         version: 6.3.0
@@ -235,7 +238,7 @@ importers:
         version: 10.9.0(vue@3.5.8(typescript@5.4.5))
       '@vueuse/nuxt':
         specifier: ^10.11.0
-        version: 10.11.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
+        version: 10.11.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       apexcharts:
         specifier: 3.49.0
         version: 3.49.0
@@ -262,10 +265,10 @@ importers:
         version: 0.23.2
       drizzle-orm:
         specifier: ^0.32.0
-        version: 0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
+        version: 0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
       drizzle-zod:
         specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(zod@3.23.8)
+        version: 0.5.1(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(zod@3.23.8)
       eslint:
         specifier: 8.57.0
         version: 8.57.0
@@ -298,7 +301,7 @@ importers:
         version: 6.9.15
       nuxt:
         specifier: ^3.13.2
-        version: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
+        version: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
       nuxt-gtag:
         specifier: ^3.0.2
         version: 3.0.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
@@ -996,6 +999,9 @@ packages:
   '@cloudflare/kv-asset-handler@0.3.4':
     resolution: {integrity: sha512-YLPHc8yASwjNkmcDMQMY35yiWjoKAKnhUbPRszBRS0YgH+IXtsMp61j+yTcnCE3oO2DgP0U3iejLC8FTtKDC8Q==}
     engines: {node: '>=16.13'}
+
+  '@cloudflare/workers-types@4.20241218.0':
+    resolution: {integrity: sha512-Y0brjmJHcAZBXOPI7lU5hbiXglQWniA1kQjot2ata+HFimyjPPcz+4QWBRrmWcMPo0OadR2Vmac7WStDLpvz0w==}
 
   '@csstools/css-parser-algorithms@2.6.1':
     resolution: {integrity: sha512-ubEkAaTfVZa+WwGhs5jbo5Xfqpeaybr/RvWzvFxRs4jfq16wH8l8Ty/QEEpINxll4xhuGfdMbipRyz5QZh9+FA==}
@@ -2623,6 +2629,9 @@ packages:
 
   '@nuxthq/studio@2.2.1':
     resolution: {integrity: sha512-FiKaC2NBnoKbV5opW8+bXt75R9b7XQ/xtr2bCSLRUca2H7lYypfUAdpYltJasKMgJsUWMNHME92iW5Fi9gb+IA==}
+
+  '@nuxthub/core@0.8.10':
+    resolution: {integrity: sha512-KqIFlWb1Fx/TF02k32LsvKxiFCcNluTYJdk06XvmCezr8Xz4NLfu/BlqqVIpWz1geR8acmLBrFnk9nJb/50MeA==}
 
   '@nuxtjs/color-mode@3.5.2':
     resolution: {integrity: sha512-cC6RfgZh3guHBMLLjrBB2Uti5eUoGM9KyauOaYS9ETmxNWBMTvpgjvSiSJp1OFljIXPIqVTJ3xtJpSNZiO3ZaA==}
@@ -4542,6 +4551,9 @@ packages:
     peerDependencies:
       '@unovis/ts': 1.5.0
       vue: ^3
+
+  '@uploadthing/mime-types@0.3.2':
+    resolution: {integrity: sha512-WP/K75S/649lM0GUcd9jq4RjeTIc/0bO2UmLx4+usTSNy/x0K8gV0JdLWeUUbmTQtJoHd4ZTSvAdG7ZQgcmXvA==}
 
   '@vercel/nft@0.26.5':
     resolution: {integrity: sha512-NHxohEqad6Ra/r4lGknO52uc/GrWILXAMs1BB4401GTqww0fw1bAqzpG1XHuDO+dprg4GvsD9ZLLSsdo78p9hQ==}
@@ -8150,6 +8162,11 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
+  mime@4.0.6:
+    resolution: {integrity: sha512-4rGt7rvQHBbaSOF9POGkk1ocRP16Md1x36Xma8sz8h8/vfCUI2OtEIeCqe4Ofes853x4xDoPiFLIT47J5fI/7A==}
+    engines: {node: '>=16'}
+    hasBin: true
+
   mimic-fn@2.1.0:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}
     engines: {node: '>=6'}
@@ -8363,6 +8380,9 @@ packages:
   netmask@2.0.2:
     resolution: {integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==}
     engines: {node: '>= 0.4.0'}
+
+  nitro-cloudflare-dev@0.2.1:
+    resolution: {integrity: sha512-zHAN21dp+As0ldkAr5tWTop/I721j7MssZG6qb7a7EMorFwdRIhyTUwltr2L6v4qT4209S4eb2S9rszP1fxS7A==}
 
   nitropack@2.9.7:
     resolution: {integrity: sha512-aKXvtNrWkOCMsQbsk4A0qQdBjrJ1ZcvwlTQevI/LAgLWLYc5L7Q/YiYxGLal4ITyNSlzir1Cm1D2ZxnYhmpMEw==}
@@ -10585,6 +10605,50 @@ packages:
       ioredis:
         optional: true
 
+  unstorage@1.13.1:
+    resolution: {integrity: sha512-ELexQHUrG05QVIM/iUeQNdl9FXDZhqLJ4yP59fnmn2jGUh0TEulwOgov1ubOb3Gt2ZGK/VMchJwPDNVEGWQpRg==}
+    peerDependencies:
+      '@azure/app-configuration': ^1.7.0
+      '@azure/cosmos': ^4.1.1
+      '@azure/data-tables': ^13.2.2
+      '@azure/identity': ^4.5.0
+      '@azure/keyvault-secrets': ^4.9.0
+      '@azure/storage-blob': ^12.25.0
+      '@capacitor/preferences': ^6.0.2
+      '@netlify/blobs': ^6.5.0 || ^7.0.0 || ^8.1.0
+      '@planetscale/database': ^1.19.0
+      '@upstash/redis': ^1.34.3
+      '@vercel/kv': ^1.0.1
+      idb-keyval: ^6.2.1
+      ioredis: ^5.4.1
+    peerDependenciesMeta:
+      '@azure/app-configuration':
+        optional: true
+      '@azure/cosmos':
+        optional: true
+      '@azure/data-tables':
+        optional: true
+      '@azure/identity':
+        optional: true
+      '@azure/keyvault-secrets':
+        optional: true
+      '@azure/storage-blob':
+        optional: true
+      '@capacitor/preferences':
+        optional: true
+      '@netlify/blobs':
+        optional: true
+      '@planetscale/database':
+        optional: true
+      '@upstash/redis':
+        optional: true
+      '@vercel/kv':
+        optional: true
+      idb-keyval:
+        optional: true
+      ioredis:
+        optional: true
+
   untun@0.1.3:
     resolution: {integrity: sha512-4luGP9LMYszMRZwsvyUd9MrxgEGZdZuZgpVQHEEX0lCYFESasVRvZd0EYpCkOIbJKHMuv0LskpXc/8Un+MJzEQ==}
     hasBin: true
@@ -11189,6 +11253,9 @@ packages:
 
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -12209,6 +12276,8 @@ snapshots:
   '@cloudflare/kv-asset-handler@0.3.4':
     dependencies:
       mime: 3.0.0
+
+  '@cloudflare/workers-types@4.20241218.0': {}
 
   '@csstools/css-parser-algorithms@2.6.1(@csstools/css-tokenizer@2.2.4)':
     dependencies:
@@ -13627,13 +13696,13 @@ snapshots:
       '@nodelib/fs.scandir': 3.0.0
       fastq: 1.17.1
 
-  '@nuxt/content@2.13.4(ioredis@5.4.1)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
+  '@nuxt/content@2.13.4(ioredis@5.4.1)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@nuxtjs/mdc': 0.9.5(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@vueuse/core': 11.3.0(vue@3.5.8(typescript@5.4.5))
       '@vueuse/head': 2.0.0(vue@3.5.8(typescript@5.4.5))
-      '@vueuse/nuxt': 11.3.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
+      '@vueuse/nuxt': 11.3.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
       consola: 3.2.3
       defu: 6.1.4
       destr: 2.0.3
@@ -14206,6 +14275,48 @@ snapshots:
       - rollup
       - supports-color
       - utf-8-validate
+      - webpack-sources
+
+  '@nuxthub/core@0.8.10(ioredis@5.4.1)(magicast@0.3.5)(rollup@3.29.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)':
+    dependencies:
+      '@cloudflare/workers-types': 4.20241218.0
+      '@nuxt/devtools-kit': 1.6.4(magicast@0.3.5)(rollup@3.29.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
+      '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
+      '@uploadthing/mime-types': 0.3.2
+      citty: 0.1.6
+      confbox: 0.1.8
+      defu: 6.1.4
+      destr: 2.0.3
+      h3: 1.13.0
+      mime: 4.0.6
+      nitro-cloudflare-dev: 0.2.1
+      ofetch: 1.4.1
+      pathe: 1.1.2
+      pkg-types: 1.2.1
+      std-env: 3.8.0
+      ufo: 1.5.4
+      uncrypto: 0.1.3
+      unstorage: 1.13.1(ioredis@5.4.1)
+      zod: 3.24.1
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@upstash/redis'
+      - '@vercel/kv'
+      - idb-keyval
+      - ioredis
+      - magicast
+      - rollup
+      - supports-color
+      - uWebSockets.js
+      - vite
       - webpack-sources
 
   '@nuxtjs/color-mode@3.5.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)':
@@ -15181,7 +15292,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sentry/nuxt@8.37.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.54.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)(encoding@0.1.13)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(pinia@2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5)))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
+  '@sentry/nuxt@8.37.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.54.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.27.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.27.0)(encoding@0.1.13)(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(pinia@2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5)))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@sentry/browser': 8.37.0
@@ -15193,7 +15304,7 @@ snapshots:
       '@sentry/utils': 8.37.0
       '@sentry/vite-plugin': 2.22.6(encoding@0.1.13)
       '@sentry/vue': 8.37.0(pinia@2.1.7(typescript@5.4.5)(vue@3.5.8(typescript@5.4.5)))(vue@3.5.8(typescript@5.4.5))
-      nuxt: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
+      nuxt: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
     transitivePeerDependencies:
       - '@opentelemetry/api'
       - '@opentelemetry/core'
@@ -16878,12 +16989,14 @@ snapshots:
       '@unovis/ts': 1.5.0
       vue: 3.5.8(typescript@5.4.5)
 
+  '@uploadthing/mime-types@0.3.2': {}
+
   '@vercel/nft@0.26.5(encoding@0.1.13)':
     dependencies:
       '@mapbox/node-pre-gyp': 1.0.11(encoding@0.1.13)
       '@rollup/pluginutils': 4.2.1
-      acorn: 8.12.1
-      acorn-import-attributes: 1.9.5(acorn@8.12.1)
+      acorn: 8.14.0
+      acorn-import-attributes: 1.9.5(acorn@8.14.0)
       async-sema: 3.1.1
       bindings: 1.5.0
       estree-walker: 2.0.2
@@ -17293,13 +17406,13 @@ snapshots:
 
   '@vueuse/metadata@12.0.0': {}
 
-  '@vueuse/nuxt@10.11.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
+  '@vueuse/nuxt@10.11.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@vueuse/core': 10.11.0(vue@3.5.8(typescript@5.4.5))
       '@vueuse/metadata': 10.11.0
       local-pkg: 0.5.0
-      nuxt: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
+      nuxt: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
       vue-demi: 0.14.10(vue@3.5.8(typescript@5.4.5))
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -17309,13 +17422,13 @@ snapshots:
       - vue
       - webpack-sources
 
-  '@vueuse/nuxt@11.3.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
+  '@vueuse/nuxt@11.3.0(magicast@0.3.5)(nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3))(rollup@3.29.5)(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@vueuse/core': 11.3.0(vue@3.5.8(typescript@5.4.5))
       '@vueuse/metadata': 11.3.0
       local-pkg: 0.5.1
-      nuxt: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
+      nuxt: 3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3)
       vue-demi: 0.14.10(vue@3.5.8(typescript@5.4.5))
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -17367,9 +17480,9 @@ snapshots:
       mime-types: 2.1.35
       negotiator: 0.6.3
 
-  acorn-import-attributes@1.9.5(acorn@8.12.1):
+  acorn-import-attributes@1.9.5(acorn@8.14.0):
     dependencies:
-      acorn: 8.12.1
+      acorn: 8.14.0
 
   acorn-jsx@5.3.2(acorn@8.12.1):
     dependencies:
@@ -18407,9 +18520,9 @@ snapshots:
 
   date-fns@4.1.0: {}
 
-  db0@0.1.4(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)):
+  db0@0.1.4(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)):
     optionalDependencies:
-      drizzle-orm: 0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
+      drizzle-orm: 0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
 
   de-indent@1.0.2: {}
 
@@ -18591,8 +18704,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0):
+  drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0):
     optionalDependencies:
+      '@cloudflare/workers-types': 4.20241218.0
       '@opentelemetry/api': 1.9.0
       '@prisma/client': 5.19.1
       '@types/pg': 8.11.8
@@ -18600,9 +18714,9 @@ snapshots:
       postgres: 3.4.4
       react: 18.2.0
 
-  drizzle-zod@0.5.1(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(zod@3.23.8):
+  drizzle-zod@0.5.1(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(zod@3.23.8):
     dependencies:
-      drizzle-orm: 0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
+      drizzle-orm: 0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0)
       zod: 3.23.8
 
   duplexer@0.1.2: {}
@@ -20332,8 +20446,8 @@ snapshots:
 
   import-in-the-middle@1.11.2:
     dependencies:
-      acorn: 8.12.1
-      acorn-import-attributes: 1.9.5(acorn@8.12.1)
+      acorn: 8.14.0
+      acorn-import-attributes: 1.9.5(acorn@8.14.0)
       cjs-module-lexer: 1.4.1
       module-details-from-path: 1.0.3
 
@@ -21458,6 +21572,8 @@ snapshots:
 
   mime@4.0.3: {}
 
+  mime@4.0.6: {}
+
   mimic-fn@2.1.0: {}
 
   mimic-fn@4.0.0: {}
@@ -21633,7 +21749,13 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  nitropack@2.9.7(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(webpack-sources@3.2.3):
+  nitro-cloudflare-dev@0.2.1:
+    dependencies:
+      consola: 3.2.3
+      mlly: 1.7.3
+      pkg-types: 1.2.1
+
+  nitropack@2.9.7(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(webpack-sources@3.2.3):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.4
       '@netlify/functions': 2.8.1
@@ -21656,7 +21778,7 @@ snapshots:
       cookie-es: 1.1.0
       croner: 8.0.2
       crossws: 0.2.4
-      db0: 0.1.4(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))
+      db0: 0.1.4(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))
       defu: 6.1.4
       destr: 2.0.3
       dot-prop: 8.0.2
@@ -22031,7 +22153,7 @@ snapshots:
       - supports-color
       - webpack-sources
 
-  nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3):
+  nuxt@3.13.2(@parcel/watcher@2.4.1)(@types/node@20.12.7)(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@3.29.5)(sass@1.75.0)(stylelint@16.2.1(typescript@5.4.5))(terser@5.30.4)(typescript@5.4.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(webpack-sources@3.2.3):
     dependencies:
       '@nuxt/devalue': 2.0.2
       '@nuxt/devtools': 1.5.1(rollup@3.29.5)(vite@5.2.10(@types/node@20.12.7)(sass@1.75.0)(terser@5.30.4))(vue@3.5.8(typescript@5.4.5))(webpack-sources@3.2.3)
@@ -22068,7 +22190,7 @@ snapshots:
       magic-string: 0.30.11
       mlly: 1.7.1
       nanotar: 0.1.1
-      nitropack: 2.9.7(drizzle-orm@0.32.2(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(webpack-sources@3.2.3)
+      nitropack: 2.9.7(drizzle-orm@0.32.2(@cloudflare/workers-types@4.20241218.0)(@opentelemetry/api@1.9.0)(@prisma/client@5.19.1)(@types/pg@8.11.8)(pg@8.12.0)(postgres@3.4.4)(react@18.2.0))(encoding@0.1.13)(magicast@0.3.5)(webpack-sources@3.2.3)
       nuxi: 3.13.2
       nypm: 0.3.11
       ofetch: 1.3.4
@@ -24581,6 +24703,23 @@ snapshots:
     transitivePeerDependencies:
       - uWebSockets.js
 
+  unstorage@1.13.1(ioredis@5.4.1):
+    dependencies:
+      anymatch: 3.1.3
+      chokidar: 3.6.0
+      citty: 0.1.6
+      destr: 2.0.3
+      h3: 1.13.0
+      listhen: 1.9.0
+      lru-cache: 10.4.3
+      node-fetch-native: 1.6.4
+      ofetch: 1.4.1
+      ufo: 1.5.4
+    optionalDependencies:
+      ioredis: 5.4.1
+    transitivePeerDependencies:
+      - uWebSockets.js
+
   untun@0.1.3:
     dependencies:
       citty: 0.1.6
@@ -25163,5 +25302,7 @@ snapshots:
       readable-stream: 4.5.2
 
   zod@3.23.8: {}
+
+  zod@3.24.1: {}
 
   zwitch@2.0.4: {}
