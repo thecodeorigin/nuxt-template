@@ -1,5 +1,6 @@
 import { useUserDevice } from '@base/server/composables/useUserDevice'
 import { z } from 'zod'
+import { useNitroApp } from '#imports'
 
 export default defineEventHandler(async (event) => {
   const { session, userId } = await defineEventOptions(event, { auth: true, params: ['userId'] })

@@ -1,3 +1,5 @@
+import { useNitroApp } from '#imports'
+
 export default defineEventHandler(async (event) => {
   const nitroApp = useNitroApp()
   await defineEventOptions(event, { auth: true })
