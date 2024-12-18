@@ -1,6 +1,6 @@
 import type Stripe from 'stripe'
 import { minBy } from 'lodash-es'
-import { useNitroApp } from '#imports'
+import { useNitroApp } from 'nitropack/runtime'
 
 export async function getStripeCustomerByEmail(email: string) {
   return tryWithCache(

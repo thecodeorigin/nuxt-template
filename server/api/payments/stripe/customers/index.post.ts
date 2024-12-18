@@ -1,4 +1,4 @@
-import { useNitroApp } from '#imports'
+import { useNitroApp } from 'nitropack/runtime'
 
 export default defineEventHandler(async (event) => {
   const nitroApp = useNitroApp()
