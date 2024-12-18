@@ -1,12 +1,13 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (to.meta.public)
+  if (to.meta.public || import.meta.prerender)
     return
 
   const healthStore = useHealthStore()
 
-  await healthStore.fetchHealthCheck()
-
-  if (!healthStore.isHealthy) {
+  try {
+    await healthStore.fetchHealthCheck()
+  }
+  catch {
     throw createError({
       statusCode: 503,
       statusMessage: 'Service Unavailable',

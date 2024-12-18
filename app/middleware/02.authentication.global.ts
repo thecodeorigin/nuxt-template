@@ -4,6 +4,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const authStore = useAuthStore()
 
-  if (to.meta.auth && !authStore.isAuthenticated)
+  if (to.meta.auth && !authStore.currentUser)
     return authStore.signIn()
 })

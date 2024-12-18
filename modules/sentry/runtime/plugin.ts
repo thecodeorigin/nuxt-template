@@ -4,6 +4,9 @@ export default defineNuxtPlugin({
   name: 'sentry',
   parallel: true,
   setup(nuxtApp) {
+    if (import.meta.prerender)
+      return
+
     const config = useRuntimeConfig()
 
     if (config.public.sentry.dsn) {
@@ -11,7 +14,7 @@ export default defineNuxtPlugin({
         const scope = Sentry.getCurrentScope()
         const authStore = useAuthStore()
 
-        if (authStore.isAuthenticated) {
+        if (authStore.currentUser) {
           scope.setUser({
             id: authStore.currentUser.sub,
             name: authStore.currentUser.name,

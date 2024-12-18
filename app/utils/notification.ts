@@ -9,37 +9,38 @@ const notificationDefaultOptions: NotificationOptions = {
   content: '',
 }
 
-export function notifyError(options: NotificationOptions) {
+function getToast() {
+  if (import.meta.client)
+    return null
+
   const { $toast } = useNuxtApp()
 
-  $toast.error(
+  return $toast
+}
+
+export function notifyError(options: NotificationOptions) {
+  getToast()?.error(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )
 }
 
 export function notifySuccess(options: NotificationOptions) {
-  const { $toast } = useNuxtApp()
-
-  $toast.success(
+  getToast()?.success(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )
 }
 
 export function notifyWarning(options: NotificationOptions) {
-  const { $toast } = useNuxtApp()
-
-  $toast.warning(
+  getToast()?.warning(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )
 }
 
 export function notifyInfo(options: NotificationOptions) {
-  const { $toast } = useNuxtApp()
-
-  $toast.info(
+  getToast()?.info(
     options.content || '',
     defu(options, notificationDefaultOptions),
   )

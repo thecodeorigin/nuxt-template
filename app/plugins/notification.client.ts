@@ -4,13 +4,12 @@ import { isInAppBrowser } from '@base/utils/detectBrowser'
 export default defineNuxtPlugin({
   setup(nuxtApp) {
     const authStore = useAuthStore()
-    const healthStore = useHealthStore()
     const tokenDeviceStore = useTokenDeviceStore()
 
     const config = useRuntimeConfig()
 
     nuxtApp.hook('app:mounted', async () => {
-      if (healthStore.isHealthy && !isInAppBrowser()) {
+      if (!isInAppBrowser()) {
         const user = useLogtoUser()
 
         if (!user)

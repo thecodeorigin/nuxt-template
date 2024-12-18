@@ -1,4 +1,4 @@
-import type { UserInfoResponse } from "@logto/nuxt"
+import type { UserInfoResponse } from '@logto/nuxt'
 
 export const useAuthStore = defineStore('auth', () => {
   const config = useRuntimeConfig()
@@ -8,8 +8,6 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = useState<string | null>('accessToken', () => null)
 
   const currentUser = useLogtoUser() as UserInfoResponse | null
-
-  const isAuthenticated = computed(() => Boolean(currentUser))
 
   const currentRoles = computed(() => currentUser?.roles || null)
 
@@ -28,7 +26,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     accessToken,
-    isAuthenticated,
     currentUser,
     currentRoles,
     signIn,

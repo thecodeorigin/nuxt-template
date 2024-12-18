@@ -3,8 +3,16 @@ export default defineNuxtPlugin({
     const authStore = useAuthStore()
     const caslStore = useCaslStore()
 
-    if (authStore.isAuthenticated)
-      await caslStore.fetchScopes()
+    if (authStore.currentUser) {
+      try {
+        await caslStore.fetchScopes()
+      }
+      catch {
+        notifyError({
+          content: 'Failed to fetch user scopes.',
+        })
+      }
+    }
 
     return {
       provide: {
