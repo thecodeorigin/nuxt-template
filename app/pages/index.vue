@@ -42,6 +42,7 @@ onErrorCaptured((error) => {
             target="_blank"
             class="focus:outline-none"
             tabindex="-1"
+            external
           >
             <span
               class="absolute inset-0"

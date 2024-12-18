@@ -2,36 +2,36 @@
 const links = [{
   label: 'Resources',
   children: [{
-    label: 'Help center'
+    label: 'Help center',
   }, {
-    label: 'Docs'
+    label: 'Docs',
   }, {
-    label: 'Roadmap'
+    label: 'Roadmap',
   }, {
-    label: 'Changelog'
-  }]
+    label: 'Changelog',
+  }],
 }, {
   label: 'Features',
   children: [{
-    label: 'Affiliates'
+    label: 'Affiliates',
   }, {
-    label: 'Portal'
+    label: 'Portal',
   }, {
-    label: 'Jobs'
+    label: 'Jobs',
   }, {
-    label: 'Sponsors'
-  }]
+    label: 'Sponsors',
+  }],
 }, {
   label: 'Company',
   children: [{
-    label: 'About'
+    label: 'About',
   }, {
-    label: 'Pricing'
+    label: 'Pricing',
   }, {
-    label: 'Careers'
+    label: 'Careers',
   }, {
-    label: 'Blog'
-  }]
+    label: 'Blog',
+  }],
 }]
 
 const toast = useToast()
@@ -45,7 +45,7 @@ function onSubmit() {
   setTimeout(() => {
     toast.add({
       title: 'Subscribed!',
-      description: 'You\'ve been subscribed to our newsletter.'
+      description: 'You\'ve been subscribed to our newsletter.',
     })
 
     loading.value = false

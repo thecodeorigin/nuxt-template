@@ -85,11 +85,6 @@ export default defineNuxtConfig({
       appSecret: process.env.LOGTO_APP_SECRET,
       cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
       fetchUserInfo: true,
-      pathnames: {
-        signIn: '/auth/signin',
-        signOut: '/auth/signout',
-        callback: '/auth/callback',
-      },
       resources: [
         process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
       ],

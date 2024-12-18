@@ -17,11 +17,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function signIn() {
-    return navigateTo({ path: '/auth/signin' }, { external: true })
+    return navigateTo({ path: '/sign-in' }, { external: true })
   }
 
   function signOut() {
-    return navigateTo({ path: '/auth/signout' }, { external: true })
+    return navigateTo({ path: '/sign-out' }, { external: true })
   }
 
   return {

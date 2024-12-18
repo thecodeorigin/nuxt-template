@@ -10,7 +10,7 @@ hero:
     icon: i-heroicons-arrow-top-right-on-square-20-solid
   links:
     - label: Get started
-      to: '/auth/signup'
+      to: '/sign-in'
       size: xl
       color: black
       icon: i-heroicons-arrow-right-20-solid
