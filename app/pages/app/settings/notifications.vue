@@ -2,7 +2,7 @@
 definePageMeta({
   sidebar: {
     label: 'Notifications',
-  }
+  },
 })
 
 const state = reactive<{ [key: string]: boolean }>({
@@ -27,7 +27,7 @@ const sections = [{
   }],
 }, {
   title: 'Account updates',
-  description: 'Receive updates about Nuxt UI.',
+  description: 'Receive updates about Nuxt Template.',
   fields: [{
     name: 'weekly_digest',
     label: 'Weekly digest',

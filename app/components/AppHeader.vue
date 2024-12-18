@@ -18,7 +18,7 @@ const links = [{
 <template>
   <UHeader :links="links">
     <template #logo>
-      Nuxt UI Pro <UBadge
+      Nuxt Template <UBadge
         label="SaaS"
         variant="subtle"
         class="mb-0.5"
