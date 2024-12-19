@@ -10,7 +10,7 @@ const route = useRoute()
 
 const { data: post } = await useAsyncData(route.path, () => queryContent<BlogPost>(route.path).findOne())
 if (!post.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Post not found', fatal: true })
+  throw createError({ statusCode: 404, statusMessage: 'Post not found' })
 }
 
 const { data: surround } = await useAsyncData(`${route.path}-surround`, () => queryContent('/blog')

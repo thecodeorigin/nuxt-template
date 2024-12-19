@@ -5,7 +5,7 @@ definePageMeta({
 
 const { data: page } = await useAsyncData('pricing', () => queryContent('/pricing').findOne())
 if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+  throw createError({ statusCode: 404, statusMessage: 'Page not found' })
 }
 
 useSeoMeta({
