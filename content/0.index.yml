@@ -10,16 +10,17 @@ hero:
     icon: i-heroicons-arrow-top-right-on-square-20-solid
   links:
     - label: Get started
-      to: '/sign-in'
+      to: '/app'
       size: xl
       color: black
       icon: i-heroicons-arrow-right-20-solid
       trailing: true
-    - label: Use this template
-      icon: i-simple-icons-github
+      external: true
+    - label: How to use
+      icon: i-heroicons-book-open
       size: xl
       color: gray
-      to: https://github.com/nuxt-ui-pro/saas
+      to: /docs
       target: _blank
 sections:
   - title: The power of our service

@@ -196,7 +196,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/app/**': { prerender: false },
+    '/app/**': { prerender: false, csurf: { enabled: true } },
     '/auth/**': { prerender: false },
     '/api/search.json': { prerender: true },
     '/docs': { redirect: '/docs/getting-started' },
@@ -307,16 +307,12 @@ export default defineNuxtConfig({
   },
 
   security: {
-    corsHandler: {
-      origin: [
-        process.env.NUXT_PUBLIC_APP_BASE_URL!,
-        process.env.AWS_CLOUDFRONT_DOMAIN!,
-      ].filter(Boolean),
+    csrf: {
+      cookieKey: 'csrfToken',
     },
     headers: {
       contentSecurityPolicy: {
         'img-src': false,
-        'style-src': false,
       },
     },
     hidePoweredBy: true,

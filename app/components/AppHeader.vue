@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NavItem } from '@nuxt/content'
+import { mapContentNavigation } from '#imports'
 
 const navigation = inject<Ref<NavItem[]>>('navigation', ref([]))
 
@@ -27,9 +28,9 @@ const links = [{
 
     <template #right>
       <UButton
-        label="Sign in"
+        label="Go to Application"
         color="gray"
-        to="/sign-in"
+        to="/app"
         external
       />
     </template>
