@@ -316,6 +316,7 @@ export default defineNuxtConfig({
     headers: {
       contentSecurityPolicy: {
         'img-src': false,
+        'style-src': false,
       },
     },
     hidePoweredBy: true,
