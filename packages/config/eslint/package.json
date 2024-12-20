@@ -22,6 +22,9 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@antfu/eslint-config": "^2.22.0",
-    "@antfu/eslint-config-vue": "0.43.1"
+    "@antfu/eslint-config-vue": "0.43.1",
+    "@typescript-eslint/eslint-plugin": "7.7.1",
+    "@typescript-eslint/parser": "7.7.1",
+    "eslint": "^9.17.0"
   }
 }

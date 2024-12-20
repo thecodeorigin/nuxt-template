@@ -21,19 +21,22 @@
     "./schemas": "./server/db/schemas/index.ts",
     "./schemas/*": "./server/db/schemas/*.ts"
   },
+  "workspaces": [
+    "packages/**"
+  ],
   "main": "./nuxt.config.ts",
   "scripts": {
-    "with-env": "doppler run -- pnpm",
-    "dev": "jiti ./scripts/serve.ts",
+    "with-env": "doppler run -- bun",
+    "dev": "bun ./scripts/serve.ts",
     "build": "nuxt build",
-    "prepack": "jiti ./scripts/prepack.ts",
+    "prepack": "bun ./scripts/prepack.ts",
     "lint": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "prepare": "jiti ./scripts/prepare.ts",
+    "prepare": "bun ./scripts/prepare.ts",
     "test": "vitest run",
     "cleanup": "rimraf .nuxt .output dist node_modules areas",
-    "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
+    "stripe:seed": "bun ./scripts/generate-stripe.ts --esmResolve",
     "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add --separator '->'",
     "db:preview": "drizzle-kit studio --port 3001",
     "db:generate": "drizzle-kit generate",
@@ -110,8 +113,6 @@
     "@types/pdfmake": "^0.2.9",
     "@types/uuid": "^8.3.3",
     "@types/webfontloader": "1.6.38",
-    "@typescript-eslint/eslint-plugin": "7.7.1",
-    "@typescript-eslint/parser": "7.7.1",
     "@unovis/ts": "^1.4.4",
     "@unovis/vue": "^1.4.4",
     "@videojs-player/vue": "1.0.0",
@@ -128,7 +129,6 @@
     "drizzle-kit": "^0.23.0",
     "drizzle-orm": "^0.32.0",
     "drizzle-zod": "^0.5.1",
-    "eslint": "9.17.0",
     "execa": "^9.3.0",
     "firebase": "^10.12.4",
     "firebase-admin": "^12.2.0",
@@ -195,16 +195,21 @@
   "devDependencies": {
     "vercel": "^39.2.2"
   },
-  "pnpm": {
-    "patchedDependencies": {
-      "@nuxt/ui-pro@1.6.0": "patches/@nuxt__ui-pro@1.6.0.patch"
-    }
-  },
   "resolutions": {
     "@tiptap/core": "^2",
     "@types/video.js": "^7",
     "h3": "^1.13.0",
     "postcss": "^8",
     "stylelint-order": "6.0.3"
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@sentry/cli",
+    "maplibre-gl",
+    "protobufjs",
+    "vnpay"
+  ],
+  "patchedDependencies": {
+    "@nuxt/ui-pro@1.6.0": "patches/@nuxt%2Fui-pro@1.6.0.patch"
   }
 }

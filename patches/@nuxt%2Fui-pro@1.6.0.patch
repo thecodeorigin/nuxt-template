@@ -1,8 +1,8 @@
 diff --git a/modules/pro/index.ts b/modules/pro/index.ts
-index f94fcf63980331d78946e45356da970132695ba4..8bb63c89f86d7b532bcceab5b4c1545f32f006a9 100644
+index f94fcf63980331d78946e45356da970132695ba4..2022e47fd17008d93494f1e14b0400db1c930abf 100644
 --- a/modules/pro/index.ts
 +++ b/modules/pro/index.ts
-@@ -1,13 +1,7 @@
+@@ -1,11 +1,6 @@
 -import { consola } from 'consola'
 -import { colors } from 'consola/utils'
  import { createResolver, defineNuxtModule, addImportsDir, hasNuxtModule, addComponentsDir, addPlugin } from '@nuxt/kit'
@@ -12,19 +12,9 @@ index f94fcf63980331d78946e45356da970132695ba4..8bb63c89f86d7b532bcceab5b4c1545f
 -import { validateLicense } from './license'
 -
  export interface ModuleOptions {
--  license?: string
+   license?: string
    routerOptions?: boolean
-   content?: boolean
-   customScrollbars?: boolean
-@@ -22,7 +16,6 @@ export default defineNuxtModule({
-     }
-   },
-   defaults: {
--    license: '',
-     routerOptions: undefined as boolean | undefined,
-     content: false,
-     customScrollbars: true
-@@ -98,24 +91,5 @@ export default defineNuxtModule({
+@@ -98,24 +93,5 @@ export default defineNuxtModule({
          (Array.isArray(tailwindConfig.content) ? tailwindConfig.content : tailwindConfig.content.files).push(resolver.resolve('./runtime/components/**/*.{vue,mjs,ts}'))
        })
      }
@@ -49,6 +39,6 @@ index f94fcf63980331d78946e45356da970132695ba4..8bb63c89f86d7b532bcceab5b4c1545f
 -    })
    }
  })
-diff --git a/modules/pro/license.ts b/modules/pro/license.ts
+diff --git a/modules/pro/license.ts b/C:/Users/Rim/.bun/install/cache/@nuxt/ui-pro@1.6.0@@@1/modules/pro/license.ts
 deleted file mode 100644
 index d5cb1a39726f6681433099f8300b04bafaf26f83..0000000000000000000000000000000000000000
