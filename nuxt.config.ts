@@ -29,16 +29,6 @@ export default defineNuxtConfig({
         href: '/favicon.ico',
       }],
     },
-
-    // pageTransition: {
-    //   name: 'app-transition-slide-fade',
-    //   mode: 'out-in',
-    // },
-
-    // layoutTransition: {
-    //   name: 'app-transition-slide-fade',
-    //   mode: 'out-in',
-    // },
   },
 
   devServer: {
@@ -317,6 +307,12 @@ export default defineNuxtConfig({
   },
 
   security: {
+    corsHandler: {
+      origin: [
+        process.env.NUXT_PUBLIC_APP_BASE_URL!,
+        process.env.AWS_CLOUDFRONT_DOMAIN!,
+      ].filter(Boolean),
+    },
     headers: {
       contentSecurityPolicy: {
         'img-src': false,
