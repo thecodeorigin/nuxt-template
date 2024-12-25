@@ -191,7 +191,7 @@ export default defineNuxtConfig({
         '/docs',
       ],
 
-      crawlLinks: true,
+      crawlLinks: false,
     },
   },
 
