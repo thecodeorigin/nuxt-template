@@ -3,12 +3,14 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+> Please purchase Nuxt UI Pro before deploying this template to production. You can purchase it [here](https://ui.nuxt.com/pro/pricing)
+
 Nuxt 3 template is a opinionated template for Nuxt 3 project. It includes the following features:
 
-- [UnoCSS](https://unocss.com) for utility-first CSS
-- [Vuetify](https://vuetifyjs.com) for component library
+- [Tailwindcss](https://tailwindcss.com/) for utility-first CSS
+- [Nuxt UI](https://ui.nuxt.com/) for component library
 - [Nuxt i18n](https://i18n.nuxtjs.org) for internationalization
-- [Nuxt Auth](https://auth.sidebase.io) for authentication
+- [LogTo](https://logto.io/) for user management and authentication
 - [Drizzle ORM](https://orm.drizzle.team) for Database communication
 - [CASL](https://casl.js.org) for Access Control
 - [Firebase Notification](https://firebase.google.com) for push notification

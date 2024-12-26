@@ -1,6 +1,22 @@
 version: '3.7'
 
 services:
+  # logto:
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   image: svhd/logto:${TAG-latest}
+  #   entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+  #   ports:
+  #     - 3001:3001
+  #     - 3002:3002
+  #   environment:
+  #     - TRUST_PROXY_HEADER=1
+  #     - DB_URL=postgres://postgres:${POSTGRES_PASSWORD:-postgres}@${POSTGRES_USER:-postgres}:${POSTGRES_PORT:-5432}/logto
+  #     # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
+  #     # Or, you can leverage it for local testing.
+  #     - ENDPOINT
+  #     - ADMIN_ENDPOINT
   postgres:
     container_name: nuxt-pg
     image: postgres:latest
@@ -16,21 +32,6 @@ services:
       - '${POSTGRES_PORT}:5432'
     restart: unless-stopped
 
-  pgadmin:
-    container_name: nuxt-pgadmin
-    image: dpage/pgadmin4
-    depends_on:
-      - postgres
-    volumes:
-      - ./docker/pgadmin:/var/lib/pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@gmail.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - '${PGADMIN_PORT:-5050}:80'
-    restart: unless-stopped
-
   mailhog:
     container_name: nuxt-mailhog
     image: mailhog/mailhog
@@ -41,6 +42,4 @@ services:
 
 volumes:
   postgres:
-    driver: local
-  pgadmin:
     driver: local

@@ -7,20 +7,6 @@
   "plugins": [
     "@stylistic/stylelint-plugin"
   ],
-  "overrides": [
-    {
-      "files": [
-        "**/*.scss"
-      ],
-      "customSyntax": "postcss-scss"
-    },
-    {
-      "files": [
-        "**/*.vue"
-      ],
-      "customSyntax": "postcss-html"
-    }
-  ],
   "rules": {
     "@stylistic/max-line-length": [
       220,

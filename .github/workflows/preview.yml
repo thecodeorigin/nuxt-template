@@ -8,6 +8,7 @@ on:
       - next
 jobs:
   Deploy-Preview:
+    needs: release-next
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,8 +22,6 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@thecodeorigin'
 
       - name: Install dependencies
         run: pnpm install
