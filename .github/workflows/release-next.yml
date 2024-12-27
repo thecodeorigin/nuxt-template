@@ -1,20 +1,17 @@
-name: Release to GitHub Packages
+name: Vercel Preview Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 on:
   push:
     branches:
       - next
 
-env:
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
 jobs:
-  release:
-    permissions:
-      contents: write
-      packages: write
+  Deploy-Preview:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +27,28 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Link Vercel Project
+        run: npx vercel link --yes --scope=${{ secrets.VERCEL_ORG_ID }} --project=${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Pull Vercel Environment Information
+        run: npx vercel env pull .env --yes --environment=preview --git-branch=next --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_S3_REGION }}
+
+      - name: Build Project Artifacts
+        run: npx vercel build --yes --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Upload assets to S3
+        run: aws s3 sync ./.vercel/output/static s3://${{ secrets.AWS_S3_BUCKET }}/assets --delete
+
+      - name: Deploy Project Artifacts to Vercel
+        run: npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Publish to GitHub Packages
         run: pnpm -r publish --publish-branch next --access public --tag next
