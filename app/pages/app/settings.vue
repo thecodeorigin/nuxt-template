@@ -15,18 +15,18 @@ const links = [
     {
       label: 'General',
       icon: 'i-heroicons-user-circle',
-      to: '/settings',
+      to: '/app/settings',
       exact: true,
     },
     {
       label: 'Members',
       icon: 'i-heroicons-user-group',
-      to: '/settings/members',
+      to: '/app/settings/members',
     },
     {
       label: 'Notifications',
       icon: 'i-heroicons-bell',
-      to: '/settings/notifications',
+      to: '/app/settings/notifications',
     },
   ],
   [

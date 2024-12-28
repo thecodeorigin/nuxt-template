@@ -7,7 +7,7 @@ const links = computed(() => createRouteTree(router.getRoutes()))
 const footerLinks = [{
   label: 'Invite people',
   icon: 'i-heroicons-plus',
-  to: '/settings/members',
+  to: '/app/settings/members',
 }, {
   label: 'Help & Support',
   icon: 'i-heroicons-question-mark-circle',
