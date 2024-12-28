@@ -16,6 +16,15 @@ export default defineNuxtConfig({
     name: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
   },
 
+  hooks: {
+    // Define `@nuxt/ui` components as global to use them in `.md` (feel free to add those you need)
+    'components:extend': (components) => {
+      const globals = components.filter(c => ['UButton'].includes(c.pascalName))
+
+      globals.forEach(c => c.global = true)
+    },
+  },
+
   app: {
     cdnURL: process.env.AWS_CLOUDFRONT_DOMAIN ? `https://${process.env.AWS_CLOUDFRONT_DOMAIN}/assets` : undefined,
 
@@ -150,6 +159,7 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true,
     asyncContext: true,
+    // appManifest: true,
   },
 
   alias: {

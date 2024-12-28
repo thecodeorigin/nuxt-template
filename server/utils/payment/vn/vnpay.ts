@@ -1,4 +1,4 @@
-import { ProductCode, VnpLocale } from 'vnpay'
+import { ProductCode, VNPay, VnpLocale, ignoreLogger } from 'vnpay'
 import { format } from 'date-fns'
 import type { paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
 
@@ -8,6 +8,13 @@ interface VNPayCheckoutProps {
   userPayment: typeof userPaymentTable.$inferSelect
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
 }
+
+export const vnpayAdmin = new VNPay({
+  tmnCode: process.env.VNP_TMNCODE!,
+  secureSecret: process.env.VNP_HASHSECRET!,
+  testMode: !process.env.DISABLE_TEST_MODE,
+  loggerFn: ignoreLogger,
+})
 
 export function createVNPayCheckout({
   date,

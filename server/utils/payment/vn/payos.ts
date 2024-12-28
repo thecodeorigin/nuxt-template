@@ -1,11 +1,19 @@
 import type { paymentProviderTransactionTable } from '@base/server/db/schemas'
 
+import PayOS from '@payos/node'
+
 interface payOSCheckoutProps {
   date: Date
   buyerEmail?: string
   buyerPhone?: string
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
 }
+
+export const payOSAdmin = new PayOS(
+  process.env.PAYOS_CLIENT_ID!,
+  process.env.PAYOS_API_KEY!,
+  process.env.PAYOS_CHECKSUM_KEY!,
+)
 
 export async function createPayOSCheckout({
   date,
