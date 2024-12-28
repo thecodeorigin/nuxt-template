@@ -10,7 +10,7 @@ on:
       - next
 
 jobs:
-  Deploy-Preview:
+  Deploy-Next:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,6 +49,3 @@ jobs:
 
       - name: Deploy Project Artifacts to Vercel
         run: npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Publish to GitHub Packages
-        run: pnpm -r publish --publish-branch next --access public --tag next
