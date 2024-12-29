@@ -1,4 +1,4 @@
-import { useNotification } from '~~/server/composables/useNotification'
+import { useNotification } from '@base/server/composables/useNotification'
 
 export default defineEventHandler(async (event) => {
   try {

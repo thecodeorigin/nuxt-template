@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Duration, format, isSameDay, sub } from 'date-fns'
-import type { Range } from '~/types'
+import type { Range } from '@base/types'
 
 const ranges = [
   { label: 'Last 7 days', duration: { days: 7 } },

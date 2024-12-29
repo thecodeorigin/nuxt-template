@@ -70,7 +70,7 @@ const items = [
         <UDivider class="sticky bottom-0" />
 
         <template #footer>
-          <!-- ~/components/UserDropdown.vue -->
+          <!-- @base/components/UserDropdown.vue -->
           <UserDropdown />
         </template>
       </UDashboardSidebar>
@@ -122,9 +122,9 @@ const items = [
       </UDashboardPanel>
     </UDashboardPage>
 
-    <!-- ~/components/HelpSlideover.vue -->
+    <!-- @base/components/HelpSlideover.vue -->
     <HelpSlideover />
-    <!-- ~/components/NotificationsSlideover.vue -->
+    <!-- @base/components/NotificationsSlideover.vue -->
     <NotificationsSlideover />
 
     <ClientOnly>

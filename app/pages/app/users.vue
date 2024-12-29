@@ -118,7 +118,7 @@ defineShortcuts({
     description="Add a new user to your database"
     :ui="{ width: 'sm:max-w-md' }"
   >
-    <!-- ~/components/users/UsersForm.vue -->
+    <!-- @base/components/users/UsersForm.vue -->
     <UsersForm @close="isNewUserModalOpen = false" />
   </UDashboardModal>
 

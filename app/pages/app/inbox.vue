@@ -87,7 +87,7 @@ watch(filteredMails, () => {
         </template>
       </UDashboardNavbar>
 
-      <!-- ~/components/inbox/InboxList.vue -->
+      <!-- @base/components/inbox/InboxList.vue -->
       <InboxList
         v-model="selectedMail"
         :mails="filteredMails"
@@ -187,7 +187,7 @@ watch(filteredMails, () => {
           </template>
         </UDashboardNavbar>
 
-        <!-- ~/components/inbox/InboxMail.vue -->
+        <!-- @base/components/inbox/InboxMail.vue -->
         <InboxMail :mail="selectedMail" />
       </template>
       <div

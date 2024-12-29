@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Member } from '~/types'
+import type { Member } from '@base/types'
 
 definePageMeta({
   sidebar: {
@@ -48,7 +48,7 @@ const filteredMembers = computed(() => {
           />
         </template>
 
-        <!-- ~/components/settings/MembersList.vue -->
+        <!-- @base/components/settings/MembersList.vue -->
         <SettingsMembersList :members="filteredMembers" />
       </UCard>
     </UDashboardSection>
@@ -59,7 +59,7 @@ const filteredMembers = computed(() => {
       description="Invite new members by email address"
       :ui="{ width: 'sm:max-w-md' }"
     >
-      <!-- ~/components/settings/MembersForm.vue -->
+      <!-- @base/components/settings/MembersForm.vue -->
       <SettingsMembersForm @close="isInviteModalOpen = false" />
     </UDashboardModal>
   </UDashboardPanelContent>
