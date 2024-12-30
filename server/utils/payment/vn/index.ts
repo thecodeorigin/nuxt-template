@@ -1,5 +1,5 @@
-import { eq } from 'drizzle-orm'
 import { PaymentStatus, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
+import type { UserInfoResponse } from '@logto/nuxt'
 import { createPayOSCheckout } from './payos'
 import { createVNPayCheckout } from './vnpay'
 
@@ -11,13 +11,12 @@ export async function createPaymentCheckout(
   provider: 'payos' | 'vnpay',
   payload: {
     clientIP?: string
-    userEmail?: string
-    productId?: string
+    productIdentifier: string
+    user: UserInfoResponse
   },
 ) {
   try {
-    // TODO: check for !payload.productId
-    if (!provider || !payload.userEmail) {
+    if (!payload.productIdentifier || !payload.user || !payload.user.sub) {
       throw createError({
         statusCode: 400,
         statusMessage: ErrorMessage.INVALID_BODY,
@@ -25,39 +24,21 @@ export async function createPaymentCheckout(
     }
 
     // TODO: get product info from payload.productId
-
-    const sysUser = await db.query.sysUserTable.findFirst({
-      columns: {
-        id: true,
-        email: true,
-        phone: true,
-      },
-      where: eq(sysUserTable.email, payload.userEmail as string),
-    })
-
-    if (!sysUser) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: ErrorMessage.INVALID_CREDENTIALS,
-      })
-    }
-
     // TODO: what if the user has an existing order?
-
-    const amount = provider === 'payos' ? 10000 : 10000 * 100
+    const amount = provider === 'payos' ? 10000 : 10000 * 100 // VNPAY requires 2 extra zeros
     const date = new Date()
     const {
       userPayment,
       paymentProviderTransaction,
     } = await db.transaction(async (db) => {
       const userOrder = (await db.insert(userOrderTable).values({
-        user_id: sysUser.id,
+        user_id: payload.user.sub,
       }).returning())[0]
 
       const userPayment = (await db.insert(userPaymentTable).values({
         amount: amount.toString(), // TODO: get amount from product info
         status: PaymentStatus.PENDING,
-        user_id: sysUser.id,
+        user_id: payload.user.sub,
         order_id: userOrder.id,
         created_at: date,
       }).returning())[0]
@@ -68,7 +49,7 @@ export async function createPaymentCheckout(
         provider_transaction_status: PaymentStatus.PENDING,
         provider_transaction_info: 'no info',
         payment_id: userPayment.id,
-        user_id: sysUser.id,
+        user_id: payload.user.sub,
         created_at: date,
       }).returning())[0]
 
@@ -82,7 +63,8 @@ export async function createPaymentCheckout(
       case 'payos':
         return await createPayOSCheckout({
           date,
-          sysUser,
+          buyerEmail: payload.user.email as string,
+          buyerPhone: payload.user.phone_number as string,
           paymentProviderTransaction,
         })
       case 'vnpay':
@@ -101,6 +83,6 @@ export async function createPaymentCheckout(
     }
   }
   catch (error) {
-    console.error(error)
+    return error
   }
 }

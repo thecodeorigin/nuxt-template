@@ -2,12 +2,12 @@ export default defineEventHandler(async (event) => {
   try {
     const clientIP = getRequestIP(event)
     const { session } = await defineEventOptions(event, { auth: true })
-    const { productId } = await readBody(event)
+    const { productIdentifier } = await readBody(event)
 
     const paymentUrl = await createPaymentCheckout('vnpay', {
-      clientIP: clientIP || '',
-      userEmail: session.user.email,
-      productId,
+      clientIP,
+      productIdentifier,
+      user: session,
     })
 
     setResponseStatus(event, 200)

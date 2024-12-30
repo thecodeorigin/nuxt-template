@@ -210,6 +210,15 @@ export default defineNuxtConfig({
     '/auth/**': { prerender: false },
     '/api/search.json': { prerender: true },
     '/docs': { redirect: '/docs/getting-started' },
+    '/api/payments/**/callback': {
+      csurf: false,
+    },
+    '/api/payments/**/webhook': {
+      csurf: false,
+    },
+    '/api/payments/**/IPN': {
+      csurf: false,
+    },
   },
 
   colorMode: {

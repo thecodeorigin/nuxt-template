@@ -13,7 +13,8 @@ export const $api = $fetch.create({
     options.headers = {
       ...options.headers,
       ...useRequestHeaders(['cookie']) /** need this for calls from SSR: https://auth.sidebase.io/guide/authjs/server-side/session-access#session-access-and-route-protection */,
-      Authorization: `Bearer ${authStore.accessToken}`,
+      'Authorization': `Bearer ${authStore.accessToken}`,
+      'Csrf-Token': useCsrf().csrf,
     }
   },
   async onResponseError(error) {
