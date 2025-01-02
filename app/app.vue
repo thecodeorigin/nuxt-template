@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const config = useRuntimeConfig()
 const colorMode = useColorMode()
 
-const color = computed(() => colorMode.value === 'dark' ? '#111827' : 'white')
+const color = computed(() => colorMode.value === 'dark' ? config.public.theme.darkColor : config.public.theme.lightColor)
 
 useHead({
   meta: [

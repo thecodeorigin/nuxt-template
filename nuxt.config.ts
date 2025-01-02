@@ -134,8 +134,8 @@ export default defineNuxtConfig({
       theme: {
         appLogo: process.env.NUXT_PUBLIC_APP_LOGO || '/images/logo.svg',
         appName: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
-        primaryColor: process.env.NUXT_PUBLIC_THEME_PRIMARY_COLOR || '#666CFF',
-        primaryDarkenColor: process.env.NUXT_PUBLIC_THEME_PRIMARY_DARKEN_COLOR || '#5C61E6',
+        lightColor: process.env.NUXT_PUBLIC_THEME_LIGHT_COLOR || '#ffffff',
+        darkColor: process.env.NUXT_PUBLIC_THEME_DARK_COLOR || '#111827',
       },
 
       firebase: {

@@ -4,7 +4,7 @@ import { isInAppBrowser } from '@base/utils/detectBrowser'
 
 definePageMeta({
   layout: 'app',
-  public: true,
+  auth: true,
 })
 
 const authStore = useAuthStore()
