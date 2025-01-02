@@ -5,6 +5,9 @@ import { addPlugin, defineNuxtModule, installModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   async setup() {
+    if (!process.env.SENTRY_TOKEN || !process.env.SENTRY_DSN)
+      return
+
     const clientConfigFile = path.resolve(process.cwd(), './sentry.client.config.ts')
     const serverConfigFile = path.resolve(process.cwd(), './sentry.server.config.ts')
 
