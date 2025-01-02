@@ -54,7 +54,6 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/image',
     '@nuxt/ui',
-    '@nuxthq/studio',
     '@nuxtjs/device',
     '@nuxtjs/seo',
     '@nuxtjs/i18n',
