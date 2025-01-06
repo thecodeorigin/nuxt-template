@@ -7,6 +7,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!config.public.features.authorization)
     return
 
+  const authStore = useAuthStore()
+  const caslStore = useCaslStore()
+
+  if (authStore.currentUser) {
+    try {
+      await caslStore.fetchScopes()
+    }
+    catch {
+      notifyError({
+        content: 'Failed to fetch user scopes.',
+      })
+    }
+  }
+
   const { can } = useAbility()
 
   if (

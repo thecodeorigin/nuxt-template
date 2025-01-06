@@ -4,7 +4,7 @@ import { createMongoAbility } from '@casl/ability'
 export const useCaslStore = defineStore('casl', () => {
   const config = useRuntimeConfig()
 
-  const scopes = useState('scopes', () => [])
+  const scopes = useState<Array<{ action: string, subject: string }>>('scopes', () => [])
 
   function reactiveAbility<T extends AnyAbility>(ability: T) {
     if (Object.hasOwn(ability, 'possibleRulesFor')) {
@@ -38,7 +38,15 @@ export const useCaslStore = defineStore('casl', () => {
   )
 
   async function fetchScopes() {
-    scopes.value = await $api('/api/scopes')
+    const response = await $api('/api/scopes')
+
+    if (Array.isArray(response)) {
+      scopes.value = response.map((scope) => {
+        const [action, subject] = scope.split(':') as [string, string]
+
+        return { action, subject }
+      })
+    }
 
     ability.update(scopes.value)
 

@@ -2,8 +2,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (to.meta.public)
     return
 
-  const authStore = useAuthStore()
+  if (to.meta.auth) {
+    const authStore = useAuthStore()
 
-  if (to.meta.auth && !authStore.currentUser)
-    return authStore.signIn()
+    if (authStore.currentUser) {
+      try {
+        await authStore.fetchToken()
+      }
+      catch {
+        notifyError({
+          content: 'Failed to retrieve user token.',
+        })
+      }
+    }
+    else {
+      return authStore.signIn()
+    }
+  }
 })
