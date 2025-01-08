@@ -44,8 +44,6 @@ function validate(state: any): FormError[] {
   const errors = []
   if (!state.name)
     errors.push({ path: 'name', message: 'Please enter your name.' })
-  if (!state.email)
-    errors.push({ path: 'email', message: 'Please enter your email.' })
   if ((state.password_current && !state.password_new) || (!state.password_current && state.password_new))
     errors.push({ path: 'password', message: 'Please enter a valid password.' })
   return errors
@@ -67,10 +65,14 @@ function onFileClick() {
 }
 
 async function onSubmit(event: FormSubmitEvent<any>) {
-  // Do something with data
-  console.log(event.data)
+  try {
+    await authStore.updateProfile(event.data)
 
-  toast.add({ title: 'Profile updated', icon: 'i-heroicons-check-circle' })
+    toast.add({ title: 'Profile updated', icon: 'i-heroicons-check-circle' })
+  }
+  catch {
+    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'red' })
+  }
 }
 </script>
 
@@ -135,6 +137,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             autocomplete="off"
             icon="i-heroicons-envelope"
             size="md"
+            disabled
           />
         </UFormGroup>
 

@@ -10,12 +10,8 @@ export const $api = $fetch.create({
 
     options.baseURL = String(useRuntimeConfig().public.apiBaseUrl || '/api')
 
-    options.headers = {
-      ...options.headers,
-      ...useRequestHeaders(['cookie']) /** need this for calls from SSR: https://auth.sidebase.io/guide/authjs/server-side/session-access#session-access-and-route-protection */,
-      'Authorization': `Bearer ${authStore.accessToken}`,
-      'Csrf-Token': useCsrf().csrf,
-    }
+    options.headers.set('Authorization', `Bearer ${authStore.accessToken}`)
+    options.headers.set('Csrf-Token', useCsrf().csrf)
   },
   async onResponseError(error) {
     const authStore = useAuthStore()

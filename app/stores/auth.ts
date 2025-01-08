@@ -24,6 +24,13 @@ export const useAuthStore = defineStore('auth', () => {
     return navigateTo({ path: '/sign-out' }, { external: true })
   }
 
+  function updateProfile(payload: Partial<{ username: string, name: string, avatar: string }>) {
+    return $api('/api/me', {
+      method: 'PATCH',
+      body: payload,
+    })
+  }
+
   return {
     accessToken,
     currentUser,
@@ -31,5 +38,6 @@ export const useAuthStore = defineStore('auth', () => {
     signIn,
     signOut,
     fetchToken,
+    updateProfile,
   }
 })
