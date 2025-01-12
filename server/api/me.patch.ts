@@ -2,8 +2,7 @@ import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    if (!process.env.LOGTO_ENDPOINT)
-      throw new Error('LOGTO_ENDPOINT is not defined')
+    await defineEventOptions(event, { auth: true })
 
     const client = useLogtoClient()
 
