@@ -4,15 +4,13 @@ const { isHelpSlideoverOpen } = useDashboard()
 
 const links = computed(() => createRouteTree(router.getRoutes()))
 
-const footerLinks = [{
-  label: 'Invite people',
-  icon: 'i-heroicons-plus',
-  to: '/app/settings/members',
-}, {
-  label: 'Help & Support',
-  icon: 'i-heroicons-question-mark-circle',
-  click: () => isHelpSlideoverOpen.value = true,
-}]
+const footerLinks = [
+  {
+    label: 'Help & Support',
+    icon: 'i-heroicons-question-mark-circle',
+    click: () => isHelpSlideoverOpen.value = true,
+  },
+]
 
 const groups = [{
   key: 'links',
