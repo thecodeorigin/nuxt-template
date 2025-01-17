@@ -7,7 +7,7 @@ export function parseError(error: any) {
 
     return createError({
       statusCode: 400,
-      statusMessage: ErrorMessage.BAD_REQUEST,
+      statusMessage: _error.message,
       data: pick(_error, ['code', 'table_name', 'constraint_name', 'detail']),
     })
   }
