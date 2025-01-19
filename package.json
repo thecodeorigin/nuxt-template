@@ -42,6 +42,7 @@
     "db:start": "docker compose up -d",
     "db:stop": "docker-compose down",
     "db:reset": "pnpm db:stop && pnpm db:clear && pnpm db:start --force-recreate",
+    "db:seed": "jiti ./server/db/seeds/index.ts",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile"
   },

@@ -9,10 +9,10 @@ export default defineEventHandler(async (event) => {
     const queryRestrict = { user_id: userId }
     const { updateNotificationById } = useNotification(queryRestrict)
 
-    const body = await readValidatedBody(event, createInsertSchema(sysNotificationTable).partial().parse)
+    const body = await readBody(event)
 
     if (body && body.read_at) {
-      body.read_at = new Date(body.read_at)
+      body.read_at = new Date()
     }
 
     const data = await updateNotificationById(notificationUId, body)
