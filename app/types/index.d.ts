@@ -29,11 +29,12 @@ export interface Member {
 }
 
 export interface Notification {
-  id: number
-  unread?: boolean
-  sender: User
-  body: string
-  date: string
+  id: string
+  created_at: string
+  title: string
+  message: string
+  read_at?: string | null
+  user_id: string
 }
 
 export type Period = 'daily' | 'weekly' | 'monthly'
