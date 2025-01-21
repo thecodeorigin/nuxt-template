@@ -4,10 +4,11 @@ import type { Notification } from '@base/types'
 interface CountNotifications {
   total: number
 }
-const authStore = useAuthStore()
-const userId = computed(() => authStore.currentUser?.sub || '')
 
 export const useNotificationStore = defineStore('notification', () => {
+  const authStore = useAuthStore()
+  const userId = computed(() => authStore.currentUser?.sub || '')
+
   function fetchNotifications(query: Partial<ParsedFilterQuery>) {
     return $api<Notification[]>(`/api/users/${userId.value}/notifications`, {
       query,
