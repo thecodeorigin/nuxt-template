@@ -2,10 +2,6 @@
 import { formatTimeAgo, useAsyncState, useDebounceFn, useInfiniteScroll } from '@vueuse/core'
 import type { Notification } from '@base/types'
 
-definePageMeta({
-  client: true,
-})
-
 const { isNotificationsSlideoverOpen, hasUnreadNotification } = useDashboard()
 const notificationStore = useNotificationStore()
 const notificationQuery = ref({
