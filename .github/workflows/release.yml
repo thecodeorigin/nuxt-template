@@ -19,12 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Corepack
-        shell: bash
-        run: corepack enable
-
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
+          version: 10.2.1
           node-version: 20
           cache: 'pnpm'
 
