@@ -1,12 +1,12 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.9.9",
+  "version": "1.9.10",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/",
-    "access": "restricted"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
-  "packageManager": "pnpm@9.12.1",
+  "packageManager": "pnpm@10.2.1",
   "author": "thecodeorigin <contact@thecodeorigin.com>",
   "homepage": "https://github.com/thecodeorigin/nuxt-template",
   "repository": {
@@ -36,6 +36,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "prepare": "jiti ./scripts/prepare.ts",
+    "start": "node ./.output/server/index.mjs",
     "test": "vitest run",
     "cleanup": "rimraf .nuxt .output dist node_modules areas",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",

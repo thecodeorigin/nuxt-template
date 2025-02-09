@@ -6,8 +6,7 @@ on:
       - main
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
 jobs:
   release:
@@ -28,8 +27,6 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@thecodeorigin"
 
       - name: Install dependencies
         run: pnpm install
