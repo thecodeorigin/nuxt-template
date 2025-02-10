@@ -20,7 +20,7 @@ const groups = [{
 
 const breadcrumbs = useBreadcrumbItems()
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+const { isNotificationsSlideoverOpen, hasUnreadNotification } = useDashboard()
 
 const items = [
   [
@@ -93,6 +93,7 @@ const items = [
               >
                 <UChip
                   color="red"
+                  :show="hasUnreadNotification"
                   inset
                 >
                   <UIcon

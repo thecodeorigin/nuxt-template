@@ -10,7 +10,7 @@ const notificationDefaultOptions: NotificationOptions = {
 }
 
 function getToast() {
-  if (import.meta.client)
+  if (import.meta.server)
     return null
 
   const { $toast } = useNuxtApp()
