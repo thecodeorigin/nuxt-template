@@ -4,8 +4,24 @@ import type { FormError, FormSubmitEvent } from '#ui/types'
 definePageMeta({
   name: 'settings-index',
   sidebar: {
-    label: 'General',
+    order: 9999,
+    label: 'Settings',
     exact: true,
+    icon: 'i-heroicons-cog',
+    tooltip: {
+      text: 'Settings',
+      shortcuts: ['G', 'S'],
+    },
+    children: [
+      {
+        label: 'General',
+        to: '/app/settings',
+      },
+      {
+        label: 'Subscription',
+        to: '/app/settings/subscription',
+      }
+    ]
   },
 })
 
