@@ -6,7 +6,7 @@ export async function getStripeCustomerByEmail(email: string) {
   return tryWithCache(
     getStorageStripeKey(`customer:${email}`),
     async () => {
-      const { data: customers } = await stripeAdmin.customers.list({
+      const { data: customers } = await getStripeAdmin().customers.list({
         email,
       })
 
@@ -22,7 +22,7 @@ export function getStripeCustomerSubscriptions(customerUId: string) {
   return tryWithCache(
     getStorageStripeKey(`customer:${customerUId}:subscriptions`),
     async () => {
-      const response = await stripeAdmin.subscriptions.list({
+      const response = await getStripeAdmin().subscriptions.list({
         customer: customerUId,
         expand: [],
       })
@@ -37,7 +37,7 @@ export function createStripeCustomer(payload: {
   phone?: string
   name?: string
 }) {
-  return stripeAdmin.customers.create({
+  return getStripeAdmin().customers.create({
     email: payload.email,
     phone: payload.phone,
     name: payload.name,
@@ -80,7 +80,7 @@ export async function createStripeCustomerOnSignup(email: string) {
 }
 
 export async function updateStripeCustomer(customerUId: string, customer: Stripe.CustomerUpdateParams) {
-  const response = await stripeAdmin.customers.update(customerUId, customer)
+  const response = await getStripeAdmin().customers.update(customerUId, customer)
 
   clearCache(getStorageStripeKey(`customer:${response.email}`))
 
@@ -90,5 +90,5 @@ export async function updateStripeCustomer(customerUId: string, customer: Stripe
 export function upsertCustomer(customer: Stripe.CustomerCreateParams) {
   clearCache(getStorageStripeKey(`customer:${customer.email}`))
 
-  return stripeAdmin.customers.create(customer)
+  return getStripeAdmin().customers.create(customer)
 }

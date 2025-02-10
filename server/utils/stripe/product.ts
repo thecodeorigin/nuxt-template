@@ -1,7 +1,7 @@
 export function getStripeProduct(productUId: string) {
   return tryWithCache(
     getStorageStripeKey(`product:${productUId}`),
-    () => stripeAdmin.products.retrieve(productUId),
+    () => getStripeAdmin().products.retrieve(productUId),
   )
 }
 
@@ -9,7 +9,7 @@ export function getStripeAllProducts() {
   return tryWithCache(
     getStorageStripeKey(`product:all`),
     async () => {
-      const response = await stripeAdmin.products.search({
+      const response = await getStripeAdmin().products.search({
         query: `metadata[\'lookup_key\']:\'${process.env.STRIPE_PRODUCT_LOOKUP_KEY}\'`,
       })
 
@@ -23,7 +23,7 @@ export function createStripeProduct(payload: {
   description: string
   features: string[]
 }) {
-  return stripeAdmin.products.create({
+  return getStripeAdmin().products.create({
     name: payload.name,
     metadata: {
       lookup_key: process.env.STRIPE_PRODUCT_LOOKUP_KEY!,
@@ -40,7 +40,7 @@ export function updateStripeProduct(productUId: string, payload: {
 }) {
   clearCache(getStorageStripeKey(`product:${productUId}`))
 
-  return stripeAdmin.products.update(productUId, {
+  return getStripeAdmin().products.update(productUId, {
     name: payload.name,
     description: payload.description,
     marketing_features: payload.features.map(feature => ({ name: feature })),
@@ -48,5 +48,5 @@ export function updateStripeProduct(productUId: string, payload: {
 }
 
 export function deleteStripeProduct(productUId: string) {
-  return stripeAdmin.products.del(productUId)
+  return getStripeAdmin().products.del(productUId)
 }

@@ -12,4 +12,6 @@ export * from './product'
 
 export * from './subscription'
 
-export const stripeAdmin = new Stripe(process.env.STRIPE_SECRET_KEY!)
+export function getStripeAdmin() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+}

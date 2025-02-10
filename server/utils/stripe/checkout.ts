@@ -18,7 +18,7 @@ function calculateTrialEndUnixTimestamp(trialPeriodDays?: number | null) {
 export async function createStripeCheckoutSession(customerUId: string, priceId: string, redirectPath: string) {
   const price = await getStripePrice(priceId)
 
-  return stripeAdmin.checkout.sessions.create({
+  return getStripeAdmin().checkout.sessions.create({
     mode: price.type === 'recurring' ? 'subscription' : 'payment',
     subscription_data: price.type === 'recurring'
       ? {

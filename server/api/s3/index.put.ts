@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }).parse)
 
   const uploadUrl = await getSignedUrl(
-    s3,
+    getS3Client(),
     new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET,
       Key: body.filename as string,
