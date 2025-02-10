@@ -148,6 +148,10 @@ export default defineNuxtConfig({
         tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE),
         replaysOnErrorSampleRate: Number(process.env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE),
       },
+
+      stripe: {
+        customerPortalURL: process.env.STRIPE_CUSTOMER_PORTAL,
+      },
     },
   },
 
