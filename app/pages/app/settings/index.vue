@@ -18,6 +18,10 @@ definePageMeta({
         to: '/app/settings',
       },
       {
+        label: 'Credit',
+        to: '/app/settings/credit',
+      },
+      {
         label: 'Subscription',
         to: '/app/settings/subscription',
       },
