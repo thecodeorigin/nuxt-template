@@ -13,6 +13,22 @@ export function useLogtoClient() {
   return (event.context?.logtoClient as LogtoClient) || null
 }
 
+export async function updateLogtoUserCustomData(userId: string, customData: Record<string, any>) {
+  const { access_token: accessToken } = await fetchM2MAccessToken()
+  const response = await $fetch(`${process.env.LOGTO_ADMIN_ENDPOINT!}/api/users/${userId}/custom-data`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: {
+      customData,
+    },
+  })
+
+  return response
+}
+
 export async function fetchM2MAccessToken() {
   const response = await $fetch<{ access_token: string }>(`${process.env.LOGTO_ADMIN_ENDPOINT!}/oidc/token`, {
     method: 'POST',
@@ -25,7 +41,7 @@ export async function fetchM2MAccessToken() {
     },
     body: new URLSearchParams({
       grant_type: 'client_credentials',
-      resource: `${process.env.LOGTO_ADMIN_ENDPOINT!}/api`,
+      resource: 'https://default.logto.app/api',
       scope: 'all',
     }).toString(),
   })

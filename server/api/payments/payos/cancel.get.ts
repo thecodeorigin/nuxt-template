@@ -34,10 +34,12 @@ export default defineEventHandler(async (event) => {
     }
     const runtimeConfig = useRuntimeConfig()
     // TODO: Do something with the cancel
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans`, 200)
+    const queryString = 'paymentStatus=cancelled'
+    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
   }
   catch {
     const runtimeConfig = useRuntimeConfig()
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans`, 200)
+    const queryString = 'paymentStatus=cancelled'
+    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
   }
 })
