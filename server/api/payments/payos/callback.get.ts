@@ -4,6 +4,9 @@ import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from
 export default defineEventHandler(async (event) => {
   try {
     const { id } = getQuery(event)
+    const { session } = await defineEventOptions(event, {
+      auth: true,
+    })
     const runtimeConfig = useRuntimeConfig()
 
     if (!id)
@@ -39,11 +42,19 @@ export default defineEventHandler(async (event) => {
       }).where(eq(userPaymentTable.id, user_payments.id))
     })
 
+    if (transactions[0].description.includes('credit') && transactionStatus === PaymentStatus.RESOLVED) {
+      const [_, amount] = payment_provider_transactions.provider_transaction_info.split(':')
+      await addCreditToUser(session, Number.parseInt(amount))
+    }
+
     // TODO: Do something with the success
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans`, 200)
+    const queryString = transactionStatus === PaymentStatus.RESOLVED ? 'paymentStatus=success' : 'paymentStatus=fail'
+    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
   }
   catch {
     const runtimeConfig = useRuntimeConfig()
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans`, 200)
+    const queryString = 'paymentStatus=fail'
+
+    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
   }
 })

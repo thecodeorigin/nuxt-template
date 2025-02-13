@@ -4,6 +4,7 @@ import PayOS from '@payos/node'
 
 interface payOSCheckoutProps {
   date: Date
+  amount: number
   buyerEmail?: string
   buyerPhone?: string
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
@@ -17,6 +18,7 @@ export const payOSAdmin = new PayOS(
 
 export async function createPayOSCheckout({
   date,
+  amount,
   buyerEmail,
   buyerPhone,
   paymentProviderTransaction,
@@ -24,7 +26,7 @@ export async function createPayOSCheckout({
   const runtimeConfig = useRuntimeConfig()
   const { checkoutUrl } = await payOSAdmin.createPaymentLink({
     orderCode: date.getTime(),
-    amount: 2000,
+    amount,
     description: paymentProviderTransaction.provider_transaction_info,
     cancelUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/payos/cancel`,
     returnUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/payos/callback`,
