@@ -30,7 +30,11 @@ function convertToSQLDateWithTimezone(input: string): Date {
 
 export default defineEventHandler(async (event) => {
   try {
-    const { isSuccess, isVerified, vnp_TxnRef, vnp_TransactionNo, vnp_Amount, vnp_PayDate }: VerifyIpnCall = vnpayAdmin.verifyIpnCall(getQuery(event))
+    const { session } = await defineEventOptions(event, {
+      auth: true,
+    })
+
+    const { isSuccess, isVerified, vnp_OrderInfo, vnp_TxnRef, vnp_TransactionNo, vnp_Amount, vnp_PayDate }: VerifyIpnCall = vnpayAdmin.verifyIpnCall(getQuery(event))
 
     if (!isVerified)
       throw new Error('IpnFailChecksum')
@@ -64,10 +68,16 @@ export default defineEventHandler(async (event) => {
       }).where(eq(userPaymentTable.id, user_payments.id))
     })
 
+    // CHECK AND HANDLE TOP UP PAYMENT
+    if (isSuccess && vnp_OrderInfo.includes('credit')) {
+      const [_, amount] = payment_provider_transactions.provider_transaction_info.split(':')
+      await addCreditToUser(session, Number.parseInt(amount))
+    }
+
     const runtimeConfig = useRuntimeConfig()
     // TODO: Do something with the success
-    const queryString = stringify(IpnSuccess)
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans?${queryString}`, 200)
+    const queryString = isSuccess ? 'paymentStatus=success' : 'paymentStatus=fail'
+    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
   }
   catch (error: any) {
     const runtimeConfig = useRuntimeConfig()
@@ -90,6 +100,6 @@ export default defineEventHandler(async (event) => {
     }
     const queryString = stringify(errResponse)
     // TODO: Do something with the error
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans?${queryString}`, 200)
+    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
   }
 })

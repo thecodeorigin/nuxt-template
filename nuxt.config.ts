@@ -97,6 +97,7 @@ export default defineNuxtConfig({
         UserScope.Roles,
         UserScope.Organizations,
         UserScope.OrganizationRoles,
+        UserScope.CustomData,
       ],
     },
 
@@ -119,6 +120,7 @@ export default defineNuxtConfig({
       appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+      appPaymentRedirect: process.env.NUXT_PUBLIC_APP_PAYMENT_REDIRECT || '/app/settings/credit',
 
       features: {
         credit: Boolean(process.env.FEATURE_CREDIT),

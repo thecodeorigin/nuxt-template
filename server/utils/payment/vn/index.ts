@@ -1,5 +1,6 @@
-import { PaymentStatus, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
+import { PaymentStatus, creditPackageTable, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
 import type { UserInfoResponse } from '@logto/nuxt'
+import { eq } from 'drizzle-orm'
 import { createPayOSCheckout } from './payos'
 import { createVNPayCheckout } from './vnpay'
 
@@ -22,9 +23,37 @@ export async function createPaymentCheckout(
     })
   }
 
-  // TODO: get product info from payload.productId
+  const [productType, productId] = payload.productIdentifier.split(':')
+
+  let productInfo: any
+
+  switch (productType) {
+    case 'credit':
+      productInfo = await db.query.creditPackageTable.findFirst({
+        where: eq(creditPackageTable.id, productId),
+        columns: {
+          id: true,
+          price: true,
+          amount: true,
+        },
+      })
+      break
+
+    default:
+      throw createError({
+        statusCode: 400,
+        statusMessage: ErrorMessage.INVALID_BODY,
+      })
+  }
+
+  if (!productInfo) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: ErrorMessage.BAD_REQUEST,
+    })
+  }
+
   // TODO: what if the user has an existing order?
-  const amount = provider === 'payos' ? 10000 : 10000 * 100 // VNPAY requires 2 extra zeros
   const date = new Date()
   const {
     userPayment,
@@ -35,7 +64,7 @@ export async function createPaymentCheckout(
     }).returning())[0]
 
     const userPayment = (await db.insert(userPaymentTable).values({
-      amount: amount.toString(), // TODO: get amount from product info
+      amount: productInfo.price,
       status: PaymentStatus.PENDING,
       user_id: payload.user.sub,
       order_id: userOrder.id,
@@ -46,7 +75,7 @@ export async function createPaymentCheckout(
       provider,
       provider_transaction_id: date.getTime().toString(),
       provider_transaction_status: PaymentStatus.PENDING,
-      provider_transaction_info: 'no info',
+      provider_transaction_info: `${productType}:${productInfo.amount}`,
       payment_id: userPayment.id,
       user_id: payload.user.sub,
       created_at: date,
@@ -62,6 +91,7 @@ export async function createPaymentCheckout(
     case 'payos':
       return await createPayOSCheckout({
         date,
+        amount: Number.parseInt(userPayment.amount),
         buyerEmail: payload.user.email as string,
         buyerPhone: payload.user.phone_number as string,
         paymentProviderTransaction,
