@@ -20,8 +20,8 @@ definePageMeta({
       {
         label: 'Subscription',
         to: '/app/settings/subscription',
-      }
-    ]
+      },
+    ],
   },
 })
 

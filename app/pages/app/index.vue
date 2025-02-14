@@ -8,6 +8,7 @@ definePageMeta({
       text: 'Home',
       shortcuts: ['G', 'H'],
     },
+    exact: true,
   },
 })
 const authStore = useAuthStore()
