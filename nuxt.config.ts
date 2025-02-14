@@ -151,6 +151,7 @@ export default defineNuxtConfig({
 
       stripe: {
         customerPortalURL: process.env.STRIPE_CUSTOMER_PORTAL,
+        productId: process.env.STRIPE_PRODUCT_ID,
       },
     },
   },

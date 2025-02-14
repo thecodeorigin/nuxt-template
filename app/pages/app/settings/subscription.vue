@@ -46,10 +46,12 @@ const billingCycleProgress = computed(() => {
         <p class="text-sm text-gray-500 mt-2">
           Manage your subscription plan and billing cycle
         </p>
-        <UButton class="mt-2 py-1 text-xs" color="white" variant="solid">
-          Pricing
-          <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
-        </UButton>
+        <NuxtLink to="/app/pricing">
+          <UButton class="mt-2 py-1 text-xs" color="white" variant="solid">
+            Pricing
+            <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
+          </UButton>
+        </NuxtLink>
       </div>
       <div class="col-span-2">
         <p>
@@ -77,7 +79,7 @@ const billingCycleProgress = computed(() => {
               }).format((subscription.items.data[0]?.price.unit_amount || 0) / 100) }} Per Month
             </strong>
 
-            <UBadge label="Popular" />
+            <UBadge v-if="subscription?.metadata.hightlight" label="Popular" />
             <p>
               Standard plan for small to medium businesses
             </p>
