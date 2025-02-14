@@ -16,32 +16,14 @@ useSeoMeta({
 })
 
 defineOgImageComponent('Saas')
-
-const isYearly = ref(false)
 </script>
 
 <template>
   <div v-if="page">
-    <UPageHero v-bind="page.hero">
-      <template #links>
-        <UPricingToggle
-          v-model="isYearly"
-          class="w-48"
-        />
-      </template>
-    </UPageHero>
-
-    <UContainer>
-      <UPricingGrid>
-        <UPricingCard
-          v-for="(plan, index) in page.plans"
-          :key="index"
-          v-bind="plan"
-          :price="isYearly ? plan.price.year : plan.price.month"
-          :cycle="isYearly ? '/year' : '/month'"
-        />
-      </UPricingGrid>
-    </UContainer>
+    <PricingPlan
+      :title="page.hero.title"
+      :description="page.hero.description"
+    />
 
     <ULandingSection>
       <ULandingLogos>
