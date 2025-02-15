@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
     if (admin.apps.length === 0) {
       admin.initializeApp({
-        credential: admin.credential.cert(service as admin.ServiceAccount),
+        credential: admin.credential.cert(service),
       })
     }
 
