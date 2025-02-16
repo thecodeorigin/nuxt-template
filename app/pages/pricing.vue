@@ -16,6 +16,11 @@ useSeoMeta({
 })
 
 defineOgImageComponent('Saas')
+
+const stripeStore = useStripeStore()
+const subscriptionStore = useSubscriptionStore()
+subscriptionStore.fetchSubscriptions()
+stripeStore.fetchStripeProductPrices()
 </script>
 
 <template>
@@ -23,6 +28,7 @@ defineOgImageComponent('Saas')
     <PricingPlan
       :title="page.hero.title"
       :description="page.hero.description"
+      :stripe-prices="stripeStore.stripePrices"
     />
 
     <ULandingSection>

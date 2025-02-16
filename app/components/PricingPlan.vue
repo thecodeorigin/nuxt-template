@@ -1,24 +1,23 @@
 <script setup lang="ts">
+import { groupBy } from 'lodash-es'
+import type Stripe from 'stripe'
 import type { StripePricingMetadata } from '~/utils/types/stripe'
 
 interface Props {
   title: string
   description: string
+  stripePrices: Stripe.Price[]
 }
 
 const props = defineProps<Props>()
-
-const stripeStore = useStripeStore()
 const subscriptionStore = useSubscriptionStore()
 const runtimeConfig = useRuntimeConfig()
-subscriptionStore.fetchSubscriptions()
-stripeStore.fetchStripeProductPrices()
 
 const pricingComputed = computed(() => {
-  if (!stripeStore.stripePrices)
+  if (!props.stripePrices)
     return []
 
-  const newArrayOfPrices = Object.values(stripeStore.stripePrices)?.map((price) => {
+  const newArrayOfPrices = Object.values(props.stripePrices)?.map((price) => {
     const isCurrentPlan = subscriptionStore.subscriptions.some(sub => sub.items.data[0]?.plan.id === price.id)
     return {
       ...price,
@@ -26,9 +25,14 @@ const pricingComputed = computed(() => {
       features: (price.metadata as any as StripePricingMetadata)?.marketing_features ? JSON.parse(price.metadata?.marketing_features!.replace(/'/g, '"')) : [], // set metadata in stripe pricing like marketing_features: "['feature1', 'feature2']"
     }
   }).sort((a, b) => (a.unit_amount ?? 0) - (b.unit_amount ?? 0))
-  return newArrayOfPrices
+  return groupBy(newArrayOfPrices, 'recurring.interval')
 })
+
 const isYearly = ref(false)
+
+const pricingByInterval = computed(() => {
+  return isYearly.value ? pricingComputed.value.year : pricingComputed.value.month
+})
 
 async function handleSubscribe(priceId: string, subscribed = false) {
   if (subscribed) {
@@ -56,7 +60,7 @@ async function handleSubscribe(priceId: string, subscribed = false) {
     <UContainer>
       <UPricingGrid>
         <template
-          v-for="(plan, index) in pricingComputed"
+          v-for="(plan, index) in pricingByInterval"
           :key="index"
         >
           <UPricingCard

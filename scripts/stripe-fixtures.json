@@ -8,8 +8,8 @@
       "path": "/v1/products",
       "method": "post",
       "params": {
-        "name": "Nuxt Template new",
-        "description": "The essentials for when you're just getting started.",
+        "name": "Nuxt Template New",
+        "description": "Subscription plans for different user needs.",
         "metadata": {
           "lookup_key": "${.env:STRIPE_PRODUCT_LOOKUP_KEY}"
         }
@@ -27,9 +27,9 @@
           "interval": "month"
         },
         "metadata": {
-          "projects_limit": 100,
+          "projects_limit": 50,
           "name": "Free",
-          "description": "The essentials for when you're just getting started.",
+          "description": "Best for individuals who want to explore basic features.",
           "marketing_features": "['5 Transcript daily', '60 Minutes Uploads', 'Lower Priority']"
         },
         "tax_behavior": "exclusive",
@@ -48,10 +48,9 @@
           "interval": "month"
         },
         "metadata": {
-          "projects_limit": 1000,
+          "projects_limit": 500,
           "name": "Basic",
-          "highlight": true,
-          "description": "The essentials for when you're just getting started.",
+          "description": "Great for small teams needing enhanced features.",
           "marketing_features": "['10 Transcript daily', '120 Minutes Uploads', 'Higher Priority']"
         },
         "tax_behavior": "exclusive",
@@ -70,10 +69,73 @@
           "interval": "month"
         },
         "metadata": {
-          "projects_limit": 10000,
+          "projects_limit": 5000,
           "name": "Premium",
-          "description": "The essentials for when you're just getting started.",
+          "description": "Ideal for businesses requiring top-tier support and resources.",
           "marketing_features": "['15 Transcript daily', '180 Minutes Uploads', 'Highest Priority']"
+        },
+        "tax_behavior": "exclusive",
+        "transfer_lookup_key": true
+      }
+    },
+    {
+      "name": "nuxt_template_yearly_price_basic",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${nuxt_template_product:id}",
+        "unit_amount": 10000,
+        "recurring": {
+          "interval": "year"
+        },
+        "metadata": {
+          "projects_limit": 500,
+          "name": "Basic",
+          "description": "Cost-effective option for small teams over a year.",
+          "marketing_features": "['10 Transcript daily', '120 Minutes Uploads', 'Higher Priority']"
+        },
+        "tax_behavior": "exclusive",
+        "transfer_lookup_key": true
+      }
+    },
+    {
+      "name": "nuxt_template_yearly_price_premium",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${nuxt_template_product:id}",
+        "unit_amount": 20000,
+        "recurring": {
+          "interval": "year"
+        },
+        "metadata": {
+          "projects_limit": 5000,
+          "name": "Premium",
+          "description": "Annual plan for businesses with advanced needs.",
+          "marketing_features": "['15 Transcript daily', '180 Minutes Uploads', 'Highest Priority']"
+        },
+        "tax_behavior": "exclusive",
+        "transfer_lookup_key": true
+      }
+    },
+    {
+      "name": "nuxt_template_yearly_price_pro",
+      "path": "/v1/prices",
+      "method": "post",
+      "params": {
+        "currency": "usd",
+        "product": "${nuxt_template_product:id}",
+        "unit_amount": 30000,
+        "recurring": {
+          "interval": "year"
+        },
+        "metadata": {
+          "projects_limit": 10000,
+          "name": "Pro",
+          "description": "Best for enterprises needing unlimited access and features.",
+          "marketing_features": "['Unlimited Transcripts', '500 Minutes Uploads', 'Priority Support']"
         },
         "tax_behavior": "exclusive",
         "transfer_lookup_key": true
