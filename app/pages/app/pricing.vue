@@ -7,6 +7,13 @@ definePageMeta({
     exact: true,
   },
 })
+
+const stripeStore = useStripeStore()
+const subscriptionStore = useSubscriptionStore()
+subscriptionStore.fetchSubscriptions()
+stripeStore.fetchStripeProductPrices()
+// await useAsyncData('stripePrices', () => stripeStore.fetchStripeProductPrices(), { default: () => [] })
+// await useAsyncData('subscriptions', () => subscriptionStore.fetchSubscriptions(), { default: () => [] })
 </script>
 
 <template>
@@ -16,6 +23,7 @@ definePageMeta({
       <PricingPlan
         title="A plan for every need"
         description="Our plans are designed to meet the requirements of both beginners and players. Get the right plan that suits you."
+        :stripe-prices="stripeStore.stripePrices"
       />
     </div>
   </UDashboardPanelContent>
