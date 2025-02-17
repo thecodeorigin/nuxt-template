@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { formatTimeAgo, useAsyncState, useDebounceFn, useInfiniteScroll } from '@vueuse/core'
-import type { Notification } from '@base/types'
+import { formatTimeAgo, useInfiniteScroll } from '@vueuse/core'
+import type { CountNotifications, Notification } from '@base/types'
 
 const { isNotificationsSlideoverOpen, hasUnreadNotification } = useDashboard()
 const notificationStore = useNotificationStore()
@@ -15,7 +15,7 @@ const notifications = ref<Notification[]>([])
 const container = useTemplateRef('container')
 const isMax = ref(false)
 
-const { isLoading, execute } = useAsyncState(
+const { status, execute } = useAsyncData(
   async () => {
     const data = await notificationStore.fetchNotifications(notificationQuery.value)
     if (data.length < notificationQuery.value.limit) {
@@ -24,21 +24,28 @@ const { isLoading, execute } = useAsyncState(
     notifications.value.push(...data)
     return data
   },
-  [] as Notification[],
+  { immediate: true },
 )
 
-const { state: countUnreadNotifications, execute: fetchUnreadNotifications } = useAsyncState(
+const { data: countUnreadNotifications, execute: fetchUnreadNotifications } = await useAsyncData<CountNotifications>(
   async () => {
     const data = await notificationStore.countUnreadNotifications()
     return data
   },
-  { total: 0 } as { total: number },
+  {
+    immediate: false,
+    default() {
+      return {
+        total: 0,
+      }
+    },
+  },
 )
 
 useInfiniteScroll(
   container,
   async () => {
-    if (isMax.value || isLoading.value)
+    if (isMax.value || status.value === 'pending')
       return
     notificationQuery.value.page++
     await execute()
@@ -100,7 +107,6 @@ async function markAllRead() {
       <div
         v-for="notification in notifications"
         :key="notification.id"
-        :to="`/inbox?id=${notification.id}`"
         class="p-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer flex items-center gap-3 relative"
         @click="handleNotificationClick(notification)"
       >
@@ -124,7 +130,7 @@ async function markAllRead() {
         </div>
       </div>
       <div
-        v-if="isLoading"
+        v-if="status === 'pending'"
         class="p-3 rounded-md flex items-center justify-center"
       >
         <BaseIcon name="IconSpinner" class="w-8 h-8 text-primary" />
