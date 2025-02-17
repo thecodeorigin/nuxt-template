@@ -37,6 +37,10 @@ export interface Notification {
   user_id: string
 }
 
+export interface CountNotifications {
+  total: number
+}
+
 export type Period = 'daily' | 'weekly' | 'monthly'
 
 export interface Range {

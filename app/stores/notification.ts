@@ -1,9 +1,5 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
-import type { Notification } from '@base/types'
-
-interface CountNotifications {
-  total: number
-}
+import type { CountNotifications, Notification } from '@base/types'
 
 export const useNotificationStore = defineStore('notification', () => {
   const authStore = useAuthStore()

@@ -1,47 +1,42 @@
-import type { ToastOptions } from 'vue-toastification/dist/types/types'
-import defu from 'defu'
-
-interface NotificationOptions extends Omit<ToastOptions, 'type'> {
-  content?: string
+interface NotificationOptions {
+  content: string
 }
-
-const notificationDefaultOptions: NotificationOptions = {
-  content: '',
-}
-
-function getToast() {
-  if (import.meta.server)
-    return null
-
-  const { $toast } = useNuxtApp()
-
-  return $toast
-}
-
 export function notifyError(options: NotificationOptions) {
-  getToast()?.error(
-    options.content || '',
-    defu(options, notificationDefaultOptions),
-  )
+  const toast = useToast()
+
+  toast.add({
+    title: 'Error',
+    description: options.content,
+    color: 'red',
+  })
 }
 
 export function notifySuccess(options: NotificationOptions) {
-  getToast()?.success(
-    options.content || '',
-    defu(options, notificationDefaultOptions),
-  )
+  const toast = useToast()
+
+  toast.add({
+    title: 'Success',
+    description: options.content,
+    color: 'green',
+  })
 }
 
 export function notifyWarning(options: NotificationOptions) {
-  getToast()?.warning(
-    options.content || '',
-    defu(options, notificationDefaultOptions),
-  )
+  const toast = useToast()
+
+  toast.add({
+    title: 'Warning',
+    description: options.content,
+    color: 'orange',
+  })
 }
 
 export function notifyInfo(options: NotificationOptions) {
-  getToast()?.info(
-    options.content || '',
-    defu(options, notificationDefaultOptions),
-  )
+  const toast = useToast()
+
+  toast.add({
+    title: 'Infor',
+    description: options.content,
+    color: 'blue',
+  })
 }
