@@ -1,13 +1,15 @@
 import { eq } from 'drizzle-orm'
 import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
+import { withQuery, joinURL } from 'ufo'
 
 export default defineEventHandler(async (event) => {
+  const runtimeConfig = useRuntimeConfig()
+
   try {
     const { id } = getQuery(event)
     const { session } = await defineEventOptions(event, {
       auth: true,
     })
-    const runtimeConfig = useRuntimeConfig()
 
     if (!id)
       throw new Error('Invalid Params')
@@ -48,13 +50,30 @@ export default defineEventHandler(async (event) => {
     }
 
     // TODO: Do something with the success
-    const queryString = transactionStatus === PaymentStatus.RESOLVED ? 'paymentStatus=success' : 'paymentStatus=fail'
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
+
+    return sendRedirect(
+      event,
+      withQuery(
+        joinURL(
+          runtimeConfig.public.appBaseUrl,
+          runtimeConfig.public.appPaymentRedirect
+        ),
+        { paymentStatus: transactionStatus === PaymentStatus.RESOLVED ? 'success' : 'fail' }
+      ),
+      200,
+    )
   }
   catch {
-    const runtimeConfig = useRuntimeConfig()
-    const queryString = 'paymentStatus=fail'
-
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
+    return sendRedirect(
+      event,
+      withQuery(
+        joinURL(
+          runtimeConfig.public.appBaseUrl,
+          runtimeConfig.public.appPaymentRedirect
+        ),
+        { paymentStatus: 'fail' }
+      ),
+      200,
+    )
   }
 })

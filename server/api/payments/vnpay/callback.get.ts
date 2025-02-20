@@ -6,10 +6,10 @@ import {
   IpnFailChecksum,
   IpnInvalidAmount,
   IpnOrderNotFound,
-  IpnSuccess,
   IpnUnknownError,
 } from 'vnpay'
 import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
+import { withQuery, joinURL } from 'ufo'
 
 function convertToSQLDateWithTimezone(input: string): Date {
   // Extract date and time components from the input (assuming GMT+7)
@@ -76,8 +76,17 @@ export default defineEventHandler(async (event) => {
 
     const runtimeConfig = useRuntimeConfig()
     // TODO: Do something with the success
-    const queryString = isSuccess ? 'paymentStatus=success' : 'paymentStatus=fail'
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
+    return sendRedirect(
+      event,
+      withQuery(
+        joinURL(
+          runtimeConfig.public.appBaseUrl,
+          runtimeConfig.public.appPaymentRedirect
+        ),
+        { paymentStatus: isSuccess ? 'success' : 'fail' }
+      ),
+      200,
+    )
   }
   catch (error: any) {
     const runtimeConfig = useRuntimeConfig()
@@ -100,6 +109,13 @@ export default defineEventHandler(async (event) => {
     }
     const queryString = stringify(errResponse)
     // TODO: Do something with the error
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}${runtimeConfig.public.appPaymentRedirect}?${queryString}`, 200)
+    return sendRedirect(
+      event,
+      `${joinURL(
+        runtimeConfig.public.appBaseUrl,
+        runtimeConfig.public.appPaymentRedirect
+      )}?${queryString}`,
+      200,
+    )
   }
 })
