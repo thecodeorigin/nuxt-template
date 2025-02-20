@@ -9,12 +9,15 @@ export default defineEventHandler(async (event) => {
     const body = await readValidatedBody(
       event,
       body => z.object({
+        email: z.string().nullable(),
         username: z.string().nullable(),
         name: z.string().nullable(),
         avatar: z.string().url().nullable(),
         password: z.string().nullable(),
       }).partial().parse(body),
     )
+
+    await enableAccountCenter()
 
     const accessToken = await client.getAccessToken()
 
@@ -34,6 +37,8 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   }
   catch (error: any) {
+    console.log('ádasđá', error, error.data, error.message)
+
     throw parseError(error)
   }
 })

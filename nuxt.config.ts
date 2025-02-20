@@ -87,7 +87,7 @@ export default defineNuxtConfig({
       cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
       fetchUserInfo: true,
       resources: [
-        process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+        process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
       ],
       scopes: [
         'create:upload',
@@ -120,7 +120,7 @@ export default defineNuxtConfig({
       appCreditURL: process.env.NUXT_PUBLIC_APP_CREDIT_URL || 'http://thecodeorigin.com',
       appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       appPaymentRedirect: process.env.NUXT_PUBLIC_APP_PAYMENT_REDIRECT || '/app/settings/credit',
 
       features: {
