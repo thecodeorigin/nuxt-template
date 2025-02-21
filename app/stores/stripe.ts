@@ -2,15 +2,20 @@ import type Stripe from 'stripe'
 
 export const useStripeStore = defineStore('stripe', () => {
   const stripePrices = ref<Stripe.Price[]>([])
-  const runtimeConfig = useRuntimeConfig()
-  const stripeConfig = runtimeConfig.public.stripe
 
   async function fetchStripeProductPrices() {
     if (stripePrices.value && stripePrices.value.length > 0) {
       return stripePrices.value
     }
 
-    stripePrices.value = await $api<Stripe.Price[]>(`/api/payments/stripe/products/${stripeConfig.productId}/prices`)
+    const { data: product } = await $api<{ data: Stripe.Product[] }>('/api/payments/stripe/products')
+
+    if (!product[0]) {
+      return []
+    }
+
+    const res = await $api<{ data: Stripe.Price[] }>(`/api/payments/stripe/products/${product[0].id}/prices`)
+    stripePrices.value = res.data
     return stripePrices.value
   }
 
