@@ -3,5 +3,5 @@ export default defineEventHandler(async (event) => {
 
   const products = await getStripeAllProducts()
 
-  return products
+  return { data: products }
 })

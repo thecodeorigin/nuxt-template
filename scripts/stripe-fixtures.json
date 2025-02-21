@@ -48,6 +48,8 @@
           "interval": "month"
         },
         "metadata": {
+          "highlight": true,
+          "scale": true,
           "projects_limit": 500,
           "name": "Basic",
           "description": "Great for small teams needing enhanced features.",
@@ -111,6 +113,8 @@
           "interval": "year"
         },
         "metadata": {
+          "highlight": true,
+          "scale": true,
           "projects_limit": 5000,
           "name": "Premium",
           "description": "Annual plan for businesses with advanced needs.",

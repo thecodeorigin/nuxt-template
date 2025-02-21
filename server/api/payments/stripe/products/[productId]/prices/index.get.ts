@@ -3,5 +3,5 @@ export default defineEventHandler(async (event) => {
 
   const prices = await getStripeAllPrices(productId)
 
-  return prices
+  return { data: prices }
 })

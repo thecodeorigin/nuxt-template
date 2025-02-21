@@ -67,11 +67,12 @@ async function handleSubscribe(priceId: string, subscribed = false) {
             v-if="plan.unit_amount !== null"
             v-bind="plan"
             :title="plan.metadata.name"
+            :scale="Boolean(plan.metadata.scale)"
             :highlight="Boolean(plan.metadata.highlight)"
             :badge="Boolean(plan.metadata.highlight) ? { label: 'Most popular' } : undefined"
             :description="plan.metadata.description"
-            :price="isYearly ? `${plan.unit_amount * 12} ${plan.currency}` : `${plan.unit_amount} ${plan.currency}`"
-            :cycle="isYearly ? '/year' : '/month'"
+            :price="`${plan.unit_amount / 100} ${plan.currency}`"
+            :cycle="`/${plan.recurring.interval}`"
             :button="{
               label: plan.current ? 'Current Plan' : 'Subscribe',
               disabled: plan.current,

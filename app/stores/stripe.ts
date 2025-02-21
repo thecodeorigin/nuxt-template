@@ -8,14 +8,15 @@ export const useStripeStore = defineStore('stripe', () => {
       return stripePrices.value
     }
 
-    const { data: product } = await $api<{ data: Stripe.Product[] }>('/api/payments/stripe/products')
+    const { data: products } = await $api<{ data?: Stripe.Product[] }>('/api/payments/stripe/products')
 
-    if (!product[0]) {
+    if (!products?.[0])
       return []
-    }
 
-    const res = await $api<{ data: Stripe.Price[] }>(`/api/payments/stripe/products/${product[0].id}/prices`)
-    stripePrices.value = res.data
+    const res = await $api<{ data?: Stripe.Price[] }>(`/api/payments/stripe/products/${products?.[0].id}/prices`)
+
+    stripePrices.value = res.data || []
+
     return stripePrices.value
   }
 
