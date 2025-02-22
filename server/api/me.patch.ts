@@ -37,8 +37,6 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   }
   catch (error: any) {
-    console.log('ádasđá', error, error.data, error.message)
-
     throw parseError(error)
   }
 })

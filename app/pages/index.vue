@@ -62,7 +62,7 @@ onErrorCaptured((error) => {
     </ULandingHero>
 
     <ULandingSection class="!pt-0">
-      <ImagePlaceholder />
+      <ImagePlaceholder :src="page.hero.thumbnail?.src" :alt="page.hero.thumbnail?.alt" />
     </ULandingSection>
 
     <ULandingSection
@@ -73,7 +73,7 @@ onErrorCaptured((error) => {
       :align="section.align"
       :features="section.features"
     >
-      <ImagePlaceholder />
+      <ImagePlaceholder :src="section.image?.src" :alt="section.image?.alt" />
     </ULandingSection>
 
     <ULandingSection
