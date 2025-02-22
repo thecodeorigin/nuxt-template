@@ -21,6 +21,8 @@ const links = [
   },
 ]
 
+const authStore = useAuthStore()
+
 const userAvatar = computed(
   () => currentUser.value.picture
     || currentUser.value.identities.google.details.avatar
@@ -49,7 +51,7 @@ const userAvatar = computed(
           />
         </template>
       </UButton>
-      <UButton v-else label="Sign in" to="/sign-in" external />
+      <UButton v-else label="Sign in" @click="authStore.signIn" />
     </template>
 
     <template #panel>
