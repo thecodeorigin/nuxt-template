@@ -16,6 +16,13 @@ export enum CreditHistoryType {
   SPEND = 'spend',
 }
 
+export enum SupportedCurrency {
+  USD = 'USD',
+  VND = 'VND',
+}
+
 export const paymentStatus = pgEnum('payment_status', enumToPgEnum(PaymentStatus))
 
 export const creditHistoryType = pgEnum('credit_history_type', enumToPgEnum(CreditHistoryType))
+
+export const supportedCurrency = pgEnum('supported_currency', enumToPgEnum(SupportedCurrency))
