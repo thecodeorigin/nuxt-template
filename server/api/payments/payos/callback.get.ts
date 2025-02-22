@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
-import { withQuery, joinURL } from 'ufo'
+import { joinURL, withQuery } from 'ufo'
 
 export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig()
@@ -56,9 +56,9 @@ export default defineEventHandler(async (event) => {
       withQuery(
         joinURL(
           runtimeConfig.public.appBaseUrl,
-          runtimeConfig.public.appPaymentRedirect
+          runtimeConfig.public.appPaymentRedirect,
         ),
-        { paymentStatus: transactionStatus === PaymentStatus.RESOLVED ? 'success' : 'fail' }
+        { paymentStatus: transactionStatus === PaymentStatus.RESOLVED ? 'success' : 'fail' },
       ),
       200,
     )
@@ -69,9 +69,9 @@ export default defineEventHandler(async (event) => {
       withQuery(
         joinURL(
           runtimeConfig.public.appBaseUrl,
-          runtimeConfig.public.appPaymentRedirect
+          runtimeConfig.public.appPaymentRedirect,
         ),
-        { paymentStatus: 'fail' }
+        { paymentStatus: 'fail' },
       ),
       200,
     )

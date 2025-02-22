@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.0.0-beta.10",
+  "version": "2.0.0-beta.11",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -71,6 +71,7 @@
     "@pinia/nuxt": "^0.5.1",
     "@sentry/nuxt": "^8.36.0",
     "@sindresorhus/is": "6.3.0",
+    "@thecodeorigin/eslint-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@types/lodash-es": "^4.17.12",
     "@types/mapbox-gl": "3.1.0",

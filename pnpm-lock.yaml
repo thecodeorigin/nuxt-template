@@ -83,6 +83,9 @@ importers:
       '@sindresorhus/is':
         specifier: 6.3.0
         version: 6.3.0
+      '@thecodeorigin/eslint-config':
+        specifier: workspace:*
+        version: link:packages/config/eslint
       '@types/bcrypt':
         specifier: ^5.0.2
         version: 5.0.2
