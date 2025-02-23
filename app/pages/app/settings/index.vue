@@ -17,15 +17,15 @@ definePageMeta({
         label: 'General',
         to: '/app/settings',
       },
-      {
+      import.meta.env.FEATURE_CREDIT && {
         label: 'Credit',
         to: '/app/settings/credit',
       },
-      {
+      import.meta.env.FEATURE_SUBSCRIPTION && {
         label: 'Subscription',
         to: '/app/settings/subscription',
       },
-    ],
+    ].filter(Boolean),
   },
 })
 

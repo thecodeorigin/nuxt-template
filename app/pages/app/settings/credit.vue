@@ -24,7 +24,7 @@ const authStore = useAuthStore()
             </p>
           </div>
           <div class="mt-4">
-            <UButton color="white" variant="solid" to="/app/pricing">
+            <UButton color="white" variant="solid" to="/pricing">
               Buy more credit
             </UButton>
           </div>

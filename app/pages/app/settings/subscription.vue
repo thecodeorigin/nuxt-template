@@ -46,7 +46,7 @@ const billingCycleProgress = computed(() => {
         <p class="text-sm text-gray-500 mt-2">
           Manage your subscription plan and billing cycle
         </p>
-        <NuxtLink to="/app/pricing">
+        <NuxtLink to="/pricing">
           <UButton class="mt-2 py-1 text-xs" color="white" variant="solid">
             Pricing
             <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
