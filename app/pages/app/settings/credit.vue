@@ -1,65 +1,36 @@
-<script setup>
-const { data } = useLazyAsyncData(async () => await $api('/api/credit'))
+<script setup lang="ts">
 const authStore = useAuthStore()
-const packages = computed(() => data.value?.map(pkg => (
-  {
-    ...pkg,
-    price: new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(pkg.price),
-  }
-)) || [])
-const paymentMethod = ref('')
-const packageId = ref('')
-const paymentStore = usePaymentStore()
-async function checkout() {
-  const { paymentUrl } = await paymentStore.checkout(paymentMethod.value, `credit:${packageId.value}`)
-  window.location.href = paymentUrl
-}
 </script>
+
 <template>
-  <UDashboardPanelContent class="pb-24">
-    <h2>Your credit</h2>
-    <div>
-      <UBadge class="w-fit">
-        <UIcon name="i-heroicons-currency-dollar" size="28" />
-        {{ authStore.currentUser.custom_data?.credit || 0 }}
-      </UBadge>
-    </div>
-    <h2>Select your package</h2>
-    <div class="flex items-center justify-between flex-wrap">
-      <div v-for="pkg in packages" :key="pkg.id" class="w-1/3 mb-2 p-2">
-        <UButton class="w-full flex-col gap-2 text-xl" color="primary" :variant="packageId === pkg.id ? 'solid' : 'outline'" @click="packageId = pkg.id">
-          <div class="flex items-center gap-1">
-            <UIcon name="i-heroicons-currency-dollar" size="28" />
-            {{ pkg.amount }}
-          </div>
+  <UDashboardPanelContent class="pb-24 pt-10">
+    <!--  -->
+    <div class="grid gap-5 grid-cols-1 lg:grid-cols-3">
+      <div>
+        <p class="font-semibold">
+          Credit available
+        </p>
+        <p class="text-sm text-gray-500 mt-2">
+          Buy more credits to use better n8n instances without getting interupted!
+        </p>
+      </div>
+      <div class="col-span-2">
+        <UCard>
           <div>
-            {{ pkg.price }}
+            <strong>
+              Available credits: {{ authStore.currentUser?.custom_data?.credit || 0 }}
+            </strong>
+            <p>
+              We will notify you if your credit is running low
+            </p>
           </div>
-        </UButton>
+          <div class="mt-4">
+            <UButton color="white" variant="solid" to="/app/pricing">
+              Buy more credit
+            </UButton>
+          </div>
+        </UCard>
       </div>
-    </div>
-    <h2>
-      Select your payment method
-    </h2>
-    <div class="flex items-center justify-between flex-wrap">
-      <div class="w-1/2 p-2">
-        <UButton class="w-full text-xl justify-center" :variant="paymentMethod === 'vnpay' ? 'solid' : 'outline'" color="primary" @click="paymentMethod = 'vnpay'">
-          VNPAY
-        </UButton>
-      </div>
-      <div class="w-1/2 p-2">
-        <UButton class="w-full text-xl justify-center" :variant="paymentMethod === 'payos' ? 'solid' : 'outline'" color="primary" @click="paymentMethod = 'payos'">
-          PAYOS
-        </UButton>
-      </div>
-    </div>
-    <div class="mt-4">
-      <UButton class="w-full p-6 text-xl justify-center" color="primary" @click="checkout">
-        Checkout
-      </UButton>
     </div>
   </UDashboardPanelContent>
 </template>

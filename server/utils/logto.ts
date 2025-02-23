@@ -32,6 +32,17 @@ export function useLogtoClient() {
   return (event.context?.logtoClient as LogtoClient) || null
 }
 
+export async function getLogtoUserCustomData(userId: string) {
+  const { access_token: accessToken } = await fetchM2MAccessToken()
+  const response = await $fetch<Record<string, any>>(`${process.env.LOGTO_ENDPOINT!}/api/users/${userId}/custom-data`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+
+  return response
+}
+
 export async function updateLogtoUserCustomData(userId: string, customData: Record<string, any>) {
   const { access_token: accessToken } = await fetchM2MAccessToken()
   const response = await $fetch(`${process.env.LOGTO_ENDPOINT!}/api/users/${userId}/custom-data`, {
@@ -45,7 +56,7 @@ export async function updateLogtoUserCustomData(userId: string, customData: Reco
     },
   })
 
-  return response
+  return response as { credit?: string }
 }
 
 export async function fetchM2MAccessToken() {

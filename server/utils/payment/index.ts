@@ -1,3 +1,3 @@
-export * from './topup/index'
+export * from './credit/index'
 
 export * from './vn/index'

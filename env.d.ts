@@ -17,6 +17,7 @@ declare module 'nitropack' {
     'session:cache:clear': (data: { sub: string }) => void
     'log:info': (data: { message: string, data?: any }) => void
     'log:error': (data: { message: string, data?: any }) => void
+    'credit:change': (data: { userId: string, amount: number }) => void
   }
 }
 

@@ -7,7 +7,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   const accessToken = useState<string | null>('accessToken', () => null)
 
-  const currentUser = useLogtoUser() as UserInfoResponse | null
+  const currentUser = useLogtoUser() as UserInfoResponse & {
+    custom_data?: { credit: number }
+  } | null
 
   const currentRoles = computed(() => currentUser?.roles || null)
 
