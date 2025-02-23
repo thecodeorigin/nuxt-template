@@ -194,9 +194,6 @@ importers:
       nuxt-security:
         specifier: ^2.1.4
         version: 2.1.5(magicast@0.3.5)(rollup@4.29.1)
-      nuxt-svgo:
-        specifier: ^4.0.12
-        version: 4.0.12(magicast@0.3.5)(rollup@4.29.1)(vue@3.5.13(typescript@4.9.5))
       nuxt-vuefire:
         specifier: ^1.0.3
         version: 1.0.5(@firebase/app-types@0.9.3)(firebase-admin@13.0.2)(firebase-functions@6.2.0(firebase-admin@13.0.2))(firebase@11.1.0)(magicast@0.3.5)(rollup@4.29.1)(vuefire@3.2.1(consola@3.3.2)(firebase@11.1.0)(vue@3.5.13(typescript@4.9.5)))
@@ -7381,21 +7378,6 @@ packages:
   nuxt-site-config@3.0.6:
     resolution: {integrity: sha512-Mkyen81br21/nA2sxlLCOtJZ2L8sGL+YzxHlsVhLhEnC355CP2SwKVtYqJNJ4aYFbxeusqZXJFiD4KbveHhk0w==}
 
-  nuxt-svgo@4.0.12:
-    resolution: {integrity: sha512-dZIgPy+jf9LQWumZ37au2eV2AIYU63ZXmGW7K9Sqy8dw1hEVrTLnporx2m4KCOxRNBT6PimCvAifYiuzJERBYQ==}
-    peerDependencies:
-      svgo-loader: ^4.0.0
-      vue: '>=3.2.13'
-      vue-loader: ^17.0.0
-      vue-svg-loader: 0.17.0-beta.2
-    peerDependenciesMeta:
-      svgo-loader:
-        optional: true
-      vue-loader:
-        optional: true
-      vue-svg-loader:
-        optional: true
-
   nuxt-vuefire@1.0.5:
     resolution: {integrity: sha512-e165U1jGTd9t3nk81HBpZg375OY8G2Wnbjr7ZhE6ach3U4d3Mpm3XJQTts3bStLj2W//cDciK7EcLD2lAYtkGA==}
     peerDependencies:
@@ -8656,11 +8638,6 @@ packages:
 
   svg-tags@1.0.0:
     resolution: {integrity: sha512-ovssysQTa+luh7A5Weu3Rta6FJlFBBbInjOh722LIt6klpU2/HtdUbszju/G4devcvk8PGt7FCLv5wftu3THUA==}
-
-  svgo@3.0.2:
-    resolution: {integrity: sha512-Z706C1U2pb1+JGP48fbazf3KxHrWOsLme6Rv7imFBn5EnuanDW1GPaA/P1/dvObE670JDePC3mnj0k0B7P0jjQ==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
 
   svgo@3.3.2:
     resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
@@ -19231,17 +19208,6 @@ snapshots:
       - vite
       - vue
 
-  nuxt-svgo@4.0.12(magicast@0.3.5)(rollup@4.29.1)(vue@3.5.13(typescript@4.9.5)):
-    dependencies:
-      '@nuxt/kit': 3.15.0(magicast@0.3.5)(rollup@4.29.1)
-      mini-svg-data-uri: 1.4.4
-      svgo: 3.0.2
-      vue: 3.5.13(typescript@4.9.5)
-    transitivePeerDependencies:
-      - magicast
-      - rollup
-      - supports-color
-
   nuxt-vuefire@1.0.5(@firebase/app-types@0.9.3)(firebase-admin@13.0.2)(firebase-functions@6.2.0(firebase-admin@13.0.2))(firebase@11.1.0)(magicast@0.3.5)(rollup@4.29.1)(vuefire@3.2.1(consola@3.3.2)(firebase@11.1.0)(vue@3.5.13(typescript@4.9.5))):
     dependencies:
       '@nuxt/kit': 3.15.0(magicast@0.3.5)(rollup@4.29.1)
@@ -20751,15 +20717,6 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   svg-tags@1.0.0: {}
-
-  svgo@3.0.2:
-    dependencies:
-      '@trysound/sax': 0.2.0
-      commander: 7.2.0
-      css-select: 5.1.0
-      css-tree: 2.3.1
-      csso: 5.0.5
-      picocolors: 1.1.1
 
   svgo@3.3.2:
     dependencies:

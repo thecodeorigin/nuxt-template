@@ -133,7 +133,7 @@ async function markAllRead() {
         v-if="status === 'pending'"
         class="p-3 rounded-md flex items-center justify-center"
       >
-        <BaseIcon name="IconSpinner" class="w-8 h-8 text-primary" />
+        <Spinner class="w-8 h-8 text-white" />
       </div>
       <div
         v-else-if="isMax"

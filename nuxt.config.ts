@@ -66,7 +66,6 @@ export default defineNuxtConfig({
     'nuxt-module-hotjar',
     'nuxt-nodemailer',
     'nuxt-vuefire',
-    'nuxt-svgo',
   ],
 
   css: [],

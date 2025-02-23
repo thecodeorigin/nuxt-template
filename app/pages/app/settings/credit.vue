@@ -4,7 +4,6 @@ const authStore = useAuthStore()
 
 <template>
   <UDashboardPanelContent class="pb-24 pt-10">
-    <!--  -->
     <div class="grid gap-5 grid-cols-1 lg:grid-cols-3">
       <div>
         <p class="font-semibold">
