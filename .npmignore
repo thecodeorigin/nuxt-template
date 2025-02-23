@@ -57,3 +57,6 @@ docker/postgres
 docker/pgadmin
 
 areas
+
+server/utils/db.ts
+drizzle.config.ts
