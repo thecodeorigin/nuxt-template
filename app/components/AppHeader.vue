@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { withQuery } from 'ufo'
 import type { NavItem } from '@nuxt/content'
 import { mapContentNavigation } from '#imports'
 
@@ -24,11 +25,11 @@ const links = [
 const authStore = useAuthStore()
 
 const userAvatar = computed(
-  () => currentUser.value.picture
-    || currentUser.value.identities.google.details.avatar
-    || currentUser.value.identities.github.details.avatar
-    || currentUser.value.identities.facebook.details.avatar
-    || 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+  () => currentUser.value?.picture
+    || currentUser.value?.identities.google?.details.avatar
+    || currentUser.value?.identities.github?.details.avatar
+    || currentUser.value?.identities.facebook?.details.avatar
+    || withQuery('https://ui-avatars.com/api', { name: authStore.currentUser?.name }),
 )
 </script>
 

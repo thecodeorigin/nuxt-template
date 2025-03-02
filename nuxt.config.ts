@@ -211,19 +211,16 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/app/**': { prerender: false, csurf: { enabled: true } },
-    '/auth/**': { prerender: false },
+    '/**': { swr: 10 },
+    '/app/**': { swr: false, prerender: false, csurf: { enabled: true } },
+    '/auth/**': { swr: false, prerender: false },
     '/api/search.json': { prerender: true },
     '/docs': { redirect: '/docs/getting-started' },
-    '/api/payments/**/callback': {
-      csurf: false,
-    },
-    '/api/payments/**/webhook': {
-      csurf: false,
-    },
-    '/api/payments/**/IPN': {
-      csurf: false,
-    },
+    '/docs/**': { prerender: true },
+    '/blog/**': { swr: true },
+    '/api/payments/**/callback': { csurf: false },
+    '/api/payments/**/webhook': { csurf: false },
+    '/api/payments/**/IPN': { csurf: false },
   },
 
   colorMode: {

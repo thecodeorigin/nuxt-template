@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.0.0-beta.19",
+  "version": "2.0.0-beta.20",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -32,6 +32,7 @@
     "preview": "nuxt preview",
     "prepare": "jiti ./scripts/prepare.ts",
     "test": "vitest run",
+    "start": "node .output/server/index.mjs",
     "cleanup": "rimraf .nuxt .output dist node_modules areas",
     "stripe:seed": "jiti ./scripts/generate-stripe.ts --esmResolve",
     "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add --separator '->'",
@@ -122,6 +123,11 @@
   },
   "devDependencies": {
     "vercel": "^39.2.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@nuxt/ui-pro@1.6.0": "patches/@nuxt__ui-pro@1.6.0.patch"
+    }
   },
   "resolutions": {
     "nuxt": "3.14.1592"
