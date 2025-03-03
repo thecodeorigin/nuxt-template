@@ -1,6 +1,8 @@
+import { sql } from 'drizzle-orm'
+
 export default defineEventHandler(async () => {
   try {
-    await db.query.sysFaqTable.findFirst({ columns: { id: true } })
+    await db.execute(sql`SELECT 1`)
 
     return { success: true }
   }
