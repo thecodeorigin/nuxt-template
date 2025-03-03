@@ -1,4 +1,4 @@
-export * from './stripe/index'
+export * from './stripe'
 
 export * from './array'
 
@@ -18,12 +18,6 @@ export * from './s3'
 
 export * from './storage'
 
-export * from './stripe'
-
 export * from './url'
 
-export * from './vnpay'
-
-export * from './payos'
-
-export * from './createPaymentCheckout'
+export * from './payment'

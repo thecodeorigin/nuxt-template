@@ -1,11 +1,12 @@
 import type { H3Event } from 'h3'
-import type { Session } from 'next-auth'
 import { z } from 'zod'
-import { getServerSession } from '#auth'
+import type { UserInfoResponse } from '@logto/node'
+import { useLogtoUser } from '#imports'
 
 interface RouteOptions<U extends boolean, P extends string[]> {
   auth?: U
   params?: P
+  scopes?: string[]
 }
 
 type ConditionalType<Condition, TrueType, FalseType> = Condition extends true ? TrueType : FalseType
@@ -16,7 +17,7 @@ export async function defineEventOptions<
   UseAuthU extends boolean,
   ParamsT extends string[],
 >(event: H3Event, options?: RouteOptions<UseAuthU, TupleType<ParamsT>>) {
-  type SessionType = ConditionalType<UseAuthU, Session, null>
+  type SessionType = ConditionalType<UseAuthU, UserInfoResponse, null>
 
   type Result = {
     [K in TupleType<ParamsT>[number]]: string
@@ -27,16 +28,27 @@ export async function defineEventOptions<
   const result = { session: null } as Result
 
   if (options?.auth) {
-    const session = await getServerSession(event)
+    const user = useLogtoUser()
 
-    if (!session) {
+    if (!user) {
       throw createError({
         statusCode: 401,
-        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+        statusMessage: ErrorMessage.UNAUTHORIZED,
       })
     }
 
-    result.session = session as SessionType
+    result.session = user as SessionType
+  }
+
+  if (options?.scopes?.length) {
+    const scopes = await getUserScopes()
+
+    if (!scopes.some(scope => options.scopes?.includes(scope))) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: ErrorMessage.DONOT_HAVE_PERMISSION,
+      })
+    }
   }
 
   if (options?.params) {

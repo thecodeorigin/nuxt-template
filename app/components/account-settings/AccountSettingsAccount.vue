@@ -92,14 +92,14 @@ watch(() => formData.value.country, (value) => {
 
 async function handleSubmit() {
   try {
-    let avatarUrl = authStore.currentUser?.avatar_url
+    let avatarUrl = authStore.currentUser?.picture || ''
 
     if (formFile.value && authStore.currentUser)
-      avatarUrl = await uploadToS3(formFile.value, authStore.currentUser.id)
+      avatarUrl = await uploadToS3(formFile.value, authStore.currentUser.sub)
 
-    await authStore.updateCurrentUser({
+    await authStore.updateProfile({
       ...formData.value,
-      avatar_url: avatarUrl,
+      avatar: avatarUrl,
     })
 
     notifySuccess({

@@ -1,16 +1,17 @@
 export default defineNuxtPlugin({
   name: 'auth',
-  parallel: true,
-  setup(nuxtApp) {
-    nuxtApp.hook('session:refresh', async () => {
-      const authStore = useAuthStore()
+  async setup() {
+    const authStore = useAuthStore()
 
-      if (authStore.isAuthenticated) {
-        try {
-          await authStore.getCurrentUser()
-        }
-        catch {}
+    if (authStore.currentUser) {
+      try {
+        await authStore.fetchToken()
       }
-    })
+      catch {
+        notifyError({
+          content: 'Failed to retrieve user token.',
+        })
+      }
+    }
   },
 })

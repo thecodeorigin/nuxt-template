@@ -1,7 +1,10 @@
 import { eq } from 'drizzle-orm'
 import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
+import { joinURL, withQuery } from 'ufo'
 
 export default defineEventHandler(async (event) => {
+  const runtimeConfig = useRuntimeConfig()
+
   try {
     const { code, cancel, status, orderCode } = getQuery(event)
 
@@ -34,10 +37,30 @@ export default defineEventHandler(async (event) => {
     }
     const runtimeConfig = useRuntimeConfig()
     // TODO: Do something with the cancel
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans`, 200)
+
+    return sendRedirect(
+      event,
+      withQuery(
+        joinURL(
+          runtimeConfig.public.appBaseUrl,
+          runtimeConfig.public.appPaymentRedirect,
+        ),
+        { paymentStatus: 'cancelled' },
+      ),
+      200,
+    )
   }
   catch {
-    const runtimeConfig = useRuntimeConfig()
-    return sendRedirect(event, `${runtimeConfig.public.appBaseUrl}/settings/billing-plans`, 200)
+    return sendRedirect(
+      event,
+      withQuery(
+        joinURL(
+          runtimeConfig.public.appBaseUrl,
+          runtimeConfig.public.appPaymentRedirect,
+        ),
+        { paymentStatus: 'cancelled' },
+      ),
+      200,
+    )
   }
 })

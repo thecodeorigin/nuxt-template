@@ -6,9 +6,9 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const tokenDeviceStore = useTokenDeviceStore()
 const userEmail = computed(() => authStore.currentUser?.email)
-const userAvatar = computed(() => authStore.currentUser?.avatar_url)
-const userFullname = computed(() => authStore.currentUser?.full_name)
-const userRole = computed(() => authStore.currentUser?.role?.name || t('User'))
+const userAvatar = computed(() => authStore.currentUser?.picture)
+const userFullname = computed(() => authStore.currentUser?.name)
+const userRole = computed(() => authStore.currentUser?.roles?.[0] || authStore.currentUser?.organization_roles?.[0] || t('User'))
 
 async function logout() {
   try {

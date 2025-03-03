@@ -1,71 +1,45 @@
-import type { InferSelectModel } from 'drizzle-orm'
-import type { sysPermissionTable } from '@base/server/db/schemas'
-import type { User } from 'next-auth'
-import type { Actions, Rule } from '@base/stores/casl'
-import type { LoggedInUser } from '../../next-auth'
-
-type Permission = InferSelectModel<typeof sysPermissionTable>
+import type { UserInfoResponse } from '@logto/nuxt'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { status, data, signOut } = useAuth()
+  const config = useRuntimeConfig()
 
-  const currentUser = ref<User | null>(null)
+  const client = useLogtoClient()
 
-  async function getCurrentUser() {
-    return currentUser.value ?? (currentUser.value = await $api('/me'))
+  const accessToken = useState<string | null>('accessToken', () => null)
+
+  const currentUser = useLogtoUser() as UserInfoResponse & {
+    custom_data?: { credit: number }
+  } | null
+
+  const currentRoles = computed(() => currentUser?.roles || null)
+
+  async function fetchToken() {
+    if (client && !accessToken.value && await client.isAuthenticated())
+      accessToken.value = await client.getAccessToken(config.public.apiBaseUrl)
   }
 
-  async function updateCurrentUser(payload: Partial<LoggedInUser>) {
-    return await $api(`/me`, {
+  function signIn() {
+    return navigateTo({ path: '/sign-in' }, { external: true })
+  }
+
+  function signOut() {
+    return navigateTo({ path: '/sign-out' }, { external: true })
+  }
+
+  function updateProfile(payload: Partial<{ username: string, name: string, avatar: string }>) {
+    return $api('/api/me', {
       method: 'PATCH',
       body: payload,
     })
   }
 
-  function normalizeRules(permissions: Permission[]) {
-    const results: Rule[] = []
-
-    for (const permission of permissions) {
-      if (permission.action === 'manage') {
-        results.push(
-          ...new Array<Actions>('create', 'read', 'update', 'delete', 'manage').map(action => ({
-            subject: permission.subject,
-            action,
-          })),
-        )
-      }
-      else {
-        results.push({
-          action: permission.action as Actions,
-          subject: permission.subject,
-        })
-      }
-    }
-
-    return results
-  }
-
-  const isAuthenticated = computed(() => Boolean(status.value === 'authenticated' && data.value?.user?.providerAccountId))
-
-  const currentRole = computed(() => currentUser.value?.role || null)
-
-  const currentPermissions = computed(() => normalizeRules(currentRole.value?.permissions || []))
-
-  const pendingUser = ref<{ email: string }>()
-  function setPendingUser(email: string) {
-    pendingUser.value = { email }
-  }
-
   return {
-    getCurrentUser,
-    updateCurrentUser,
-    isAuthenticated,
+    accessToken,
     currentUser,
-    currentRole,
-    currentPermissions,
-    currentSession: data,
-    pendingUser,
-    setPendingUser,
+    currentRoles,
+    signIn,
     signOut,
+    fetchToken,
+    updateProfile,
   }
 })

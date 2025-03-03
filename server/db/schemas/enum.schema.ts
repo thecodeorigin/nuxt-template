@@ -4,27 +4,6 @@ function enumToPgEnum(myEnum: any): [string, ...string[]] {
   return Object.values(myEnum).map((value: any) => `${value}`) as [string, ...string[]]
 }
 
-export enum PermissionScope {
-  ALL = 'all',
-  ORGANIZATION = 'organization',
-  SELF = 'self',
-  CUSTOM = 'custom',
-}
-
-export enum PermissionAction {
-  CREATE = 'create',
-  READ = 'read',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  MANAGE = 'manage',
-}
-
-export enum UserStatus {
-  ACTIVE = 'active',
-  DEACTIVATED = 'deactivated',
-  PENDING = 'pending',
-}
-
 export enum PaymentStatus {
   FAILED = 'failed',
   RESOLVED = 'resolved',
@@ -37,12 +16,13 @@ export enum CreditHistoryType {
   SPEND = 'spend',
 }
 
-export const permissionAction = pgEnum('permission_action', enumToPgEnum(PermissionAction))
-
-export const permissionScope = pgEnum('permission_scope', enumToPgEnum(PermissionScope))
-
-export const userStatus = pgEnum('user_status', enumToPgEnum(UserStatus))
+export enum SupportedCurrency {
+  USD = 'USD',
+  VND = 'VND',
+}
 
 export const paymentStatus = pgEnum('payment_status', enumToPgEnum(PaymentStatus))
 
 export const creditHistoryType = pgEnum('credit_history_type', enumToPgEnum(CreditHistoryType))
+
+export const supportedCurrency = pgEnum('supported_currency', enumToPgEnum(SupportedCurrency))

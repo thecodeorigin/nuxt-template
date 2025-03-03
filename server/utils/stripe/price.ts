@@ -3,7 +3,7 @@ export function getStripeFreePrices(productUId: string) {
   return tryWithCache(
     getStorageStripeKey(`product:${productUId}:price:free`),
     async () => {
-      const response = await stripeAdmin.prices.list({
+      const response = await getStripeAdmin().prices.list({
         product: productUId,
         lookup_keys: ['free'],
       })
@@ -17,7 +17,7 @@ export function getStripeAllPrices(productUId: string) {
   return tryWithCache(
     getStorageStripeKey(`product:${productUId}:price:all`),
     async () => {
-      const response = await stripeAdmin.prices.list({
+      const response = await getStripeAdmin().prices.list({
         product: productUId,
       })
 
@@ -29,7 +29,7 @@ export function getStripeAllPrices(productUId: string) {
 export function getStripePrice(priceId: string) {
   return tryWithCache(
     getStorageStripeKey(`price:${priceId}`),
-    () => stripeAdmin.prices.retrieve(priceId),
+    () => getStripeAdmin().prices.retrieve(priceId),
   )
 }
 
@@ -44,7 +44,7 @@ export function createStripePrice(payload: {
   product: string
   active?: boolean
 }) {
-  return stripeAdmin.prices.create({
+  return getStripeAdmin().prices.create({
     currency: payload.currency,
     unit_amount: payload.amount,
     recurring: payload.recurring && {
@@ -63,7 +63,7 @@ export function updateStripePrice(priceId: string, payload: {
 }) {
   clearCache(getStorageStripeKey(`price:${priceId}`))
 
-  return stripeAdmin.prices.update(priceId, {
+  return getStripeAdmin().prices.update(priceId, {
     lookup_key: payload.lookup_key,
     active: typeof payload.active === 'boolean' ? payload.active : true,
   })

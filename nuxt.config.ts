@@ -2,6 +2,8 @@ import { fileURLToPath } from 'node:url'
 
 import svgLoader from 'vite-svg-loader'
 
+import { UserScope } from '@logto/node'
+
 import { version as appVersion } from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -11,6 +13,8 @@ export default defineNuxtConfig({
   },
 
   app: {
+    cdnURL: process.env.AWS_CLOUDFRONT_DOMAIN ? `https://${process.env.AWS_CLOUDFRONT_DOMAIN}/assets` : undefined,
+
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
       title: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
@@ -52,8 +56,26 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
-    auth: {
-      secret: process.env.AUTH_SECRET,
+    logto: {
+      endpoint: process.env.LOGTO_ENDPOINT,
+      appId: process.env.LOGTO_APP_ID,
+      appSecret: process.env.LOGTO_APP_SECRET,
+      cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
+      fetchUserInfo: true,
+      resources: [
+        process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+      ],
+      scopes: [
+        'create:upload',
+        UserScope.Profile,
+        UserScope.Identities,
+        UserScope.Email,
+        UserScope.Profile,
+        UserScope.Roles,
+        UserScope.Organizations,
+        UserScope.OrganizationRoles,
+        UserScope.CustomData,
+      ],
     },
 
     redis: {
@@ -74,7 +96,8 @@ export default defineNuxtConfig({
       appCreditURL: process.env.NUXT_PUBLIC_APP_CREDIT_URL || 'http://thecodeorigin.com',
       appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
+      appPaymentRedirect: process.env.NUXT_PUBLIC_APP_PAYMENT_REDIRECT || '/app/settings/credit',
 
       features: {
         credit: Boolean(process.env.FEATURE_CREDIT),
@@ -104,6 +127,10 @@ export default defineNuxtConfig({
         tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE),
         replaysOnErrorSampleRate: Number(process.env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE),
       },
+
+      stripe: {
+        customerPortalURL: process.env.STRIPE_CUSTOMER_PORTAL,
+      },
     },
   },
 
@@ -126,15 +153,6 @@ export default defineNuxtConfig({
     ],
   },
 
-  auth: {
-    baseURL: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-    globalAppMiddleware: false,
-
-    provider: {
-      type: 'authjs',
-    },
-  },
-
   plugins: [
     '@base/plugins/iconify/index.ts',
   ],
@@ -148,6 +166,7 @@ export default defineNuxtConfig({
 
   experimental: {
     typedPages: true,
+    asyncContext: true,
   },
 
   alias: {
@@ -209,6 +228,12 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    '/api/payments/**/callback': { csurf: false },
+    '/api/payments/**/webhook': { csurf: false },
+    '/api/payments/**/IPN': { csurf: false },
+  },
+
   pinia: {
     storesDirs: [
       fileURLToPath(new URL('./app/stores', import.meta.url)),
@@ -260,8 +285,8 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxtjs/device',
     '@nuxtjs/i18n',
-    '@sidebase/nuxt-auth',
     '@pinia/nuxt',
+    '@logto/nuxt',
     'nuxt-security',
     'nuxt-vuefire',
     'nuxt-gtag',
@@ -272,10 +297,10 @@ export default defineNuxtConfig({
   vuefire: {
     config: {
       apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+      authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
       databaseURL: process.env.FIREBASE_DB_URL,
       projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+      storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
@@ -321,6 +346,14 @@ export default defineNuxtConfig({
   },
 
   security: {
+    csrf: {
+      cookieKey: 'csrfToken',
+    },
+    headers: {
+      contentSecurityPolicy: {
+        'img-src': false,
+      },
+    },
     hidePoweredBy: true,
     rateLimiter: {
       driver: {

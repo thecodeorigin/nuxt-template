@@ -12,6 +12,7 @@ export default defineConfig({
   dbCredentials: process.env.POSTGRES_URL
     ? {
         url: process.env.POSTGRES_URL,
+        ssl: false,
       }
     : {
         host: process.env.POSTGRES_HOST!,
@@ -19,6 +20,7 @@ export default defineConfig({
         user: process.env.POSTGRES_USER!,
         password: process.env.POSTGRES_PASSWORD!,
         database: process.env.POSTGRES_DB!,
+        ssl: false,
       },
   verbose: true,
   strict: true,

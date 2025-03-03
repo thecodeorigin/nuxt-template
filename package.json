@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.9.11",
+  "version": "1.10.0",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -29,9 +29,8 @@
   "main": "./nuxt.config.ts",
   "scripts": {
     "with-env": "doppler run -- pnpm",
-    "dev": "jiti ./scripts/serve.ts",
+    "dev": "nuxt dev",
     "build": "nuxt build",
-    "prepack": "jiti ./scripts/prepack.ts",
     "lint": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -43,7 +42,7 @@
     "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add --separator '->'",
     "db:preview": "drizzle-kit studio --port 3001",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
+    "db:migrate": "drizzle-kit migrate",
     "db:seed": "jiti ./server/db/seeds/index.seed.ts",
     "db:clear": "rimraf ./docker/postgres",
     "db:start": "docker compose up -d",
@@ -54,7 +53,6 @@
   },
   "dependencies": {
     "@antfu/utils": "0.7.7",
-    "@auth/core": "^0.37.3",
     "@aws-sdk/client-s3": "^3.637.0",
     "@aws-sdk/s3-request-presigner": "^3.637.0",
     "@casl/ability": "6.7.1",
@@ -74,6 +72,7 @@
     "@iconify/tools": "4.0.4",
     "@iconify/utils": "2.1.23",
     "@iconify/vue": "4.1.1",
+    "@logto/nuxt": "^1.1.5",
     "@ngneat/falso": "^7.2.0",
     "@nuxt/eslint": "^0.5.7",
     "@nuxt/fonts": "^0.9.2",
@@ -84,7 +83,6 @@
     "@payos/node": "^1.0.10",
     "@pinia/nuxt": "^0.5.1",
     "@sentry/nuxt": "^8.36.0",
-    "@sidebase/nuxt-auth": "^0.9.4",
     "@sindresorhus/is": "6.3.0",
     "@stylistic/stylelint-config": "1.0.1",
     "@stylistic/stylelint-plugin": "2.1.1",
@@ -134,7 +132,6 @@
     "lodash-es": "^4.17.21",
     "mapbox-gl": "3.2.0",
     "mongodb": "^6.9.0",
-    "next-auth": "4.21.1",
     "nodemailer": "^6.9.15",
     "nuxt": "^3.13.2",
     "nuxt-gtag": "^3.0.2",

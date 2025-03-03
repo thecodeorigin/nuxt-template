@@ -2,7 +2,6 @@ import type { OffsetOptions } from '@floating-ui/dom'
 import type { RouteLocationRaw } from 'vue-router'
 import type { AppContentLayoutNav, ContentWidth, FooterType, HorizontalNavType, NavbarType } from '@base/@layouts/enums'
 import type { Component } from 'vue'
-import type { Actions } from '~/stores/casl'
 
 export interface LayoutConfig {
   app: {
@@ -39,8 +38,7 @@ export interface LayoutConfig {
 }
 
 export interface AclProperties {
-  action: Actions
-  subject: string
+  scopes: string[]
 }
 
 // 👉 Vertical nav link

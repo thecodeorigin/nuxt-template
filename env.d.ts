@@ -4,13 +4,10 @@ import type { Page } from 'puppeteer'
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
 import type { z } from 'zod'
 import type { HookResult } from '@nuxt/schema'
-import type { sysUserTable } from './server/db/schemas'
-import type { Actions } from '~/stores/casl'
 
 declare module 'vue-router' {
   interface RouteMeta {
-    action?: Actions
-    subject?: string
+    scopes?: string[]
     sidebar?: (NavItem & {
       group: NavGroupType
     })
@@ -35,10 +32,10 @@ declare module '#app' {
 
 declare module 'nitropack' {
   interface NitroRuntimeHooks {
-    'user:created': (data: typeof sysUserTable.$inferSelect) => void
     'session:cache:clear': (data: { providerAccountId: string }) => void
     'log:info': (data: { message: string, data?: any }) => void
     'log:error': (data: { message: string, data?: any }) => void
+    'credit:change': (data: { userId: string, amount: number }) => void
   }
 }
 

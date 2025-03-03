@@ -5,7 +5,7 @@ import ScrollToTop from '@base/@core/components/ScrollToTop.vue'
 import initCore from '@base/@core/initCore'
 import { initConfigStore, useConfigStore } from '@base/@core/stores/config'
 import { hexToRgb } from '@base/@core/utils/colorConverter'
-import { isInAppBrowser } from '@/utils/detectBrowser'
+import { isInAppBrowser } from '~/utils/browser'
 
 // ℹ️ Sync current theme with initial loader theme
 initCore()

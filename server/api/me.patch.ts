@@ -1,25 +1,40 @@
-import { useUserCrud } from '@base/server/composables/useUserCrud'
-import { createInsertSchema } from 'drizzle-zod'
-import { sysUserTable } from '../db/schemas'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { session } = await defineEventOptions(event, { auth: true })
+    await defineEventOptions(event, { auth: true })
 
-    const body = await readValidatedBody(event, createInsertSchema(sysUserTable).partial().parse)
+    const client = useLogtoClient()
 
-    return tryWithCache(
-      getStorageSessionKey(session.user.providerAccountId),
-      async () => {
-        const { updateUserByEmail } = useUserCrud()
-
-        const sysUser = await updateUserByEmail(session.user!.email, body)
-
-        setResponseStatus(event, 201)
-
-        return sysUser
-      },
+    const body = await readValidatedBody(
+      event,
+      body => z.object({
+        email: z.string().nullable(),
+        username: z.string().nullable(),
+        name: z.string().nullable(),
+        avatar: z.string().url().nullable(),
+        password: z.string().nullable(),
+      }).partial().parse(body),
     )
+
+    await enableAccountCenter()
+
+    const accessToken = await client.getAccessToken()
+
+    await $fetch(`${process.env.LOGTO_ENDPOINT}/api/my-account`, {
+      method: 'PATCH',
+      body: {
+        name: body?.name || null,
+        avatar: body?.avatar || null,
+        username: body?.username || null,
+        password: body?.password || null,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+    return { success: true }
   }
   catch (error: any) {
     throw parseError(error)

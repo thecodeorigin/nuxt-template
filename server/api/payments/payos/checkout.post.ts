@@ -1,12 +1,11 @@
 export default defineEventHandler(async (event) => {
   try {
+    const { productIdentifier } = await readBody(event)
     const { session } = await defineEventOptions(event, { auth: true })
 
-    const { productId } = await readBody(event)
-
     const paymentUrl = await createPaymentCheckout('payos', {
-      userEmail: session.user.email,
-      productId,
+      productIdentifier,
+      user: session,
     })
 
     setResponseStatus(event, 200)

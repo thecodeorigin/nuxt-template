@@ -1,10 +1,8 @@
 import type { NavGroupType, NavItem } from '@base/@layouts/types'
-import type { Actions } from '#imports'
 import { useHead } from '#imports'
 
 type UseMetaInput = Parameters<typeof useHead>[0] & {
-  action?: Actions
-  subject?: string
+  scopes: string[]
   sidebar?: (NavItem & {
     group?: NavGroupType
   })
@@ -36,7 +34,7 @@ function patchPageMeta(key: string, value: any, routeName?: string) {
  * @param options `useHead` options
  */
 export function useMeta(input: UseMetaInput, routeName?: string, options?: UseMetaOptions) {
-  useHead(omit(input, ['sidebar', 'action', 'subject']), options)
+  useHead(omit(input, ['sidebar', 'scopes']), options)
 
   // patch each custom input explicitly
   patchPageMeta('sidebar', input.sidebar, routeName)

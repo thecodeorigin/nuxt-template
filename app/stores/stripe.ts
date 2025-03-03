@@ -5,10 +5,10 @@ export const useStripeStore = defineStore('stripe', () => {
   const stripePrices = ref<Record<Stripe.Product['id'], Stripe.Price[]>>({})
 
   async function fetchStripeProductPrices() {
-    stripeProducts.value = await $api<Stripe.Product[]>('/payments/stripe/products')
+    stripeProducts.value = await $api('/api/payments/stripe/products')
 
     for (const product of stripeProducts.value) {
-      stripePrices.value[product.id] = await $api<Stripe.Price[]>(`/payments/stripe/products/${product.id}/prices`)
+      stripePrices.value[product.id] = await $api(`/api/payments/stripe/products/${product.id}/prices`)
     }
 
     return stripePrices.value

@@ -1,39 +1,22 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  /*
-     * If it's a public route, continue navigation. This kind of pages are allowed to visited by login & non-login users. Basically, without any restrictions.
-     * Examples of public routes are, 404, under maintenance, etc.
-     */
   if (to.meta.public)
     return
 
-  const authStore = useAuthStore()
+  if (to.meta.auth || to.meta.auth === undefined) {
+    const authStore = useAuthStore()
 
-  if (authStore.isAuthenticated || to.query.loggedIn) {
-    try {
-      await authStore.getCurrentUser()
+    if (authStore.currentUser) {
+      try {
+        await authStore.fetchToken()
+      }
+      catch {
+        notifyError({
+          content: 'Failed to retrieve user token.',
+        })
+      }
     }
-    catch {}
-  }
-
-  if (authStore.isAuthenticated) {
-    if (!authStore.currentUser?.id) {
-      await authStore.signOut({ redirect: false })
+    else {
+      return authStore.signIn()
     }
-    else if (to.meta.unauthenticatedOnly) {
-      return navigateTo('/')
-    }
-  }
-  else if (!to.meta.unauthenticatedOnly && to.name !== 'auth-login') {
-    const filteredQuery = Object.entries(to.query)
-      .filter(([key]) => key !== 'to')
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&')
-    const fullPath = filteredQuery ? `${to.path}?${filteredQuery}` : to.path
-    return navigateTo({
-      name: 'auth-login',
-      query: {
-        to: to.fullPath !== '/' ? fullPath : undefined,
-      },
-    })
   }
 })

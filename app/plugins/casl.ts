@@ -1,10 +1,13 @@
-export default defineNuxtPlugin(() => {
-  const caslStore = useCaslStore()
+export default defineNuxtPlugin({
+  dependsOn: ['auth'],
+  async setup() {
+    const caslStore = useCaslStore()
 
-  return {
-    provide: {
-      ability: caslStore.ability,
-      can: caslStore.ability.can.bind(caslStore.ability),
-    },
-  }
+    return {
+      provide: {
+        ability: caslStore.ability,
+        can: caslStore.ability.can.bind(caslStore.ability),
+      },
+    }
+  },
 })

@@ -5,8 +5,7 @@ import type { NavGroupType, NavItem } from './app/@base/@layouts/types'
 
 declare module '#app' {
   interface PageMeta {
-    action?: Actions
-    subject?: string
+    scopes?: string[]
     sidebar?: (NavItem & {
       group: NavGroupType
     })
@@ -23,7 +22,7 @@ declare module 'nuxt/schema' {
     //
   }
   interface PublicRuntimeConfig {
-    apiBaseUrl: string
+    //
   }
 }
 

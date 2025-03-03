@@ -1,18 +1,16 @@
-import type * as z from 'zod'
-import type { selectUserShortcutSchema } from '@base/server/db/schemas'
+import type { userShortcutTable } from '@base/server/db/schemas'
+import type { InferSelectModel } from 'drizzle-orm'
 
-export type RawShortcut = z.infer<typeof selectUserShortcutSchema>
+export type RawShortcut = InferSelectModel<typeof userShortcutTable>
 
 export const useShortcutStore = defineStore('shortcut', () => {
   const authStore = useAuthStore()
-
-  const userId = computed(() => authStore.currentUser?.id || '')
 
   const userShortcuts = ref<RawShortcut[]>([])
 
   async function getUserShortcuts() {
     if (!userShortcuts.value.length) {
-      const response = await $api<{ data: RawShortcut[], total: number }>(`/users/${userId.value}/shortcuts`)
+      const response = await $api(`/api/users/${authStore.currentUser?.sub}/shortcuts`)
 
       userShortcuts.value = response.data
     }
@@ -21,7 +19,7 @@ export const useShortcutStore = defineStore('shortcut', () => {
   }
 
   async function postUserShortcut(route: string) {
-    const response = await $api<{ data: RawShortcut }>(`/users/${userId.value}/shortcuts`, {
+    const response = await $api(`/api/users/${authStore.currentUser?.sub}/shortcuts`, {
       method: 'POST',
       body: JSON.stringify({
         route,
@@ -32,7 +30,7 @@ export const useShortcutStore = defineStore('shortcut', () => {
   }
 
   async function deleteUserShortcut(shortcutId: string) {
-    const response = await $api<{ data: RawShortcut[] }>(`/users/${userId.value}/shortcuts/${shortcutId}`, {
+    const response = await $api(`/api/users/${authStore.currentUser?.sub}/shortcuts/${shortcutId}`, {
       method: 'DELETE',
     })
 

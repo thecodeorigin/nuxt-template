@@ -3,7 +3,7 @@ export const useHealthStore = defineStore('health', () => {
 
   async function fetchHealthCheck() {
     try {
-      await $api<{ success: true }>('/health')
+      await $api('/api/health')
 
       isHealthy.value = true
     }
