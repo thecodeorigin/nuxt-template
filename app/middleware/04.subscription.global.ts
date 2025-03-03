@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
   const subscriptionStore = useSubscriptionStore()
 
-  if (authStore.isAuthenticated) {
+  if (authStore.currentUser) {
     if (!subscriptionStore.currentSubscription)
       await subscriptionStore.fetchSubscriptions()
 

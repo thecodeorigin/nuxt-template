@@ -12,7 +12,7 @@ export default defineNuxtPlugin({
 
     nuxtApp.hook('app:mounted', async () => {
       if (healthStore.isHealthy && !isInAppBrowser()) {
-        if (authStore.isAuthenticated) {
+        if (authStore.currentUser) {
           try {
             if (Notification.permission !== 'granted')
               await Notification.requestPermission()
