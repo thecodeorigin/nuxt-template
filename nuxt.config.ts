@@ -85,12 +85,6 @@ export default defineNuxtConfig({
       password: process.env.REDIS_PASSWORD,
     },
 
-    mongodb: {
-      connectionString: process.env.MONGODB_CONNECTION_STRING,
-      databaseName: process.env.MONGODB_DATABASE_NAME,
-      collectionName: process.env.MONGODB_COLLECTION_NAME,
-    },
-
     public: {
       appVersion,
       appCredit: process.env.NUXT_PUBLIC_APP_CREDIT || 'Thecodeorigin',

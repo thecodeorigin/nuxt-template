@@ -9,11 +9,11 @@ export function getStorageStripeKey(identifier: string) {
 function getStorage() {
   const config = useRuntimeConfig()
 
-  return config.mongodb.connectionString
-    ? useStorage('mongodb')
-    : (config.redis.host && config.redis.port && config.redis.password)
-        ? useStorage('redis')
-        : useStorage()
+  return (config.redis.host && config.redis.port && config.redis.password)
+    ? useStorage('redis')
+    : config.mongodb.connectionString
+      ? useStorage('mongodb')
+      : useStorage()
 }
 
 export async function tryWithCache<T>(key: string, getter: () => Promise<T | undefined | null>) {

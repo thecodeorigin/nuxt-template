@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -131,7 +131,6 @@
     "h3": "^1.13.0",
     "lodash-es": "^4.17.21",
     "mapbox-gl": "3.2.0",
-    "mongodb": "^6.9.0",
     "nodemailer": "^6.9.15",
     "nuxt": "^3.13.2",
     "nuxt-gtag": "^3.0.2",
