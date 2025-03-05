@@ -6,8 +6,18 @@ export function getStorageStripeKey(identifier: string) {
   return `stripe:${identifier}`
 }
 
+function getStorage() {
+  const config = useRuntimeConfig()
+
+  return config.mongodb.connectionString
+    ? useStorage('mongodb')
+    : (config.redis.host && config.redis.port && config.redis.password)
+        ? useStorage('redis')
+        : useStorage()
+}
+
 export async function tryWithCache<T>(key: string, getter: () => Promise<T | undefined | null>) {
-  const storage = useStorage('mongodb')
+  const storage = getStorage()
 
   const cachedResult = await storage.getItem(key)
 
@@ -23,7 +33,7 @@ export async function tryWithCache<T>(key: string, getter: () => Promise<T | und
 }
 
 export async function clearCache(key: string) {
-  const storage = useStorage('mongodb')
+  const storage = getStorage()
 
   await storage.removeItem(key)
 }

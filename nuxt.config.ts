@@ -63,8 +63,9 @@ export default defineNuxtConfig({
       cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
       fetchUserInfo: true,
       resources: [
+        process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
         process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
-      ],
+      ].filter(Boolean),
       scopes: [
         'create:upload',
         UserScope.Profile,
@@ -357,11 +358,11 @@ export default defineNuxtConfig({
     hidePoweredBy: true,
     rateLimiter: {
       driver: {
-        name: 'mongodb',
+        name: 'redis',
         options: {
-          connectionString: process.env.MONGODB_CONNECTION_STRING || '',
-          databaseName: process.env.MONGODB_DATABASE_NAME || '',
-          collectionName: 'rate-limiter',
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD,
         },
       },
     },
