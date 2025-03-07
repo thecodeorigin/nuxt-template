@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "1.11.3",
+  "version": "1.11.4",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -44,10 +44,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "jiti ./server/db/seeds/index.seed.ts",
-    "db:clear": "rimraf ./docker/postgres",
-    "db:start": "docker compose up -d",
-    "db:stop": "docker-compose down",
-    "db:reset": "pnpm db:stop && pnpm db:clear && pnpm db:start --force-recreate",
+    "docker:clear": "rimraf ./docker/postgres ./docker/redis",
+    "docker:start": "docker compose up -d",
+    "docker:stop": "docker-compose down",
+    "docker:reset": "pnpm docker:stop && pnpm docker:clear && pnpm docker:start --force-recreate",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile"
   },

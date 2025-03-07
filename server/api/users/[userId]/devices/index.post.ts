@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     const _error = parseError(error)
 
     if (_error.data?.code === '23503')
-      await nitroApp.hooks.callHook('session:cache:clear', { providerAccountId: session.user.providerAccountId })
+      await nitroApp.hooks.callHook('session:cache:clear', { providerAccountId: session.sub })
 
     throw _error
   }

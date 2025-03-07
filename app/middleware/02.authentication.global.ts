@@ -6,6 +6,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const authStore = useAuthStore()
 
     if (authStore.currentUser) {
+      if (to.meta.unauthenticatedOnly)
+        return navigateTo('/')
+
       try {
         await authStore.fetchToken()
       }
@@ -15,8 +18,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
         })
       }
     }
-    else {
-      return authStore.signIn()
+    else if (!to.meta.unauthenticatedOnly) {
+      return navigateTo('/auth/login')
     }
   }
 })

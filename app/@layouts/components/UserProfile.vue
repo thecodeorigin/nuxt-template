@@ -15,7 +15,7 @@ async function logout() {
     if (authStore.currentUser)
       await tokenDeviceStore.clearTokenDevice()
 
-    await authStore.signOut({ callbackUrl: '/auth/login' })
+    await authStore.signOut()
 
     navigateTo({ name: 'auth-login' })
   }

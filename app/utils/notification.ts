@@ -10,6 +10,9 @@ const notificationDefaultOptions: NotificationOptions = {
 }
 
 export function notifyError(options: NotificationOptions) {
+  if (import.meta.server)
+    return
+
   const { $toast } = useNuxtApp()
 
   $toast.error(
@@ -19,6 +22,9 @@ export function notifyError(options: NotificationOptions) {
 }
 
 export function notifySuccess(options: NotificationOptions) {
+  if (import.meta.server)
+    return
+
   const { $toast } = useNuxtApp()
 
   $toast.success(
@@ -28,6 +34,9 @@ export function notifySuccess(options: NotificationOptions) {
 }
 
 export function notifyWarning(options: NotificationOptions) {
+  if (import.meta.server)
+    return
+
   const { $toast } = useNuxtApp()
 
   $toast.warning(
@@ -37,6 +46,9 @@ export function notifyWarning(options: NotificationOptions) {
 }
 
 export function notifyInfo(options: NotificationOptions) {
+  if (import.meta.server)
+    return
+
   const { $toast } = useNuxtApp()
 
   $toast.info(

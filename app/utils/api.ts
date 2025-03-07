@@ -30,11 +30,11 @@ export const $api = $fetch.create({
         }
         catch {}
         finally {
-          authStore.signIn()
-
           notifyError({
             content: 'You are not authorized to perform this action.',
           })
+
+          navigateTo('/auth/login')
         }
         break
       default:

@@ -13,9 +13,19 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     restart: unless-stopped
+  redis:
+    container_name: nuxt-redis
+    image: redis:latest
+    volumes:
+      - ./docker/redis:/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis}
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
 
 volumes:
   postgres:
     driver: local
-  pgadmin:
+  redis:
     driver: local
