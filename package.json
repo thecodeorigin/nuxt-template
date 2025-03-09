@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.0.0-beta.20",
+  "version": "2.0.0-beta.21",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -123,11 +123,6 @@
   },
   "devDependencies": {
     "vercel": "^39.2.2"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@nuxt/ui-pro@1.6.0": "patches/@nuxt__ui-pro@1.6.0.patch"
-    }
   },
   "resolutions": {
     "nuxt": "3.14.1592"

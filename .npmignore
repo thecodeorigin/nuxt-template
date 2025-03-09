@@ -55,6 +55,7 @@ public/firebase-config.json
 
 docker/postgres
 docker/pgadmin
+docker/redis
 
 areas
 

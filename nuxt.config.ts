@@ -26,8 +26,6 @@ export default defineNuxtConfig({
   },
 
   app: {
-    cdnURL: process.env.AWS_CLOUDFRONT_DOMAIN ? `https://${process.env.AWS_CLOUDFRONT_DOMAIN}/assets` : undefined,
-
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
       title: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
