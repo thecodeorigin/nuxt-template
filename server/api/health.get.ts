@@ -1,5 +1,9 @@
+import { sql } from 'drizzle-orm'
+
 export default defineEventHandler(async () => {
   try {
+    await db.execute(sql`SELECT 1`)
+
     return { success: true }
   }
   catch (error: any) {
