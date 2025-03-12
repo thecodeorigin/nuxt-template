@@ -114,6 +114,7 @@ export default defineNuxtConfig({
 
     public: {
       appVersion,
+      appDeploymentID: process.env.NUXT_PUBLIC_APP_DEPLOYMENT_ID || appVersion,
       appCredit: process.env.NUXT_PUBLIC_APP_CREDIT || 'Thecodeorigin',
       appCreditURL: process.env.NUXT_PUBLIC_APP_CREDIT_URL || 'http://thecodeorigin.com',
       appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
