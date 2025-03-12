@@ -50,7 +50,13 @@ const items = [
         :ui="{ left: 'flex-1' }"
       >
         <template #left>
-          <TeamsDropdown />
+          <!-- <TeamsDropdown /> -->
+          <span class="font-semibold">Nuxt Template</span>
+          <UBadge
+            label="SaaS"
+            variant="subtle"
+            class="mb-0.5"
+          />
         </template>
       </UDashboardNavbar>
 

@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const { getUserDeviceAllTokens } = useUserDevice({ user_id: userId })
 
     const tokens = await getUserDeviceAllTokens({} as ParsedFilterQuery)
-    setResponseStatus(event, 200)
+
     return tokens
   }
   catch (error: any) {

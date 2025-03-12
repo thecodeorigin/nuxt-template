@@ -46,6 +46,18 @@ const items = computed(() => [
     },
   }],
 ])
+
+const userAvatar = computed(
+  () => currentUser?.picture
+    || currentUser?.identities.google?.details.avatar
+    || currentUser?.identities.github?.details.avatar
+    || currentUser?.identities.facebook?.details.avatar
+    || withQuery('https://ui-avatars.com/api', { name: currentUser?.name }),
+)
+
+const userName = computed(() => currentUser?.name || currentUser?.email || currentUser?.username || '')
+
+const userIdentity = computed(() => currentUser?.email || currentUser?.username)
 </script>
 
 <template>
@@ -65,12 +77,12 @@ const items = computed(() => [
       >
         <template #leading>
           <UAvatar
-            :src="withQuery('https://ui-avatars.com/api', { name: currentUser?.name })"
+            :src="userAvatar"
             size="2xs"
           />
         </template>
-        <p class="truncate">
-          {{ currentUser?.name || currentUser?.email || currentUser?.username || '' }}
+        <p v-if="userName" class="truncate">
+          {{ userName }}
         </p>
         <template #trailing>
           <UIcon
@@ -82,12 +94,12 @@ const items = computed(() => [
     </template>
 
     <template #account>
-      <div class="text-left w-full">
+      <div v-if="userIdentity" class="text-left w-full">
         <p>
           Signed in as
         </p>
         <p class="truncate font-medium text-gray-900 dark:text-white w-full">
-          {{ currentUser?.email || currentUser?.username }}
+          {{ userIdentity }}
         </p>
       </div>
     </template>

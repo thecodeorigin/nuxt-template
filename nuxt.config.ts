@@ -83,11 +83,12 @@ export default defineNuxtConfig({
       appSecret: process.env.LOGTO_APP_SECRET,
       cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
       fetchUserInfo: true,
+      postCallbackRedirectUri: '/app',
+      postLogoutRedirectUri: '/',
       resources: [
         process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
       ],
       scopes: [
-        'create:upload',
         UserScope.Profile,
         UserScope.Identities,
         UserScope.Email,
@@ -199,11 +200,6 @@ export default defineNuxtConfig({
     },
 
     prerender: {
-      routes: [
-        '/',
-        '/docs',
-      ],
-
       crawlLinks: false,
     },
   },
