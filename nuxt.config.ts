@@ -209,7 +209,6 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/**': { swr: 10 },
     '/app/**': { swr: false, prerender: false, csurf: { enabled: true } },
     '/auth/**': { swr: false, prerender: false },
     '/api/search.json': { prerender: true },
