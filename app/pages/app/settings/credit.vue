@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
+const currentUser = useLogtoUser()
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const authStore = useAuthStore()
         <UCard>
           <div>
             <strong>
-              Available credits: {{ authStore.currentUser?.custom_data?.credit || 0 }}
+              Available credits: {{ currentUser?.custom_data?.credit || 0 }}
             </strong>
             <p>
               We will notify you if your credit is running low

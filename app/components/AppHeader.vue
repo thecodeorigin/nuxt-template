@@ -3,8 +3,6 @@ import { withQuery } from 'ufo'
 import type { NavItem } from '@nuxt/content'
 import { mapContentNavigation } from '#imports'
 
-const currentUser = useLogtoUser()
-
 const navigation = inject<Ref<NavItem[]>>('navigation', ref([]))
 
 const links = [
@@ -24,12 +22,14 @@ const links = [
 
 const authStore = useAuthStore()
 
+const currentUser = useLogtoUser()
+
 const userAvatar = computed(
-  () => currentUser.value?.picture
-    || currentUser.value?.identities.google?.details.avatar
-    || currentUser.value?.identities.github?.details.avatar
-    || currentUser.value?.identities.facebook?.details.avatar
-    || withQuery('https://ui-avatars.com/api', { name: authStore.currentUser?.name }),
+  () => currentUser?.picture
+    || currentUser?.identities.google?.details.avatar
+    || currentUser?.identities.github?.details.avatar
+    || currentUser?.identities.facebook?.details.avatar
+    || withQuery('https://ui-avatars.com/api', { name: currentUser?.name }),
 )
 </script>
 

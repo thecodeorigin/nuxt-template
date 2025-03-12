@@ -1,14 +1,10 @@
 export const useTokenDeviceStore = defineStore('token-device', () => {
-  const authStore = useAuthStore()
-
-  const userId = computed(() => authStore.currentUser?.sub || '')
-
   const tokenDevice = ref<string | null>(null)
 
   async function setTokenDevice(token: string) {
     try {
       tokenDevice.value = token
-      await $api(`/api/users/${userId.value}/devices`, {
+      await $api(`/api/users/${useLogtoUser()?.sub}/devices`, {
         method: 'POST',
         body: { token },
       })
@@ -20,7 +16,7 @@ export const useTokenDeviceStore = defineStore('token-device', () => {
 
   async function clearTokenDevice() {
     try {
-      await $api(`/api/users/${userId.value}/devices`, {
+      await $api(`/api/users/${useLogtoUser()?.sub}/devices`, {
         method: 'DELETE',
         body: { token: tokenDevice.value },
       })

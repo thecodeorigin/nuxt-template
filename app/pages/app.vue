@@ -7,7 +7,6 @@ definePageMeta({
   auth: true,
 })
 
-const authStore = useAuthStore()
 const tokenDeviceStore = useTokenDeviceStore()
 
 const config = useRuntimeConfig()
@@ -18,7 +17,9 @@ onMounted(async () => {
       if (Notification.permission !== 'granted')
         await Notification.requestPermission()
 
-      if (Notification.permission === 'granted' && authStore.currentUser) {
+        const currentUser = useLogtoUser()
+
+      if (Notification.permission === 'granted' && currentUser) {
         const messaging = getMessaging()
         const token = await getToken(messaging, { vapidKey: config.public.firebase.keyPair })
         await tokenDeviceStore.setTokenDevice(token)

@@ -7,6 +7,8 @@ const { metaSymbol } = useShortcuts()
 
 const authStore = useAuthStore()
 
+const currentUser = useLogtoUser()
+
 const items = computed(() => [
   [{
     slot: 'account',
@@ -63,12 +65,12 @@ const items = computed(() => [
       >
         <template #leading>
           <UAvatar
-            :src="withQuery('https://ui-avatars.com/api', { name: authStore.currentUser?.name })"
+            :src="withQuery('https://ui-avatars.com/api', { name: currentUser?.name })"
             size="2xs"
           />
         </template>
         <p class="truncate">
-          {{ authStore.currentUser?.name || authStore.currentUser?.email || authStore.currentUser?.username || '' }}
+          {{ currentUser?.name || currentUser?.email || currentUser?.username || '' }}
         </p>
         <template #trailing>
           <UIcon
@@ -85,7 +87,7 @@ const items = computed(() => [
           Signed in as
         </p>
         <p class="truncate font-medium text-gray-900 dark:text-white w-full">
-          {{ authStore.currentUser?.email || authStore.currentUser?.username }}
+          {{ currentUser?.email || currentUser?.username }}
         </p>
       </div>
     </template>

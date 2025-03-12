@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
+const currentUser = useLogtoUser()
 
 const team = ref()
 
 const organizations = computed(() => (
-  [`${authStore.currentUser?.name}'s organization`].concat(authStore.currentUser?.organizations || [])
+  [`${currentUser?.name}'s organization`].concat(currentUser?.organizations || [])
 ).map(org => ({
   label: org,
   click: () => {

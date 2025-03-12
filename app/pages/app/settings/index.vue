@@ -32,9 +32,7 @@ definePageMeta({
 const fileRef = ref<HTMLInputElement>()
 const isDeleteAccountModalOpen = ref(false)
 
-const authStore = useAuthStore()
-
-const currentUser = computed(() => authStore.currentUser)
+const currentUser = useLogtoUser()
 
 const state = ref({
   name: 'Benjamin Canac',
