@@ -27,9 +27,6 @@ async function payos() {
 
 <template>
   <UDashboardPanelContent>
-    <p>
-      {{ authStore.accessToken }}
-    </p>
     <div>
       <button @click="payos">
         Create PAYOS payment

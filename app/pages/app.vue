@@ -17,7 +17,7 @@ onMounted(async () => {
       if (Notification.permission !== 'granted')
         await Notification.requestPermission()
 
-        const currentUser = useLogtoUser()
+      const currentUser = useLogtoUser()
 
       if (Notification.permission === 'granted' && currentUser) {
         const messaging = getMessaging()

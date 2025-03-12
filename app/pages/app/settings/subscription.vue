@@ -1,4 +1,8 @@
 <script setup lang="ts">
+useHead({
+  title: 'Subscription Information',
+})
+
 const subscriptionStore = useSubscriptionStore()
 useLazyAsyncData(() => subscriptionStore.fetchSubscriptions())
 const runtimeConfig = useRuntimeConfig()

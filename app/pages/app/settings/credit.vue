@@ -1,4 +1,8 @@
 <script setup lang="ts">
+useHead({
+  title: 'Credit Information',
+})
+
 const currentUser = useLogtoUser()
 </script>
 

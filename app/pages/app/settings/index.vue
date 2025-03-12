@@ -29,8 +29,14 @@ definePageMeta({
   },
 })
 
+useHead({
+  title: 'General Settings',
+})
+
 const fileRef = ref<HTMLInputElement>()
 const isDeleteAccountModalOpen = ref(false)
+
+const authStore = useAuthStore()
 
 const currentUser = useLogtoUser()
 
@@ -42,7 +48,7 @@ const state = ref({
   password_new: '',
 })
 
-syncRef(currentUser, state, {
+syncRef(computed(() => currentUser), state, {
   direction: 'ltr',
   transform: {
     ltr(left) {
