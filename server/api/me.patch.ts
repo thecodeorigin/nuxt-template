@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { cleanDoubleSlashes } from 'ufo'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
     const accessToken = await client.getAccessToken()
 
-    await $fetch(`${process.env.LOGTO_ENDPOINT}/api/my-account`, {
+    await $fetch(cleanDoubleSlashes(`${process.env.LOGTO_ENDPOINT}/api/my-account`), {
       method: 'PATCH',
       body: {
         name: body?.name || null,
