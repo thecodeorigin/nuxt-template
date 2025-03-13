@@ -12,5 +12,5 @@ export enum ErrorMessage {
   INVALID_VERIFICATION_URL = 'Invalid verification URL!',
   EMAIL_ALREADY_VERIFIED = 'Email already verified!',
   PASSWORD_MISMATCH = 'Password mismatch!',
-  INVALID_BODY = 'Invalid request body!',
+  INVALID_WEBHOOK_BODY = 'Invalid webhook body!',
 }

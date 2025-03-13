@@ -19,7 +19,7 @@ export async function createPaymentCheckout(
   if (!payload.productIdentifier || !payload.user || !payload.user.sub) {
     throw createError({
       statusCode: 400,
-      statusMessage: ErrorMessage.INVALID_BODY,
+      statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
     })
   }
 
@@ -42,7 +42,7 @@ export async function createPaymentCheckout(
     default:
       throw createError({
         statusCode: 400,
-        statusMessage: ErrorMessage.INVALID_BODY,
+        statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
       })
   }
 
@@ -107,7 +107,7 @@ export async function createPaymentCheckout(
     default:
       throw createError({
         statusCode: 400,
-        statusMessage: ErrorMessage.INVALID_BODY,
+        statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
       })
   }
 }

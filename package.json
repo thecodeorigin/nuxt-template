@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.0.0-beta.26",
+  "version": "2.0.0-beta.27",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -38,7 +38,7 @@
     "i18n:extract": "vue-i18n-extract report --vueFiles \"./app/**/*.?(js|ts|vue)\" --languageFiles \"./app/assets/locale/*.?(json)\" --add --separator '->'",
     "db:preview": "drizzle-kit studio --port 3001",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
+    "db:migrate": "drizzle-kit migrate",
     "db:clear": "rimraf ./docker/postgres",
     "db:start": "docker compose up -d",
     "db:stop": "docker-compose down",
