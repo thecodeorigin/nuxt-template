@@ -3,7 +3,20 @@ useHead({
   title: 'Credit Information',
 })
 
-const currentUser = useLogtoUser()
+const creditStore = useCreditStore()
+
+const isUpdatingCredit = ref(false)
+async function handleUpdateCredit() {
+  try {
+    isUpdatingCredit.value = true
+
+    await creditStore.updateCredit()
+  }
+  catch {}
+  finally {
+    isUpdatingCredit.value = false
+  }
+}
 </script>
 
 <template>
@@ -21,7 +34,14 @@ const currentUser = useLogtoUser()
         <UCard>
           <div>
             <strong>
-              Available credits: {{ currentUser?.custom_data?.credit || 0 }}
+              Available credits: {{ creditStore.credit }}
+
+              <UIcon
+                name="i-heroicons-arrow-path"
+                class="ml-1 cursor-pointer"
+                :class="{ 'animate-spin': isUpdatingCredit }"
+                @click="handleUpdateCredit"
+              />
             </strong>
             <p>
               We will notify you if your credit is running low
