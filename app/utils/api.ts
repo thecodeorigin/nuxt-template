@@ -35,7 +35,7 @@ export const $api = $fetch.create({
         break
       default:
         notifyError({
-          content: error.response?.statusText || 'Internal Server Error',
+          content: getErrorMessage(error),
         })
         break
     }

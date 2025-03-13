@@ -9,3 +9,13 @@ export function getNuxtError(error: any) {
     stack: _error.stack,
   }
 }
+
+export function getErrorMessage(error: any): string {
+  if (error.response?.data)
+    return error.response.data.message || error.response.data.statusMessage || 'An error occurred!'
+
+  if (error.response?._data)
+    return error.response._data.message || error.response._data.statusMessage || 'An error occurred!'
+
+  return error.statusMessage || error.message || 'An error occurred!'
+}
