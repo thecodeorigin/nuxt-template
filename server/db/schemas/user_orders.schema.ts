@@ -1,15 +1,22 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { userPaymentTable } from './user_payments.schema'
+import { creditPackageTable } from './credit_packages.schema'
 
 export const userOrderTable = pgTable('user_orders', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   user_id: text('user_id').notNull(),
+  credit_package_id: uuid('credit_package_id')
+    .references(() => creditPackageTable.id, { onDelete: 'no action', onUpdate: 'no action' }).notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
 
 export const userOrderRelations = relations(userOrderTable, ({ one }) => ({
+  package: one(creditPackageTable, {
+    fields: [userOrderTable.credit_package_id],
+    references: [creditPackageTable.id],
+  }),
   payment: one(userPaymentTable, {
     fields: [userOrderTable.id],
     references: [userPaymentTable.order_id],

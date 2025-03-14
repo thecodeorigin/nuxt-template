@@ -1,4 +1,6 @@
 import { jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm/relations'
+import { userOrderTable } from './user_orders.schema'
 
 export const creditPackageTable = pgTable('credit_packages', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -12,3 +14,7 @@ export const creditPackageTable = pgTable('credit_packages', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
+
+export const creditPackageRelations = relations(creditPackageTable, ({ many }) => ({
+  orders: many(userOrderTable),
+}))
