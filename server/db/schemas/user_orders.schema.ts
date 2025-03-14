@@ -7,7 +7,7 @@ export const userOrderTable = pgTable('user_orders', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   user_id: text('user_id').notNull(),
   credit_package_id: uuid('credit_package_id')
-    .references(() => creditPackageTable.id, { onDelete: 'no action', onUpdate: 'no action' }).notNull(),
+    .references(() => creditPackageTable.id, { onDelete: 'no action', onUpdate: 'no action' }),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
