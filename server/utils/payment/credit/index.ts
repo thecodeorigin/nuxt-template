@@ -1,4 +1,3 @@
-import type { UserInfoResponse } from '@logto/nuxt'
 import { useCredit } from '@base/server/composables/useCredit'
 import { CreditHistoryType } from '@base/server/db/schemas'
 

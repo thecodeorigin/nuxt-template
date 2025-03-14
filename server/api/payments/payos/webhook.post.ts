@@ -3,14 +3,17 @@ import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from
 
 export default defineEventHandler(async (event) => {
   try {
-    const webhookData = payOSAdmin.verifyPaymentWebhookData(
-      await readBody(event),
-    )
+    const body = await readBody(event)
+
+    console.log('Webhook body:', body)
+
+    const webhookData = payOSAdmin.verifyPaymentWebhookData(body)
 
     if (!webhookData) {
       throw createError({
         statusCode: 400,
         message: ErrorMessage.INVALID_WEBHOOK_BODY,
+        data: body,
       })
     }
 
