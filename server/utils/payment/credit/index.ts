@@ -2,24 +2,24 @@ import type { UserInfoResponse } from '@logto/nuxt'
 import { useCredit } from '@base/server/composables/useCredit'
 import { CreditHistoryType } from '@base/server/db/schemas'
 
-export async function addCreditToUser(user: UserInfoResponse, amount: number) {
-  const userData = await getLogtoUserCustomData(user.sub)
+export async function addCreditToUser(userId: string, amount: number) {
+  const userData = await getLogtoUserCustomData(userId)
 
   const newAmount = (Number.parseInt(userData.credit || '0')) + amount
 
   const { updateCreditHistory } = useCredit()
 
-  await updateCreditHistory(CreditHistoryType.TOPUP, amount, user.sub)
+  await updateCreditHistory(CreditHistoryType.TOPUP, amount, userId)
 
-  await useNitroApp().hooks.callHook('credit:change', { userId: user.sub, amount: newAmount })
+  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
 
-  await updateLogtoUserCustomData(user.sub, { ...userData, credit: newAmount })
+  await updateLogtoUserCustomData(userId, { ...userData, credit: newAmount })
 
   return { success: true }
 }
 
-export async function subtractCreditFromUser(user: UserInfoResponse, amount: number) {
-  const userData = await getLogtoUserCustomData(user.sub)
+export async function subtractCreditFromUser(userId: string, amount: number) {
+  const userData = await getLogtoUserCustomData(userId)
 
   const newAmount = (Number.parseInt(userData.credit || '0')) - amount
 
@@ -32,11 +32,11 @@ export async function subtractCreditFromUser(user: UserInfoResponse, amount: num
 
   const { updateCreditHistory } = useCredit()
 
-  await updateCreditHistory(CreditHistoryType.SPEND, amount, user.sub)
+  await updateCreditHistory(CreditHistoryType.SPEND, amount, userId)
 
-  await useNitroApp().hooks.callHook('credit:change', { userId: user.sub, amount: newAmount })
+  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
 
-  await updateLogtoUserCustomData(user.sub, { ...userData, credit: newAmount })
+  await updateLogtoUserCustomData(userId, { ...userData, credit: newAmount })
 
   return { success: true }
 }

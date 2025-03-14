@@ -21,7 +21,11 @@ export default defineEventHandler(async (event) => {
       with: {
         payment: {
           with: {
-            order: true,
+            order: {
+              with: {
+                package: true,
+              },
+            },
           },
         },
       },
@@ -42,6 +46,11 @@ export default defineEventHandler(async (event) => {
         status: transactionStatus,
       }).where(
         eq(userPaymentTable.id, paymentTransactionOfProvider.payment.id),
+      )
+
+      await addCreditToUser(
+        paymentTransactionOfProvider.payment.order.user_id,
+        Number.parseInt(paymentTransactionOfProvider.payment.order.package.amount),
       )
     })
 

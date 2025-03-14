@@ -25,7 +25,7 @@ export async function createPaymentCheckout(
 
   const [productType, productId] = payload.productIdentifier.split(':')
 
-  let productInfo: any
+  let productInfo: { id: string, price: string, amount: string } | undefined
 
   switch (productType) {
     case 'credit':
@@ -53,33 +53,37 @@ export async function createPaymentCheckout(
     })
   }
 
-  // TODO: what if the user has an existing order?
-  const date = new Date()
-  const {
-    userPayment,
-    paymentProviderTransaction,
-  } = await db.transaction(async (db) => {
-    const userOrder = (await db.insert(userOrderTable).values({
-      user_id: payload.user.sub,
-    }).returning())[0]
+  const createdDate = new Date()
 
-    const userPayment = (await db.insert(userPaymentTable).values({
-      amount: productInfo.price,
-      status: PaymentStatus.PENDING,
-      user_id: payload.user.sub,
-      order_id: userOrder.id,
-      created_at: date,
-    }).returning())[0]
+  const { userPayment, paymentProviderTransaction } = await db.transaction(async (db) => {
+    const userOrder = (
+      await db.insert(userOrderTable).values({
+        credit_package_id: productId,
+        user_id: payload.user.sub,
+      }).returning()
+    )[0]
 
-    const paymentProviderTransaction = (await db.insert(paymentProviderTransactionTable).values({
-      provider,
-      provider_transaction_id: date.getTime().toString(),
-      provider_transaction_status: PaymentStatus.PENDING,
-      provider_transaction_info: `${productType}:${productInfo.amount}`,
-      payment_id: userPayment.id,
-      user_id: payload.user.sub,
-      created_at: date,
-    }).returning())[0]
+    const userPayment = (
+      await db.insert(userPaymentTable).values({
+        amount: productInfo.price,
+        status: PaymentStatus.PENDING,
+        user_id: payload.user.sub,
+        order_id: userOrder.id,
+        created_at: createdDate,
+      }).returning()
+    )[0]
+
+    const paymentProviderTransaction = (
+      await db.insert(paymentProviderTransactionTable).values({
+        provider,
+        provider_transaction_id: createdDate.getTime().toString(),
+        provider_transaction_status: PaymentStatus.PENDING,
+        provider_transaction_info: `${productType}:${productInfo.amount}`,
+        payment_id: userPayment.id,
+        user_id: payload.user.sub,
+        created_at: createdDate,
+      }).returning()
+    )[0]
 
     return {
       userPayment,
@@ -90,7 +94,7 @@ export async function createPaymentCheckout(
   switch (provider) {
     case 'payos':
       return await createPayOSCheckout({
-        date,
+        date: createdDate,
         amount: Number.parseInt(userPayment.amount),
         buyerEmail: payload.user.email as string,
         buyerPhone: payload.user.phone_number as string,
@@ -98,7 +102,7 @@ export async function createPaymentCheckout(
       })
     case 'vnpay':
       return createVNPayCheckout({
-        date,
+        date: createdDate,
         clientIP: payload.clientIP as string,
         userPayment,
         paymentProviderTransaction,

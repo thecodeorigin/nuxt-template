@@ -9,7 +9,7 @@ import {
   IpnUnknownError,
 } from 'vnpay'
 import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
-import { withQuery, joinURL } from 'ufo'
+import { joinURL, withQuery } from 'ufo'
 
 function convertToSQLDateWithTimezone(input: string): Date {
   // Extract date and time components from the input (assuming GMT+7)
@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
     // CHECK AND HANDLE TOP UP PAYMENT
     if (isSuccess && vnp_OrderInfo.includes('credit')) {
       const [_, amount] = payment_provider_transactions.provider_transaction_info.split(':')
-      await addCreditToUser(session, Number.parseInt(amount))
+      await addCreditToUser(session.sub, Number.parseInt(amount))
     }
 
     const runtimeConfig = useRuntimeConfig()
@@ -81,9 +81,9 @@ export default defineEventHandler(async (event) => {
       withQuery(
         joinURL(
           runtimeConfig.public.appBaseUrl,
-          runtimeConfig.public.appPaymentRedirect
+          runtimeConfig.public.appPaymentRedirect,
         ),
-        { paymentStatus: isSuccess ? 'success' : 'fail' }
+        { paymentStatus: isSuccess ? 'success' : 'fail' },
       ),
       200,
     )
@@ -113,7 +113,7 @@ export default defineEventHandler(async (event) => {
       event,
       `${joinURL(
         runtimeConfig.public.appBaseUrl,
-        runtimeConfig.public.appPaymentRedirect
+        runtimeConfig.public.appPaymentRedirect,
       )}?${queryString}`,
       200,
     )
