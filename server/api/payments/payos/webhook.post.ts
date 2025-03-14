@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
     console.log('Webhook body:', body)
 
-    const webhookData = payOSAdmin.verifyPaymentWebhookData(body)
+    const webhookData = getPayOSAdmin().verifyPaymentWebhookData(body)
 
     if (!webhookData) {
       throw createError({
@@ -34,10 +34,17 @@ export default defineEventHandler(async (event) => {
       },
     })
 
-    if (!paymentTransactionOfProvider)
+    if (!paymentTransactionOfProvider?.payment.order.package)
       return { success: true }
 
     await db.transaction(async (db) => {
+      if (!paymentTransactionOfProvider?.payment.order.package) {
+        throw createError({
+          statusCode: 400,
+          message: 'No credit package found for this transaction!',
+        })
+      }
+
       await db.update(paymentProviderTransactionTable).set({
         provider_transaction_status: transactionStatus,
         provider_transaction_resolved_at: new Date(webhookData.transactionDateTime),

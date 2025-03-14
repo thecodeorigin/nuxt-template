@@ -112,6 +112,14 @@ export default defineNuxtConfig({
       collectionName: process.env.MONGODB_COLLECTION_NAME,
     },
 
+    payos: {
+      clientId: process.env.PAYOS_CLIENT_ID,
+      apiKey: process.env.PAYOS_API_KEY,
+      checksumKey: process.env.PAYOS_CHECKSUM_KEY,
+      cancelUrl: process.env.PAYOS_CANCEL_URL,
+      returnUrl: process.env.PAYOS_RETURN_URL,
+    },
+
     public: {
       appVersion,
       appDeploymentID: process.env.NUXT_PUBLIC_APP_DEPLOYMENT_ID || appVersion,

@@ -10,11 +10,15 @@ interface payOSCheckoutProps {
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
 }
 
-export const payOSAdmin = new PayOS(
-  process.env.PAYOS_CLIENT_ID!,
-  process.env.PAYOS_API_KEY!,
-  process.env.PAYOS_CHECKSUM_KEY!,
-)
+export function getPayOSAdmin() {
+  const runtimeConfig = useRuntimeConfig()
+
+  return new PayOS(
+    runtimeConfig.payos.clientId,
+    runtimeConfig.payos.apiKey,
+    runtimeConfig.payos.checksumKey,
+  )
+}
 
 export async function createPayOSCheckout({
   date,
@@ -25,12 +29,12 @@ export async function createPayOSCheckout({
 }: payOSCheckoutProps) {
   const runtimeConfig = useRuntimeConfig()
 
-  const { checkoutUrl } = await payOSAdmin.createPaymentLink({
+  const { checkoutUrl } = await getPayOSAdmin().createPaymentLink({
     orderCode: date.getTime(),
     amount,
     description: paymentProviderTransaction.provider_transaction_info,
-    cancelUrl: process.env.PAYOS_CANCEL_URL || `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
-    returnUrl: process.env.PAYOS_RETURN_URL || `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
+    cancelUrl: runtimeConfig.payos.cancelUrl || `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
+    returnUrl: runtimeConfig.payos.returnUrl || `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
     buyerEmail,
     buyerPhone,
   })
