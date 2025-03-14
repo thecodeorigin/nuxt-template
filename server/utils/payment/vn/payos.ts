@@ -24,12 +24,13 @@ export async function createPayOSCheckout({
   paymentProviderTransaction,
 }: payOSCheckoutProps) {
   const runtimeConfig = useRuntimeConfig()
+
   const { checkoutUrl } = await payOSAdmin.createPaymentLink({
     orderCode: date.getTime(),
     amount,
     description: paymentProviderTransaction.provider_transaction_info,
-    cancelUrl: `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
-    returnUrl: `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
+    cancelUrl: process.env.PAYOS_CANCEL_URL || `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
+    returnUrl: process.env.PAYOS_RETURN_URL || `${runtimeConfig.public.appBaseUrl}/app/settings/credit`,
     buyerEmail,
     buyerPhone,
   })

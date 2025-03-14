@@ -212,7 +212,6 @@ export default defineNuxtConfig({
     '/docs': { redirect: '/docs/getting-started' },
     '/docs/**': { prerender: true },
     '/blog/**': { swr: true },
-    '/api/payments/payos/callback': { csurf: false },
     '/api/payments/payos/webhook': { csurf: false },
     '/api/payments/vnpay/callback': { csurf: false },
     '/api/payments/vnpay/IPN': { csurf: false },
