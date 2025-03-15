@@ -5,8 +5,6 @@ import { version as appVersion } from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  extends: ['@nuxt/ui-pro'],
-
   future: {
     compatibilityVersion: 4,
   },
@@ -14,15 +12,6 @@ export default defineNuxtConfig({
   site: {
     url: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
     name: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
-  },
-
-  hooks: {
-    // Define `@nuxt/ui` components as global to use them in `.md` (feel free to add those you need)
-    'components:extend': (components) => {
-      const globals = components.filter(c => ['UButton'].includes(c.pascalName))
-
-      globals.forEach(c => c.global = true)
-    },
   },
 
   app: {
@@ -47,26 +36,25 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    '@nuxt/ui-pro',
     '@nuxt/content',
     '@nuxt/eslint',
-    '@nuxt/fonts',
     '@nuxt/image',
-    '@nuxt/ui',
+    '@nuxt/fonts',
     '@nuxtjs/device',
     '@nuxtjs/seo',
     '@nuxtjs/i18n',
-    '@vueuse/nuxt',
-    '@pinia/nuxt',
     '@logto/nuxt',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
     'nuxt-security',
     'nuxt-gtag',
     'nuxt-og-image',
-    'nuxt-module-hotjar',
     'nuxt-nodemailer',
     'nuxt-vuefire',
   ],
 
-  css: [],
+  css: ['@base/assets/css/main.css'],
 
   /*
     ❗ Please read the docs before updating runtimeConfig
@@ -134,10 +122,6 @@ export default defineNuxtConfig({
         credit: Boolean(process.env.FEATURE_CREDIT),
         subscription: Boolean(process.env.FEATURE_SUBSCRIPTION),
         authorization: Boolean(process.env.FEATURE_AUTHORIZATION),
-      },
-
-      hotjar: {
-        projectId: process.env.HOTJAR_ID,
       },
 
       theme: {
@@ -298,12 +282,6 @@ export default defineNuxtConfig({
         id: process.env.FIREBASE_MEASUREMENT_ID || '',
       },
     ],
-  },
-
-  hotjar: {
-    hotjarId: process.env.HOTJAR_ID,
-    scriptVersion: 6,
-    debug: process.env.NODE_ENV === 'development',
   },
 
   nodemailer: process.env.NODE_ENV === 'development'
