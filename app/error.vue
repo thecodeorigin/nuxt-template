@@ -35,22 +35,59 @@ const errorMessage = computed(() => {
     .with(403, () => 'You do not have permission to access this page! Please contact the administrator to resolve this problem.')
     .otherwise(() => props.error.message + (import.meta.env.DEV ? props.error.stack : ''))
 })
+
+const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'), {
+  transform: data => data.find(item => item.path === '/docs')?.children || [],
+})
+const { data: files } = useLazyAsyncData('search', () => queryCollectionSearchSections('docs'), {
+  server: false,
+})
+
+const links = [{
+  label: 'Docs',
+  icon: 'i-lucide-book',
+  to: '/docs/getting-started',
+}, {
+  label: 'Pricing',
+  icon: 'i-lucide-credit-card',
+  to: '/pricing',
+}, {
+  label: 'Blog',
+  icon: 'i-lucide-pencil',
+  to: '/blog',
+}]
 </script>
 
 <template>
   <div>
+    <AppHeader />
+
     <UMain>
       <UContainer>
         <UPage>
-          <UPageError
-            :name="errorName"
-            :message="errorMessage"
-            :status="error.statusCode"
+          <UError
+            :error="{
+              statusCode: error.statusCode,
+              statusMessage: errorName,
+              message: errorMessage,
+            }"
           />
         </UPage>
       </UContainer>
     </UMain>
 
-    <UNotifications />
+    <AppFooter />
+
+    <ClientOnly>
+      <LazyUContentSearch
+        :files="files"
+        shortcut="meta_k"
+        :navigation="navigation"
+        :links="links"
+        :fuse="{ resultLimit: 42 }"
+      />
+    </ClientOnly>
+
+    <UToaster />
   </div>
 </template>

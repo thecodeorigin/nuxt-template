@@ -37,7 +37,6 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxt/ui-pro',
-    '@nuxt/content',
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/fonts',
@@ -52,6 +51,7 @@ export default defineNuxtConfig({
     'nuxt-og-image',
     'nuxt-nodemailer',
     'nuxt-vuefire',
+    '@nuxt/content',
   ],
 
   css: ['@base/assets/css/main.css'],
@@ -116,7 +116,7 @@ export default defineNuxtConfig({
       appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-      appPaymentRedirect: process.env.NUXT_PUBLIC_APP_PAYMENT_REDIRECT || '/app/settings/credit',
+      appPaymentRedirect: process.env.NUXT_PUBLIC_APP_PAYMENT_REDIRECT || '/app/app/settings/credit',
 
       features: {
         credit: Boolean(process.env.FEATURE_CREDIT),
@@ -176,8 +176,16 @@ export default defineNuxtConfig({
     },
   },
 
-  build: {
+  vite: {
+    optimizeDeps: {
+      include: [
+        'vnpay > moment',
+        'vnpay > moment-timezone',
+      ],
+    },
+  },
 
+  build: {
     analyze: {
       analyzerMode: 'static',
     },
@@ -195,12 +203,25 @@ export default defineNuxtConfig({
     prerender: {
       crawlLinks: false,
     },
+
+    alias: {
+      '@base/server': fileURLToPath(new URL('./server', import.meta.url)),
+    },
+    typescript: {
+      tsConfig: {
+        compilerOptions: {
+          paths: {
+            '@base/server': ['../server'],
+            '@base/server/*': ['../server/*'],
+          },
+        },
+      },
+    },
   },
 
   routeRules: {
     '/app/**': { swr: false, prerender: false, csurf: { enabled: true } },
     '/auth/**': { swr: false, prerender: false },
-    '/api/search.json': { prerender: true },
     '/docs': { redirect: '/docs/getting-started' },
     '/docs/**': { prerender: true },
     '/blog/**': { swr: true },
@@ -211,10 +232,6 @@ export default defineNuxtConfig({
 
   colorMode: {
     disableTransition: true,
-  },
-
-  ui: {
-    safelistColors: ['primary', 'red', 'orange', 'green'],
   },
 
   pinia: {
@@ -237,7 +254,7 @@ export default defineNuxtConfig({
       useCookie: true,
       cookieKey: 'nuxt-template-language',
     },
-    langDir: 'assets/locale',
+    langDir: './',
     locales: [
       {
         code: 'en',
@@ -308,6 +325,7 @@ export default defineNuxtConfig({
   },
 
   security: {
+    enabled: false,
     csrf: {
       cookieKey: 'csrfToken',
     },
@@ -319,11 +337,11 @@ export default defineNuxtConfig({
     hidePoweredBy: true,
     rateLimiter: {
       driver: {
-        name: 'mongodb',
+        name: 'redis',
         options: {
-          connectionString: process.env.MONGODB_CONNECTION_STRING || '',
-          databaseName: process.env.MONGODB_DATABASE_NAME || '',
-          collectionName: 'rate-limiter',
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD,
         },
       },
     },

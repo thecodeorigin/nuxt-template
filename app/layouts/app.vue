@@ -1,139 +1,146 @@
 <script setup lang="ts">
-const router = useRouter()
-const { isHelpSlideoverOpen } = useDashboard()
+const route = useRoute()
+const toast = useToast()
 
-const links = computed(() => createRouteTree(router.getRoutes()))
+const open = ref(false)
 
-const footerLinks = [
-  {
-    label: 'Help & Support',
-    icon: 'i-heroicons-question-mark-circle',
-    click: () => isHelpSlideoverOpen.value = true,
-  },
-]
-
-const groups = [{
-  key: 'links',
-  label: 'Go to',
-  commands: links.value.map(link => ({ ...link, shortcuts: link.tooltip?.shortcuts })),
-}]
-
-const breadcrumbs = useBreadcrumbItems()
-
-const { isNotificationsSlideoverOpen, hasUnreadNotification } = useDashboard()
-
-const items = [
+const links = [
   [
     {
-      label: 'New mail',
-      icon: 'i-heroicons-paper-airplane',
-      to: '/inbox',
+      label: 'Dashboard',
+      icon: 'i-lucide-monitor',
+      to: '/app',
+      onSelect() {
+        open.value = false
+      },
+    },
+  ],
+  [
+    {
+      label: 'Settings',
+      icon: 'i-lucide-settings',
+      defaultOpen: true,
+      children: [
+        {
+          label: 'Profile',
+          to: '/app/settings/profile',
+          exact: true,
+          onSelect() {
+            open.value = false
+          },
+        },
+        {
+          label: 'Notifications',
+          to: '/app/settings/notifications',
+          onSelect() {
+            open.value = false
+          },
+        },
+        {
+          label: 'Security',
+          to: '/app/settings/security',
+          onSelect() {
+            open.value = false
+          },
+        },
+      ],
     },
     {
-      label: 'New user',
-      icon: 'i-heroicons-user-plus',
-      to: '/users',
+      label: 'Feedback',
+      icon: 'i-lucide-message-circle',
+      to: 'https://github.com/nuxt-ui-pro/dashboard',
+      target: '_blank',
+    },
+    {
+      label: 'Help & Support',
+      icon: 'i-lucide-info',
+      to: 'https://github.com/nuxt/ui-pro',
+      target: '_blank',
     },
   ],
 ]
+
+const groups = computed(() => [{
+  id: 'links',
+  label: 'Go to',
+  items: links.flat(),
+}, {
+  id: 'code',
+  label: 'Code',
+  items: [{
+    id: 'source',
+    label: 'View page source',
+    icon: 'i-simple-icons-github',
+    to: `https://github.com/nuxt-ui-pro/dashboard/blob/v3/app/pages${route.path === '/' ? '/index' : route.path}.vue`,
+    target: '_blank',
+  }],
+}])
+
+onMounted(async () => {
+  const cookie = useCookie('cookie-consent')
+  if (cookie.value === 'accepted') {
+    return
+  }
+
+  toast.add({
+    title: 'We use first-party cookies to enhance your experience on our website.',
+    duration: 0,
+    close: false,
+    actions: [{
+      label: 'Accept',
+      color: 'neutral',
+      variant: 'outline',
+      onClick: () => {
+        cookie.value = 'accepted'
+      },
+    }, {
+      label: 'Opt out',
+      color: 'neutral',
+      variant: 'ghost',
+    }],
+  })
+})
 </script>
 
 <template>
-  <UDashboardLayout>
-    <UDashboardPanel
-      :width="250"
-      :resizable="{ min: 200, max: 300 }"
+  <UDashboardGroup>
+    <UDashboardSearch :groups="groups" />
+
+    <UDashboardSidebar
+      v-model:open="open"
       collapsible
+      resizable
+      class="bg-(--ui-bg-elevated)/25"
+      :ui="{ footer: 'lg:border-t lg:border-(--ui-border)' }"
     >
-      <UDashboardNavbar
-        class="!border-transparent"
-        :ui="{ left: 'flex-1' }"
-      >
-        <template #left>
-          <!-- <TeamsDropdown /> -->
-          <span class="font-semibold">Nuxt Template</span>
-          <UBadge
-            label="SaaS"
-            variant="subtle"
-            class="mb-0.5"
-          />
-        </template>
-      </UDashboardNavbar>
+      <template #header="{ collapsed }">
+        <TeamsMenu :collapsed="collapsed" />
+      </template>
 
-      <UDashboardSidebar>
-        <template #header>
-          <UDashboardSearchButton />
-        </template>
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-(--ui-border)" />
 
-        <UDashboardSidebarLinks :links="links" />
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[0]"
+          orientation="vertical"
+        />
 
-        <div class="flex-1" />
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[1]"
+          orientation="vertical"
+          class="mt-auto"
+        />
+      </template>
 
-        <UDashboardSidebarLinks :links="footerLinks" />
+      <template #footer="{ collapsed }">
+        <UserMenu :collapsed="collapsed" />
+      </template>
+    </UDashboardSidebar>
 
-        <UDivider class="sticky bottom-0" />
+    <slot />
 
-        <template #footer>
-          <!-- @base/components/UserDropdown.vue -->
-          <UserDropdown />
-        </template>
-      </UDashboardSidebar>
-    </UDashboardPanel>
-
-    <UDashboardPage>
-      <UDashboardPanel grow>
-        <UDashboardNavbar title="Home">
-          <template #left>
-            <UBreadcrumb :links="breadcrumbs" />
-          </template>
-          <template #right>
-            <UTooltip
-              text="Notifications"
-              :shortcuts="['N']"
-            >
-              <UButton
-                color="gray"
-                variant="ghost"
-                square
-                @click="isNotificationsSlideoverOpen = true"
-              >
-                <UChip
-                  color="red"
-                  :show="hasUnreadNotification"
-                  inset
-                >
-                  <UIcon
-                    name="i-heroicons-bell"
-                    class="w-5 h-5"
-                  />
-                </UChip>
-              </UButton>
-            </UTooltip>
-
-            <UDropdown :items="items">
-              <UButton
-                icon="i-heroicons-plus"
-                color="white"
-                size="xs"
-                variant="outline"
-              >
-                Create
-              </UButton>
-            </UDropdown>
-          </template>
-        </UDashboardNavbar>
-
-        <slot />
-      </UDashboardPanel>
-    </UDashboardPage>
-
-    <!-- @base/components/HelpSlideover.vue -->
-    <HelpSlideover />
-    <!-- @base/components/NotificationsSlideover.vue -->
     <NotificationsSlideover />
-
-    <ClientOnly>
-      <LazyUDashboardSearch :groups="groups" />
-    </ClientOnly>
-  </UDashboardLayout>
+  </UDashboardGroup>
 </template>

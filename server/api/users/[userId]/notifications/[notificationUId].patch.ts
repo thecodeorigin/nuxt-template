@@ -1,5 +1,3 @@
-import { createInsertSchema } from 'drizzle-zod'
-import { sysNotificationTable } from '@base/server/db/schemas'
 import { useNotification } from '@base/server/composables/useNotification'
 
 export default defineEventHandler(async (event) => {

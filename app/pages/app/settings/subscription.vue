@@ -51,7 +51,7 @@ const billingCycleProgress = computed(() => {
           Manage your subscription plan and billing cycle
         </p>
         <NuxtLink to="/pricing">
-          <UButton class="mt-2 py-1 text-xs" color="white" variant="solid">
+          <UButton class="mt-2 py-1 text-xs" color="neutral" variant="solid">
             Pricing
             <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
           </UButton>
@@ -63,7 +63,7 @@ const billingCycleProgress = computed(() => {
             {{ subscription.items.data[0]?.price.metadata?.name }}
           </strong>
         </p>
-        <UButton class="mt-2 py-1 text-xs" color="white" variant="solid" @click="handleOpenStripePortal">
+        <UButton class="mt-2 py-1 text-xs" color="neutral" variant="solid" @click="handleOpenStripePortal">
           Manage subscription plan
         </UButton>
         <UCard class="mt-4">
@@ -88,7 +88,7 @@ const billingCycleProgress = computed(() => {
               Standard plan for small to medium businesses
             </p>
           </div>
-          <UButton class="mt-2 py-1 text-xs" color="white" variant="solid">
+          <UButton class="mt-2 py-1 text-xs" color="neutral" variant="solid">
             Upgrade plan
           </UButton>
         </UCard>

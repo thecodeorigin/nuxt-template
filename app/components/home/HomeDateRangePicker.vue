@@ -1,62 +1,135 @@
 <script setup lang="ts">
-import { type Duration, format, isSameDay, sub } from 'date-fns'
+import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import type { Range } from '@base/types'
 
-const ranges = [
-  { label: 'Last 7 days', duration: { days: 7 } },
-  { label: 'Last 14 days', duration: { days: 14 } },
-  { label: 'Last 30 days', duration: { days: 30 } },
-  { label: 'Last 3 months', duration: { months: 3 } },
-  { label: 'Last 6 months', duration: { months: 6 } },
-  { label: 'Last year', duration: { years: 1 } },
-]
-
-const selected = defineModel({
-  type: Object as PropType<Range>,
-  required: true,
+const df = new DateFormatter('en-US', {
+  dateStyle: 'medium',
 })
 
-function isRangeSelected(duration: Duration) {
-  return isSameDay(selected.value.start, sub(new Date(), duration)) && isSameDay(selected.value.end, new Date())
+const selected = defineModel<Range>({ required: true })
+
+const ranges = [
+  { label: 'Last 7 days', days: 7 },
+  { label: 'Last 14 days', days: 14 },
+  { label: 'Last 30 days', days: 30 },
+  { label: 'Last 3 months', months: 3 },
+  { label: 'Last 6 months', months: 6 },
+  { label: 'Last year', years: 1 },
+]
+
+function toCalendarDate(date: Date) {
+  return new CalendarDate(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+  )
 }
 
-function selectRange(duration: Duration) {
-  selected.value = { start: sub(new Date(), duration), end: new Date() }
+const calendarRange = computed({
+  get: () => ({
+    start: selected.value.start ? toCalendarDate(selected.value.start) : undefined,
+    end: selected.value.end ? toCalendarDate(selected.value.end) : undefined,
+  }),
+  set: (newValue: { start: CalendarDate | null, end: CalendarDate | null }) => {
+    selected.value = {
+      start: newValue.start ? newValue.start.toDate(getLocalTimeZone()) : new Date(),
+      end: newValue.end ? newValue.end.toDate(getLocalTimeZone()) : new Date(),
+    }
+  },
+})
+
+function isRangeSelected(range: { days?: number, months?: number, years?: number }) {
+  if (!selected.value.start || !selected.value.end)
+    return false
+
+  const currentDate = today(getLocalTimeZone())
+  let startDate = currentDate.copy()
+
+  if (range.days) {
+    startDate = startDate.subtract({ days: range.days })
+  }
+  else if (range.months) {
+    startDate = startDate.subtract({ months: range.months })
+  }
+  else if (range.years) {
+    startDate = startDate.subtract({ years: range.years })
+  }
+
+  const selectedStart = toCalendarDate(selected.value.start)
+  const selectedEnd = toCalendarDate(selected.value.end)
+
+  return selectedStart.compare(startDate) === 0 && selectedEnd.compare(currentDate) === 0
+}
+
+function selectRange(range: { days?: number, months?: number, years?: number }) {
+  const endDate = today(getLocalTimeZone())
+  let startDate = endDate.copy()
+
+  if (range.days) {
+    startDate = startDate.subtract({ days: range.days })
+  }
+  else if (range.months) {
+    startDate = startDate.subtract({ months: range.months })
+  }
+  else if (range.years) {
+    startDate = startDate.subtract({ years: range.years })
+  }
+
+  selected.value = {
+    start: startDate.toDate(getLocalTimeZone()),
+    end: endDate.toDate(getLocalTimeZone()),
+  }
 }
 </script>
 
 <template>
-  <UPopover :popper="{ placement: 'bottom-start' }">
-    <template #default="{ open }">
-      <UButton
-        color="gray"
-        variant="ghost"
-        :class="[open && 'bg-gray-50 dark:bg-gray-800']"
-        trailing-icon="i-heroicons-chevron-down-20-solid"
-      >
-        {{ format(selected.start, 'd MMM, yyy') }} - {{ format(selected.end, 'd MMM, yyy') }}
-      </UButton>
-    </template>
+  <UPopover :content="{ align: 'start' }" :modal="true">
+    <UButton
+      color="neutral"
+      variant="ghost"
+      icon="i-lucide-calendar"
+      class="data-[state=open]:bg-(--ui-bg-elevated) group"
+    >
+      <span class="truncate">
+        <template v-if="selected.start">
+          <template v-if="selected.end">
+            {{ df.format(selected.start) }} - {{ df.format(selected.end) }}
+          </template>
+          <template v-else>
+            {{ df.format(selected.start) }}
+          </template>
+        </template>
+        <template v-else>
+          Pick a date
+        </template>
+      </span>
 
-    <template #panel="{ close }">
-      <div class="flex items-center sm:divide-x divide-gray-200 dark:divide-gray-800">
-        <div class="hidden sm:flex flex-col py-4">
+      <template #trailing>
+        <UIcon name="i-lucide-chevron-down" class="shrink-0 text-(--ui-text-dimmed) size-5 group-data-[state=open]:rotate-180 transition-transform duration-200" />
+      </template>
+    </UButton>
+
+    <template #content>
+      <div class="flex items-stretch sm:divide-x divide-(--ui-border)">
+        <div class="hidden sm:flex flex-col justify-center">
           <UButton
             v-for="(range, index) in ranges"
             :key="index"
             :label="range.label"
-            color="gray"
+            color="neutral"
             variant="ghost"
-            class="rounded-none px-6"
-            :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50']"
+            class="rounded-none px-4"
+            :class="[isRangeSelected(range) ? 'bg-(--ui-bg-elevated)' : 'hover:bg-(--ui-bg-elevated)/50']"
             truncate
-            @click="selectRange(range.duration)"
+            @click="selectRange(range)"
           />
         </div>
 
-        <DatePicker
-          v-model="selected"
-          @close="close"
+        <UCalendar
+          v-model="calendarRange"
+          class="p-2"
+          :number-of-months="2"
+          range
         />
       </div>
     </template>
