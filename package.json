@@ -26,7 +26,6 @@
     "with-env": "doppler run -- pnpm",
     "dev": "jiti ./scripts/serve.ts",
     "build": "nuxt build",
-    "prepack": "jiti ./scripts/prepack.ts",
     "lint": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -79,6 +78,7 @@
     "@types/pdfmake": "^0.2.11",
     "@types/uuid": "^10.0.0",
     "@types/webfontloader": "^1.6.38",
+    "@typescript-eslint/typescript-estree": "8.26.1",
     "@unovis/ts": "^1.5.1",
     "@unovis/vue": "^1.5.1",
     "@vueuse/core": "^13.0.0",
@@ -123,6 +123,7 @@
     ]
   },
   "resolutions": {
+    "@typescript-eslint/typescript-estree": "8.26.1",
     "vue-tsc": "2.2.2"
   }
 }

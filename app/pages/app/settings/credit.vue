@@ -48,7 +48,7 @@ async function handleUpdateCredit() {
             </p>
           </div>
           <div class="mt-4">
-            <UButton color="white" variant="solid" to="/pricing">
+            <UButton color="neutral" variant="solid" to="/pricing">
               Buy more credit
             </UButton>
           </div>

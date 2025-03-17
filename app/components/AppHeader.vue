@@ -1,24 +1,17 @@
 <script setup lang="ts">
-import { withQuery } from 'ufo'
-import type { NavItem } from '@nuxt/content'
-import { mapContentNavigation } from '#imports'
+const route = useRoute()
 
-const navigation = inject<Ref<NavItem[]>>('navigation', ref([]))
-
-const links = [
-  {
-    label: 'Documentation',
-    to: '/docs',
-  },
-  {
-    label: 'Pricing',
-    to: '/pricing',
-  },
-  {
-    label: 'Blog',
-    to: '/blog',
-  },
-]
+const items = computed(() => [{
+  label: 'Docs',
+  to: '/docs',
+  active: route.path.startsWith('/docs'),
+}, {
+  label: 'Pricing',
+  to: '/pricing',
+}, {
+  label: 'Blog',
+  to: '/blog',
+}])
 
 const authStore = useAuthStore()
 
@@ -34,17 +27,20 @@ const userAvatar = computed(
 </script>
 
 <template>
-  <UHeader :links="links">
-    <template #logo>
-      Nuxt Template <UBadge
-        label="SaaS"
-        variant="subtle"
-        class="mb-0.5"
-      />
+  <UHeader>
+    <template #left>
+      <NuxtLink to="/">
+        <LogoPro class="w-auto h-6 shrink-0" />
+      </NuxtLink>
     </template>
 
+    <UNavigationMenu
+      :items="items"
+      variant="link"
+    />
+
     <template #right>
-      <UButton v-if="currentUser" label="Go to Dashboard" color="gray" to="/app" external>
+      <UButton v-if="currentUser" label="Go to Dashboard" color="neutral" variant="ghost" to="/app">
         <template #leading>
           <UAvatar
             :src="userAvatar"
@@ -52,13 +48,40 @@ const userAvatar = computed(
           />
         </template>
       </UButton>
-      <UButton v-else label="Sign in" @click="authStore.signIn" />
+      <UButton
+        v-else
+        label="Sign in"
+        color="neutral"
+        @click="authStore.signIn"
+      />
+
+      <UColorModeButton />
     </template>
 
-    <template #panel>
-      <UNavigationTree
-        :links="mapContentNavigation(navigation)"
-        default-open
+    <template #body>
+      <UNavigationMenu
+        :items="items"
+        orientation="vertical"
+        class="-mx-2.5"
+      />
+
+      <USeparator class="my-6" />
+
+      <UButton v-if="currentUser" label="Go to Dashboard" color="neutral" variant="ghost" to="/app">
+        <template #leading>
+          <UAvatar
+            :src="userAvatar"
+            size="2xs"
+          />
+        </template>
+      </UButton>
+      <UButton
+        v-else
+        label="Sign in"
+        color="neutral"
+        block
+        class="mb-3"
+        @click="authStore.signIn"
       />
     </template>
   </UHeader>

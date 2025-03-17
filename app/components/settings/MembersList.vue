@@ -1,35 +1,22 @@
 <script setup lang="ts">
 import type { Member } from '@base/types'
 
-defineProps({
-  members: {
-    type: Array as PropType<Member[]>,
-    default: () => [],
-  },
-})
+defineProps<{
+  members: Member[]
+}>()
 
-function getItems(member: Member) {
-  return [[{
-    label: 'Edit member',
-    click: () => console.log('Edit', member),
-  }, {
-    label: 'Remove member',
-    labelClass: 'text-red-500 dark:text-red-400',
-    click: () => console.log('Remove', member),
-  }]]
-}
-
-function onRoleChange(member: Member, role: string) {
-  // Do something with data
-  console.log(member.username, role)
-}
+const items = [{
+  label: 'Edit member',
+  onSelect: () => console.log('Edit member'),
+}, {
+  label: 'Remove member',
+  color: 'error' as const,
+  onSelect: () => console.log('Remove member'),
+}]
 </script>
 
 <template>
-  <ul
-    role="list"
-    class="divide-y divide-gray-200 dark:divide-gray-800"
-  >
+  <ul role="list" class="divide-y divide-(--ui-border)">
     <li
       v-for="(member, index) in members"
       :key="index"
@@ -42,34 +29,30 @@ function onRoleChange(member: Member, role: string) {
         />
 
         <div class="text-sm min-w-0">
-          <p class="text-gray-900 dark:text-white font-medium truncate">
+          <p class="text-(--ui-text-highlighted) font-medium truncate">
             {{ member.name }}
           </p>
-          <p class="text-gray-500 dark:text-gray-400 truncate">
+          <p class="text-(--ui-text-muted) truncate">
             {{ member.username }}
           </p>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <USelectMenu
+        <USelect
           :model-value="member.role"
-          :options="['member', 'owner']"
-          color="white"
-          :ui-menu="{ select: 'capitalize', option: { base: 'capitalize' } }"
-          @update:model-value="onRoleChange(member, $event)"
+          :items="['member', 'owner']"
+          color="neutral"
+          :ui="{ value: 'capitalize', item: 'capitalize' }"
         />
 
-        <UDropdown
-          :items="getItems(member)"
-          position="bottom-end"
-        >
+        <UDropdownMenu :items="items" :content="{ align: 'end' }">
           <UButton
-            icon="i-heroicons-ellipsis-vertical"
-            color="gray"
+            icon="i-lucide-ellipsis-vertical"
+            color="neutral"
             variant="ghost"
           />
-        </UDropdown>
+        </UDropdownMenu>
       </div>
     </li>
   </ul>

@@ -2,11 +2,8 @@ import { PaymentStatus, creditPackageTable, paymentProviderTransactionTable, use
 import type { UserInfoResponse } from '@logto/nuxt'
 import { eq } from 'drizzle-orm'
 import { createPayOSCheckout } from './payos'
-import { createVNPayCheckout } from './vnpay'
 
 export * from './payos'
-
-export * from './vnpay'
 
 export async function createPaymentCheckout(
   provider: 'payos' | 'vnpay',
@@ -98,13 +95,6 @@ export async function createPaymentCheckout(
         amount: Number.parseInt(userPayment.amount),
         buyerEmail: payload.user.email as string,
         buyerPhone: payload.user.phone_number as string,
-        paymentProviderTransaction,
-      })
-    case 'vnpay':
-      return createVNPayCheckout({
-        date: createdDate,
-        clientIP: payload.clientIP as string,
-        userPayment,
         paymentProviderTransaction,
       })
 

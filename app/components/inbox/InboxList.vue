@@ -2,35 +2,18 @@
 import { format, isToday } from 'date-fns'
 import type { Mail } from '@base/types'
 
-const props = defineProps({
-  modelValue: {
-    type: Object as PropType<Mail | null>,
-    default: null,
-  },
-  mails: {
-    type: Array as PropType<Mail[]>,
-    default: () => [],
-  },
-})
-
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{
+  mails: Mail[]
+}>()
 
 const mailsRefs = ref<Element[]>([])
 
-const selectedMail = computed({
-  get() {
-    return props.modelValue
-  },
-  set(value: Mail | null) {
-    emit('update:modelValue', value)
-  },
-})
+const selectedMail = defineModel<Mail | null>()
 
 watch(selectedMail, () => {
   if (!selectedMail.value) {
     return
   }
-
   const ref = mailsRefs.value[selectedMail.value.id]
   if (ref) {
     ref.scrollIntoView({ block: 'nearest' })
@@ -62,24 +45,21 @@ defineShortcuts({
 </script>
 
 <template>
-  <UDashboardPanelContent class="p-0">
+  <div class="overflow-y-auto divide-y divide-(--ui-border)">
     <div
       v-for="(mail, index) in mails"
       :key="index"
       :ref="el => { mailsRefs[mail.id] = el as Element }"
     >
       <div
-        class="p-4 text-sm cursor-pointer border-l-2"
+        class="p-4 sm:px-6 text-sm cursor-pointer border-l-2 transition-colors"
         :class="[
-          mail.unread ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300',
-          selectedMail && selectedMail.id === mail.id ? 'border-primary-500 dark:border-primary-400 bg-primary-100 dark:bg-primary-900/25' : 'border-white dark:border-gray-900 hover:border-primary-500/25 dark:hover:border-primary-400/25 hover:bg-primary-100/50 dark:hover:bg-primary-900/10',
+          mail.unread ? 'text-(--ui-text-highlighted)' : 'text-(--ui-text-toned)',
+          selectedMail && selectedMail.id === mail.id ? 'border-(--ui-primary) bg-(--ui-primary)/10' : 'border-(--ui-bg) hover:border-(--ui-primary) hover:bg-(--ui-primary)/5',
         ]"
         @click="selectedMail = mail"
       >
-        <div
-          class="flex items-center justify-between"
-          :class="[mail.unread && 'font-semibold']"
-        >
+        <div class="flex items-center justify-between" :class="[mail.unread && 'font-semibold']">
           <div class="flex items-center gap-3">
             {{ mail.from.name }}
 
@@ -88,15 +68,13 @@ defineShortcuts({
 
           <span>{{ isToday(new Date(mail.date)) ? format(new Date(mail.date), 'HH:mm') : format(new Date(mail.date), 'dd MMM') }}</span>
         </div>
-        <p :class="[mail.unread && 'font-semibold']">
+        <p class="truncate" :class="[mail.unread && 'font-semibold']">
           {{ mail.subject }}
         </p>
-        <p class="text-gray-400 dark:text-gray-500 line-clamp-1">
+        <p class="text-(--ui-text-dimmed) line-clamp-1">
           {{ mail.body }}
         </p>
       </div>
-
-      <UDivider />
     </div>
-  </UDashboardPanelContent>
+  </div>
 </template>
