@@ -1,22 +1,6 @@
 version: '3.7'
 
 services:
-  # logto:
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   image: svhd/logto:${TAG-latest}
-  #   entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
-  #   ports:
-  #     - 3001:3001
-  #     - 3002:3002
-  #   environment:
-  #     - TRUST_PROXY_HEADER=1
-  #     - DB_URL=postgres://postgres:${POSTGRES_PASSWORD:-postgres}@${POSTGRES_USER:-postgres}:${POSTGRES_PORT:-5432}/logto
-  #     # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
-  #     # Or, you can leverage it for local testing.
-  #     - ENDPOINT
-  #     - ADMIN_ENDPOINT
   postgres:
     container_name: nuxt-pg
     image: postgres:latest
@@ -38,6 +22,29 @@ services:
     ports:
       - '${SMTP_PORT:-1025}:1025'
       - '${SMTP_WEB_PORT:-8025}:8025'
+    restart: unless-stopped
+
+  redis:
+    container_name: nuxt-redis
+    image: redis:latest
+    volumes:
+      - ./docker/redis:/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis}
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
+
+  mondodb:
+    container_name: nuxt-mongodb
+    image: mongo:latest
+    volumes:
+      - ./docker/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
+    ports:
+      - "27017:27017"
     restart: unless-stopped
 
 volumes:

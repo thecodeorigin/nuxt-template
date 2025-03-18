@@ -3,7 +3,9 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-> Please purchase Nuxt UI Pro before deploying this template to production. You can purchase it [here](https://ui.nuxt.com/pro/pricing)
+> **Note:** This template is for development purposes only. It is not recommended to use this template in production without purchasing Nuxt UI Pro. You can purchase it [here](https://ui.nuxt.com/pro/pricing)
+
+> The first version of the template using Nuxt Materialize theme will be kept permanently free and open-source.
 
 Nuxt 3 template is a opinionated template for Nuxt 3 project. It includes the following features:
 

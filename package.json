@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.0.0-beta.36",
+  "version": "2.0.0",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -24,7 +24,7 @@
   "main": "./nuxt.config.ts",
   "scripts": {
     "with-env": "doppler run -- pnpm",
-    "dev": "jiti ./scripts/serve.ts",
+    "dev": "nuxt dev",
     "build": "nuxt build",
     "lint": "eslint . --fix",
     "generate": "nuxt generate",
@@ -38,11 +38,11 @@
     "db:preview": "drizzle-kit studio --port 3001",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:clear": "rimraf ./docker/postgres",
-    "db:start": "docker compose up -d",
-    "db:stop": "docker-compose down",
-    "db:reset": "pnpm db:stop && pnpm db:clear && pnpm db:start --force-recreate",
     "db:seed": "jiti ./server/db/seeds/index.ts",
+    "docker:clear": "rimraf ./docker/postgres ./docker/redis ./docker/mondodb",
+    "docker:start": "docker compose -f docker-compose.dev.yml up -d",
+    "docker:stop": "docker-compose -f docker-compose.dev.yml down",
+    "docker:reset": "pnpm docker:stop && pnpm docker:clear && pnpm docker:start --force-recreate",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile"
   },
