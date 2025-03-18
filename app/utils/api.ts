@@ -14,7 +14,6 @@ export const $api = $fetch.create({
       options.headers.set('Csrf-Token', authStore.crsfToken)
   },
   async onResponseError(error) {
-    const authStore = useAuthStore()
     const isRequestFromExternalUrl = !String(error.response.url).startsWith(String(useRuntimeConfig().public.appBaseUrl))
     switch (error.response?.status) {
       case 401:
@@ -22,11 +21,11 @@ export const $api = $fetch.create({
           return
 
         try {
-          await authStore.signOut()
+          await navigateTo({ path: '/sign-out' }, { external: true })
         }
         catch {}
         finally {
-          authStore.signIn()
+          navigateTo({ path: '/sign-in' }, { external: true })
 
           notifyError({
             content: 'You are not authorized to perform this action.',

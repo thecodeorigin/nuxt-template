@@ -150,7 +150,9 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    dirs: [],
+    dirs: [
+      fileURLToPath(new URL('./app/api', import.meta.url)),
+    ],
   },
 
   experimental: {

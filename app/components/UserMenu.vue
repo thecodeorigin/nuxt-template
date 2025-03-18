@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+import { withQuery } from 'ufo'
+
 defineProps<{
   collapsed?: boolean
 }>()
-
-const authStore = useAuthStore()
 
 const currentUser = useLogtoUser()
 
@@ -58,7 +58,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([
       label: 'Log out',
       icon: 'i-lucide-log-out',
       onSelect() {
-        authStore.signOut()
+        navigateTo({ path: '/sign-out' }, { external: true })
       },
     },
   ],

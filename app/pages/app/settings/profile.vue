@@ -13,8 +13,6 @@ const profileSchema = z.object({
 
 type ProfileSchema = z.output<typeof profileSchema>
 
-const authStore = useAuthStore()
-
 const currentUser = useLogtoUser()
 
 const formData = ref({
@@ -39,15 +37,16 @@ syncRef(computed(() => currentUser), formData, {
 })
 
 const toast = useToast()
+const authApi = useApiAuth()
 
 async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   try {
-    await authStore.updateProfile(event.data)
+    await authApi.updateProfile(event.data)
 
     toast.add({ title: 'Profile updated', icon: 'i-heroicons-check-circle' })
   }
   catch {
-    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'red' })
+    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'error' })
   }
 }
 

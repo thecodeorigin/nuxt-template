@@ -1,9 +1,9 @@
-export const usePaymentStore = defineStore('payment', () => {
-  async function checkout(type: 'payos' | 'vnpay', productIdentifier: string) {
+export function useApiPayment() {
+  function checkout(type: 'payos' | 'vnpay', productIdentifier: string) {
     if (type !== 'payos' && type !== 'vnpay')
       throw new Error('Invalid payment provider')
 
-    const { data } = await $api<{
+    return $api<{
       data: {
         message: string
         paymentUrl: string
@@ -14,11 +14,9 @@ export const usePaymentStore = defineStore('payment', () => {
         productIdentifier,
       },
     })
-
-    return data
   }
 
   return {
     checkout,
   }
-})
+}

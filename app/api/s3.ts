@@ -1,4 +1,4 @@
-export const useS3Store = defineStore('s3', () => {
+export function useApiS3() {
   function getSignedUrl(filename: string) {
     return $api<{ uploadUrl: string, assetUrl: string }>('/api/s3', {
       method: 'PUT',
@@ -9,4 +9,4 @@ export const useS3Store = defineStore('s3', () => {
   return {
     getSignedUrl,
   }
-})
+}

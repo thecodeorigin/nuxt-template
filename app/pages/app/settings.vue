@@ -5,7 +5,11 @@ const links = [
       label: 'Profile',
       icon: 'i-lucide-user',
       to: '/app/settings/profile',
-      exact: true,
+    },
+    {
+      label: 'Billing',
+      icon: 'i-lucide-credit-card',
+      to: '/app/settings/billing',
     },
     {
       label: 'Notifications',

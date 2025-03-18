@@ -1,6 +1,6 @@
 import { PaymentStatus, creditPackageTable, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
-import type { UserInfoResponse } from '@logto/nuxt'
 import { eq } from 'drizzle-orm'
+import type { LogtoUser } from '@base/server/types/logto'
 import { createPayOSCheckout } from './payos'
 
 export * from './payos'
@@ -10,7 +10,7 @@ export async function createPaymentCheckout(
   payload: {
     clientIP?: string
     productIdentifier: string
-    user: UserInfoResponse
+    user: LogtoUser
   },
 ) {
   if (!payload.productIdentifier || !payload.user || !payload.user.sub) {
