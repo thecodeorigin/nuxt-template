@@ -4,16 +4,6 @@ import type { Period, Range } from '@base/types'
 
 const { isNotificationsSlideoverOpen } = useDashboard()
 
-const items = [[{
-  label: 'New mail',
-  icon: 'i-lucide-send',
-  to: '/app/inbox',
-}, {
-  label: 'New customer',
-  icon: 'i-lucide-user-plus',
-  to: '/app/customers',
-}]]
-
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
   end: new Date(),
@@ -24,7 +14,7 @@ const period = ref<Period>('daily')
 <template>
   <UDashboardPanel id="home">
     <template #header>
-      <UDashboardNavbar title="Home" :ui="{ right: 'gap-3' }">
+      <UDashboardNavbar title="Dashboard" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -43,9 +33,14 @@ const period = ref<Period>('daily')
             </UButton>
           </UTooltip>
 
-          <UDropdownMenu :items="items">
-            <UButton icon="i-lucide-plus" size="md" class="rounded-full" />
-          </UDropdownMenu>
+          <UTooltip text="Create new instance" :popper="{ placement: 'right' }">
+            <UButton
+              trailing-icon="i-heroicons-plus"
+              color="neutral"
+            >
+              Create
+            </UButton>
+          </UTooltip>
         </template>
       </UDashboardNavbar>
 

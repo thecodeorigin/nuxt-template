@@ -1,4 +1,6 @@
+import { seedNotifications } from './notifications.seed'
+
 (async () => {
-  // await seedNotifications('6qegkbe1web8', 'mrtruyenbd1407@gmail.com')
+  await seedNotifications('ax0p23zp6a2k', 'nguyenhuunguyeny.ny@gmail.com')
   process.exit(0)
 })()

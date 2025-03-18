@@ -11,6 +11,7 @@ const links = [
       label: 'Dashboard',
       icon: 'i-lucide-monitor',
       to: '/app',
+      exact: true,
       onSelect() {
         open.value = false
       },
