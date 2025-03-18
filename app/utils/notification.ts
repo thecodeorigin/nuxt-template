@@ -7,7 +7,7 @@ export function notifyError(options: NotificationOptions) {
   toast.add({
     title: 'Error',
     description: options.content,
-    color: 'red',
+    color: 'error',
   })
 }
 
@@ -17,7 +17,7 @@ export function notifySuccess(options: NotificationOptions) {
   toast.add({
     title: 'Success',
     description: options.content,
-    color: 'green',
+    color: 'success',
   })
 }
 
@@ -27,7 +27,7 @@ export function notifyWarning(options: NotificationOptions) {
   toast.add({
     title: 'Warning',
     description: options.content,
-    color: 'orange',
+    color: 'warning',
   })
 }
 
@@ -37,6 +37,6 @@ export function notifyInfo(options: NotificationOptions) {
   toast.add({
     title: 'Infor',
     description: options.content,
-    color: 'blue',
+    color: 'info',
   })
 }

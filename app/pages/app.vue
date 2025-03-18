@@ -7,12 +7,14 @@ definePageMeta({
   auth: true,
 })
 
-const tokenDeviceStore = useTokenDeviceStore()
-
 const config = useRuntimeConfig()
 
+const tokenDevice = useLocalStorage<string | null>('tokenDevice', null)
+
+const notificationApi = useApiNotification()
+
 onMounted(async () => {
-  if (!isInAppBrowser() && !tokenDeviceStore.tokenDevice) {
+  if (!isInAppBrowser() && !tokenDevice.value) {
     try {
       if (Notification.permission !== 'granted')
         await Notification.requestPermission()
@@ -20,9 +22,9 @@ onMounted(async () => {
       const currentUser = useLogtoUser()
 
       if (Notification.permission === 'granted' && currentUser) {
-        const messaging = getMessaging()
-        const token = await getToken(messaging, { vapidKey: config.public.firebase.keyPair })
-        await tokenDeviceStore.setTokenDevice(token)
+        const token = await getToken(getMessaging(), { vapidKey: config.public.firebase.keyPair })
+
+        notificationApi.createTokenDevice(token)
       }
     }
     catch {}

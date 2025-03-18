@@ -3,12 +3,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
 
   if (to.meta.auth) {
-    const authStore = useAuthStore()
-
     const currentUser = useLogtoUser()
 
     if (!currentUser) {
-      return authStore.signIn()
+      return navigateTo({ path: '/sign-in' }, { external: true })
     }
   }
 })

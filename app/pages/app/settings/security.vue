@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from 'zod'
-import type { FormError } from '@nuxt/ui'
+import type { FormError, FormSubmitEvent } from '@nuxt/ui'
 
 const passwordSchema = z.object({
   password: z.string().min(8, 'Must be at least 8 characters'),
@@ -24,19 +24,19 @@ function validate(state: Partial<PasswordSchema>): FormError[] {
   return errors
 }
 
-const authStore = useAuthStore()
+const authApi = useApiAuth()
 
 const toast = useToast()
 
 async function onSubmit(event: FormSubmitEvent<PasswordSchema>) {
   try {
-    await authStore.updatePassword(event.data)
+    await authApi.updatePassword(event.data)
 
     toast.add({ title: 'Profile updated', icon: 'i-heroicons-check-circle' })
   }
   catch (error) {
     console.log(error)
-    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'red' })
+    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'error' })
   }
 }
 </script>

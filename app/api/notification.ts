@@ -1,14 +1,14 @@
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { CountNotifications, Notification } from '@base/types'
 
-export const useNotificationStore = defineStore('notification', () => {
+export function useApiNotification() {
   function fetchNotifications(query: Partial<ParsedFilterQuery>) {
     return $api<Notification[]>(`/api/users/${useLogtoUser()?.sub}/notifications`, {
       query,
     })
   }
 
-  async function markRead(id: string) {
+  function markRead(id: string) {
     return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/${id}`, {
       method: 'PATCH',
       body: {
@@ -17,7 +17,7 @@ export const useNotificationStore = defineStore('notification', () => {
     })
   }
 
-  async function markUnread(id: string) {
+  function markUnread(id: string) {
     return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/${id}`, {
       method: 'PATCH',
       body: {
@@ -26,26 +26,42 @@ export const useNotificationStore = defineStore('notification', () => {
     })
   }
 
-  async function markAllRead() {
+  function markAllRead() {
     return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/mark-all-read`, {
       method: 'PATCH',
     })
   }
 
-  async function markAllUnread() {
+  function markAllUnread() {
     return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/mark-all-unread`, {
       method: 'PATCH',
     })
   }
 
-  async function deleteNotification(id: string) {
+  function deleteNotification(id: string) {
     return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/${id}`, {
       method: 'DELETE',
     })
   }
-  async function countUnreadNotifications() {
+
+  function countUnreadNotifications() {
     return $api<CountNotifications>(`/api/users/${useLogtoUser()?.sub}/notifications/unread`)
   }
+
+  function createTokenDevice(token: string) {
+    return $api(`/api/users/${useLogtoUser()?.sub}/devices`, {
+      method: 'POST',
+      body: { token },
+    })
+  }
+
+  function deleteTokenDevice(token: string) {
+    return $api(`/api/users/${useLogtoUser()?.sub}/devices`, {
+      method: 'DELETE',
+      body: { token },
+    })
+  }
+
   return {
     fetchNotifications,
     markRead,
@@ -54,5 +70,7 @@ export const useNotificationStore = defineStore('notification', () => {
     markAllUnread,
     deleteNotification,
     countUnreadNotifications,
+    createTokenDevice,
+    deleteTokenDevice,
   }
-})
+}

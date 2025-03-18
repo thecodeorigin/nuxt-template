@@ -18,8 +18,6 @@ export default defineEventHandler(async (event) => {
       }).partial().parse(body),
     )
 
-    console.log('body', body)
-
     await enableAccountCenter()
 
     const accessToken = await client.getAccessToken()

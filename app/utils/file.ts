@@ -40,9 +40,7 @@ export function downloadBlob(blob: Blob, filename: string) {
 }
 
 export async function uploadToS3(file: File, filename: string) {
-  const s3Store = useS3Store()
-
-  const { uploadUrl, assetUrl } = await s3Store.getSignedUrl(filename)
+  const { uploadUrl, assetUrl } = await useApiS3().getSignedUrl(filename)
 
   await fetch(uploadUrl, {
     method: 'PUT',

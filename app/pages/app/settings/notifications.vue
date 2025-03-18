@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const state = reactive<{ [key: string]: boolean }>({
+const formData = ref({
   email: true,
   desktop: false,
   product_updates: true,
@@ -13,12 +13,12 @@ const sections = [
     description: 'Where can we notify you?',
     fields: [
       {
-        name: 'email',
+        name: 'email' as const,
         label: 'Email',
         description: 'Receive a daily email digest.',
       },
       {
-        name: 'desktop',
+        name: 'desktop' as const,
         label: 'Desktop',
         description: 'Receive desktop notifications.',
       },
@@ -29,17 +29,17 @@ const sections = [
     description: 'Receive updates about Nuxt UI.',
     fields: [
       {
-        name: 'weekly_digest',
+        name: 'weekly_digest' as const,
         label: 'Weekly digest',
         description: 'Receive a weekly digest of news.',
       },
       {
-        name: 'product_updates',
+        name: 'product_updates' as const,
         label: 'Product updates',
         description: 'Receive a monthly email with all new features and updates.',
       },
       {
-        name: 'important_updates',
+        name: 'important_updates' as const,
         label: 'Important updates',
         description: 'Receive emails about important updates like security fixes, maintenance, etc.',
       },
@@ -49,7 +49,7 @@ const sections = [
 
 async function onChange() {
   // Do something with data
-  console.log(state)
+  console.log(formData)
 }
 </script>
 
@@ -72,7 +72,7 @@ async function onChange() {
         class="flex items-center justify-between not-last:pb-4 gap-2"
       >
         <USwitch
-          v-model="state[field.name]"
+          v-model="formData[field.name]"
           @update:model-value="onChange"
         />
       </UFormField>

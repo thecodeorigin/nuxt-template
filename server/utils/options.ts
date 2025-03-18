@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
+import type { LogtoUser } from '@base/server/types/logto'
 import { z } from 'zod'
-import type { UserInfoResponse } from '@logto/node'
 import { useLogtoUser } from '#imports'
 
 interface RouteOptions<U extends boolean, P extends string[]> {
@@ -17,7 +17,7 @@ export async function defineEventOptions<
   UseAuthU extends boolean,
   ParamsT extends string[],
 >(event: H3Event, options?: RouteOptions<UseAuthU, TupleType<ParamsT>>) {
-  type SessionType = ConditionalType<UseAuthU, UserInfoResponse, null>
+  type SessionType = ConditionalType<UseAuthU, LogtoUser, null>
 
   type Result = {
     [K in TupleType<ParamsT>[number]]: string

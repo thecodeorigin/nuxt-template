@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { withQuery } from 'ufo'
+
 const route = useRoute()
 
 const items = computed(() => [{
@@ -12,8 +14,6 @@ const items = computed(() => [{
   label: 'Blog',
   to: '/blog',
 }])
-
-const authStore = useAuthStore()
 
 const currentUser = useLogtoUser()
 
@@ -52,7 +52,7 @@ const userAvatar = computed(
         v-else
         label="Sign in"
         color="neutral"
-        @click="authStore.signIn"
+        @click="navigateTo({ path: '/sign-in' }, { external: true })"
       />
 
       <UColorModeButton />
@@ -81,7 +81,7 @@ const userAvatar = computed(
         color="neutral"
         block
         class="mb-3"
-        @click="authStore.signIn"
+        @click="navigateTo({ path: '/sign-in' }, { external: true })"
       />
     </template>
   </UHeader>

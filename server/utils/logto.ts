@@ -1,5 +1,5 @@
 import type LogtoClient from '@logto/node'
-import type { UserInfoResponse } from '@logto/node'
+import type { LogtoUser } from '@base/server/types/logto'
 import { cleanDoubleSlashes } from 'ufo'
 
 type LogtoAccountCenterFieldStatus = 'Off' | 'Edit' | 'ReadOnly'
@@ -24,7 +24,7 @@ interface LogtoAccountCenterSettings {
 export function useLogtoUser() {
   const event = useEvent()
 
-  return (event.context?.logtoUser as UserInfoResponse) || null
+  return (event.context?.logtoUser as LogtoUser) || null
 }
 
 export function useLogtoClient() {
