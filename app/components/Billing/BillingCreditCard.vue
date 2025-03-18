@@ -1,24 +1,5 @@
 <script setup lang="ts">
-const currentUser = useLogtoUser()
-
-const credit = ref(currentUser?.custom_data?.credit || 0)
-
-const creditApi = useApiCredit()
-
-const isUpdatingCredit = ref(false)
-async function handleUpdateCredit() {
-  try {
-    isUpdatingCredit.value = true
-
-    const response = await creditApi.fetchCredit()
-
-    credit.value = response.data?.custom_data?.credit || 0
-  }
-  catch {}
-  finally {
-    isUpdatingCredit.value = false
-  }
-}
+const { credit, isRefreshingCredit, refreshCredit } = useCredit()
 </script>
 
 <template>
@@ -30,8 +11,8 @@ async function handleUpdateCredit() {
         <UIcon
           name="i-heroicons-arrow-path"
           class="ml-1 cursor-pointer"
-          :class="{ 'animate-spin': isUpdatingCredit }"
-          @click="handleUpdateCredit"
+          :class="{ 'animate-spin': isRefreshingCredit }"
+          @click="refreshCredit"
         />
       </strong>
       <p>
