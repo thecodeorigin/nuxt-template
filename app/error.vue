@@ -2,12 +2,9 @@
 import { match } from 'ts-pattern'
 import type { NuxtError } from '#app'
 
-const props = defineProps({
-  error: {
-    type: Object as PropType<NuxtError>,
-    required: true,
-  },
-})
+const props = defineProps<{
+  error: NuxtError
+}>()
 
 useSeoMeta({
   title: props.error.statusMessage || 'Error',
