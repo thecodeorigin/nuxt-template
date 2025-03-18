@@ -4,8 +4,6 @@ export * from './payment'
 
 export * from './stripe'
 
-export * from './array'
-
 export * from './db'
 
 export * from './error'

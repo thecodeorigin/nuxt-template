@@ -2,7 +2,7 @@ import type { ParsedFilterQuery } from '@base/server/utils/filter'
 import type { CountNotifications, Notification } from '@base/types'
 
 export function useApiNotification() {
-  function fetchNotifications(query: Partial<ParsedFilterQuery>) {
+  function fetchNotifications(query?: Partial<ParsedFilterQuery>) {
     return $api<Notification[]>(`/api/users/${useLogtoUser()?.sub}/notifications`, {
       query,
     })

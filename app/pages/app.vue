@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { getMessaging, getToken } from 'firebase/messaging'
-import { isInAppBrowser } from '@base/utils/detectBrowser'
 
 definePageMeta({
   layout: 'app',
