@@ -27,7 +27,7 @@ watch(isNotificationsSlideoverOpen, (value) => {
     title="Notifications"
   >
     <template #body>
-      <template v-if="notifications">
+      <template v-if="notifications?.length">
         <NuxtLink
           v-for="notification in notifications"
           :key="notification.id"
