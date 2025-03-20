@@ -118,7 +118,7 @@ onMounted(async () => {
       :ui="{ footer: 'lg:border-t lg:border-(--ui-border)' }"
     >
       <template #header="{ collapsed }">
-        <TeamsMenu :collapsed="collapsed" />
+        <UserMenu :collapsed="collapsed" />
       </template>
 
       <template #default="{ collapsed }">
@@ -136,10 +136,6 @@ onMounted(async () => {
           orientation="vertical"
           class="mt-auto"
         />
-      </template>
-
-      <template #footer="{ collapsed }">
-        <UserMenu :collapsed="collapsed" />
       </template>
     </UDashboardSidebar>
 
