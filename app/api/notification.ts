@@ -3,13 +3,13 @@ import type { CountNotifications, Notification } from '@base/types'
 
 export function useApiNotification() {
   function fetchNotifications(query?: Partial<ParsedFilterQuery>) {
-    return $api<Notification[]>(`/api/users/${useLogtoUser()?.sub}/notifications`, {
+    return $api(`/api/notifications`, {
       query,
     })
   }
 
   function markRead(id: string) {
-    return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/${id}`, {
+    return $api(`/api/notifications/${id}`, {
       method: 'PATCH',
       body: {
         read_at: new Date(),
@@ -18,7 +18,7 @@ export function useApiNotification() {
   }
 
   function markUnread(id: string) {
-    return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/${id}`, {
+    return $api(`/api/notifications/${id}`, {
       method: 'PATCH',
       body: {
         read_at: null,
@@ -27,36 +27,36 @@ export function useApiNotification() {
   }
 
   function markAllRead() {
-    return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/mark-all-read`, {
+    return $api(`/api/notifications/read`, {
       method: 'PATCH',
     })
   }
 
   function markAllUnread() {
-    return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/mark-all-unread`, {
+    return $api(`/api/notifications/unread`, {
       method: 'PATCH',
     })
   }
 
   function deleteNotification(id: string) {
-    return $api<Notification>(`/api/users/${useLogtoUser()?.sub}/notifications/${id}`, {
+    return $api(`/api/notifications/${id}`, {
       method: 'DELETE',
     })
   }
 
   function countUnreadNotifications() {
-    return $api<CountNotifications>(`/api/users/${useLogtoUser()?.sub}/notifications/unread`)
+    return $api(`/api/notifications/unread`)
   }
 
   function createTokenDevice(token: string) {
-    return $api(`/api/users/${useLogtoUser()?.sub}/devices`, {
+    return $api(`/api/devices`, {
       method: 'POST',
       body: { token },
     })
   }
 
   function deleteTokenDevice(token: string) {
-    return $api(`/api/users/${useLogtoUser()?.sub}/devices`, {
+    return $api(`/api/devices`, {
       method: 'DELETE',
       body: { token },
     })

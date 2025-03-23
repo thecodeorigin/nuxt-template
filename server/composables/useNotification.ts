@@ -1,65 +1,142 @@
-import { and, eq, isNotNull, isNull } from 'drizzle-orm'
+import { and, count, eq, ilike, isNotNull, isNull, or } from 'drizzle-orm'
 import { sysNotificationTable } from '@base/server/db/schemas'
-import { useCrud } from '@base/server/composables/useCrud'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 
-interface QueryRestrict {
-  user_id: string
-  markAllRead?: any
-  markAllUnread?: any
-}
-export function useNotification(queryRestrict: QueryRestrict) {
-  const {
-    countRecords,
-    createRecord,
-    deleteRecordByKey,
-    getRecordByKey,
-    getRecordsPaginated,
-    updateRecordByKey,
-    updateManyRecords,
-  } = useCrud(sysNotificationTable, {
-    queryRestrict: () => and(...[
-      queryRestrict.user_id && eq(sysNotificationTable.user_id, queryRestrict.user_id),
-      queryRestrict.markAllRead && isNull(sysNotificationTable.read_at),
-      queryRestrict.markAllUnread && isNotNull(sysNotificationTable.read_at),
-    ].filter(Boolean)),
-  })
-  async function getNotificationsPaginated(options: ParsedFilterQuery) {
-    const { data, total } = await getRecordsPaginated(options)
-    return { data, total }
+export function useNotification() {
+  async function getNotificationCount(userId: string, options: Partial<ParsedFilterQuery>, unread?: boolean) {
+    const data = await db.select({ total: count() }).from(sysNotificationTable).where(
+      and(
+        eq(sysNotificationTable.user_id, userId),
+        unread ? isNull(sysNotificationTable.read_at) : undefined,
+        or(
+          ilike(sysNotificationTable.title, `%${options?.keyword || ''}%`),
+          ilike(sysNotificationTable.message, `%${options?.keyword || ''}%`),
+          ilike(sysNotificationTable.title, `%${options?.keywordLower || ''}%`),
+          ilike(sysNotificationTable.message, `%${options?.keywordLower || ''}%`),
+        ),
+      ),
+    )
+
+    return data[0]
   }
-  async function getNotificationById(id: string) {
-    const { data } = await getRecordByKey('id', id)
-    return { data }
+
+  async function getNotificationsPaginated(userId: string, options: Partial<ParsedFilterQuery>, unread?: boolean) {
+    const limit = options.limit || 20
+    const page = options.page || 1
+
+    const notifications = await db.query.sysNotificationTable.findMany({
+      limit,
+      offset: limit * (page - 1),
+      orderBy(schema, { asc, desc }) {
+        return options.sortAsc
+          ? asc((schema as any)[options.sortBy || 'created_at'])
+          : desc((schema as any)[options.sortBy || 'created_at'])
+      },
+      where(schema, { and, or, eq, ilike }) {
+        if (options.keyword && options.keywordLower) {
+          return and(
+            eq(schema.user_id, userId),
+            unread ? isNull(schema.read_at) : undefined,
+            or(
+              ilike(schema.title, `%${options.keyword}%`),
+              ilike(schema.message, `%${options.keyword}%`),
+              ilike(schema.title, `%${options.keywordLower}%`),
+              ilike(schema.message, `%${options.keywordLower}%`),
+            ),
+          )
+        }
+      },
+    })
+
+    const { total } = options.withCount
+      ? await getNotificationCount(userId, options, unread)
+      : { total: notifications.length }
+
+    return {
+      data: notifications,
+      total,
+    }
   }
-  async function updateNotificationById(id: string, body: any) {
-    const { data } = await updateRecordByKey('id', id, body)
-    return { data }
+
+  function getNotificationById(notificationId: string, userId: string) {
+    return db.query.sysNotificationTable.findFirst({
+      where(schema, { and, eq }) {
+        return and(
+          eq(schema.user_id, userId),
+          eq(schema.id, notificationId),
+        )
+      },
+    })
   }
-  async function createNotification(body: any) {
-    const { data } = await createRecord(body)
-    return { data }
+
+  function createNotification(userId: string, payload: { title: string, message: string, action: any, user_id: string }) {
+    return db.insert(sysNotificationTable).values({
+      ...payload,
+      user_id: userId,
+    })
   }
-  async function deleteNotificationById(id: string) {
-    const { data } = await deleteRecordByKey('id', id)
-    return { data }
+
+  function readNotificationById(notificationId: string, userId: string) {
+    return db.update(sysNotificationTable).set({
+      read_at: new Date(),
+    }).where(
+      and(
+        eq(sysNotificationTable.user_id, userId),
+        eq(sysNotificationTable.id, notificationId),
+      ),
+    )
   }
-  function countNotifications() {
-    return countRecords()
+
+  function unreadNotificationById(notificationId: string, userId: string) {
+    return db.update(sysNotificationTable).set({
+      read_at: null,
+    }).where(
+      and(
+        eq(sysNotificationTable.user_id, userId),
+        eq(sysNotificationTable.id, notificationId),
+      ),
+    )
   }
-  function markAllRead() {
-    return updateManyRecords({ read_at: new Date() })
+
+  function deleteNotificationById(notificationId: string, userId: string) {
+    return db.delete(sysNotificationTable).where(
+      and(
+        eq(sysNotificationTable.user_id, userId),
+        eq(sysNotificationTable.id, notificationId),
+      ),
+    )
   }
-  function markAllUnread() {
-    return updateManyRecords({ read_at: null })
+
+  function markAllRead(userId: string) {
+    return db.update(sysNotificationTable).set({
+      read_at: new Date(),
+    }).where(
+      and(
+        eq(sysNotificationTable.user_id, userId),
+        isNull(sysNotificationTable.read_at),
+      ),
+    )
   }
+
+  function markAllUnread(userId: string) {
+    return db.update(sysNotificationTable).set({
+      read_at: null,
+    }).where(
+      and(
+        eq(sysNotificationTable.user_id, userId),
+        isNotNull(sysNotificationTable.read_at),
+      ),
+    )
+  }
+
   return {
     getNotificationsPaginated,
+    getNotificationCount,
     getNotificationById,
     createNotification,
-    updateNotificationById,
+    readNotificationById,
+    unreadNotificationById,
     deleteNotificationById,
-    countNotifications,
     markAllRead,
     markAllUnread,
   }

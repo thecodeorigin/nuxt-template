@@ -1,6 +1,6 @@
 export function useCreditPackage() {
-  async function getCreditPackages() {
-    return await db.query.creditPackageTable.findMany({
+  function getCreditPackages() {
+    return db.query.creditPackageTable.findMany({
       orderBy(schema, { asc }) {
         return [
           asc(schema.position),
@@ -9,7 +9,21 @@ export function useCreditPackage() {
     })
   }
 
+  function getCreditPackageByProductId(productId: string) {
+    return db.query.creditPackageTable.findFirst({
+      where(schema, { eq }) {
+        return eq(schema.id, productId)
+      },
+      columns: {
+        id: true,
+        price: true,
+        amount: true,
+      },
+    })
+  }
+
   return {
     getCreditPackages,
+    getCreditPackageByProductId,
   }
 }

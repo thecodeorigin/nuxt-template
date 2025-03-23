@@ -1,3 +1,6 @@
+import admin from 'firebase-admin'
+import { useUserDevice } from '@base/server/composables/useUserDevice'
+
 export function getFirebaseServiceAccount() {
   return {
     type: 'service_account',
@@ -12,4 +15,28 @@ export function getFirebaseServiceAccount() {
     client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fmxbs%40${process.env.FIREBASE_PROJECT_ID}.iam.gserviceaccount.com`,
     universe_domain: 'googleapis.com',
   }
+}
+
+export async function sendFirebaseCloudMessage(title: string, body: string) {
+  const service = getFirebaseServiceAccount()
+
+  if (admin.apps.length === 0) {
+    admin.initializeApp({
+      credential: admin.credential.cert(service as admin.ServiceAccount),
+    })
+  }
+
+  const currentUser = useLogtoUser()
+
+  const { getUserDeviceTokens } = useUserDevice()
+
+  const deviceTokens = await getUserDeviceTokens(currentUser.sub)
+
+  return admin.messaging().sendEachForMulticast({
+    tokens: deviceTokens.map(device => device.token_device).filter(Boolean) as string[],
+    notification: {
+      title,
+      body,
+    },
+  })
 }

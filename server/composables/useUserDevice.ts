@@ -1,38 +1,43 @@
 import { and, eq } from 'drizzle-orm'
 import { userDeviceTable } from '@base/server/db/schemas'
-import { useCrud } from './useCrud'
 
-interface QueryRestrict {
-  user_id: string | any
-}
-export function useUserDevice(queryRestrict: QueryRestrict) {
-  const { getRecordsPaginated, getRecordByKey, createRecord, deleteRecordByKey } = useCrud(userDeviceTable, {
-    queryRestrict: () => and(
-      ...[queryRestrict.user_id && eq(userDeviceTable.user_id, queryRestrict.user_id)].filter(Boolean),
-    ),
-  })
-  async function getUserDeviceAllTokens(options: ParsedFilterQuery) {
-    const { data, total } = await getRecordsPaginated(options)
-    return { data, total }
-  }
-  async function getUserDeviceToken(token_device: string) {
-    const { data } = await getRecordByKey('token_device', token_device)
-    return { data }
+export function useUserDevice() {
+  async function getUserDeviceTokens(userId: string) {
+    return db.query.userDeviceTable.findMany({
+      where(schema, { eq }) {
+        return eq(schema.user_id, userId)
+      },
+    })
   }
 
-  async function createUserDeviceToken(body: any) {
-    const { data } = await createRecord(body)
-    return { data }
+  function getUserDeviceToken(userId: string, deviceToken: string) {
+    return db.query.userDeviceTable.findFirst({
+      where(schema, { eq }) {
+        return eq(schema.token_device, deviceToken)
+      },
+    })
   }
-  async function deleteUserDeviceToken(token_device: string) {
-    const { data } = await deleteRecordByKey('token_device', token_device)
-    return { data }
+
+  function createUserDeviceToken(userId: string, deviceToken: string) {
+    return db.insert(userDeviceTable).values({
+      user_id: userId,
+      token_device: deviceToken,
+    }).returning()
+  }
+
+  function deleteUserDeviceToken(userId: string, deviceToken: string) {
+    return db.delete(userDeviceTable).where(
+      and(
+        eq(userDeviceTable.user_id, userId),
+        eq(userDeviceTable.token_device, deviceToken),
+      ),
+    )
   }
 
   return {
     getUserDeviceToken,
+    getUserDeviceTokens,
     createUserDeviceToken,
     deleteUserDeviceToken,
-    getUserDeviceAllTokens,
   }
 }
