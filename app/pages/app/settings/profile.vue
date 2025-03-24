@@ -43,10 +43,10 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   try {
     await authApi.updateProfile(event.data)
 
-    toast.add({ title: 'Profile updated', icon: 'i-heroicons-check-circle' })
+    toast.add({ title: 'Profile updated', icon: 'i-lucide-circle-check' })
   }
   catch {
-    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'error' })
+    toast.add({ title: 'Error updating profile', icon: 'i-lucide-circle-x', color: 'error' })
   }
 }
 

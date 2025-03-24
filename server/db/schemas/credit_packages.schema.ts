@@ -2,6 +2,11 @@ import { jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-c
 import { relations } from 'drizzle-orm/relations'
 import { userOrderTable } from './user_orders.schema'
 
+interface PricingPlanFeature {
+  title: string
+  icon?: string
+}
+
 export const creditPackageTable = pgTable('credit_packages', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   title: text('title'),
@@ -9,7 +14,7 @@ export const creditPackageTable = pgTable('credit_packages', {
   price: numeric('price').notNull(),
   currency: text('currency').notNull(),
   amount: numeric('amount').notNull(),
-  features: jsonb('features'),
+  features: jsonb('features').$type<string[] | PricingPlanFeature[]>().default([]),
   position: numeric('position'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),

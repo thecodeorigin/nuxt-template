@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { getMessaging, getToken } from 'firebase/messaging'
-import { quickActionBusKey } from '@base/injections/layout'
 
 definePageMeta({
   layout: 'app',
@@ -14,8 +13,6 @@ const tokenDevice = useLocalStorage<string | null>('tokenDevice', null)
 const { isNotificationsSlideoverOpen } = useDashboard()
 
 const { credit, isRefreshingCredit, refreshCredit } = useCredit()
-
-const quickActionBus = useEventBus(quickActionBusKey)
 
 const notificationApi = useApiNotification()
 
@@ -71,6 +68,36 @@ const links = [
     },
   ],
 ]
+
+const isTopupModalVisible = ref(false)
+
+const { data: plans } = useAsyncData('credit-packages', () => useApiCreditPackage().fetchCreditPackages(), {
+  transform(data) {
+    return data.data.reduce((acc, item) => {
+      if (Number(item.amount) > 0) {
+        acc.push({
+          ...item,
+          features: [],
+        })
+      }
+
+      return acc
+    }, [] as CreditPackage[])
+  },
+})
+
+const selectedPriceId = ref(plans.value?.[1]?.id || null)
+const selectedPrice = computed(() => plans.value?.find((plan: any) => plan.id === selectedPriceId.value))
+
+const paymentApi = useApiPayment()
+
+async function handleCheckout() {
+  const productIdentifier = `credit:${selectedPriceId.value}`
+
+  const { data: checkoutData } = await paymentApi.checkout('payos', productIdentifier)
+
+  window.open(checkoutData.paymentUrl, '_blank')
+}
 </script>
 
 <template>
@@ -99,22 +126,61 @@ const links = [
             Credits: <strong class="ml-2">{{ credit }}</strong>
 
             <UIcon
-              name="i-heroicons-arrow-path"
+              name="i-lucide-refresh-cw"
               class="ml-1 cursor-pointer"
               :class="{ 'animate-spin': isRefreshingCredit }"
               @click="refreshCredit"
             />
           </span>
 
-          <UTooltip text="Create new instance" :popper="{ placement: 'right' }">
+          <UTooltip text="Add more credit to your account" :popper="{ placement: 'right' }">
             <UButton
-              trailing-icon="i-heroicons-plus"
+              trailing-icon="i-lucide-diamond-plus"
               color="neutral"
-              @click="quickActionBus.emit()"
+              @click="isTopupModalVisible = true"
             >
-              Create
+              Add Credit
             </UButton>
           </UTooltip>
+
+          <UModal
+            v-model:open="isTopupModalVisible"
+            title="Topup credit to your account"
+            :ui="{
+              content: 'w-full max-w-3xl',
+            }"
+          >
+            <template #body>
+              <UFormField
+                description="Get started by selecting a credit package."
+                help="It's recommended to topup twice the amount of your instance monthly consumption."
+                size="xl"
+              >
+                <div class="flex items-center space-x-4">
+                  <USelect
+                    v-model="selectedPriceId"
+                    :items="plans || []"
+                    value-key="id"
+                    label-key="title"
+                    size="xl"
+                    placeholder="Select a credit package"
+                    class="flex-1"
+                  >
+                    <template #item="{ item }">
+                      {{ item.title }}
+
+                      <span class="text-gray-500">{{ formatPrice(Number(item.price), item.currency) }} / {{ item.amount }} credits</span>
+                    </template>
+                  </USelect>
+
+                  <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" @click="handleCheckout">
+                    <b>Buy {{ Number(selectedPrice?.amount) }} credits</b>
+                    ({{ formatPrice(Number(selectedPrice?.price), selectedPrice?.currency || 'vi') }})
+                  </UButton>
+                </div>
+              </UFormField>
+            </template>
+          </UModal>
         </template>
       </UDashboardNavbar>
 

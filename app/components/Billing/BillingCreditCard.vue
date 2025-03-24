@@ -9,7 +9,7 @@ const { credit, isRefreshingCredit, refreshCredit } = useCredit()
         Available credits: {{ credit }}
 
         <UIcon
-          name="i-heroicons-arrow-path"
+          name="i-lucide-refresh-cw"
           class="ml-1 cursor-pointer"
           :class="{ 'animate-spin': isRefreshingCredit }"
           @click="refreshCredit"

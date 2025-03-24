@@ -32,11 +32,11 @@ async function onSubmit(event: FormSubmitEvent<PasswordSchema>) {
   try {
     await authApi.updatePassword(event.data)
 
-    toast.add({ title: 'Profile updated', icon: 'i-heroicons-check-circle' })
+    toast.add({ title: 'Profile updated', icon: 'i-lucide-circle-check' })
   }
   catch (error) {
     console.log(error)
-    toast.add({ title: 'Error updating profile', icon: 'i-heroicons-x-circle', color: 'error' })
+    toast.add({ title: 'Error updating profile', icon: 'i-lucide-circle-x', color: 'error' })
   }
 }
 </script>

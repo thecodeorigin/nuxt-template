@@ -119,6 +119,10 @@ export const collections = {
         title: z.string().nonempty(),
         description: z.string().nonempty(),
       }),
+      topup: z.object({
+        title: z.string().nonempty(),
+        description: z.string().nonempty(),
+      }),
       plans: z.array(
         z.object({
           title: z.string().nonempty(),
@@ -143,7 +147,7 @@ export const collections = {
           z.object({
             label: z.string().nonempty(),
             content: z.string().nonempty(),
-            defaultOpen: z.boolean().optional(),
+            value: z.string().nonempty(),
           }),
         ),
       }),

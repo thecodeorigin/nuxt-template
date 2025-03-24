@@ -4,72 +4,30 @@ navigation.icon: i-lucide-credit-card
 hero:
   title: A plan for every need
   description: Our plans are designed to meet the requirements of both beginners and players. Get the right plan that suits you.
-plans:
-  - title: Basic
-    description: A basic plan for individuals.
-    price:
-      month: $9.9
-      year: $99.9
-    button:
-      label: Get Started
-      color: neutral
-      variant: subtle
-    features:
-      - 1 GB Storage
-      - 1 Email Account
-      - 1 Domain
-      - 1 Website
-      - 1 Database
-      - 1 SSL Certificate
-      - 1 Support Ticket
-  - title: Standard
-    description: A standard plan for small teams.
-    price:
-      month: $19.9
-      year: $199.9
-    highlight: true
-    scale: true
-    button:
-      label: Get Started
-    features:
-      - 10 GB Storage
-      - 10 Email Accounts
-      - 10 Domains
-      - 10 Websites
-      - 10 Databases
-      - 10 SSL Certificates
-      - 10 Support Tickets
-  - title: Premium
-    description: A premium plan for large teams.
-    price:
-      month: $29.9
-      year: $299.9
-    button:
-      label: Get Started
-      color: neutral
-      variant: subtle
-    features:
-      - 100 GB Storage
-      - 100 Email Accounts
-      - 100 Domains
-      - 100 Websites
-      - 100 Databases
-      - 100 SSL Certificates
-      - 100 Support Tickets
+  align: center
+topup:
+  title: Top up your account
+  description: Add credits to your account to create your first n8n instance.
+
 faq:
-  title: Frequently asked questions
-  description: Culpa consectetur dolor pariatur commodo aliqua amet tempor nisi enim deserunt elit cillum.
+  title: Frequently Asked Questions
+  description: Find answers to common questions about our credit-based n8n hosting service, including billing, credits, and plan changes.
   items:
-    - label: Is this a secure service?
-      content: Qui sunt nostrud aliquip reprehenderit enim proident veniam magna aliquip velit occaecat eiusmod nisi deserunt sunt.
-      defaultOpen: true
-    - label: How can I cancel my subscription?
-      content: Consectetur irure Lorem nostrud adipisicing aliqua mollit Lorem sit officia magna eiusmod cupidatat.
-    - label: How does the free trial work?
-      content: Quis officia commodo magna eu qui aliquip duis.
-    - label: Can I switch plans later?
-      content: Dolore irure ullamco dolore eu occaecat magna eiusmod dolor aliqua culpa labore.
+    - label: How does your pricing model work?
+      content: Different tiers consume credits at different rates. Stronger instances consume more credits. You can top up credits from your dashboard.
+    - label: Do you offer a free tier?
+      content: No, we do not offer a free tier. All instances require credits to run.
+    - label: What happens if I run out of credits?
+      content: If your credit balance reaches zero, your n8n instance will continue running for 7 days. After that, it will be deactivated until you add more credits.
+    - label: Can I cancel my instance and get a refund?
+      content: Canceling an instance does not refund cash but returns unused credits to your account. However, canceling an instance costs 1 day’s worth of credits based on its tier.
+    - label: Can I upgrade or downgrade my instance?
+      content: Yes! You can change your instance tier at any time. The new credit consumption rate will apply immediately.
+    - label: Where can I top up my account?
+      content: You can top up your account with credits from your dashboard. If you make a payment from the pricing page, our system will automatically create a new n8n instance for you.
+    - label: How does billing work?
+      content: Your instance consumes credits daily. As long as you have enough credits, your instance will stay active.
     - label: Do you offer refunds?
-      content: Duis mollit nostrud voluptate mollit Lorem dolore commodo veniam incididunt eiusmod.
+      content: We do not offer cash refunds. If you cancel an instance, any remaining credits (minus the 1-day cancellation cost) will be returned to your account.
     - label: Do you offer support?
-      content: Aliqua sit nisi consequat pariatur Lorem minim irure qui.
+      content: Yes! We offer support for all plans, ensuring you get assistance when needed.
