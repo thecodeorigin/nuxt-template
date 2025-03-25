@@ -175,7 +175,7 @@ async function handleCheckout() {
 
                   <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" @click="handleCheckout">
                     <b>Buy {{ Number(selectedPrice?.amount) }} credits</b>
-                    ({{ formatPrice(Number(selectedPrice?.price), selectedPrice?.currency || 'vi') }})
+                    ({{ formatPrice(Number(selectedPrice?.price), selectedPrice?.currency || 'VND') }})
                   </UButton>
                 </div>
               </UFormField>
