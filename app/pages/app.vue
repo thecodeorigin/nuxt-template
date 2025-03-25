@@ -147,7 +147,7 @@ async function handleCheckout() {
             v-model:open="isTopupModalVisible"
             title="Topup credit to your account"
             :ui="{
-              content: 'w-full max-w-3xl',
+              content: 'w-full !max-w-3xl',
             }"
           >
             <template #body>
