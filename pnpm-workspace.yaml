@@ -1,3 +1,16 @@
 packages:
   - ./
-  - 'packages/**'
+  - packages/**
+ignoredBuiltDependencies:
+  - '@firebase/util'
+  - '@parcel/watcher'
+  - '@sentry/cli'
+  - bcrypt
+  - esbuild
+  - maplibre-gl
+  - protobufjs
+  - sharp
+  - vnpay
+  - vue-demi
+onlyBuiltDependencies:
+  - better-sqlite3

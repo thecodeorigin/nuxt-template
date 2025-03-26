@@ -1,12 +1,12 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.2.3",
+  "version": "2.2.5",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "packageManager": "pnpm@9.12.1",
+  "packageManager": "pnpm@10.7.0",
   "author": "thecodeorigin <contact@thecodeorigin.com>",
   "homepage": "https://github.com/thecodeorigin/nuxt-template",
   "repository": {

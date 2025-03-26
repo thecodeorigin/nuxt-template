@@ -10,6 +10,7 @@ export default defineNitroPlugin(() => {
     host: config.redis.host,
     port: Number(config.redis.port),
     password: config.redis.password,
+    maxRetriesPerRequest: 0,
   })
 
   // Mount driver
