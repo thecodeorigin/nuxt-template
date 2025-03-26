@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -116,11 +116,6 @@
     "vue-tsc": "^2.2.2",
     "vuefire": "^3.2.1",
     "zod": "^3.24.2"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3"
-    ]
   },
   "resolutions": {
     "@typescript-eslint/typescript-estree": "8.26.1",
