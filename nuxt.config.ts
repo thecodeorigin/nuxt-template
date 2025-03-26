@@ -88,18 +88,6 @@ export default defineNuxtConfig({
       ],
     },
 
-    redis: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      password: process.env.REDIS_PASSWORD,
-    },
-
-    mongodb: {
-      connectionString: process.env.MONGODB_CONNECTION_STRING,
-      databaseName: process.env.MONGODB_DATABASE_NAME,
-      collectionName: process.env.MONGODB_COLLECTION_NAME,
-    },
-
     payos: {
       clientId: process.env.PAYOS_CLIENT_ID,
       apiKey: process.env.PAYOS_API_KEY,
@@ -337,6 +325,24 @@ export default defineNuxtConfig({
       },
     },
     hidePoweredBy: true,
+    rateLimiter: process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+      ? {
+          driver: {
+            name: 'upstash',
+          },
+        }
+      : process.env.REDIS_HOST && process.env.REDIS_PASSWORD
+        ? {
+            driver: {
+              name: 'redis',
+              options: {
+                host: process.env.REDIS_HOST,
+                port: Number(process.env.REDIS_PORT),
+                password: process.env.REDIS_PASSWORD,
+              },
+            },
+          }
+        : false,
   },
 
   compatibilityDate: '2024-07-12',

@@ -2,15 +2,14 @@ import mongodbDriver from 'unstorage/drivers/mongodb'
 
 export default defineNitroPlugin(() => {
   const storage = useStorage()
-  const config = useRuntimeConfig()
 
-  // Dynamically pass in credentials from runtime configuration, or other sources
-  const driver = mongodbDriver({
-    connectionString: config.mongodb.connectionString,
-    databaseName: config.mongodb.databaseName,
-    collectionName: config.mongodb.collectionName,
-  })
+  if (process.env.MONGODB_CONNECTION_STRING && process.env.MONGODB_DATABASE_NAME && process.env.MONGODB_COLLECTION_NAME) {
+    const driver = mongodbDriver({
+      connectionString: process.env.MONGODB_CONNECTION_STRING,
+      databaseName: process.env.MONGODB_DATABASE_NAME,
+      collectionName: process.env.MONGODB_COLLECTION_NAME,
+    })
 
-  // Mount driver
-  storage.mount('mongodb', driver)
+    storage.mount('mongodb', driver)
+  }
 })
