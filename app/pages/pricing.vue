@@ -94,25 +94,6 @@ tryOnBeforeMount(async () => {
 
 <template>
   <div v-if="page">
-    <UPageHero v-bind="page.hero" />
-
-    <UContainer>
-      <UPricingPlans v-if="plans?.length" scale style="--count: 3">
-        <PricingItem
-          v-for="(plan, index) in plans || []"
-          :key="index"
-          :index="index"
-          :highlight="checkHighlightedPrice(Number(plan.price), index)"
-          :credit-package="plan"
-          @buy="handleBuyCredit"
-          @contact="handleContact"
-        />
-      </UPricingPlans>
-      <p v-else>
-        No credit package available. Please contact us for more information.
-      </p>
-    </UContainer>
-
     <UPageSection
       :title="page.topup.title"
       :description="page.topup.description"
@@ -148,6 +129,23 @@ tryOnBeforeMount(async () => {
         </ClientOnly>
       </UFormField>
     </UPageSection>
+
+    <UContainer>
+      <UPricingPlans v-if="plans?.length" scale style="--count: 3">
+        <PricingItem
+          v-for="(plan, index) in plans || []"
+          :key="index"
+          :index="index"
+          :highlight="checkHighlightedPrice(Number(plan.price), index)"
+          :credit-package="plan"
+          @buy="handleBuyCredit"
+          @contact="handleContact"
+        />
+      </UPricingPlans>
+      <p v-else>
+        No credit package available. Please contact us for more information.
+      </p>
+    </UContainer>
 
     <UPageSection
       :title="page.faq.title"

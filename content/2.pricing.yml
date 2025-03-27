@@ -1,12 +1,9 @@
 title: Pricing
 description: Choose the plan that's right for you.
 navigation.icon: i-lucide-credit-card
-hero:
-  title: A plan for every need
-  description: Our plans are designed to meet the requirements of both beginners and players. Get the right plan that suits you.
-  align: center
+
 topup:
-  title: Top up your account
+  title: Start topping up your account
   description: Add credits to your account to create your first n8n instance.
 
 faq:
