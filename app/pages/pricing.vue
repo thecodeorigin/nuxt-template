@@ -25,7 +25,7 @@ function checkHighlightedPrice(price: number, index?: number) {
     return index === 1
 }
 
-const selectedPriceId = ref(plans.value?.[1]?.id || null)
+const selectedPriceId = ref<string | null>(null)
 const selectedPrice = computed(() => plans.value?.find((plan: any) => plan.id === selectedPriceId.value))
 
 const paymentApi = useApiPayment()
@@ -79,6 +79,9 @@ async function handleCheckout() {
 }
 
 tryOnBeforeMount(async () => {
+  if (!selectedPriceId.value)
+    selectedPriceId.value = plans.value?.[1]?.id || null
+
   if (pendingPaymentPrice.value) {
     const isProcessing = Boolean(pendingPaymentPrice.value)
 
@@ -122,8 +125,8 @@ tryOnBeforeMount(async () => {
             </USelect>
 
             <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" @click="handleCheckout">
-              <b>Buy {{ Number(selectedPrice?.amount) }} credits</b>
-              ({{ formatPrice(Number(selectedPrice?.price), selectedPrice?.currency || 'VND') }})
+              <b>Buy {{ Number(selectedPrice?.amount || 0) }} credits</b>
+              ({{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }})
             </UButton>
           </div>
         </ClientOnly>
