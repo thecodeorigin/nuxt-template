@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+
 import { fileURLToPath } from 'node:url'
 import { UserScope } from '@logto/node'
 
@@ -146,7 +148,6 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true,
     asyncContext: true,
-    // appManifest: true,
   },
 
   alias: {
@@ -172,6 +173,27 @@ export default defineNuxtConfig({
         'vnpay > moment',
         'vnpay > moment-timezone',
       ],
+    },
+  },
+
+  hooks: {
+    'build:before': function () {
+      try {
+        fs.writeFileSync('./public/firebase-config.json', JSON.stringify({
+          apiKey: process.env.FIREBASE_API_KEY,
+          authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
+          databaseURL: process.env.FIREBASE_DB_URL,
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
+          messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+          appId: process.env.FIREBASE_APP_ID,
+          measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+        }))
+        console.log('Firebase config file written successfully')
+      }
+      catch (err) {
+        console.error('Error writing to file:', err)
+      }
     },
   },
 

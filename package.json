@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -29,7 +29,7 @@
     "lint": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "prepare": "jiti ./scripts/prepare.ts",
+    "prepare": "nuxt prepare",
     "test": "vitest run",
     "start": "node .output/server/index.mjs",
     "cleanup": "rimraf .nuxt .output dist node_modules areas",
