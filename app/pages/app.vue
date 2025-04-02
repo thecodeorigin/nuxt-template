@@ -156,7 +156,7 @@ async function handleCheckout() {
                 help="It's recommended to topup twice the amount of your instance monthly consumption."
                 size="xl"
               >
-                <div class="flex items-center space-x-4">
+                <div class="flex md:flex-row flex-col items-center gap-2">
                   <USelect
                     v-model="selectedPriceId"
                     :items="plans || []"
@@ -164,7 +164,7 @@ async function handleCheckout() {
                     label-key="title"
                     size="xl"
                     placeholder="Select a credit package"
-                    class="flex-1"
+                    class="flex-1 md:w-auto w-full"
                   >
                     <template #item="{ item }">
                       {{ item.title }}
@@ -173,9 +173,9 @@ async function handleCheckout() {
                     </template>
                   </USelect>
 
-                  <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" @click="handleCheckout">
-                    <b>Buy {{ Number(selectedPrice?.amount) }} credits</b>
-                    ({{ formatPrice(Number(selectedPrice?.price), selectedPrice?.currency || 'VND') }})
+                  <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" class="md:w-auto w-full" @click="handleCheckout">
+                    <b>Buy {{ Number(selectedPrice?.amount || 0) }} credits</b>
+                    ({{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }})
                   </UButton>
                 </div>
               </UFormField>

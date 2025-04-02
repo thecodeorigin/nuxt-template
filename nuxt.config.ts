@@ -63,10 +63,6 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
-    auth: {
-      secret: process.env.AUTH_SECRET,
-    },
-
     logto: {
       endpoint: process.env.LOGTO_ENDPOINT,
       appId: process.env.LOGTO_APP_ID,
