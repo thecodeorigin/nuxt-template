@@ -22,13 +22,6 @@ export async function subtractCreditFromUser(userId: string, amount: number) {
 
   const newAmount = (Number.parseInt(userData.credit || '0')) - amount
 
-  if (newAmount < 0) {
-    throw createError({
-      message: 'Insufficient amount of credits!',
-      statusCode: 402,
-    })
-  }
-
   const { updateCreditHistory } = useCredit()
 
   await updateCreditHistory(CreditHistoryType.SPEND, amount, userId)
