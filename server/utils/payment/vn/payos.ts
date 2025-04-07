@@ -33,8 +33,8 @@ export async function createPayOSCheckout({
     orderCode: date.getTime(),
     amount,
     description: paymentProviderTransaction.provider_transaction_info,
-    cancelUrl: config.payos.cancelUrl || `${config.public.appBaseUrl}/app/app/settings/credit`,
-    returnUrl: config.payos.returnUrl || `${config.public.appBaseUrl}/app/app/settings/credit`,
+    cancelUrl: config.payos.cancelUrl || `${config.public.appBaseUrl}/app/settings/credit`,
+    returnUrl: config.payos.returnUrl || `${config.public.appBaseUrl}/app/settings/credit`,
     buyerEmail,
     buyerPhone,
   })
