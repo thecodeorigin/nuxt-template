@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm'
 import { PaymentStatus, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '../db/schemas'
 
 export function usePayment() {
@@ -21,6 +22,14 @@ export function usePayment() {
     )[0]
   }
 
+  function updatePaymentStatus(paymentId: string, status: PaymentStatus) {
+    return db.update(userPaymentTable).set({
+      status,
+    }).where(
+      eq(userPaymentTable.id, paymentId),
+    )
+  }
+
   async function createProviderTransaction(paymentId: string, userId: string, provider: string, productType: string, productInfo: any) {
     return (
       await db.insert(paymentProviderTransactionTable).values({
@@ -34,9 +43,38 @@ export function usePayment() {
     )[0]
   }
 
+  function getProviderTransactionByOrderCode(orderCode: string) {
+    return db.query.paymentProviderTransactionTable.findFirst({
+      where: eq(paymentProviderTransactionTable.provider_transaction_id, orderCode),
+      with: {
+        payment: {
+          with: {
+            order: {
+              with: {
+                package: true,
+              },
+            },
+          },
+        },
+      },
+    })
+  }
+
+  function updateProviderTransactionStatus(transactionId: string, status: PaymentStatus, resolvedAt: string | Date | number) {
+    return db.update(paymentProviderTransactionTable).set({
+      provider_transaction_status: status,
+      provider_transaction_resolved_at: new Date(resolvedAt),
+    }).where(
+      eq(paymentProviderTransactionTable.id, transactionId),
+    )
+  }
+
   return {
     createOrder,
     createPayment,
+    updatePaymentStatus,
     createProviderTransaction,
+    getProviderTransactionByOrderCode,
+    updateProviderTransactionStatus,
   }
 }

@@ -1,19 +1,19 @@
 import { promises as fs } from 'node:fs'
 import { dirname, join } from 'node:path'
 import type { H3Event } from 'h3'
-import { HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
 export type LogLevel = 'log' | 'info' | 'warn' | 'error'
 
 export class Logger {
   private logsDir: string
   private s3Bucket: string | null = null
-  private s3Region: string | null = null
   private currentLogFile: string | null = null
   private uploadQueue: Set<string> = new Set()
   private isUploading = false
-  private maxLogFiles = 2 // Keep at most this many log files locally
   private enabledLogLevels: Set<LogLevel> | null = null
+  private maxLogSizeBytes = 5 * 1024 * 1024 // 5MB threshold for "fullness"
+  private currentLogSize = 0
 
   constructor(logsDir: string = join(process.cwd(), 'logs')) {
     this.logsDir = logsDir
@@ -68,7 +68,6 @@ export class Logger {
 
     if (bucket) {
       this.s3Bucket = bucket
-      this.s3Region = region || null
       console.info(`Logger configured to use S3 bucket: ${bucket}${region ? ` in region ${region}` : ''}`)
     }
     else {
@@ -109,49 +108,11 @@ export class Logger {
     // If the log file has changed, queue the old one for upload
     if (this.currentLogFile && this.currentLogFile !== logFilePath) {
       this.queueForUpload(this.currentLogFile)
+      this.currentLogSize = 0
     }
 
     this.currentLogFile = logFilePath
     return logFilePath
-  }
-
-  private async checkLogFileCount() {
-    try {
-      // Read all files in the logs directory
-      const files = await fs.readdir(this.logsDir)
-
-      // Filter for log files (ending with .log)
-      const logFiles = files
-        .filter(file => file.endsWith('.log'))
-        .map(file => join(this.logsDir, file))
-
-      // If there are more log files than our threshold, upload the oldest ones
-      if (logFiles.length > this.maxLogFiles) {
-        // Sort by file creation time (oldest first)
-        const sortedFiles = await Promise.all(
-          logFiles.map(async (file) => {
-            const stats = await fs.stat(file)
-            return { file, createdAt: stats.birthtime }
-          }),
-        )
-
-        sortedFiles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-
-        // Keep the current log file and remove oldest ones beyond our threshold
-        const filesToUpload = sortedFiles
-          .filter(item => item.file !== this.currentLogFile)
-          .slice(0, logFiles.length - this.maxLogFiles)
-          .map(item => item.file)
-
-        // Queue files for upload
-        for (const file of filesToUpload) {
-          this.queueForUpload(file)
-        }
-      }
-    }
-    catch (error) {
-      console.error('Error checking log file count:', error)
-    }
   }
 
   private queueForUpload(filePath: string) {
@@ -204,21 +165,14 @@ export class Logger {
     }
 
     try {
-      // Create a new S3 client with the specific region for the logger bucket if provided
-      let s3Client
-      if (this.s3Region) {
-        s3Client = new S3Client({
-          region: this.s3Region,
-          credentials: {
-            accessKeyId: process.env.AWS_S3_ACCESS_KEY!,
-            secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY!,
-          },
-        })
-      }
-      else {
-        // Fall back to the default client
-        s3Client = getS3Client()
-      }
+      // Use the auto-imported getS3Client when no specific region is provided
+      const s3Client = new S3Client({
+        region: process.env.AWS_LOGGER_S3_REGION!,
+        credentials: {
+          accessKeyId: process.env.AWS_S3_ACCESS_KEY!,
+          secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY!,
+        },
+      })
 
       // Check if file exists
       const fileStats = await fs.stat(filePath)
@@ -239,25 +193,6 @@ export class Logger {
 
       // Create S3 key with logs/ prefix
       const s3Key = `logs/${fileName}`
-
-      // Check if the file already exists in S3 to avoid duplicate uploads
-      try {
-        await s3Client.send(new HeadObjectCommand({
-          Bucket: this.s3Bucket,
-          Key: s3Key,
-        }))
-
-        // Object already exists in S3, safe to delete locally
-        console.info(`Log file ${fileName} already exists in S3, skipping upload`)
-        await fs.unlink(filePath)
-        return
-      }
-      catch (error: any) {
-        // If error code is 404, the object does not exist, which is what we want
-        if (error.name !== 'NotFound' && error.$metadata?.httpStatusCode !== 404) {
-          throw error
-        }
-      }
 
       // Upload to S3
       await s3Client.send(new PutObjectCommand({
@@ -302,6 +237,10 @@ export class Logger {
       logEntry = { ...logEntry, ...meta }
     }
 
+    const logLine = `${JSON.stringify(logEntry)}\n`
+    // eslint-disable-next-line node/prefer-global/buffer
+    const logLineSize = Buffer.byteLength(logLine, 'utf-8')
+
     try {
       // Ensure the directory exists
       await fs.mkdir(dirname(logFilePath), { recursive: true })
@@ -309,12 +248,24 @@ export class Logger {
       // Append log to file
       await fs.appendFile(
         logFilePath,
-        `${JSON.stringify(logEntry)}\n`,
+        logLine,
         'utf-8',
       )
 
-      // After writing, check if we have too many log files
-      await this.checkLogFileCount()
+      // Track current log file size
+      this.currentLogSize += logLineSize
+
+      // Check if the log file size exceeds threshold
+      if (this.currentLogSize >= this.maxLogSizeBytes) {
+        // Change the current log file to force rotation
+        this.currentLogFile = null
+        this.currentLogSize = 0
+
+        // Queue the full log file for upload
+        if (logFilePath !== null) {
+          this.queueForUpload(logFilePath)
+        }
+      }
     }
     catch (error) {
       console.error(`Error writing to log file: ${error}`)
@@ -364,7 +315,6 @@ export class Logger {
       try {
         // Only try to read the body for methods that typically have one
         if (['POST', 'PUT', 'PATCH'].includes(event.method)) {
-          // Clone the event to avoid consuming the body stream
           body = await readBody(event).catch(() => null)
         }
       }
@@ -413,6 +363,14 @@ export class Logger {
     }
     catch (error) {
       console.error('Error flushing logs:', error)
+    }
+  }
+
+  // Configure log file size threshold (in MB)
+  public setMaxLogSize(sizeInMB: number) {
+    if (sizeInMB > 0) {
+      this.maxLogSizeBytes = sizeInMB * 1024 * 1024
+      console.info(`Logger: Set max log file size to ${sizeInMB}MB`)
     }
   }
 }

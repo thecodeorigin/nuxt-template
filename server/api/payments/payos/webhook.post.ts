@@ -1,5 +1,5 @@
-import { eq } from 'drizzle-orm'
-import { PaymentStatus, paymentProviderTransactionTable, userPaymentTable } from '@base/server/db/schemas'
+import { PaymentStatus } from '@base/server/db/schemas'
+import { usePayment } from '@base/server/composables/usePayment'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -21,20 +21,9 @@ export default defineEventHandler(async (event) => {
     logger.log('[PayOS Webhook] Verified webhook data:', webhookData)
     const transactionStatus = webhookData.code === '00' ? PaymentStatus.RESOLVED : PaymentStatus.FAILED
 
-    const paymentTransactionOfProvider = await db.query.paymentProviderTransactionTable.findFirst({
-      where: eq(paymentProviderTransactionTable.provider_transaction_id, String(webhookData.orderCode)),
-      with: {
-        payment: {
-          with: {
-            order: {
-              with: {
-                package: true,
-              },
-            },
-          },
-        },
-      },
-    })
+    const { updatePaymentStatus, updateProviderTransactionStatus, getProviderTransactionByOrderCode } = usePayment()
+
+    const paymentTransactionOfProvider = await getProviderTransactionByOrderCode(String(webhookData.orderCode))
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
       logger.warn(`[PayOS Webhook] Transaction not found or invalid: orderCode=${webhookData.orderCode}`)
@@ -43,41 +32,30 @@ export default defineEventHandler(async (event) => {
 
     logger.log(`[PayOS Webhook] Processing transaction: orderCode=${webhookData.orderCode}, status=${transactionStatus}`)
 
-    await db.transaction(async (db) => {
-      if (!paymentTransactionOfProvider?.payment.order.package) {
-        logger.error(`[PayOS Webhook] No credit package found for transaction: ${webhookData.orderCode}`)
-        throw createError({
-          statusCode: 400,
-          message: 'No credit package found for this transaction!',
-        })
-      }
+    const creditAmount = Number.parseInt(paymentTransactionOfProvider.payment.order.package.amount)
+    const userId = paymentTransactionOfProvider.payment.order.user_id
 
-      logger.log(`[PayOS Webhook] Updating transaction ${paymentTransactionOfProvider.id} to status: ${transactionStatus}`)
+    logger.log(`[PayOS Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
 
-      await db.update(paymentProviderTransactionTable).set({
-        provider_transaction_status: transactionStatus,
-        provider_transaction_resolved_at: new Date(webhookData.transactionDateTime),
-      }).where(
-        eq(paymentProviderTransactionTable.id, paymentTransactionOfProvider.id),
-      )
+    await addCreditToUser(userId, creditAmount)
 
-      await db.update(userPaymentTable).set({
-        status: transactionStatus,
-      }).where(
-        eq(userPaymentTable.id, paymentTransactionOfProvider.payment.id),
-      )
+    logger.log(`[PayOS Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
 
-      logger.log(`[PayOS Webhook] Transaction updated successfully: id=${paymentTransactionOfProvider.id}, status=${transactionStatus}`)
+    if (!paymentTransactionOfProvider?.payment.order.package) {
+      logger.error(`[PayOS Webhook] No credit package found for transaction: ${webhookData.orderCode}`)
+      throw createError({
+        statusCode: 400,
+        message: 'No credit package found for this transaction!',
+      })
+    }
 
-      const creditAmount = Number.parseInt(paymentTransactionOfProvider.payment.order.package.amount)
-      const userId = paymentTransactionOfProvider.payment.order.user_id
+    logger.log(`[PayOS Webhook] Updating transaction ${paymentTransactionOfProvider.id} to status: ${transactionStatus}`)
 
-      logger.log(`[PayOS Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
+    await updateProviderTransactionStatus(paymentTransactionOfProvider.id, transactionStatus, webhookData.transactionDateTime)
 
-      await addCreditToUser(userId, creditAmount)
+    await updatePaymentStatus(paymentTransactionOfProvider.payment.id, transactionStatus)
 
-      logger.log(`[PayOS Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
-    })
+    logger.log(`[PayOS Webhook] Transaction updated successfully: id=${paymentTransactionOfProvider.id}, status=${transactionStatus}`)
 
     logger.log('[PayOS Webhook] Webhook processing completed successfully')
     return { success: true }
