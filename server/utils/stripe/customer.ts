@@ -62,7 +62,7 @@ export async function createStripeCustomerOnSignup(email: string) {
     })
   }
 
-  console.log(`${email} (${stripeCustomer.id}) has signed up for ${freePrice.id} (${freePrice.unit_amount} ${freePrice.currency})`)
+  logger.log(`${email} (${stripeCustomer.id}) has signed up for ${freePrice.id} (${freePrice.unit_amount} ${freePrice.currency})`)
 
   nitroApp.hooks.callHook('log:info', {
     message: 'Stripe customer created on signup',

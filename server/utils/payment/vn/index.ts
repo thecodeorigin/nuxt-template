@@ -1,6 +1,7 @@
-import { PaymentStatus, creditPackageTable, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
+import { creditPackageTable } from '@base/server/db/schemas'
 import { eq } from 'drizzle-orm'
 import type { LogtoUser } from '@base/server/types/logto'
+import { usePayment } from '@base/server/composables/usePayment'
 import { createPayOSCheckout } from './payos'
 
 export * from './payos'
@@ -23,6 +24,8 @@ export async function createPaymentCheckout(
   const [productType, productId] = payload.productIdentifier.split(':')
 
   let productInfo: { id: string, price: string, amount: string } | undefined
+
+  const { createOrder, createPayment, createProviderTransaction } = usePayment()
 
   switch (productType) {
     case 'credit':
@@ -52,41 +55,21 @@ export async function createPaymentCheckout(
 
   const createdDate = new Date()
 
-  const { userPayment, paymentProviderTransaction } = await db.transaction(async (db) => {
-    const userOrder = (
-      await db.insert(userOrderTable).values({
-        credit_package_id: productId,
-        user_id: payload.user.sub,
-      }).returning()
-    )[0]
+  const userOrder = await createOrder(productId, payload.user.sub)
 
-    const userPayment = (
-      await db.insert(userPaymentTable).values({
-        amount: productInfo.price,
-        status: PaymentStatus.PENDING,
-        user_id: payload.user.sub,
-        order_id: userOrder.id,
-        created_at: createdDate,
-      }).returning()
-    )[0]
+  const userPayment = await createPayment(
+    userOrder.id,
+    payload.user.sub,
+    Number(productInfo.price),
+  )
 
-    const paymentProviderTransaction = (
-      await db.insert(paymentProviderTransactionTable).values({
-        provider,
-        provider_transaction_id: createdDate.getTime().toString(),
-        provider_transaction_status: PaymentStatus.PENDING,
-        provider_transaction_info: `${productType}:${productInfo.amount}`,
-        payment_id: userPayment.id,
-        user_id: payload.user.sub,
-        created_at: createdDate,
-      }).returning()
-    )[0]
-
-    return {
-      userPayment,
-      paymentProviderTransaction,
-    }
-  })
+  const paymentProviderTransaction = await createProviderTransaction(
+    userPayment.id,
+    payload.user.sub,
+    provider,
+    productType,
+    productInfo,
+  )
 
   switch (provider) {
     case 'payos':

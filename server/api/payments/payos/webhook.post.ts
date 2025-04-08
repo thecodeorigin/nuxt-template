@@ -5,12 +5,12 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
 
-    console.log('[PayOS Webhook] Received webhook data:', JSON.stringify(body, null, 2))
+    logger.log('[PayOS Webhook] Received webhook data:', body)
 
     const webhookData = getPayOSAdmin().verifyPaymentWebhookData(body)
 
     if (!webhookData) {
-      console.error('[PayOS Webhook] Invalid webhook data received:', JSON.stringify(body, null, 2))
+      logger.error('[PayOS Webhook] Invalid webhook data received:', body)
       throw createError({
         statusCode: 400,
         message: ErrorMessage.INVALID_WEBHOOK_BODY,
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    console.log('[PayOS Webhook] Verified webhook data:', JSON.stringify(webhookData, null, 2))
+    logger.log('[PayOS Webhook] Verified webhook data:', webhookData)
     const transactionStatus = webhookData.code === '00' ? PaymentStatus.RESOLVED : PaymentStatus.FAILED
 
     const paymentTransactionOfProvider = await db.query.paymentProviderTransactionTable.findFirst({
@@ -37,22 +37,22 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
-      console.warn(`[PayOS Webhook] Transaction not found or invalid: orderCode=${webhookData.orderCode}`)
+      logger.warn(`[PayOS Webhook] Transaction not found or invalid: orderCode=${webhookData.orderCode}`)
       return { success: true }
     }
 
-    console.log(`[PayOS Webhook] Processing transaction: orderCode=${webhookData.orderCode}, status=${transactionStatus}`)
+    logger.log(`[PayOS Webhook] Processing transaction: orderCode=${webhookData.orderCode}, status=${transactionStatus}`)
 
     await db.transaction(async (db) => {
       if (!paymentTransactionOfProvider?.payment.order.package) {
-        console.error(`[PayOS Webhook] No credit package found for transaction: ${webhookData.orderCode}`)
+        logger.error(`[PayOS Webhook] No credit package found for transaction: ${webhookData.orderCode}`)
         throw createError({
           statusCode: 400,
           message: 'No credit package found for this transaction!',
         })
       }
 
-      console.log(`[PayOS Webhook] Updating transaction ${paymentTransactionOfProvider.id} to status: ${transactionStatus}`)
+      logger.log(`[PayOS Webhook] Updating transaction ${paymentTransactionOfProvider.id} to status: ${transactionStatus}`)
 
       await db.update(paymentProviderTransactionTable).set({
         provider_transaction_status: transactionStatus,
@@ -67,23 +67,23 @@ export default defineEventHandler(async (event) => {
         eq(userPaymentTable.id, paymentTransactionOfProvider.payment.id),
       )
 
-      console.log(`[PayOS Webhook] Transaction updated successfully: id=${paymentTransactionOfProvider.id}, status=${transactionStatus}`)
+      logger.log(`[PayOS Webhook] Transaction updated successfully: id=${paymentTransactionOfProvider.id}, status=${transactionStatus}`)
 
       const creditAmount = Number.parseInt(paymentTransactionOfProvider.payment.order.package.amount)
       const userId = paymentTransactionOfProvider.payment.order.user_id
 
-      console.log(`[PayOS Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
+      logger.log(`[PayOS Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
 
       await addCreditToUser(userId, creditAmount)
 
-      console.log(`[PayOS Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
+      logger.log(`[PayOS Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
     })
 
-    console.log('[PayOS Webhook] Webhook processing completed successfully')
+    logger.log('[PayOS Webhook] Webhook processing completed successfully')
     return { success: true }
   }
   catch (error: any) {
-    console.error('[PayOS Webhook] Error processing webhook:', error)
+    logger.error('[PayOS Webhook] Error processing webhook:', error)
     throw parseError(error)
   }
 })

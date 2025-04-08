@@ -39,6 +39,6 @@ export async function pushNotification(param: NotificationBody) {
   }
 
   const res = await admin.messaging().sendEachForMulticast(body)
-  console.log('push:', res)
+  logger.log('Notification pushed:', res)
   return res
 }
