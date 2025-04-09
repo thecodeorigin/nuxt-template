@@ -1,4 +1,5 @@
 import type { LogtoUser } from '@base/server/types/logto'
+import { useUserProfile } from '@base/server/composables/useUserProfile'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -6,10 +7,20 @@ export default defineEventHandler(async (event) => {
 
     const client = useLogtoClient()
 
-    const user = await client.fetchUserInfo()
+    const { getUserProfileById } = useUserProfile()
+
+    const user = (await client.fetchUserInfo()) as LogtoUser
+
+    const userProfile = await getUserProfileById(user.sub)
 
     return {
-      data: user as LogtoUser,
+      data: {
+        ...user,
+        custom_data: {
+          ...user.custom_data,
+          credit: Number(userProfile?.credit) || user.custom_data.credit || 0,
+        },
+      } as LogtoUser,
     }
   }
   catch (error) {

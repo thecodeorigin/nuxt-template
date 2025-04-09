@@ -1,9 +1,7 @@
 import { creditBusKey } from '@base/injections/credit'
 
 export function useCredit() {
-  const currentUser = useLogtoUser()
-
-  const credit = ref(currentUser?.custom_data?.credit || 0)
+  const credit = ref(0)
 
   const creditApi = useApiCredit()
 

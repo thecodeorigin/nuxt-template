@@ -6,13 +6,16 @@ export async function addCreditToUser(userId: string, amount: number) {
 
   const newAmount = (Number.parseInt(userData.credit || '0')) + amount
 
-  const { updateCreditHistory } = useCredit()
+  const { updateCreditHistory, updateUserCredit } = useCredit()
 
   await updateCreditHistory(CreditHistoryType.TOPUP, amount, userId)
 
-  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
+  await updateUserCredit(userId, newAmount)
 
+  // TODO: remove this later
   await updateLogtoUserCustomData(userId, { ...userData, credit: newAmount })
+
+  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
 
   return { success: true }
 }
@@ -22,13 +25,16 @@ export async function subtractCreditFromUser(userId: string, amount: number) {
 
   const newAmount = (Number.parseInt(userData.credit || '0')) - amount
 
-  const { updateCreditHistory } = useCredit()
+  const { updateCreditHistory, updateUserCredit } = useCredit()
 
   await updateCreditHistory(CreditHistoryType.SPEND, amount, userId)
 
-  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
+  await updateUserCredit(userId, newAmount)
 
+  // TODO: remove this later
   await updateLogtoUserCustomData(userId, { ...userData, credit: newAmount })
+
+  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
 
   return { success: true }
 }

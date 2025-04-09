@@ -32,6 +32,8 @@ onMounted(async () => {
     }
     catch {}
   }
+
+  refreshCredit()
 })
 
 const route = useRoute()
