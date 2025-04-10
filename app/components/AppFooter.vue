@@ -62,7 +62,7 @@ function onSubmit() {
             <form @submit.prevent="onSubmit">
               <UFormField
                 name="email"
-                label="Subscribe to our newsletter"
+                :label="$t('Subscribe to our newsletter')"
                 size="lg"
               >
                 <UInput
@@ -76,7 +76,7 @@ function onSubmit() {
                       type="submit"
                       size="xs"
                       color="neutral"
-                      label="Subscribe"
+                      :label="$t('Subscribe')"
                     />
                   </template>
                 </UInput>

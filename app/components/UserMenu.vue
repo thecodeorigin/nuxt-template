@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-
 import { withQuery } from 'ufo'
 
 defineProps<{
   collapsed?: boolean
 }>()
+
+const { t } = useI18n()
 
 const currentUser = useLogtoUser()
 
@@ -30,24 +31,24 @@ const items = computed<DropdownMenuItem[][]>(() => ([
   ],
   [
     {
-      label: 'Profile',
+      label: t('Profile'),
       icon: 'i-lucide-user',
       to: '/app/settings/profile',
     },
     {
-      label: 'Billing',
+      label: t('Billing'),
       icon: 'i-lucide-credit-card',
       to: '/app/settings/billing',
     },
     {
-      label: 'Security',
+      label: t('Security'),
       icon: 'i-lucide-shield',
       to: '/app/settings/security',
     },
   ],
   [
     {
-      label: 'Documentation',
+      label: t('Documentation'),
       icon: 'i-lucide-book-open',
       to: '/docs',
       target: '_blank',
@@ -55,7 +56,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([
   ],
   [
     {
-      label: 'Log out',
+      label: t('Log out'),
       icon: 'i-lucide-log-out',
       onSelect() {
         navigateTo({ path: '/sign-out' }, { external: true })

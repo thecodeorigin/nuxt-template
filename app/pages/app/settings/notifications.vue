@@ -6,42 +6,42 @@ const formData = ref({
   weekly_digest: false,
   important_updates: true,
 })
-
+const { t } = useI18n()
 const sections = [
   {
-    title: 'Notification channels',
-    description: 'Where can we notify you?',
+    title: t('Notification channels'),
+    description: t('Where can we notify you?'),
     fields: [
       {
         name: 'email' as const,
-        label: 'Email',
-        description: 'Receive a daily email digest.',
+        label: t('Email'),
+        description: t('Receive a daily email digest.'),
       },
       {
         name: 'desktop' as const,
-        label: 'Desktop',
-        description: 'Receive desktop notifications.',
+        label: t('Desktop'),
+        description: t('Receive desktop notifications.'),
       },
     ],
   },
   {
-    title: 'Account updates',
-    description: 'Receive updates about Nuxt UI.',
+    title: t('Account updates'),
+    description: t('Receive updates about Nuxt UI.'),
     fields: [
       {
         name: 'weekly_digest' as const,
-        label: 'Weekly digest',
+        label: t('Weekly digest'),
         description: 'Receive a weekly digest of news.',
       },
       {
         name: 'product_updates' as const,
-        label: 'Product updates',
-        description: 'Receive a monthly email with all new features and updates.',
+        label: t('Product updates'),
+        description: t('Receive a monthly email with all new features and updates.'),
       },
       {
         name: 'important_updates' as const,
-        label: 'Important updates',
-        description: 'Receive emails about important updates like security fixes, maintenance, etc.',
+        label: t('Important updates'),
+        description: t('Receive emails about important updates like security fixes, maintenance, etc.'),
       },
     ],
   },

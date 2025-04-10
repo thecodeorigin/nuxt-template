@@ -102,8 +102,8 @@ tryOnBeforeMount(async () => {
       :description="page.topup.description"
     >
       <UFormField
-        description="Get started by selecting a credit package."
-        help="It's recommended to topup twice the amount of your instance monthly consumption."
+        :description="$t('Get started by selecting a credit package.')"
+        :help="$t('It\'s recommended to topup twice the amount of your instance monthly consumption.')"
         size="xl"
       >
         <ClientOnly>
@@ -114,7 +114,7 @@ tryOnBeforeMount(async () => {
               value-key="id"
               label-key="title"
               size="xl"
-              placeholder="Select a credit package"
+              :placeholder="$t('Select a credit package')"
               class="flex-1"
             >
               <template #item="{ item }">
@@ -125,7 +125,7 @@ tryOnBeforeMount(async () => {
             </USelect>
 
             <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" @click="handleCheckout">
-              <b>Buy {{ Number(selectedPrice?.amount || 0) }} credits</b>
+              <b>{{ $t('Buy') }} {{ Number(selectedPrice?.amount || 0) }} credits</b>
               ({{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }})
             </UButton>
           </div>

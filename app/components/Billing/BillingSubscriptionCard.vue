@@ -66,7 +66,7 @@ const billingCycleProgress = computed(() => {
           {{ new Intl.NumberFormat('en-US', { style: 'currency', currency: (subscription?.currency || 'usd').toUpperCase() }).format((subscription?.items.data[0]?.price.unit_amount || 0) / 100) }} Per Month
         </strong>
 
-        <UBadge v-if="subscription?.metadata.hightlight" label="Popular" />
+        <UBadge v-if="subscription?.metadata.hightlight" :label="$t('Popular')" />
       </div>
 
       <UButton class="mt-2 py-1 text-xs" color="neutral" variant="solid" @click="handleOpenStripePortal">
@@ -98,7 +98,7 @@ const billingCycleProgress = computed(() => {
       </div>
     </template>
     <p v-else class="text-gray-500 cursor-not-allowed">
-      Monthly subscription plan is not available at the moment
+      {{ $t('Monthly subscription plan is not available at the moment') }}
     </p>
   </UCard>
 </template>

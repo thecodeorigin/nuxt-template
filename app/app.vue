@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const colorMode = useColorMode()
-
+const { t } = useI18n()
 const color = computed(() => colorMode.value === 'dark' ? config.public.theme.darkColor : config.public.theme.lightColor)
 
 useHead({
@@ -32,15 +32,15 @@ const { data: files } = useLazyAsyncData('search', () => queryCollectionSearchSe
 })
 
 const links = [{
-  label: 'Docs',
+  label: t('Docs'),
   icon: 'i-lucide-book',
   to: '/docs/getting-started',
 }, {
-  label: 'Pricing',
+  label: t('Pricing'),
   icon: 'i-lucide-credit-card',
   to: '/pricing',
 }, {
-  label: 'Blog',
+  label: t('Blog'),
   icon: 'i-lucide-pencil',
   to: '/blog',
 }]

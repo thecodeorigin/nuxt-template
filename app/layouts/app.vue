@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const toast = useToast()
+const { t } = useI18n()
 
 const open = ref(false)
 
@@ -8,7 +9,7 @@ const config = useRuntimeConfig()
 const links = [
   [
     {
-      label: 'Dashboard',
+      label: t('Dashboard'),
       icon: 'i-lucide-monitor',
       to: '/app',
       exact: true,
@@ -17,12 +18,12 @@ const links = [
       },
     },
     {
-      label: 'Settings',
+      label: t('Settings'),
       icon: 'i-lucide-settings',
       defaultOpen: true,
       children: [
         {
-          label: 'Profile',
+          label: t('Profile'),
           to: '/app/settings/profile',
           exact: true,
           onSelect() {
@@ -30,21 +31,21 @@ const links = [
           },
         },
         {
-          label: 'Billing',
+          label: t('Billing'),
           to: '/app/settings/billing',
           onSelect() {
             open.value = false
           },
         },
         {
-          label: 'Notifications',
+          label: t('Notifications'),
           to: '/app/settings/notifications',
           onSelect() {
             open.value = false
           },
         },
         {
-          label: 'Security',
+          label: t('Security'),
           to: '/app/settings/security',
           onSelect() {
             open.value = false
@@ -55,13 +56,13 @@ const links = [
   ],
   [
     {
-      label: 'Feedback',
+      label: t('Feedback'),
       icon: 'i-lucide-message-circle',
       to: config.public.appFeedbackUrl as string,
       target: '_blank',
     },
     {
-      label: 'Help & Support',
+      label: t('Help & Support'),
       icon: 'i-lucide-info',
       to: config.public.appSupportUrl as string,
       target: '_blank',
@@ -72,7 +73,7 @@ const links = [
 const groups = computed(() => [
   {
     id: 'links',
-    label: 'Go to',
+    label: t('Go to'),
     items: links.flat(),
   },
 ])
@@ -84,12 +85,12 @@ onMounted(async () => {
     return
 
   toast.add({
-    title: 'We use first-party cookies to enhance your experience on our website.',
+    title: t('We use first-party cookies to enhance your experience on our website.'),
     duration: 0,
     close: false,
     actions: [
       {
-        label: 'Accept',
+        label: t('Accept'),
         color: 'neutral',
         variant: 'outline',
         onClick() {
@@ -97,7 +98,7 @@ onMounted(async () => {
         },
       },
       {
-        label: 'Opt out',
+        label: t('Opt out'),
         color: 'neutral',
         variant: 'ghost',
       },
