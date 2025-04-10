@@ -1,10 +1,13 @@
 import { useCredit } from '@base/server/composables/useCredit'
 import { CreditHistoryType } from '@base/server/db/schemas'
+import { useUserProfile } from '@base/server/composables/useUserProfile'
 
 export async function addCreditToUser(userId: string, amount: number) {
-  const userData = await getLogtoUserCustomData(userId)
+  const { getUserCreditById } = useUserProfile()
 
-  const newAmount = (Number.parseInt(userData.credit || '0')) + amount
+  const userCredit = await getUserCreditById(userId)
+
+  const newAmount = userCredit + amount
 
   const { updateCreditHistory, updateUserCredit } = useCredit()
 
@@ -12,27 +15,23 @@ export async function addCreditToUser(userId: string, amount: number) {
 
   await updateUserCredit(userId, newAmount)
 
-  // TODO: remove this later
-  await updateLogtoUserCustomData(userId, { ...userData, credit: newAmount })
-
   await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
 
   return { success: true }
 }
 
 export async function subtractCreditFromUser(userId: string, amount: number) {
-  const userData = await getLogtoUserCustomData(userId)
+  const { getUserCreditById } = useUserProfile()
 
-  const newAmount = (Number.parseInt(userData.credit || '0')) - amount
+  const userCredit = await getUserCreditById(userId)
+
+  const newAmount = userCredit - amount
 
   const { updateCreditHistory, updateUserCredit } = useCredit()
 
   await updateCreditHistory(CreditHistoryType.SPEND, amount, userId)
 
   await updateUserCredit(userId, newAmount)
-
-  // TODO: remove this later
-  await updateLogtoUserCustomData(userId, { ...userData, credit: newAmount })
 
   await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
 

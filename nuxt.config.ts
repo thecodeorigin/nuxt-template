@@ -11,6 +11,16 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
+  $development: {
+    vite: {
+      server: {
+        allowedHosts: [
+          '.ngrok.app',
+        ],
+      },
+    },
+  },
+
   site: {
     url: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
     name: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',

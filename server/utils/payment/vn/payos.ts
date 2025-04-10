@@ -2,8 +2,8 @@ import type { paymentProviderTransactionTable } from '@base/server/db/schemas'
 
 import PayOS from '@payos/node'
 
-interface payOSCheckoutProps {
-  date: Date
+interface PayOSCheckoutProps {
+  orderCode: number
   amount: number
   buyerEmail?: string
   buyerPhone?: string
@@ -21,20 +21,20 @@ export function getPayOSAdmin() {
 }
 
 export async function createPayOSCheckout({
-  date,
+  orderCode,
   amount,
   buyerEmail,
   buyerPhone,
   paymentProviderTransaction,
-}: payOSCheckoutProps) {
+}: PayOSCheckoutProps) {
   const config = useRuntimeConfig()
 
   const { checkoutUrl } = await getPayOSAdmin().createPaymentLink({
-    orderCode: date.getTime(),
+    orderCode,
     amount,
     description: paymentProviderTransaction.provider_transaction_info,
-    cancelUrl: config.payos.cancelUrl || `${config.public.appBaseUrl}/app/settings/credit`,
-    returnUrl: config.payos.returnUrl || `${config.public.appBaseUrl}/app/settings/credit`,
+    cancelUrl: config.payos.cancelUrl || `${config.public.appBaseUrl}/app/settings/billing`,
+    returnUrl: config.payos.returnUrl || `${config.public.appBaseUrl}/app/settings/billing`,
     buyerEmail,
     buyerPhone,
   })

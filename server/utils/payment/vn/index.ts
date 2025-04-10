@@ -1,7 +1,6 @@
-import { creditPackageTable } from '@base/server/db/schemas'
-import { eq } from 'drizzle-orm'
 import type { LogtoUser } from '@base/server/types/logto'
 import { usePayment } from '@base/server/composables/usePayment'
+import { useCreditPackage } from '@base/server/composables/useCreditPackage'
 import { createPayOSCheckout } from './payos'
 
 export * from './payos'
@@ -26,17 +25,11 @@ export async function createPaymentCheckout(
   let productInfo: { id: string, price: string, amount: string } | undefined
 
   const { createOrder, createPayment, createProviderTransaction } = usePayment()
+  const { getCreditPackageByProductId } = useCreditPackage()
 
   switch (productType) {
     case 'credit':
-      productInfo = await db.query.creditPackageTable.findFirst({
-        where: eq(creditPackageTable.id, productId),
-        columns: {
-          id: true,
-          price: true,
-          amount: true,
-        },
-      })
+      productInfo = await getCreditPackageByProductId(productId)
       break
 
     default:
@@ -53,8 +46,6 @@ export async function createPaymentCheckout(
     })
   }
 
-  const createdDate = new Date()
-
   const userOrder = await createOrder(productId, payload.user.sub)
 
   const userPayment = await createPayment(
@@ -63,9 +54,12 @@ export async function createPaymentCheckout(
     Number(productInfo.price),
   )
 
+  const orderCode = new Date().getTime()
+
   const paymentProviderTransaction = await createProviderTransaction(
     userPayment.id,
     payload.user.sub,
+    orderCode,
     provider,
     productType,
     productInfo,
@@ -74,7 +68,7 @@ export async function createPaymentCheckout(
   switch (provider) {
     case 'payos':
       return await createPayOSCheckout({
-        date: createdDate,
+        orderCode,
         amount: Number.parseInt(userPayment.amount),
         buyerEmail: payload.user.email as string,
         buyerPhone: payload.user.phone_number as string,

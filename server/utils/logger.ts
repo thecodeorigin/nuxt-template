@@ -273,22 +273,22 @@ export class Logger {
   }
 
   public async log(message: any, meta?: Record<string, any>) {
-    console.log(message)
+    console.log(message, meta)
     await this.writeToLogFile('log', message, meta)
   }
 
   public async info(message: any, meta?: Record<string, any>) {
-    console.info(message)
+    console.info(message, meta)
     await this.writeToLogFile('info', message, meta)
   }
 
   public async warn(message: any, meta?: Record<string, any>) {
-    console.warn(message)
+    console.warn(message, meta)
     await this.writeToLogFile('warn', message, meta)
   }
 
   public async error(message: any, meta?: Record<string, any>) {
-    console.error(message)
+    console.error(message, meta)
     await this.writeToLogFile('error', message, meta)
   }
 

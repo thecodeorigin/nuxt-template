@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { credit, isRefreshingCredit, refreshCredit } = useCredit()
+
+tryOnBeforeMount(refreshCredit)
 </script>
 
 <template>
