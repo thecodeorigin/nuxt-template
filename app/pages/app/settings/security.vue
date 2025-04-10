@@ -43,8 +43,8 @@ async function onSubmit(event: FormSubmitEvent<PasswordSchema>) {
 
 <template>
   <UPageCard
-    title="Password"
-    description="Confirm your password password before setting a new one."
+    :title="$t('Password')"
+    :description="$t('Confirm your password password before setting a new one.')"
     variant="subtle"
   >
     <UForm
@@ -58,7 +58,7 @@ async function onSubmit(event: FormSubmitEvent<PasswordSchema>) {
         <UInput
           v-model="formData.password"
           type="password"
-          placeholder="Current password"
+          :placeholder="$t('Current password')"
           class="w-full"
         />
       </UFormField>
@@ -67,12 +67,12 @@ async function onSubmit(event: FormSubmitEvent<PasswordSchema>) {
         <UInput
           v-model="formData.password_new"
           type="password"
-          placeholder="New password"
+          :placeholder="$t('New password')"
           class="w-full"
         />
       </UFormField>
 
-      <UButton label="Update" class="w-fit" type="submit" />
+      <UButton :label="$t('Update')" class="w-fit" type="submit" />
     </UForm>
   </UPageCard>
 </template>

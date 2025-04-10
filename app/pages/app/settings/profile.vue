@@ -73,15 +73,15 @@ function onFileClick() {
     @submit="onSubmit"
   >
     <UPageCard
-      title="Profile"
-      description="These informations will be displayed publicly."
+      :title="$t('Profile')"
+      :description="$t('These informations will be displayed publicly.')"
       variant="naked"
       orientation="horizontal"
       class="mb-4"
     >
       <UButton
         form="settings"
-        label="Save changes"
+        :label="$t('Save changes')"
         color="neutral"
         type="submit"
         class="w-fit lg:ms-auto"
@@ -91,8 +91,8 @@ function onFileClick() {
     <UPageCard variant="subtle">
       <UFormField
         name="name"
-        label="Name"
-        description="Will appear on receipts, invoices, and other communication."
+        :label="$t('Name')"
+        :description="$t('Will appear on receipts, invoices, and other communication.')"
         required
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
@@ -105,7 +105,7 @@ function onFileClick() {
       <UFormField
         name="email"
         label="Email"
-        description="Used to sign in, for email receipts and product updates."
+        :description="$t('Used to sign in, for email receipts and product updates.')"
         required
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
@@ -119,7 +119,7 @@ function onFileClick() {
       <UFormField
         name="username"
         label="Username"
-        description="Your unique username for logging in and your profile URL."
+        :description="$t('Your unique username for logging in and your profile URL.')"
         required
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
@@ -132,7 +132,7 @@ function onFileClick() {
       <USeparator />
       <UFormField
         name="avatar"
-        label="Avatar"
+        :label="$t('Avatar')"
         description="JPG, GIF or PNG. 1MB Max."
         class="flex max-sm:flex-col justify-between sm:items-center gap-4"
       >
@@ -143,7 +143,7 @@ function onFileClick() {
             size="lg"
           />
           <UButton
-            label="Choose"
+            :label="$t('Choose')"
             color="neutral"
             @click="onFileClick"
           />

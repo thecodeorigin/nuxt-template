@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { withQuery } from 'ufo'
 
+const { t } = useI18n()
 const route = useRoute()
 
 const items = computed(() => [{
-  label: 'Docs',
+  label: t('Docs'),
   to: '/docs',
   active: route.path.startsWith('/docs'),
 }, {
-  label: 'Pricing',
+  label: t('Pricing'),
   to: '/pricing',
 }, {
-  label: 'Blog',
+  label: t('Blog'),
   to: '/blog',
 }])
 
@@ -40,7 +41,7 @@ const userAvatar = computed(
     />
 
     <template #right>
-      <UButton v-if="currentUser" label="Go to Dashboard" color="neutral" variant="ghost" to="/app">
+      <UButton v-if="currentUser" :label="$t('Go to Dashboard')" color="neutral" variant="ghost" to="/app">
         <template #leading>
           <UAvatar
             :src="userAvatar"
@@ -50,7 +51,7 @@ const userAvatar = computed(
       </UButton>
       <UButton
         v-else
-        label="Sign in"
+        :label="$t('Sign in')"
         color="neutral"
         @click="navigateTo({ path: '/sign-in' }, { external: true })"
       />
@@ -77,7 +78,7 @@ const userAvatar = computed(
       </UButton>
       <UButton
         v-else
-        label="Sign in"
+        :label="$t('Sign in')"
         color="neutral"
         block
         class="mb-3"

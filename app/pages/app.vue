@@ -5,7 +5,7 @@ definePageMeta({
   layout: 'app',
   auth: true,
 })
-
+const { t } = useI18n()
 const config = useRuntimeConfig()
 
 const tokenDevice = useLocalStorage<string | null>('tokenDevice', null)
@@ -41,29 +41,29 @@ const route = useRoute()
 const links = [
   [
     {
-      label: 'Profile',
+      label: t('Profile'),
       icon: 'i-lucide-user',
       to: '/app/settings/profile',
     },
     {
-      label: 'Billing',
+      label: t('Billing'),
       icon: 'i-lucide-credit-card',
       to: '/app/settings/billing',
     },
     {
-      label: 'Notifications',
+      label: t('Notifications'),
       icon: 'i-lucide-bell',
       to: '/app/settings/notifications',
     },
     {
-      label: 'Security',
+      label: t('Security'),
       icon: 'i-lucide-shield',
       to: '/app/settings/security',
     },
   ],
   [
     {
-      label: 'Documentation',
+      label: t('Documentation'),
       icon: 'i-lucide-book-open',
       to: '/docs',
       target: '_blank',
@@ -125,7 +125,7 @@ async function handleCheckout() {
           </UTooltip>
 
           <span class="inline-flex items-center mr-4">
-            Credits: <strong class="ml-2">{{ credit }}</strong>
+            {{ $t('Credits') }}: <strong class="ml-2">{{ credit }}</strong>
 
             <UIcon
               name="i-lucide-refresh-cw"
@@ -141,21 +141,21 @@ async function handleCheckout() {
               color="neutral"
               @click="isTopupModalVisible = true"
             >
-              Add Credit
+              {{ $t('Add Credit') }}
             </UButton>
           </UTooltip>
 
           <UModal
             v-model:open="isTopupModalVisible"
-            title="Topup credit to your account"
+            :title="$t('Topup credit to your account')"
             :ui="{
               content: 'w-full !max-w-3xl',
             }"
           >
             <template #body>
               <UFormField
-                description="Get started by selecting a credit package."
-                help="It's recommended to topup twice the amount of your instance monthly consumption."
+                :description="$t('Get started by selecting a credit package.')"
+                :help="$t('It\'s recommended to topup twice the amount of your instance monthly consumption.')"
                 size="xl"
               >
                 <div class="flex md:flex-row flex-col items-center gap-2">
@@ -165,7 +165,7 @@ async function handleCheckout() {
                     value-key="id"
                     label-key="title"
                     size="xl"
-                    placeholder="Select a credit package"
+                    :placeholder="$t('Select a credit package')"
                     class="flex-1 md:w-auto w-full"
                   >
                     <template #item="{ item }">
@@ -176,7 +176,9 @@ async function handleCheckout() {
                   </USelect>
 
                   <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" class="md:w-auto w-full" @click="handleCheckout">
-                    <b>Buy {{ Number(selectedPrice?.amount || 0) }} credits</b>
+                    <b>
+                      {{ $t('Buy') }} {{ Number(selectedPrice?.amount || 0) }} credits
+                    </b>
                     ({{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }})
                   </UButton>
                 </div>

@@ -24,7 +24,7 @@ watch(isNotificationsSlideoverOpen, (value) => {
 <template>
   <USlideover
     v-model:open="isNotificationsSlideoverOpen"
-    title="Notifications"
+    :title="$t('Notifications')"
   >
     <template #body>
       <template v-if="notifications?.length">
@@ -51,7 +51,7 @@ watch(isNotificationsSlideoverOpen, (value) => {
         </NuxtLink>
       </template>
       <p v-else>
-        You don't have any notifications.
+        {{ $t('You don\'t have any notifications.') }}
       </p>
     </template>
   </USlideover>

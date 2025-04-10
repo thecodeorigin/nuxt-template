@@ -6,7 +6,7 @@ const { credit, isRefreshingCredit, refreshCredit } = useCredit()
   <UCard>
     <div>
       <strong>
-        Available credits: {{ credit }}
+        {{ $t('Available credits') }}: {{ credit }}
 
         <UIcon
           name="i-lucide-refresh-cw"
@@ -16,12 +16,12 @@ const { credit, isRefreshingCredit, refreshCredit } = useCredit()
         />
       </strong>
       <p>
-        We will notify you if your credit is running low
+        {{ $t('We will notify you if your credit is running low') }}
       </p>
     </div>
     <div class="mt-4">
       <UButton color="neutral" variant="solid" to="/pricing">
-        Buy more credit
+        {{ $t('Buy more credit') }}
       </UButton>
     </div>
   </UCard>

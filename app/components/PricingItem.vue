@@ -33,17 +33,17 @@ async function handleBuyCredit(productId: string) {
     :scale="highlight"
     :highlight="highlight"
     :badge="highlight ? { label: 'Most popular' } : undefined"
-    :price="Number(creditPackage.amount) ? `${creditPackage.amount} credits` : 'Contact us'"
+    :price="Number(creditPackage.amount) ? `${creditPackage.amount} credits` : $t('Contact us')"
     :billing-cycle="Number(creditPackage.amount) ? '/month' : ''"
     :features="creditPackage.features || []"
     :button="
       Number(creditPackage.price)
         ? {
-          label: 'Buy credits & Start',
+          label: $t('Buy credits & Start'),
           variant: 'solid',
           onClick: () => handleBuyCredit(creditPackage.id),
         } : {
-          label: 'Contact us',
+          label: $t('Contact us'),
           variant: 'solid',
           onClick: () => handleContact(),
         }"
