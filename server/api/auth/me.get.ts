@@ -23,7 +23,9 @@ export default defineEventHandler(async (event) => {
       } as LogtoUser,
     }
   }
-  catch (error) {
+  catch (error: any) {
+    logger.error('[Me API] Error fetching user info:', error)
+
     throw parseError(error)
   }
 })

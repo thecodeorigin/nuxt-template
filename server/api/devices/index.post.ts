@@ -20,6 +20,8 @@ export default defineEventHandler(async (event) => {
     return { message: 'Token registration successful' }
   }
   catch (error: any) {
+    logger.error('[Device API] Error registering device token:', error)
+
     throw parseError(error)
   }
 })

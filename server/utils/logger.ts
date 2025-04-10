@@ -12,7 +12,7 @@ export class Logger {
   private uploadQueue: Set<string> = new Set()
   private isUploading = false
   private enabledLogLevels: Set<LogLevel> | null = null
-  private maxLogSizeBytes = 5 * 1024 * 1024 // 5MB threshold for "fullness"
+  private maxLogSizeBytes = 15 * 1024 * 1024 // 15MB threshold for "fullness"
   private currentLogSize = 0
 
   constructor(logsDir: string = join(process.cwd(), 'logs')) {

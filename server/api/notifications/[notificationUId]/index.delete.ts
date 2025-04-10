@@ -9,6 +9,8 @@ export default defineEventHandler(async (event) => {
     return deleteNotificationById(notificationUId, session.sub)
   }
   catch (error: any) {
+    logger.error('[Notification API] Error deleting notification:', error)
+
     throw parseError(error)
   }
 })

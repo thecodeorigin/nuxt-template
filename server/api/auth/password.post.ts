@@ -37,6 +37,8 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   }
   catch (error: any) {
+    logger.error('[Password API] Error updating user password:', error)
+
     throw parseError(error)
   }
 })

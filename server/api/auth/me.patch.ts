@@ -38,6 +38,8 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   }
   catch (error: any) {
+    logger.error('[Me API] Error updating user info:', error)
+
     throw parseError(error)
   }
 })

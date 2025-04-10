@@ -9,6 +9,8 @@ export default defineEventHandler(async (event) => {
     return unreadNotificationById(notificationUId, session.sub)
   }
   catch (error: any) {
+    logger.error('[Notification API] Error marking notification as unread:', error)
+
     throw parseError(error)
   }
 })

@@ -69,7 +69,7 @@ export async function createPaymentCheckout(
     case 'payos':
       return await createPayOSCheckout({
         orderCode,
-        amount: Number.parseInt(userPayment.amount),
+        amount: Number(userPayment.amount),
         buyerEmail: payload.user.email as string,
         buyerPhone: payload.user.phone_number as string,
         paymentProviderTransaction,

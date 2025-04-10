@@ -13,6 +13,8 @@ export default defineEventHandler(async (event) => {
     return { message: 'Token unregistration successful' }
   }
   catch (error: any) {
+    logger.error('[Device API] Error unregistering device token:', error)
+
     throw parseError(error)
   }
 })

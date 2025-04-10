@@ -10,7 +10,9 @@ export default defineEventHandler(async (event) => {
 
     return { data: prices }
   }
-  catch (error) {
+  catch (error: any) {
+    logger.error('[Credit Packages API] Error fetching credit packages:', error)
+
     throw parseError(error)
   }
 })

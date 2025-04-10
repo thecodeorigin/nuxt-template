@@ -17,15 +17,16 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const { getUserDeviceAllTokens } = useUserDevice({ user_id })
-    const response = await getUserDeviceAllTokens({} as ParsedFilterQuery)
+    const { getUserDeviceTokens } = useUserDevice()
 
-    if (response && response.total === 0) {
+    const response = await getUserDeviceTokens(user_id)
+
+    if (response && response.length === 0) {
       setResponseStatus(event, 200)
       return { message: 'No device found' }
     }
     else {
-      const tokens = response.data!.map<string>((item: any) => item.token_device)
+      const tokens = response.map<string>((item: any) => item.token_device)
       const body = {
         tokens,
         notification: {
@@ -47,6 +48,8 @@ export default defineEventHandler(async (event) => {
     }
   }
   catch (error: any) {
+    logger.error('[Firebase API] Error sending notification:', error)
+
     throw parseError(error)
   }
 })

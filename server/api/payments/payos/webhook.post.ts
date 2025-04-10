@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
 
     logger.log(`[PayOS Webhook] Processing transaction: orderCode=${webhookData.orderCode}, status=${transactionStatus}`)
 
-    const creditAmount = Number.parseInt(paymentTransactionOfProvider.payment.order.package.amount)
+    const creditAmount = Number(paymentTransactionOfProvider.payment.order.package.amount)
     const userId = paymentTransactionOfProvider.payment.order.user_id
 
     logger.log(`[PayOS Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
@@ -62,6 +62,7 @@ export default defineEventHandler(async (event) => {
   }
   catch (error: any) {
     logger.error('[PayOS Webhook] Error processing webhook:', error)
+
     throw parseError(error)
   }
 })
