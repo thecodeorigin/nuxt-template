@@ -14,7 +14,7 @@ export function useUserProfile() {
     const userProfile = await getUserProfileById(userId)
 
     return Number(
-      userProfile?.credit || (await getLogtoUserCustomData(userId)).credit,
+      userProfile?.credit || (await getLogtoUserCustomData(userId)).credit || 0,
     )
   }
 

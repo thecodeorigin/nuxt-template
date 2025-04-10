@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
         ...user,
         custom_data: {
           ...user.custom_data,
-          credit: Number(userProfile?.credit) || user.custom_data.credit || 0,
+          credit: Number(userProfile?.credit || 0) || user.custom_data.credit || 0,
         },
       } as LogtoUser,
     }
