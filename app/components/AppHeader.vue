@@ -68,7 +68,7 @@ const userAvatar = computed(
 
       <USeparator class="my-6" />
 
-      <UButton v-if="currentUser" label="Go to Dashboard" color="neutral" variant="ghost" to="/app">
+      <UButton v-if="currentUser" :label="$t('Go to Dashboard')" color="neutral" variant="ghost" to="/app">
         <template #leading>
           <UAvatar
             :src="userAvatar"

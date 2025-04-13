@@ -1,6 +1,8 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useHead({
-  title: 'Subscription Information',
+  title: t('Subscription Information'),
 })
 
 const subscriptionStore = useSubscriptionStore()
@@ -27,7 +29,7 @@ async function handleOpenStripePortal() {
     if (customerPortalUrl)
       window.open(customerPortalUrl, '_blank')
     else
-      notifyWarning({ content: 'Stripe customer self-service portal is not currently available!' })
+      notifyWarning({ content: t('Stripe customer self-service portal is not currently available!') })
   }
   catch {}
 }
@@ -54,34 +56,34 @@ const billingCycleProgress = computed(() => {
   <UCard>
     <template v-if="subscription">
       <p>
-        Your plan
+        {{ $t('Your plan') }}
         <strong class="text-primary">
-          "{{ subscription.items.data[0]?.price.metadata?.name || 'Unsubscribed' }}"
+          "{{ subscription.items.data[0]?.price.metadata?.name || $t('Unsubscribed') }}"
         </strong>
-        <span>is active until {{ dateExpired }}</span>
+        <span>{{ $t('is active until {0}', [dateExpired]) }}</span>
       </p>
 
       <div class="mt-2">
         <strong>
-          {{ new Intl.NumberFormat('en-US', { style: 'currency', currency: (subscription?.currency || 'usd').toUpperCase() }).format((subscription?.items.data[0]?.price.unit_amount || 0) / 100) }} Per Month
+          {{ new Intl.NumberFormat('en-US', { style: 'currency', currency: (subscription?.currency || 'usd').toUpperCase() }).format((subscription?.items.data[0]?.price.unit_amount || 0) / 100) }} {{ $t('Per Month') }}
         </strong>
 
         <UBadge v-if="subscription?.metadata.hightlight" :label="$t('Popular')" />
       </div>
 
       <UButton class="mt-2 py-1 text-xs" color="neutral" variant="solid" @click="handleOpenStripePortal">
-        Upgrade or manage subscription
+        {{ $t('Upgrade or manage subscription') }}
       </UButton>
 
       <div class="mt-4">
         <!-- billing cycle -->
         <div class="flex justify-between">
           <p>
-            Billing cycle
+            {{ $t('Billing cycle') }}
           </p>
           <p>
             {{ subscription?.days_until_due || 0 }}
-            days remaining
+            {{ $t('days remaining') }}
           </p>
         </div>
         <UProgress class="mt-2 h-1" size="md" :value="billingCycleProgress" />
@@ -89,11 +91,11 @@ const billingCycleProgress = computed(() => {
     </template>
     <template v-else-if="customerPortalUrl">
       <p>
-        You are not subscribed to any monthly plan
+        {{ $t('You are not subscribed to any monthly plan') }}
       </p>
       <div class="mt-4">
         <UButton color="neutral" variant="solid" to="/pricing">
-          View Subscriptions
+          {{ $t('View Subscriptions') }}
         </UButton>
       </div>
     </template>

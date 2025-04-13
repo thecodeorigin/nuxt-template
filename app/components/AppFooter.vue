@@ -1,36 +1,38 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 const columns = [{
-  label: 'Resources',
+  label: t('Resources'),
   children: [{
-    label: 'Help center',
+    label: t('Help center'),
   }, {
-    label: 'Docs',
+    label: t('Docs'),
   }, {
-    label: 'Roadmap',
+    label: t('Roadmap'),
   }, {
-    label: 'Changelog',
+    label: t('Changelog'),
   }],
 }, {
-  label: 'Features',
+  label: t('Features'),
   children: [{
-    label: 'Affiliates',
+    label: t('Affiliates'),
   }, {
-    label: 'Portal',
+    label: t('Portal'),
   }, {
-    label: 'Jobs',
+    label: t('Jobs'),
   }, {
-    label: 'Sponsors',
+    label: t('Sponsors'),
   }],
 }, {
-  label: 'Company',
+  label: t('Company'),
   children: [{
-    label: 'About',
+    label: t('About'),
   }, {
-    label: 'Pricing',
+    label: t('Pricing'),
   }, {
-    label: 'Careers',
+    label: t('Careers'),
   }, {
-    label: 'Blog',
+    label: t('Blog'),
   }],
 }]
 
@@ -43,8 +45,8 @@ function onSubmit() {
   loading.value = true
 
   toast.add({
-    title: 'Subscribed!',
-    description: 'You\'ve been subscribed to our newsletter.',
+    title: t('Subscribed!'),
+    description: t('You\'ve been subscribed to our newsletter.'),
   })
 }
 </script>
@@ -89,7 +91,7 @@ function onSubmit() {
 
     <template #left>
       <p class="text-(--ui-text-muted) text-sm">
-        Copyright © {{ new Date().getFullYear() }}. All rights reserved.
+        {{ $t('Copyright © {0}. All rights reserved.', [new Date().getFullYear()]) }}
       </p>
     </template>
 

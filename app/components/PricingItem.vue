@@ -32,7 +32,7 @@ async function handleBuyCredit(productId: string) {
     :description="creditPackage.description || ''"
     :scale="highlight"
     :highlight="highlight"
-    :badge="highlight ? { label: 'Most popular' } : undefined"
+    :badge="highlight ? { label: $t('Most popular') } : undefined"
     :price="Number(creditPackage.amount) ? `${creditPackage.amount} credits` : $t('Contact us')"
     :billing-cycle="Number(creditPackage.amount) ? '/month' : ''"
     :features="creditPackage.features || []"
