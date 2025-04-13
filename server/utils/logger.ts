@@ -14,6 +14,7 @@ export class Logger {
   private enabledLogLevels: Set<LogLevel> | null = null
   private maxLogSizeBytes = 15 * 1024 * 1024 // 15MB threshold for "fullness"
   private currentLogSize = 0
+  private logStartTime: Date | null = null
 
   constructor(logsDir: string = join(process.cwd(), 'logs')) {
     this.logsDir = logsDir
@@ -95,20 +96,31 @@ export class Logger {
   }
 
   private getLogFilePath(): string {
-    const timestamp = new Date()
-    const year = timestamp.getFullYear()
-    const month = String(timestamp.getMonth() + 1).padStart(2, '0')
-    const day = String(timestamp.getDate()).padStart(2, '0')
-    const hour = String(timestamp.getHours()).padStart(2, '0')
+    const now = new Date()
 
-    // Format: YYYY-MM-DD-HH.log
-    const logFileName = `${year}-${month}-${day}-${hour}.log`
-    const logFilePath = join(this.logsDir, logFileName)
+    // If this is a new log file, set the start time
+    if (!this.logStartTime || !this.currentLogFile) {
+      this.logStartTime = now
+    }
+
+    // Format the timestamps for the filename
+    const startTime = this.logStartTime.toISOString().replace(/:/g, '-').replace(/\..+/, '')
+
+    // Create a directory structure based on year/month/day
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const dirPath = join(this.logsDir, String(year), month, day)
+
+    // Format: logs/YYYY/MM/DD/YYYY-MM-DDTHH-MM-SS_start.log
+    const logFileName = `${startTime}.log`
+    const logFilePath = join(dirPath, logFileName)
 
     // If the log file has changed, queue the old one for upload
     if (this.currentLogFile && this.currentLogFile !== logFilePath) {
       this.queueForUpload(this.currentLogFile)
       this.currentLogSize = 0
+      this.logStartTime = now // Reset start time for new log file
     }
 
     this.currentLogFile = logFilePath
@@ -191,8 +203,22 @@ export class Logger {
         throw new Error(`Could not extract filename from path: ${filePath}`)
       }
 
-      // Create S3 key with logs/ prefix
-      const s3Key = `logs/${fileName}`
+      // Create a more specific filename with end timestamp
+      // Original format is start-timestamp.log
+      // New format is start-timestamp_to_end-timestamp.log
+      const now = new Date()
+      const endTime = now.toISOString().replace(/:/g, '-').replace(/\..+/, '')
+
+      // Extract the start time from the original filename
+      const startTime = fileName.replace('.log', '')
+
+      // Create new filename with start-to-end format
+      const s3FileName = `${startTime}_to_${endTime}.log`
+
+      // Create S3 key with logs/ prefix and maintain year/month/day structure
+      const pathParts = filePath.split(/[/\\]/)
+      const yearMonthDay = pathParts.slice(-4, -1).join('/')
+      const s3Key = `logs/${yearMonthDay}/${s3FileName}`
 
       // Upload to S3
       await s3Client.send(new PutObjectCommand({
