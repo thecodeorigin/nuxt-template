@@ -1,5 +1,4 @@
 import { PaymentStatus } from '@base/server/db/schemas'
-import { usePayment } from '@base/server/composables/usePayment'
 
 export default defineEventHandler(async (event) => {
   try {

@@ -225,6 +225,13 @@ export default defineNuxtConfig({
     alias: {
       '@base/server': fileURLToPath(new URL('./server', import.meta.url)),
     },
+
+    imports: {
+      dirs: [
+        fileURLToPath(new URL('./server/composables', import.meta.url)),
+      ],
+    },
+
     typescript: {
       tsConfig: {
         compilerOptions: {

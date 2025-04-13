@@ -1,5 +1,4 @@
-import admin from 'firebase-admin'
-import { useUserDevice } from '@base/server/composables/useUserDevice'
+import firebaseAdmin from 'firebase-admin'
 
 export function getFirebaseServiceAccount() {
   return {
@@ -20,9 +19,9 @@ export function getFirebaseServiceAccount() {
 export async function sendFirebaseCloudMessage(title: string, body: string) {
   const service = getFirebaseServiceAccount()
 
-  if (admin.apps.length === 0) {
-    admin.initializeApp({
-      credential: admin.credential.cert(service as admin.ServiceAccount),
+  if (firebaseAdmin.apps.length === 0) {
+    firebaseAdmin.initializeApp({
+      credential: firebaseAdmin.credential.cert(service as firebaseAdmin.ServiceAccount),
     })
   }
 
@@ -32,7 +31,7 @@ export async function sendFirebaseCloudMessage(title: string, body: string) {
 
   const deviceTokens = await getUserDeviceTokens(currentUser.sub)
 
-  return admin.messaging().sendEachForMulticast({
+  return firebaseAdmin.messaging().sendEachForMulticast({
     tokens: deviceTokens.map(device => device.token_device).filter(Boolean) as string[],
     notification: {
       title,

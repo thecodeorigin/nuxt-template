@@ -1,5 +1,3 @@
-import { useNotification } from '@base/server/composables/useNotification'
-
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })

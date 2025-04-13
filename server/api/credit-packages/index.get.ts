@@ -1,5 +1,3 @@
-import { useCreditPackage } from '@base/server/composables/useCreditPackage'
-
 export default defineEventHandler(async (event) => {
   try {
     await defineEventOptions(event)

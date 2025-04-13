@@ -1,4 +1,3 @@
-import { useUserDevice } from '@base/server/composables/useUserDevice'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {

@@ -1,5 +1,3 @@
-import { useUserDevice } from '@base/server/composables/useUserDevice'
-
 export default defineEventHandler(async (event) => {
   try {
     const { session } = await defineEventOptions(event, { auth: true })

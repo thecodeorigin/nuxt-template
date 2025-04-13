@@ -1,6 +1,4 @@
 import type { LogtoUser } from '@base/server/types/logto'
-import { usePayment } from '@base/server/composables/usePayment'
-import { useCreditPackage } from '@base/server/composables/useCreditPackage'
 import { createPayOSCheckout } from './payos'
 
 export * from './payos'

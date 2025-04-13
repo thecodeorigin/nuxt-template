@@ -1,6 +1,4 @@
-import { useCredit } from '@base/server/composables/useCredit'
 import { CreditHistoryType } from '@base/server/db/schemas'
-import { useUserProfile } from '@base/server/composables/useUserProfile'
 
 export async function addCreditToUser(userId: string, amount: number) {
   const { getUserCreditById } = useUserProfile()

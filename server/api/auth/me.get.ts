@@ -1,5 +1,4 @@
 import type { LogtoUser } from '@base/server/types/logto'
-import { useUserProfile } from '@base/server/composables/useUserProfile'
 
 export default defineEventHandler(async (event) => {
   try {

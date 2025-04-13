@@ -1,6 +1,5 @@
 import type { CreditHistoryType } from '@base/server/db/schemas'
 import { creditHistoryTable } from '@base/server/db/schemas'
-import { useUserProfile } from './useUserProfile'
 
 export function useCredit() {
   function getCreditPackages() {
@@ -11,12 +10,14 @@ export function useCredit() {
     })
   }
 
-  function updateCreditHistory(type: CreditHistoryType, amount: number, user_id: string) {
-    return db.insert(creditHistoryTable).values({ amount: String(amount), type, user_id })
+  function updateCreditHistory(type: CreditHistoryType, amount: number, userId: string) {
+    return db.insert(creditHistoryTable)
+      .values({ amount: String(amount), type, user_id: userId })
   }
 
   function updateUserCredit(userId: string, credit: number) {
-    return useUserProfile().upsertUserProfile(userId, { credit: String(credit) })
+    return useUserProfile()
+      .upsertUserProfile(userId, { credit: String(credit) })
   }
 
   return {
