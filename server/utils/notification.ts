@@ -6,6 +6,7 @@ interface NotificationBody {
   body: string
   link: string
 }
+
 export async function pushNotification(param: NotificationBody) {
   if (!param.user_id)
     return
