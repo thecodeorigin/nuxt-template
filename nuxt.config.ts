@@ -19,6 +19,26 @@ export default defineNuxtConfig({
         ],
       },
     },
+
+    nodemailer: {
+      secure: false,
+      from: process.env.SMTP_FROM,
+      host: process.env.SMTP_SERVER,
+      port: Number(process.env.SMTP_PORT),
+    },
+  },
+
+  $production: {
+    nodemailer: {
+      secure: true,
+      from: process.env.SMTP_FROM!,
+      host: process.env.SMTP_SERVER,
+      port: Number(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    },
   },
 
   site: {
@@ -327,23 +347,6 @@ export default defineNuxtConfig({
       },
     ],
   },
-
-  nodemailer: process.env.NODE_ENV === 'development'
-    ? {
-        from: process.env.SMTP_FROM,
-        host: process.env.SMTP_SERVER,
-        port: Number(process.env.SMTP_PORT),
-      }
-    : {
-        from: process.env.SMTP_FROM,
-        host: process.env.SMTP_SERVER,
-        port: Number(process.env.SMTP_PORT),
-        secure: true,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      },
 
   eslint: {
     config: {

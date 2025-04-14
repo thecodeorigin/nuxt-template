@@ -1,7 +1,7 @@
 {
   "name": "@thecodeorigin/nuxt",
   "type": "module",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
