@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
-export const userDeviceTable = pgTable('user_devices', {
+export const deviceTable = pgTable('devices', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   user_id: text('user_id').notNull(),
   token_device: text('token_device'),

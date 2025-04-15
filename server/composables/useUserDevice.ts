@@ -1,9 +1,9 @@
 import { and, eq } from 'drizzle-orm'
-import { userDeviceTable } from '@base/server/db/schemas'
+import { deviceTable } from '@base/server/db/schemas'
 
 export function useUserDevice() {
   async function getUserDeviceTokens(userId: string) {
-    return db.query.userDeviceTable.findMany({
+    return db.query.deviceTable.findMany({
       where(schema, { eq }) {
         return eq(schema.user_id, userId)
       },
@@ -11,7 +11,7 @@ export function useUserDevice() {
   }
 
   function getUserDeviceToken(userId: string, deviceToken: string) {
-    return db.query.userDeviceTable.findFirst({
+    return db.query.deviceTable.findFirst({
       where(schema, { eq }) {
         return eq(schema.token_device, deviceToken)
       },
@@ -19,17 +19,17 @@ export function useUserDevice() {
   }
 
   function createUserDeviceToken(userId: string, deviceToken: string) {
-    return db.insert(userDeviceTable).values({
+    return db.insert(deviceTable).values({
       user_id: userId,
       token_device: deviceToken,
     }).returning()
   }
 
   function deleteUserDeviceToken(userId: string, deviceToken: string) {
-    return db.delete(userDeviceTable).where(
+    return db.delete(deviceTable).where(
       and(
-        eq(userDeviceTable.user_id, userId),
-        eq(userDeviceTable.token_device, deviceToken),
+        eq(deviceTable.user_id, userId),
+        eq(deviceTable.token_device, deviceToken),
       ),
     )
   }
