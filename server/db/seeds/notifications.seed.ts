@@ -1,4 +1,4 @@
-import { sysNotificationTable } from '../schemas'
+import { notificationTable } from '../schemas'
 import { db } from '../../utils/db'
 
 export async function seedNotifications(id: string, email: string) {
@@ -8,5 +8,5 @@ export async function seedNotifications(id: string, email: string) {
     title: `Notification test ${Math.random()}`,
     message: `Notification send to ${email}`,
   }))
-  return await db.insert(sysNotificationTable).values(notifications)
+  return await db.insert(notificationTable).values(notifications)
 }

@@ -1,6 +1,6 @@
 import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
-export const sysNotificationTable = pgTable('sys_notifications', {
+export const notificationTable = pgTable('notifications', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   title: text('title'),

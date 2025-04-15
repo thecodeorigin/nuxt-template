@@ -1,6 +1,6 @@
 import { jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { userOrderTable } from './user_orders.schema'
+import { orderTable } from './orders.schema'
 
 interface PricingPlanFeature {
   title: string
@@ -21,5 +21,5 @@ export const creditPackageTable = pgTable('credit_packages', {
 })
 
 export const creditPackageRelations = relations(creditPackageTable, ({ many }) => ({
-  orders: many(userOrderTable),
+  orders: many(orderTable),
 }))

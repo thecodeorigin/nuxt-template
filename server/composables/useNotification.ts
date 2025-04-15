@@ -1,18 +1,18 @@
 import { and, count, eq, ilike, isNotNull, isNull, or } from 'drizzle-orm'
-import { sysNotificationTable } from '@base/server/db/schemas'
+import { notificationTable } from '@base/server/db/schemas'
 import type { ParsedFilterQuery } from '@base/server/utils/filter'
 
 export function useNotification() {
   async function getNotificationCount(userId: string, options: Partial<ParsedFilterQuery>, unread?: boolean) {
-    const data = await db.select({ total: count() }).from(sysNotificationTable).where(
+    const data = await db.select({ total: count() }).from(notificationTable).where(
       and(
-        eq(sysNotificationTable.user_id, userId),
-        unread ? isNull(sysNotificationTable.read_at) : undefined,
+        eq(notificationTable.user_id, userId),
+        unread ? isNull(notificationTable.read_at) : undefined,
         or(
-          ilike(sysNotificationTable.title, `%${options?.keyword || ''}%`),
-          ilike(sysNotificationTable.message, `%${options?.keyword || ''}%`),
-          ilike(sysNotificationTable.title, `%${options?.keywordLower || ''}%`),
-          ilike(sysNotificationTable.message, `%${options?.keywordLower || ''}%`),
+          ilike(notificationTable.title, `%${options?.keyword || ''}%`),
+          ilike(notificationTable.message, `%${options?.keyword || ''}%`),
+          ilike(notificationTable.title, `%${options?.keywordLower || ''}%`),
+          ilike(notificationTable.message, `%${options?.keywordLower || ''}%`),
         ),
       ),
     )
@@ -24,7 +24,7 @@ export function useNotification() {
     const limit = options.limit || 20
     const page = options.page || 1
 
-    const notifications = await db.query.sysNotificationTable.findMany({
+    const notifications = await db.query.notificationTable.findMany({
       limit,
       offset: limit * (page - 1),
       orderBy(schema, { asc, desc }) {
@@ -59,7 +59,7 @@ export function useNotification() {
   }
 
   function getNotificationById(notificationId: string, userId: string) {
-    return db.query.sysNotificationTable.findFirst({
+    return db.query.notificationTable.findFirst({
       where(schema, { and, eq }) {
         return and(
           eq(schema.user_id, userId),
@@ -70,61 +70,61 @@ export function useNotification() {
   }
 
   function createNotification(userId: string, payload: { title: string, message: string, action: any, user_id: string }) {
-    return db.insert(sysNotificationTable).values({
+    return db.insert(notificationTable).values({
       ...payload,
       user_id: userId,
     })
   }
 
   function readNotificationById(notificationId: string, userId: string) {
-    return db.update(sysNotificationTable).set({
+    return db.update(notificationTable).set({
       read_at: new Date(),
     }).where(
       and(
-        eq(sysNotificationTable.user_id, userId),
-        eq(sysNotificationTable.id, notificationId),
+        eq(notificationTable.user_id, userId),
+        eq(notificationTable.id, notificationId),
       ),
     )
   }
 
   function unreadNotificationById(notificationId: string, userId: string) {
-    return db.update(sysNotificationTable).set({
+    return db.update(notificationTable).set({
       read_at: null,
     }).where(
       and(
-        eq(sysNotificationTable.user_id, userId),
-        eq(sysNotificationTable.id, notificationId),
+        eq(notificationTable.user_id, userId),
+        eq(notificationTable.id, notificationId),
       ),
     )
   }
 
   function deleteNotificationById(notificationId: string, userId: string) {
-    return db.delete(sysNotificationTable).where(
+    return db.delete(notificationTable).where(
       and(
-        eq(sysNotificationTable.user_id, userId),
-        eq(sysNotificationTable.id, notificationId),
+        eq(notificationTable.user_id, userId),
+        eq(notificationTable.id, notificationId),
       ),
     )
   }
 
   function markAllRead(userId: string) {
-    return db.update(sysNotificationTable).set({
+    return db.update(notificationTable).set({
       read_at: new Date(),
     }).where(
       and(
-        eq(sysNotificationTable.user_id, userId),
-        isNull(sysNotificationTable.read_at),
+        eq(notificationTable.user_id, userId),
+        isNull(notificationTable.read_at),
       ),
     )
   }
 
   function markAllUnread(userId: string) {
-    return db.update(sysNotificationTable).set({
+    return db.update(notificationTable).set({
       read_at: null,
     }).where(
       and(
-        eq(sysNotificationTable.user_id, userId),
-        isNotNull(sysNotificationTable.read_at),
+        eq(notificationTable.user_id, userId),
+        isNotNull(notificationTable.read_at),
       ),
     )
   }

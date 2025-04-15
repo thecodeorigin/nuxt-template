@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm'
-import { PaymentStatus, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '../db/schemas'
+import { PaymentStatus, orderTable, paymentProviderTransactionTable, paymentTable } from '../db/schemas'
 
 export function usePayment() {
   async function createOrder(creditPackageId: string, userId: string) {
     return (
-      await db.insert(userOrderTable).values({
+      await db.insert(orderTable).values({
         credit_package_id: creditPackageId,
         user_id: userId,
       }).returning()
@@ -13,7 +13,7 @@ export function usePayment() {
 
   async function createPayment(orderId: string, userId: string, amount: number) {
     return (
-      await db.insert(userPaymentTable).values({
+      await db.insert(paymentTable).values({
         amount: String(amount),
         status: PaymentStatus.PENDING,
         user_id: userId,
@@ -23,10 +23,10 @@ export function usePayment() {
   }
 
   function updatePaymentStatus(paymentId: string, status: PaymentStatus) {
-    return db.update(userPaymentTable).set({
+    return db.update(paymentTable).set({
       status,
     }).where(
-      eq(userPaymentTable.id, paymentId),
+      eq(paymentTable.id, paymentId),
     )
   }
 

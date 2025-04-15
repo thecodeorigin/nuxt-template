@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm'
-import { userProfileTable } from '../db/schemas'
+import { profileTable } from '../db/schemas'
 
 export function useUserProfile() {
   function getUserProfileById(userId: string) {
-    return db.query.userProfileTable.findFirst({
+    return db.query.profileTable.findFirst({
       where(schema, { eq }) {
         return eq(schema.user_id, userId)
       },
@@ -25,7 +25,7 @@ export function useUserProfile() {
     credit: string
   }>) {
     return (
-      await db.insert(userProfileTable).values({
+      await db.insert(profileTable).values({
         user_id: userId,
         ...payload,
       }).returning()
@@ -39,7 +39,7 @@ export function useUserProfile() {
     credit: string
   }>) {
     return db.transaction(async (tx) => {
-      const userProfile = await tx.query.userProfileTable.findFirst({
+      const userProfile = await tx.query.profileTable.findFirst({
         where(schema, { eq }) {
           return eq(schema.user_id, userId)
         },
@@ -49,9 +49,9 @@ export function useUserProfile() {
         return createUserProfile(userId, payload)
 
       return (
-        await tx.update(userProfileTable)
+        await tx.update(profileTable)
           .set(payload)
-          .where(eq(userProfileTable.user_id, userId))
+          .where(eq(profileTable.user_id, userId))
           .returning()
       )[0]
     })
