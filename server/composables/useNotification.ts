@@ -1,9 +1,13 @@
 import { and, count, eq, ilike, isNotNull, isNull, or } from 'drizzle-orm'
 import { notificationTable } from '@base/server/db/schemas'
-import type { ParsedFilterQuery } from '@base/server/utils/filter'
+import type { Notification, PaginatedResponse, PaginationOptions } from '@base/server/types/models'
 
 export function useNotification() {
-  async function getNotificationCount(userId: string, options: Partial<ParsedFilterQuery>, unread?: boolean) {
+  async function getNotificationCount(
+    userId: string,
+    options: Partial<PaginationOptions>,
+    unread?: boolean,
+  ): Promise<{ total: number }> {
     const data = await db.select({ total: count() }).from(notificationTable).where(
       and(
         eq(notificationTable.user_id, userId),
@@ -20,7 +24,11 @@ export function useNotification() {
     return data[0]
   }
 
-  async function getNotificationsPaginated(userId: string, options: Partial<ParsedFilterQuery>, unread?: boolean) {
+  async function getNotificationsPaginated(
+    userId: string,
+    options: Partial<PaginationOptions>,
+    unread?: boolean,
+  ): Promise<PaginatedResponse<Notification>> {
     const limit = options.limit || 20
     const page = options.page || 1
 
@@ -58,7 +66,7 @@ export function useNotification() {
     }
   }
 
-  function getNotificationById(notificationId: string, userId: string) {
+  function getNotificationById(notificationId: string, userId: string): Promise<Notification | undefined> {
     return db.query.notificationTable.findFirst({
       where(schema, { and, eq }) {
         return and(
@@ -69,11 +77,13 @@ export function useNotification() {
     })
   }
 
-  function createNotification(userId: string, payload: { title: string, message: string, action: any, user_id: string }) {
-    return db.insert(notificationTable).values({
+  type NotificationInput = Pick<Notification, 'title' | 'message' | 'action' | 'user_id'>
+
+  async function createNotification(userId: string, payload: Omit<NotificationInput, 'user_id'>): Promise<Notification> {
+    return (await db.insert(notificationTable).values({
       ...payload,
       user_id: userId,
-    })
+    }).returning())[0]
   }
 
   function readNotificationById(notificationId: string, userId: string) {

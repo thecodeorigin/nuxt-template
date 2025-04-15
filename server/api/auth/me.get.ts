@@ -6,11 +6,11 @@ export default defineEventHandler(async (event) => {
 
     const client = useLogtoClient()
 
-    const { getUserProfileById } = useUserProfile()
+    const { getUserById } = useUser()
 
     const user = (await client.fetchUserInfo()) as LogtoUser
 
-    const userProfile = await getUserProfileById(user.sub)
+    const userProfile = await getUserById(user.sub)
 
     return {
       data: {

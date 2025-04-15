@@ -6,12 +6,12 @@ export default defineEventHandler(async (event) => {
 
     const { token } = await readValidatedBody(event, z.object({ token: z.string() }).parse)
 
-    const { getUserDeviceToken, createUserDeviceToken } = useUserDevice()
+    const { getDeviceToken, createDeviceToken } = useDeviceToken()
 
-    const existingDeviceToken = await getUserDeviceToken(session.sub, token)
+    const existingDeviceToken = await getDeviceToken(session.sub, token)
 
     if (!existingDeviceToken) {
-      const createdToken = await createUserDeviceToken(session.sub, token)
+      const createdToken = await createDeviceToken(session.sub, token)
 
       return { message: 'Token registration successful', token: createdToken[0].token_device }
     }

@@ -4,9 +4,9 @@ export default defineEventHandler(async (event) => {
 
     const { token } = await readBody(event)
 
-    const { deleteUserDeviceToken } = useUserDevice()
+    const { deleteDeviceToken } = useDeviceToken()
 
-    await deleteUserDeviceToken(session.sub, token)
+    await deleteDeviceToken(session.sub, token)
 
     return { message: 'Token unregistration successful' }
   }

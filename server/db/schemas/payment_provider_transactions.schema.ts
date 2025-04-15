@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { paymentTable } from './payments.schema'
+import { userTable } from './users.schema'
 
 export const paymentProviderTransactionTable = pgTable('payment_provider_transactions', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -11,7 +12,9 @@ export const paymentProviderTransactionTable = pgTable('payment_provider_transac
   provider_transaction_info: text('provider_transaction_info').notNull(), // vnp_OrderInfo
   payment_id: uuid('payment_id')
     .references(() => paymentTable.id, { onDelete: 'no action', onUpdate: 'no action' }).notNull(),
-  user_id: text('user_id').notNull(),
+  user_id: uuid('user_id')
+    .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' })
+    .notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
@@ -20,5 +23,9 @@ export const paymentProviderTransactionRelations = relations(paymentProviderTran
   payment: one(paymentTable, {
     fields: [paymentProviderTransactionTable.payment_id],
     references: [paymentTable.id],
+  }),
+  user: one(userTable, {
+    fields: [paymentProviderTransactionTable.user_id],
+    references: [userTable.id],
   }),
 }))

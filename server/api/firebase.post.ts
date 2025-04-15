@@ -16,9 +16,9 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const { getUserDeviceTokens } = useUserDevice()
+    const { getDeviceTokens } = useDeviceToken()
 
-    const response = await getUserDeviceTokens(user_id)
+    const response = await getDeviceTokens(user_id)
 
     if (response && response.length === 0) {
       setResponseStatus(event, 200)

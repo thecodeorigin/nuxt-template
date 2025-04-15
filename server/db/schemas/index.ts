@@ -14,4 +14,6 @@ export * from './orders.schema'
 
 export * from './payments.schema'
 
-export * from './profiles.schema'
+export * from './users.schema'
+
+export * from './identities.schema'

@@ -1,37 +1,50 @@
 import { CreditHistoryType } from '@base/server/db/schemas'
+import { resolveUserId } from '../../user-mapping'
 
 export async function addCreditToUser(userId: string, amount: number) {
-  const { getUserCreditById } = useUserProfile()
+  // Resolve ID (could be Logto ID or our UUID)
+  const resolvedUserId = await resolveUserId(userId)
+  if (!resolvedUserId) {
+    throw new Error(`User with ID ${userId} not found`)
+  }
 
-  const userCredit = await getUserCreditById(userId)
+  const { getUserCreditById } = useUser()
+
+  const userCredit = await getUserCreditById(resolvedUserId)
 
   const newAmount = userCredit + amount
 
   const { updateCreditHistory, updateUserCredit } = useCredit()
 
-  await updateCreditHistory(CreditHistoryType.TOPUP, amount, userId)
+  await updateCreditHistory(CreditHistoryType.TOPUP, amount, resolvedUserId)
 
-  await updateUserCredit(userId, newAmount)
+  await updateUserCredit(resolvedUserId, newAmount)
 
-  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
+  await useNitroApp().hooks.callHook('credit:change', { userId: resolvedUserId, amount: newAmount })
 
   return { success: true }
 }
 
 export async function subtractCreditFromUser(userId: string, amount: number) {
-  const { getUserCreditById } = useUserProfile()
+  // Resolve ID (could be Logto ID or our UUID)
+  const resolvedUserId = await resolveUserId(userId)
+  if (!resolvedUserId) {
+    throw new Error(`User with ID ${userId} not found`)
+  }
 
-  const userCredit = await getUserCreditById(userId)
+  const { getUserCreditById } = useUser()
+
+  const userCredit = await getUserCreditById(resolvedUserId)
 
   const newAmount = userCredit - amount
 
   const { updateCreditHistory, updateUserCredit } = useCredit()
 
-  await updateCreditHistory(CreditHistoryType.SPEND, amount, userId)
+  await updateCreditHistory(CreditHistoryType.SPEND, amount, resolvedUserId)
 
-  await updateUserCredit(userId, newAmount)
+  await updateUserCredit(resolvedUserId, newAmount)
 
-  await useNitroApp().hooks.callHook('credit:change', { userId, amount: newAmount })
+  await useNitroApp().hooks.callHook('credit:change', { userId: resolvedUserId, amount: newAmount })
 
   return { success: true }
 }

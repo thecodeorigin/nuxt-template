@@ -19,9 +19,9 @@ export async function pushNotification(param: NotificationBody) {
     })
   }
 
-  const { getUserDeviceTokens } = useUserDevice()
+  const { getDeviceTokens } = useDeviceToken()
 
-  const response = await getUserDeviceTokens(param.user_id)
+  const response = await getDeviceTokens(param.user_id)
 
   if (response && response.length === 0)
     return

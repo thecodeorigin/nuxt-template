@@ -1,8 +1,9 @@
 import { eq } from 'drizzle-orm'
 import { PaymentStatus, orderTable, paymentProviderTransactionTable, paymentTable } from '../db/schemas'
+import type { Order, Payment, PaymentProviderTransaction } from '../types/models'
 
 export function usePayment() {
-  async function createOrder(creditPackageId: string, userId: string) {
+  async function createOrder(creditPackageId: string, userId: string): Promise<Order> {
     return (
       await db.insert(orderTable).values({
         credit_package_id: creditPackageId,
@@ -11,7 +12,7 @@ export function usePayment() {
     )[0]
   }
 
-  async function createPayment(orderId: string, userId: string, amount: number) {
+  async function createPayment(orderId: string, userId: string, amount: number): Promise<Payment> {
     return (
       await db.insert(paymentTable).values({
         amount: String(amount),
@@ -30,7 +31,14 @@ export function usePayment() {
     )
   }
 
-  async function createProviderTransaction(paymentId: string, userId: string, orderCode: number, provider: string, productType: string, productInfo: any) {
+  async function createProviderTransaction(
+    paymentId: string,
+    userId: string,
+    orderCode: number,
+    provider: string,
+    productType: string,
+    productInfo: Record<string, any>,
+  ): Promise<PaymentProviderTransaction> {
     return (
       await db.insert(paymentProviderTransactionTable).values({
         provider,
@@ -43,7 +51,16 @@ export function usePayment() {
     )[0]
   }
 
-  function getProviderTransactionByOrderCode(orderCode: string) {
+  function getProviderTransactionByOrderCode(orderCode: string): Promise<
+    | (PaymentProviderTransaction & {
+      payment: Payment & {
+        order: Order & {
+          package: any
+        }
+      }
+    })
+    | undefined
+  > {
     return db.query.paymentProviderTransactionTable.findFirst({
       where: eq(paymentProviderTransactionTable.provider_transaction_id, orderCode),
       with: {
