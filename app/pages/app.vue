@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getMessaging, getToken } from 'firebase/messaging'
+import { topupBusKey } from '@base/injections/credit'
 
 definePageMeta({
   layout: 'app',
@@ -72,6 +73,12 @@ const links = [
 ]
 
 const isTopupModalVisible = ref(false)
+
+const topupBus = useEventBus(topupBusKey)
+
+topupBus.on(() => {
+  isTopupModalVisible.value = true
+})
 
 const { data: plans } = useAsyncData('credit-packages', () => useApiCreditPackage().fetchCreditPackages(), {
   transform(data) {

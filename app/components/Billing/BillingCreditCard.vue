@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { topupBusKey } from '@base/injections/credit'
+
 const { credit, isRefreshingCredit, refreshCredit } = useCredit()
 
 tryOnBeforeMount(refreshCredit)
+
+const topupBus = useEventBus(topupBusKey)
 </script>
 
 <template>
@@ -22,7 +26,7 @@ tryOnBeforeMount(refreshCredit)
       </p>
     </div>
     <div class="mt-4">
-      <UButton color="neutral" variant="solid" to="/pricing">
+      <UButton color="neutral" variant="solid" @click="topupBus.emit()">
         {{ $t('Buy more credit') }}
       </UButton>
     </div>
