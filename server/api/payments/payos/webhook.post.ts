@@ -34,6 +34,8 @@ export default defineEventHandler(async (event) => {
     const creditAmount = Number(paymentTransactionOfProvider.payment.order.package.amount)
     const userId = paymentTransactionOfProvider.payment.order.user_id
 
+    // The userId is already the UUID from our database since we've updated
+    // our schemas to use UUID references between tables
     logger.log(`[PayOS Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
 
     await addCreditToUser(userId, creditAmount)

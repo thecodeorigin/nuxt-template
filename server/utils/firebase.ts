@@ -27,9 +27,9 @@ export async function sendFirebaseCloudMessage(title: string, body: string) {
 
   const currentUser = useLogtoUser()
 
-  const { getUserDeviceTokens } = useUserDevice()
+  const { getDeviceTokens } = useDeviceToken()
 
-  const deviceTokens = await getUserDeviceTokens(currentUser.sub)
+  const deviceTokens = await getDeviceTokens(currentUser.sub)
 
   return firebaseAdmin.messaging().sendEachForMulticast({
     tokens: deviceTokens.map(device => device.token_device).filter(Boolean) as string[],
