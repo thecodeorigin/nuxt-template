@@ -4,7 +4,7 @@ withDefaults(
     index?: number
     orientation?: 'horizontal' | 'vertical'
     highlight?: boolean
-    creditPackage: CreditPackage
+    product: Product
   }>(),
   {
     orientation: 'vertical',
@@ -28,20 +28,20 @@ async function handleBuyCredit(productId: string) {
 <template>
   <UPricingPlan
     :orientation="orientation"
-    :title="creditPackage.title || ''"
-    :description="creditPackage.description || ''"
+    :title="product.title || ''"
+    :description="product.description || ''"
     :scale="highlight"
     :highlight="highlight"
     :badge="highlight ? { label: $t('Most popular') } : undefined"
-    :price="Number(creditPackage.amount) ? `${creditPackage.amount} credits` : $t('Contact us')"
-    :billing-cycle="Number(creditPackage.amount) ? '/month' : ''"
-    :features="creditPackage.features || []"
+    :price="Number(product.amount) ? `${product.amount} credits` : $t('Contact us')"
+    :billing-cycle="Number(product.amount) ? '/month' : ''"
+    :features="product.features || []"
     :button="
-      Number(creditPackage.price)
+      Number(product.price)
         ? {
           label: $t('Buy credits & Start'),
           variant: 'solid',
-          onClick: () => handleBuyCredit(creditPackage.id),
+          onClick: () => handleBuyCredit(product.id),
         } : {
           label: $t('Contact us'),
           variant: 'solid',

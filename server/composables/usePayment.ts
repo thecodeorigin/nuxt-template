@@ -3,10 +3,10 @@ import { PaymentStatus, orderTable, paymentProviderTransactionTable, paymentTabl
 import type { Order, Payment, PaymentProviderTransaction } from '../types/models'
 
 export function usePayment() {
-  async function createOrder(creditPackageId: string, userId: string): Promise<Order> {
+  async function createOrder(productId: string, userId: string): Promise<Order> {
     return (
       await db.insert(orderTable).values({
-        credit_package_id: creditPackageId,
+        product_id: productId,
         user_id: userId,
       }).returning()
     )[0]

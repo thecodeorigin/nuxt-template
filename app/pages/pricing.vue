@@ -10,7 +10,7 @@ useSeoMeta({
 
 defineOgImageComponent('Saas')
 
-const { data: plans } = useAsyncData('credit-packages', () => useApiCreditPackage().fetchCreditPackages(), {
+const { data: products } = useAsyncData('credit-packages', () => useApiProduct().fetchCreditPackages(), {
   transform(data) {
     return data.data
   },
@@ -26,7 +26,7 @@ function checkHighlightedPrice(price: number, index?: number) {
 }
 
 const selectedPriceId = ref<string | null>(null)
-const selectedPrice = computed(() => plans.value?.find((plan: any) => plan.id === selectedPriceId.value))
+const selectedPrice = computed(() => products.value?.find((plan: any) => plan.id === selectedPriceId.value))
 
 const paymentApi = useApiPayment()
 
@@ -80,7 +80,7 @@ async function handleCheckout() {
 
 tryOnBeforeMount(async () => {
   if (!selectedPriceId.value)
-    selectedPriceId.value = plans.value?.[1]?.id || null
+    selectedPriceId.value = products.value?.[1]?.id || null
 
   if (pendingPaymentPrice.value) {
     const isProcessing = Boolean(pendingPaymentPrice.value)
@@ -110,7 +110,7 @@ tryOnBeforeMount(async () => {
           <div class="flex items-center space-x-4">
             <USelect
               v-model="selectedPriceId"
-              :items="plans || []"
+              :items="products || []"
               value-key="id"
               label-key="title"
               size="xl"
@@ -134,13 +134,13 @@ tryOnBeforeMount(async () => {
     </UPageSection>
 
     <UContainer>
-      <UPricingPlans v-if="plans?.length" scale style="--count: 3">
+      <UPricingPlans v-if="products?.length" scale style="--count: 3">
         <PricingItem
-          v-for="(plan, index) in plans || []"
+          v-for="(plan, index) in products || []"
           :key="index"
           :index="index"
           :highlight="checkHighlightedPrice(Number(plan.price), index)"
-          :credit-package="plan"
+          :product="plan"
           @buy="handleBuyCredit"
           @contact="handleContact"
         />

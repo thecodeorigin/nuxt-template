@@ -1,13 +1,13 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import type {
   creditHistoryTable,
-  creditPackageTable,
   deviceTable,
   identityTable,
   notificationTable,
   orderTable,
   paymentProviderTransactionTable,
   paymentTable,
+  productTable,
   userTable,
 } from '../db/schemas'
 
@@ -21,7 +21,7 @@ export type CreditHistory = InferSelectModel<typeof creditHistoryTable>
 export type Order = InferSelectModel<typeof orderTable>
 export type Payment = InferSelectModel<typeof paymentTable>
 export type PaymentProviderTransaction = InferSelectModel<typeof paymentProviderTransactionTable>
-export type CreditPackage = InferSelectModel<typeof creditPackageTable>
+export type Product = InferSelectModel<typeof productTable>
 export type Device = InferSelectModel<typeof deviceTable>
 
 /**

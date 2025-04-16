@@ -80,7 +80,7 @@ topupBus.on(() => {
   isTopupModalVisible.value = true
 })
 
-const { data: plans } = useAsyncData('credit-packages', () => useApiCreditPackage().fetchCreditPackages(), {
+const { data: plans } = useAsyncData('products', () => useApiProduct().fetchProducts(), {
   transform(data) {
     return data.data.reduce((acc, item) => {
       if (Number(item.amount) > 0) {
@@ -91,7 +91,7 @@ const { data: plans } = useAsyncData('credit-packages', () => useApiCreditPackag
       }
 
       return acc
-    }, [] as CreditPackage[])
+    }, [] as Product[])
   },
 })
 

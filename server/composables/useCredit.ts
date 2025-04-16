@@ -1,10 +1,10 @@
 import type { CreditHistoryType } from '@base/server/db/schemas'
 import { creditHistoryTable } from '@base/server/db/schemas'
-import type { CreditHistory, CreditPackage } from '@base/server/types/models'
+import type { CreditHistory, Product } from '@base/server/types/models'
 
 export function useCredit() {
-  function getCreditPackages(): Promise<CreditPackage[]> {
-    return db.query.creditPackageTable.findMany({
+  function getProducts(): Promise<Product[]> {
+    return db.query.productTable.findMany({
       orderBy(fields, { asc }) {
         return asc(fields.price)
       },
@@ -31,7 +31,7 @@ export function useCredit() {
   }
 
   return {
-    getCreditPackages,
+    getProducts,
     updateCreditHistory,
     updateUserCredit,
   }

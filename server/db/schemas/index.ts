@@ -1,6 +1,6 @@
 export * from './credit_histories.schema'
 
-export * from './credit_packages.schema'
+export * from './products.schema'
 
 export * from './enum.schema'
 

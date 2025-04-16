@@ -26,6 +26,14 @@ export default defineNuxtConfig({
       host: process.env.SMTP_SERVER,
       port: Number(process.env.SMTP_PORT),
     },
+
+    nitro: {
+      tasks: {
+        'email:test': {
+          description: 'Test email sending',
+        },
+      },
+    },
   },
 
   $production: {
@@ -230,6 +238,10 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    experimental: {
+      tasks: true,
+    },
+
     devProxy: {
       host: 'localhost',
     },
@@ -272,9 +284,11 @@ export default defineNuxtConfig({
     '/docs/**': { prerender: true },
     '/blog/**': { swr: true },
     '/api/content/**': { csurf: false },
+    '/api/logto/webhook': { csurf: false },
     '/api/payments/payos/webhook': { csurf: false },
     '/api/payments/vnpay/callback': { csurf: false },
     '/api/payments/vnpay/IPN': { csurf: false },
+    '/_nitro/tasks/**': { csurf: false },
   },
 
   colorMode: {
