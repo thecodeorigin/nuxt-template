@@ -4,9 +4,7 @@ import { userTable } from './users.schema'
 
 export const identityTable = pgTable('identities', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  user_id: uuid('user_id')
-    .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' })
-    .notNull(),
+  user_id: text('user_id').notNull(),
   provider: text('provider').notNull(), // e.g., 'google', 'facebook', etc.
   provider_user_id: text('provider_user_id').notNull(),
   provider_data: jsonb('provider_data').default({}),

@@ -1,10 +1,10 @@
-import { creditPackageTable } from '../schemas'
+import { productTable } from '../schemas'
 import { db } from '../../utils/db'
 
-export async function seedCreditPackages() {
-  console.log('Seeding credit packages...')
+export async function seedProducts() {
+  console.log('Seeding products...')
 
-  return await db.insert(creditPackageTable).values([
+  return await db.insert(productTable).values([
     {
       title: 'Basic',
       description: 'Ideal for testing their workflows.',

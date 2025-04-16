@@ -43,10 +43,10 @@ export default defineEventHandler(async (event) => {
     logger.log(`[PayOS Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
-      logger.error(`[PayOS Webhook] No credit package found for transaction: ${webhookData.orderCode}`)
+      logger.error(`[PayOS Webhook] No product found for transaction: ${webhookData.orderCode}`)
       throw createError({
         statusCode: 400,
-        message: 'No credit package found for this transaction!',
+        message: 'No product found for this transaction!',
       })
     }
 

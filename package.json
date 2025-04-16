@@ -40,8 +40,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "jiti ./server/db/seeds/index.ts",
     "docker:clear": "rimraf ./docker/postgres ./docker/redis ./docker/mondodb",
-    "docker:start": "docker compose -f docker-compose.dev.yml up -d",
-    "docker:stop": "docker-compose -f docker-compose.dev.yml down",
+    "docker:start": "docker compose -f docker-compose.service.yml up -d --force-recreate",
+    "docker:stop": "docker-compose -f docker-compose.service.yml down",
     "docker:reset": "pnpm docker:stop && pnpm docker:clear && pnpm docker:start --force-recreate",
     "gettext:extract": "vue-gettext-extract",
     "gettext:compile": "vue-gettext-compile"

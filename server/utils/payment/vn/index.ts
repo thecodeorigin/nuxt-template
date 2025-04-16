@@ -23,11 +23,11 @@ export async function createPaymentCheckout(
   let productInfo: { id: string, price: string, amount: string } | undefined
 
   const { createOrder, createPayment, createProviderTransaction } = usePayment()
-  const { getCreditPackageByProductId } = useCreditPackage()
+  const { getProductByProductId } = useProduct()
 
   switch (productType) {
     case 'credit':
-      productInfo = await getCreditPackageByProductId(productId)
+      productInfo = await getProductByProductId(productId)
       break
 
     default:

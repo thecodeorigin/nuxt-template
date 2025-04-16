@@ -1,0 +1,98 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: nuxt-template-pg
+    image: postgres:latest
+    volumes:
+      - ./docker/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    restart: unless-stopped
+
+  redis:
+    container_name: nuxt-template-redis
+    image: redis:latest
+    volumes:
+      - ./docker/redis:/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis}
+    ports:
+      - '${REDIS_PORT}:6379'
+    restart: unless-stopped
+
+  mondodb:
+    container_name: nuxt-template-mongodb
+    image: mongo:latest
+    volumes:
+      - ./docker/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
+    ports:
+      - '27017:27017'
+    restart: unless-stopped
+
+  mailhog:
+    container_name: nuxt-template-mailhog
+    image: mailhog/mailhog:latest
+    volumes:
+      - ./docker/mailhog:/data
+    ports:
+      - '${SMTP_PORT:-1025}:1025' # SMTP server port
+      - '${SMTP_WEB_PORT:-8025}:8025' # Web UI port
+    restart: unless-stopped
+
+  logto:
+    depends_on:
+      postgres-logto:
+        condition: service_healthy
+    image: svhd/logto:latest
+    container_name: nuxt-template-logto
+    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    volumes:
+      - ./docker/logto:/opt/logto/packages/core/data
+    ports:
+      - '3001:3001'
+      - '3002:3002'
+    environment:
+      - TRUST_PROXY_HEADER=1
+      - DB_URL=postgresql://postgres:p0stgr3s@postgres-logto:5432/logto
+      - ENDPOINT
+      - ADMIN_ENDPOINT
+    restart: unless-stopped
+
+  postgres-logto:
+    image: postgres:latest
+    container_name: nuxt-template-pg-logto
+    volumes:
+      - ./docker/postgres-logto:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: p0stgr3s
+      POSTGRES_DB: logto
+    ports:
+      - '54333:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres:
+    driver: local
+  pgadmin:
+    driver: local
+  redis:
+    driver: local
+  mondodb:
+    driver: local
+  logto:
+    driver: local

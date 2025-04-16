@@ -1,6 +1,11 @@
 import { boolean, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { identityTable } from './identities.schema'
+import { deviceTable } from './devices.schema'
+import { creditHistoryTable } from './credit_histories.schema'
+import { notificationTable } from './notifications.schema'
+import { orderTable } from './orders.schema'
+import { paymentTable } from './payments.schema'
 
 export const userTable = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -31,4 +36,9 @@ export const userTable = pgTable('users', {
 
 export const userRelations = relations(userTable, ({ many }) => ({
   identities: many(identityTable),
+  devices: many(deviceTable),
+  creditHistories: many(creditHistoryTable),
+  notifications: many(notificationTable),
+  orders: many(orderTable),
+  payments: many(paymentTable),
 }))

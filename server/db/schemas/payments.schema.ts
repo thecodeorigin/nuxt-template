@@ -11,9 +11,7 @@ export const paymentTable = pgTable('payments', {
   status: paymentStatus('status').notNull(),
   order_id: uuid('order_id')
     .references(() => orderTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
-  user_id: uuid('user_id')
-    .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' })
-    .notNull(),
+  user_id: text('user_id').notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
