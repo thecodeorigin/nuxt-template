@@ -16,14 +16,14 @@ const items = computed(() => [{
   to: '/blog',
 }])
 
-const currentUser = useLogtoUser()
+const authStore = useAuthStore()
 
 const userAvatar = computed(
-  () => currentUser?.picture
-    || currentUser?.identities.google?.details.avatar
-    || currentUser?.identities.github?.details.avatar
-    || currentUser?.identities.facebook?.details.avatar
-    || withQuery('https://ui-avatars.com/api', { name: currentUser?.name }),
+  () => authStore.currentUser?.picture
+    || authStore.currentUser?.identities.google?.details.avatar
+    || authStore.currentUser?.identities.github?.details.avatar
+    || authStore.currentUser?.identities.facebook?.details.avatar
+    || withQuery('https://ui-avatars.com/api', { name: authStore.currentUser?.name }),
 )
 </script>
 
@@ -41,7 +41,7 @@ const userAvatar = computed(
     />
 
     <template #right>
-      <UButton v-if="currentUser" :label="$t('Go to Dashboard')" color="neutral" variant="ghost" to="/app">
+      <UButton v-if="authStore.currentUser" :label="$t('Go to Dashboard')" color="neutral" variant="ghost" to="/app">
         <template #leading>
           <UAvatar
             :src="userAvatar"
@@ -68,7 +68,7 @@ const userAvatar = computed(
 
       <USeparator class="my-6" />
 
-      <UButton v-if="currentUser" :label="$t('Go to Dashboard')" color="neutral" variant="ghost" to="/app">
+      <UButton v-if="authStore.currentUser" :label="$t('Go to Dashboard')" color="neutral" variant="ghost" to="/app">
         <template #leading>
           <UAvatar
             :src="userAvatar"

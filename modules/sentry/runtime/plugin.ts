@@ -12,13 +12,13 @@ export default defineNuxtPlugin({
     if (config.public.sentry.dsn) {
       nuxtApp.hook('vue:setup', () => {
         const scope = Sentry.getCurrentScope()
-        const currentUser = useLogtoUser()
+        const authStore = useAuthStore()
 
-        if (currentUser) {
+        if (authStore.currentUser) {
           scope.setUser({
-            id: currentUser.sub,
-            name: currentUser.name,
-            email: currentUser.email || '',
+            id: authStore.currentUser.sub,
+            name: authStore.currentUser.name,
+            email: authStore.currentUser.email || '',
           })
         }
       })

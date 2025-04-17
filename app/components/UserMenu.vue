@@ -8,19 +8,19 @@ defineProps<{
 
 const { t } = useI18n()
 
-const currentUser = useLogtoUser()
+const authStore = useAuthStore()
 
 const userAvatar = computed(
-  () => currentUser?.picture
-    || currentUser?.identities.google?.details.avatar
-    || currentUser?.identities.github?.details.avatar
-    || currentUser?.identities.facebook?.details.avatar
-    || withQuery('https://ui-avatars.com/api', { name: currentUser?.name }),
+  () => authStore.currentUser?.picture
+    || authStore.currentUser?.identities.google?.details.avatar
+    || authStore.currentUser?.identities.github?.details.avatar
+    || authStore.currentUser?.identities.facebook?.details.avatar
+    || withQuery('https://ui-avatars.com/api', { name: authStore.currentUser?.name }),
 )
 
-const userName = computed(() => currentUser?.name || currentUser?.email || currentUser?.username || '')
+const userName = computed(() => authStore.currentUser?.name || authStore.currentUser?.email || authStore.currentUser?.username || '')
 
-const userIdentity = computed(() => currentUser?.email || currentUser?.username)
+const userIdentity = computed(() => authStore.currentUser?.email || authStore.currentUser?.username)
 
 const items = computed<DropdownMenuItem[][]>(() => ([
   [

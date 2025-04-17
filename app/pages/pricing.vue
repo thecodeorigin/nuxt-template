@@ -30,7 +30,7 @@ const selectedPrice = computed(() => products.value?.find((plan: any) => plan.id
 
 const paymentApi = useApiPayment()
 
-const currentUser = useLogtoUser()
+const authStore = useAuthStore()
 
 const pendingPaymentPrice = useLocalStorage('pendingPaymentPrice', '')
 
@@ -67,7 +67,7 @@ function handleContact() {
 async function handleCheckout() {
   const productIdentifier = `credit:${selectedPriceId.value}`
 
-  if (!currentUser) {
+  if (!authStore.currentUser) {
     pendingPaymentPrice.value = productIdentifier
 
     await navigateTo({ path: '/sign-in' }, { external: true })
