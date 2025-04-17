@@ -35,28 +35,40 @@ interface LogtoUserEntity {
   name?: string
   avatar?: string
   customData?: Record<string, any>
-  identities?: Record<string, any>
+  identities?: Record<string, LogtoIdentity>
   lastSignInAt?: string
   createdAt?: string
   applicationId?: string
   isSuspended?: boolean
 }
 
+// Define Logto identity interface
+interface LogtoIdentity {
+  userId: string
+  details?: {
+    id?: string
+    email?: string
+    name?: string
+    avatar?: string
+    phone?: string
+  }
+}
+
 // Get signing key from environment variable or config
-// const LOGTO_SIGNING_KEY = process.env.LOGTO_WEBHOOK_SIGNING_KEY || ''
+const LOGTO_SIGNING_KEY = process.env.LOGTO_WEBHOOK_SIGNING_KEY || ''
 
-// // Verify the Logto webhook signature
-// // eslint-disable-next-line node/prefer-global/buffer
-// function verifySignature(signingKey: string, rawBody: Buffer, signature: string): boolean {
-//   if (!signingKey)
-//     return false
+// Verify the Logto webhook signature
+// eslint-disable-next-line node/prefer-global/buffer
+function verifySignature(signingKey: string, rawBody: Buffer, signature: string): boolean {
+  if (!signingKey)
+    return false
 
-//   const hmac = createHmac('sha256', signingKey)
-//   hmac.update(rawBody)
-//   const computedSignature = hmac.digest('hex')
+  const hmac = createHmac('sha256', signingKey)
+  hmac.update(rawBody)
+  const computedSignature = hmac.digest('hex')
 
-//   return computedSignature === signature
-// }
+  return computedSignature === signature
+}
 
 // Map Logto user data to our user schema
 function mapLogtoUserToUserInput(logtoUser: LogtoUserEntity) {
@@ -71,36 +83,67 @@ function mapLogtoUserToUserInput(logtoUser: LogtoUserEntity) {
     last_sign_in_at: logtoUser.lastSignInAt ? new Date(logtoUser.lastSignInAt) : undefined,
     is_suspended: logtoUser.isSuspended,
     // Default credit value for new users if not present in customData
-    credit: '0',
+    // Convert to string for drizzle numeric field
+    credit: logtoUser.customData?.credit !== undefined
+      ? String(logtoUser.customData.credit)
+      : '0',
+  }
+}
+
+// Process identities from Logto user data
+async function processIdentities(userId: string, identities?: Record<string, LogtoIdentity>) {
+  if (!identities)
+    return
+
+  const { upsertIdentity } = useIdentity()
+
+  // Process each identity provider
+  for (const [provider, identity] of Object.entries(identities)) {
+    const providerUserId = identity?.details?.id || ''
+    if (!providerUserId)
+      continue
+
+    // If we've made it here, we know identity.details exists
+    // Map the provider data from the identity details
+    const providerData = {
+      email: identity.details!.email,
+      name: identity.details!.name,
+      avatar: identity.details!.avatar,
+      phone: identity.details!.phone,
+    }
+
+    // Create or update the identity entry
+    await upsertIdentity(userId, provider, providerUserId, providerData)
   }
 }
 
 export default defineEventHandler(async (event) => {
   try {
-    // Get the raw request body for signature verification
-    // const rawBody = await readRawBody(event)
-    // if (!rawBody) {
-    //   return { error: 'Invalid request body' }
-    // }
+    // Get the raw request body as buffer for signature verification
+    // Use false parameter to get the raw buffer instead of parsed string
+    const rawBody = await readRawBody(event, false)
+    if (!rawBody) {
+      return { error: 'Invalid request body' }
+    }
 
-    // // Get the signature from headers
-    // const signature = getRequestHeader(event, 'logto-signature-sha-256')
-    // if (!signature) {
-    //   return { error: 'Missing signature header' }
-    // }
+    // Get the signature from headers
+    const signature = getRequestHeader(event, 'logto-signature-sha-256')
+    if (!signature) {
+      return { error: 'Missing signature header' }
+    }
 
-    // // Verify the signature
-    // if (!verifySignature(LOGTO_SIGNING_KEY, rawBody, signature)) {
-    //   setResponseStatus(event, 401)
-    //   return { error: 'Invalid signature' }
-    // }
+    // Verify the signature with the raw body buffer
+    if (!verifySignature(LOGTO_SIGNING_KEY, rawBody, signature)) {
+      return { error: 'Invalid signature' }
+    }
 
-    // Parse the request body
-    const body = await readBody<LogtoWebhookPayload>(event)
+    // Parse the request body JSON
+    const body = JSON.parse(rawBody.toString()) as LogtoWebhookPayload
     const { event: eventType, user, data, userId } = body
 
     // Get user composables
     const { upsertUser, updateLastSignIn, updateSuspensionStatus, deleteUser } = useUser()
+    const { deleteIdentitiesByUserId } = useIdentity()
 
     // Handle different event types
     switch (eventType) {
@@ -110,7 +153,10 @@ export default defineEventHandler(async (event) => {
         }
 
         // Create or update user
-        await upsertUser(user.id, mapLogtoUserToUserInput(user))
+        const createdUser = await upsertUser(user.id, mapLogtoUserToUserInput(user))
+
+        // Process any identity information
+        await processIdentities(createdUser.id, user.identities)
         break
       }
 
@@ -120,16 +166,13 @@ export default defineEventHandler(async (event) => {
         }
 
         // Create or update user data and update last sign-in time
-        await upsertUser(userId, mapLogtoUserToUserInput(user))
+        const updatedUser = await upsertUser(userId, mapLogtoUserToUserInput(user))
 
-        // Resolve to internal UUID if possible
-        const resolvedUser = await db.query.userTable.findFirst({
-          where: eq(userTable.logto_id, userId),
-        })
+        // Process any identity information
+        await processIdentities(updatedUser.id, user.identities)
 
-        if (resolvedUser) {
-          await updateLastSignIn(resolvedUser.id)
-        }
+        // Update last sign-in time
+        await updateLastSignIn(updatedUser.id)
         break
       }
 
@@ -139,7 +182,10 @@ export default defineEventHandler(async (event) => {
         }
 
         // Create or update user
-        await upsertUser(data.id, mapLogtoUserToUserInput(data))
+        const createdUser = await upsertUser(data.id, mapLogtoUserToUserInput(data))
+
+        // Process any identity information
+        await processIdentities(createdUser.id, data.identities)
         break
       }
 
@@ -154,6 +200,10 @@ export default defineEventHandler(async (event) => {
         })
 
         if (user) {
+          // Delete identities first to maintain referential integrity
+          await deleteIdentitiesByUserId(user.id)
+
+          // Then delete the user
           await deleteUser(user.id)
         }
         break
@@ -165,7 +215,10 @@ export default defineEventHandler(async (event) => {
         }
 
         // Update user data
-        await upsertUser(userId, mapLogtoUserToUserInput(data))
+        const updatedUser = await upsertUser(userId, mapLogtoUserToUserInput(data))
+
+        // Process any identity information
+        await processIdentities(updatedUser.id, data.identities)
         break
       }
 
@@ -196,7 +249,13 @@ export default defineEventHandler(async (event) => {
   }
   catch (error: any) {
     console.error('Error processing Logto webhook:', error)
-    setResponseStatus(event, 500)
+
+    // If it's already a Nuxt error, just rethrow it
+    if (error.statusCode) {
+      throw error
+    }
+
+    // Otherwise create a generic error
     return { error: error.message || 'Internal server error' }
   }
 })
