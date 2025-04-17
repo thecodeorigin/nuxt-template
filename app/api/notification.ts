@@ -62,6 +62,19 @@ export function useApiNotification() {
     })
   }
 
+  function updateSettings(payload: Partial<{
+    email: boolean | null
+    desktop: boolean | null
+    product_updates: boolean | null
+    weekly_digest: boolean | null
+    important_updates: boolean | null
+  }>) {
+    return $api('/api/auth/notification', {
+      method: 'PATCH',
+      body: payload,
+    })
+  }
+
   return {
     fetchNotifications,
     markRead,
@@ -72,5 +85,6 @@ export function useApiNotification() {
     countUnreadNotifications,
     createTokenDevice,
     deleteTokenDevice,
+    updateSettings,
   }
 }

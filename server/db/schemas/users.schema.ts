@@ -23,6 +23,13 @@ export const userTable = pgTable('users', {
   zalo: text('zalo'),
   credit: numeric('credit'),
 
+  // Notification settings with default values
+  email_notifications: boolean('email_notifications').default(true),
+  desktop_notifications: boolean('desktop_notifications').default(true),
+  product_updates_notifications: boolean('product_updates_notifications').default(true),
+  weekly_digest_notifications: boolean('weekly_digest_notifications').default(true),
+  important_updates_notifications: boolean('important_updates_notifications').default(true),
+
   // Additional Logto metadata
   custom_data: jsonb('custom_data').default({}),
   last_sign_in_at: timestamp('last_sign_in_at', { withTimezone: true }),
