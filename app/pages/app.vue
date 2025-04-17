@@ -23,9 +23,9 @@ onMounted(async () => {
       if (Notification.permission !== 'granted')
         await Notification.requestPermission()
 
-      const currentUser = useLogtoUser()
+      const authStore = useAuthStore()
 
-      if (Notification.permission === 'granted' && currentUser) {
+      if (Notification.permission === 'granted' && authStore.currentUser) {
         const token = await getToken(getMessaging(), { vapidKey: config.public.firebase.keyPair })
 
         notificationApi.createTokenDevice(token)

@@ -6,7 +6,10 @@ export const useAuthStore = defineStore('auth', () => {
     return window.document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
   })
 
+  const currentUser = computed(useLogtoUser)
+
   return {
     crsfToken,
+    currentUser,
   }
 })

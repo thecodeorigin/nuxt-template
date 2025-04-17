@@ -21,7 +21,7 @@ interface LogtoWebhookPayload {
   userId?: string
   user?: LogtoUserEntity
   data?: LogtoUserEntity | null
-  params?: { id: string }
+  params?: { id?: string, userId?: string }
   interactionEvent?: string
   sessionId?: string
   applicationId?: string
@@ -157,22 +157,6 @@ export default defineEventHandler(async (event) => {
 
     // Handle different event types
     switch (eventType) {
-      case 'PostRegister': {
-        if (!user) {
-          return sendError(event, createError({
-            statusCode: 400,
-            statusMessage: 'Missing user data for PostRegister event',
-          }))
-        }
-
-        // Create or update user
-        const createdUser = await upsertUser(user.id, mapLogtoUserToUserInput(user))
-
-        // Process any identity information
-        await processIdentities(createdUser.id, user.identities)
-        break
-      }
-
       case 'PostSignIn': {
         if (!user || !userId) {
           return sendError(event, createError({
@@ -209,7 +193,9 @@ export default defineEventHandler(async (event) => {
       }
 
       case 'User.Deleted': {
-        if (!params?.id) {
+        const userId = params?.userId || data?.id
+
+        if (!userId) {
           return sendError(event, createError({
             statusCode: 400,
             statusMessage: 'Missing userId for User.Deleted event',
@@ -218,7 +204,7 @@ export default defineEventHandler(async (event) => {
 
         // Find user by Logto ID
         const user = await db.query.userTable.findFirst({
-          where: eq(userTable.logto_id, params.id),
+          where: eq(userTable.logto_id, userId),
         })
 
         if (user) {
@@ -232,7 +218,9 @@ export default defineEventHandler(async (event) => {
       }
 
       case 'User.Data.Updated': {
-        if (!data || !params?.id) {
+        const userId = params?.userId || data?.id
+
+        if (!data || !userId) {
           return sendError(event, createError({
             statusCode: 400,
             statusMessage: 'Missing user data for User.Data.Updated event',
@@ -240,7 +228,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // Update user data
-        const updatedUser = await upsertUser(params.id, mapLogtoUserToUserInput(data))
+        const updatedUser = await upsertUser(userId, mapLogtoUserToUserInput(data))
 
         // Process any identity information
         await processIdentities(updatedUser.id, data.identities)
@@ -248,7 +236,9 @@ export default defineEventHandler(async (event) => {
       }
 
       case 'User.SuspensionStatus.Updated': {
-        if (!data || !params?.id) {
+        const userId = params?.userId || data?.id
+
+        if (!data || !userId) {
           return sendError(event, createError({
             statusCode: 400,
             statusMessage: 'Missing user data for User.SuspensionStatus.Updated event',
@@ -257,7 +247,7 @@ export default defineEventHandler(async (event) => {
 
         // Find user by Logto ID to get internal UUID
         const user = await db.query.userTable.findFirst({
-          where: eq(userTable.logto_id, params.id),
+          where: eq(userTable.logto_id, userId),
         })
 
         if (user && data.isSuspended !== undefined) {

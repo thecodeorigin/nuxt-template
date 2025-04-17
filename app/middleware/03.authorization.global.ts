@@ -9,9 +9,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const caslStore = useCaslStore()
 
-  const currentUser = useLogtoUser()
+  const authStore = useAuthStore()
 
-  if (currentUser) {
+  if (authStore.currentUser) {
     try {
       await caslStore.fetchScopes()
     }

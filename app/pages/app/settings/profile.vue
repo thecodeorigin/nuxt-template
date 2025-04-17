@@ -13,7 +13,7 @@ const profileSchema = z.object({
 
 type ProfileSchema = z.output<typeof profileSchema>
 
-const currentUser = useLogtoUser()
+const authStore = useAuthStore()
 
 const formData = ref({
   name: 'Benjamin Canac',
@@ -22,7 +22,7 @@ const formData = ref({
   avatar: '',
 })
 
-syncRef(computed(() => currentUser), formData, {
+syncRef(computed(() => authStore.currentUser), formData, {
   direction: 'ltr',
   transform: {
     ltr(left) {
