@@ -15,17 +15,20 @@ export default defineEventHandler(async (event) => {
       }).partial().parse(body),
     )
 
-    await enableAccountCenter()
+    const { updateUser } = useUser()
 
-    const userData = await getLogtoUserCustomData(session.sub)
-
-    await updateLogtoUserCustomData(session.sub, { ...userData, ...body })
+    await updateUser(session.sub, {
+      ...(body.email !== undefined && { email_notifications: body.email }),
+      ...(body.desktop !== undefined && { desktop_notifications: body.desktop }),
+      ...(body.product_updates !== undefined && { product_updates_notifications: body.product_updates }),
+      ...(body.weekly_digest !== undefined && { weekly_digest_notifications: body.weekly_digest }),
+      ...(body.important_updates !== undefined && { important_updates_notifications: body.important_updates }),
+    })
 
     return { success: true }
   }
   catch (error: any) {
     logger.error('[Notification API] Error updating user notification settings:', error)
-
     throw parseError(error)
   }
 })

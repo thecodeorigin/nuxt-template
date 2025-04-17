@@ -63,7 +63,12 @@ export type UserInput = OptionalNullable<
   'custom_data' |
   'last_sign_in_at' |
   'is_suspended' |
-  'has_password' >
+  'has_password' |
+  'email_notifications' |
+  'desktop_notifications' |
+  'product_updates_notifications' |
+  'weekly_digest_notifications' |
+  'important_updates_notifications'>
 >
 
 /**

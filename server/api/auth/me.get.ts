@@ -1,30 +1,25 @@
-import type { LogtoUser } from '@base/server/types/logto'
-
 export default defineEventHandler(async (event) => {
   try {
-    await defineEventOptions(event, { auth: true })
-
-    const client = useLogtoClient()
+    const { session } = await defineEventOptions(event, { auth: true })
 
     const { getUserById } = useUser()
 
-    const user = (await client.fetchUserInfo()) as LogtoUser
+    // Get the user data from our database
+    const user = await getUserById(session.sub)
 
-    const userProfile = await getUserById(user.sub)
+    if (!user) {
+      throw createError({
+        statusCode: 404,
+        message: 'User not found',
+      })
+    }
 
     return {
-      data: {
-        ...user,
-        custom_data: {
-          ...user.custom_data,
-          credit: Number(userProfile?.credit || 0) || user.custom_data.credit || 0,
-        },
-      } as LogtoUser,
+      data: user,
     }
   }
   catch (error: any) {
-    logger.error('[Me API] Error fetching user info:', error)
-
+    logger.error('[User API] Error fetching user:', error)
     throw parseError(error)
   }
 })

@@ -15,7 +15,9 @@ export function useCredit() {
 
       const response = await creditApi.fetchCredit()
 
-      credit.value = response.data?.custom_data?.credit || 0
+      // Updated to work with our database-first approach
+      // The credit is directly on the user object now
+      credit.value = Number(response.data?.credit || 0)
     }
     catch {}
     finally {
