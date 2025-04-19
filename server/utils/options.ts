@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
-import type { LogtoUser } from '@base/server/types/logto'
 import { z } from 'zod'
+import type { User } from '../types/models'
 import { useLogtoUser } from '#imports'
 
 interface RouteOptions<U extends boolean, P extends string[]> {
@@ -17,7 +17,7 @@ export async function defineEventOptions<
   UseAuthU extends boolean,
   ParamsT extends string[],
 >(event: H3Event, options?: RouteOptions<UseAuthU, TupleType<ParamsT>>) {
-  type SessionType = ConditionalType<UseAuthU, LogtoUser, null>
+  type SessionType = ConditionalType<UseAuthU, User, null>
 
   type Result = {
     [K in TupleType<ParamsT>[number]]: string
@@ -37,7 +37,16 @@ export async function defineEventOptions<
       })
     }
 
-    result.session = user as SessionType
+    const currentUser = await useUser().getUserById(user.sub)
+
+    if (!currentUser) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: ErrorMessage.UNAUTHORIZED,
+      })
+    }
+
+    result.session = currentUser as SessionType
   }
 
   if (options?.scopes?.length) {

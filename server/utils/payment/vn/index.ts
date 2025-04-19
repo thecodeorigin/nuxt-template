@@ -1,4 +1,4 @@
-import type { LogtoUser } from '@base/server/types/logto'
+import type { User } from '@base/server/types/models'
 import { createPayOSCheckout } from './payos'
 
 export * from './payos'
@@ -8,10 +8,10 @@ export async function createPaymentCheckout(
   payload: {
     clientIP?: string
     productIdentifier: string
-    user: LogtoUser
+    user: User
   },
 ) {
-  if (!payload.productIdentifier || !payload.user || !payload.user.sub) {
+  if (!payload.productIdentifier || !payload.user || !payload.user.id) {
     throw createError({
       statusCode: 400,
       statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
@@ -44,11 +44,11 @@ export async function createPaymentCheckout(
     })
   }
 
-  const userOrder = await createOrder(productId, payload.user.sub)
+  const userOrder = await createOrder(productId, payload.user.id)
 
   const userPayment = await createPayment(
     userOrder.id,
-    payload.user.sub,
+    payload.user.id,
     Number(productInfo.price),
   )
 
@@ -56,7 +56,7 @@ export async function createPaymentCheckout(
 
   const paymentProviderTransaction = await createProviderTransaction(
     userPayment.id,
-    payload.user.sub,
+    payload.user.id,
     orderCode,
     provider,
     productType,
@@ -68,8 +68,8 @@ export async function createPaymentCheckout(
       return await createPayOSCheckout({
         orderCode,
         amount: Number(userPayment.amount),
-        buyerEmail: payload.user.email as string,
-        buyerPhone: payload.user.phone_number as string,
+        buyerEmail: payload.user.primary_email as string,
+        buyerPhone: payload.user.primary_phone as string,
         paymentProviderTransaction,
       })
 

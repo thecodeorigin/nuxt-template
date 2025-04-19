@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
     const { readNotificationById } = useNotification()
 
-    return readNotificationById(notificationUId, session.sub)
+    return readNotificationById(notificationUId, session.id)
   }
   catch (error: any) {
     logger.error('[Notification API] Error marking notification as read:', error)

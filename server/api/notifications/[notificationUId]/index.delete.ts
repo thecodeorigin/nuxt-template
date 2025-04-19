@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
     const { deleteNotificationById } = useNotification()
 
-    return deleteNotificationById(notificationUId, session.sub)
+    return deleteNotificationById(notificationUId, session.id)
   }
   catch (error: any) {
     logger.error('[Notification API] Error deleting notification:', error)

@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
     const { unreadNotificationById } = useNotification()
 
-    return unreadNotificationById(notificationUId, session.sub)
+    return unreadNotificationById(notificationUId, session.id)
   }
   catch (error: any) {
     logger.error('[Notification API] Error marking notification as unread:', error)

@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
     const { markAllRead } = useNotification()
 
-    return markAllRead(session.sub)
+    return markAllRead(session.id)
   }
   catch (error: any) {
     logger.error('[Notification API] Error marking all notifications as read:', error)

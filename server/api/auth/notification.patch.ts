@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
     const { updateUser } = useUser()
 
-    await updateUser(session.sub, {
+    await updateUser(session.id, {
       ...(body.email !== undefined && { email_notifications: body.email }),
       ...(body.desktop !== undefined && { desktop_notifications: body.desktop }),
       ...(body.product_updates !== undefined && { product_updates_notifications: body.product_updates }),

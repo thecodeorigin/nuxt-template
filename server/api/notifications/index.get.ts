@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
     const { getNotificationsPaginated } = useNotification()
 
-    return getNotificationsPaginated(session.sub, getFilter(event))
+    return getNotificationsPaginated(session.id, getFilter(event))
   }
   catch (error: any) {
     logger.error('[Notification API] Error fetching notifications:', error)

@@ -8,10 +8,10 @@ export default defineEventHandler(async (event) => {
 
     const { getDeviceToken, createDeviceToken } = useDeviceToken()
 
-    const existingDeviceToken = await getDeviceToken(session.sub, token)
+    const existingDeviceToken = await getDeviceToken(session.id, token)
 
     if (!existingDeviceToken) {
-      const createdToken = await createDeviceToken(session.sub, token)
+      const createdToken = await createDeviceToken(session.id, token)
 
       return { message: 'Token registration successful', token: createdToken[0].token_device }
     }

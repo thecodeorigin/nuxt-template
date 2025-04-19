@@ -16,7 +16,7 @@ export function getFirebaseServiceAccount() {
   }
 }
 
-export async function sendFirebaseCloudMessage(title: string, body: string) {
+export async function sendFirebaseCloudMessage(userId: string, title: string, body: string) {
   const service = getFirebaseServiceAccount()
 
   if (firebaseAdmin.apps.length === 0) {
@@ -25,11 +25,9 @@ export async function sendFirebaseCloudMessage(title: string, body: string) {
     })
   }
 
-  const currentUser = useLogtoUser()
-
   const { getDeviceTokens } = useDeviceToken()
 
-  const deviceTokens = await getDeviceTokens(currentUser.sub)
+  const deviceTokens = await getDeviceTokens(userId)
 
   return firebaseAdmin.messaging().sendEachForMulticast({
     tokens: deviceTokens.map(device => device.token_device).filter(Boolean) as string[],
