@@ -7,7 +7,8 @@ export const creditHistoryTable = pgTable('credit_histories', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   amount: numeric('amount').notNull(),
   type: creditHistoryType('type').notNull(),
-  user_id: text('user_id').notNull(),
+  user_id: uuid('user_id')
+    .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 

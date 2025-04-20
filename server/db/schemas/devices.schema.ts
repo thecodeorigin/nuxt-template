@@ -4,7 +4,8 @@ import { userTable } from './users.schema'
 
 export const deviceTable = pgTable('devices', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  user_id: text('user_id').notNull(),
+  user_id: uuid('user_id')
+    .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
   token_device: text('token_device'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })

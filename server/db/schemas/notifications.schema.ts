@@ -9,7 +9,8 @@ export const notificationTable = pgTable('notifications', {
   message: text('message'),
   action: jsonb('action'),
   read_at: timestamp('read_at', { withTimezone: true }),
-  user_id: text('user_id').notNull(),
+  user_id: uuid('user_id')
+    .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
 })
 
 export const notificationRelations = relations(notificationTable, ({ one }) => ({
