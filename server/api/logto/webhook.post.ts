@@ -83,11 +83,6 @@ function mapLogtoUserToUserInput(logtoUser: LogtoUserEntity) {
     custom_data: logtoUser.customData,
     last_sign_in_at: logtoUser.lastSignInAt ? new Date(logtoUser.lastSignInAt) : undefined,
     is_suspended: logtoUser.isSuspended,
-    // Default credit value for new users if not present in customData
-    // Convert to string for drizzle numeric field
-    credit: logtoUser.customData?.credit !== undefined
-      ? String(logtoUser.customData.credit)
-      : '0',
   }
 }
 

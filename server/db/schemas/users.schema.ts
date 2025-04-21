@@ -21,7 +21,7 @@ export const userTable = pgTable('users', {
   // Custom fields from your original profiles schema
   facebook: text('facebook'),
   zalo: text('zalo'),
-  credit: numeric('credit'),
+  credit: numeric('credit').default('0'),
 
   // Notification settings with default values
   email_notifications: boolean('email_notifications').default(true),
