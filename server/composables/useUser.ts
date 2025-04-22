@@ -1,5 +1,4 @@
-import { eq, or } from 'drizzle-orm'
-import { omit } from 'lodash-es'
+import { eq } from 'drizzle-orm'
 import { userTable } from '../db/schemas'
 import type { User, UserInput } from '../types/models'
 
@@ -87,7 +86,7 @@ export function useUser() {
       }
 
       // Update existing user
-      return updateUser(userId, omit(payload, ['credit']))
+      return updateUser(userId, payload)
     })
   }
 
