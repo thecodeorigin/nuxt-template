@@ -1,7 +1,7 @@
 import { jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { orderTable } from './orders.schema'
-import { ProductType, productType } from './enum.schema'
+import { ProductType, productStatus, productType } from './enum.schema'
 
 interface PricingPlanFeature {
   title: string
@@ -19,6 +19,7 @@ export const productTable = pgTable('products', {
   type: productType('type').default(ProductType.CREDIT).notNull(),
   features: jsonb('features').$type<string[] | PricingPlanFeature[]>().default([]),
   position: numeric('position'),
+  status: productStatus('status').default('active').notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })

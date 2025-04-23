@@ -27,6 +27,11 @@ export enum ProductType {
   OTHER = 'other',
 }
 
+export enum ProductStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
 export const paymentStatus = pgEnum('payment_status', enumToPgEnum(PaymentStatus))
 
 export const creditHistoryType = pgEnum('credit_history_type', enumToPgEnum(CreditHistoryType))
@@ -34,3 +39,5 @@ export const creditHistoryType = pgEnum('credit_history_type', enumToPgEnum(Cred
 export const supportedCurrency = pgEnum('supported_currency', enumToPgEnum(SupportedCurrency))
 
 export const productType = pgEnum('product_type', enumToPgEnum(ProductType))
+
+export const productStatus = pgEnum('product_status', enumToPgEnum(ProductStatus))

@@ -1,9 +1,12 @@
 import type { Product } from '@base/server/types/models'
-import { ProductType } from '../db/schemas'
+import { ProductStatus, ProductType } from '../db/schemas'
 
 export function useProduct() {
   function getProducts(): Promise<Product[]> {
     return db.query.productTable.findMany({
+      where(schema, { eq }) {
+        return eq(schema.status, ProductStatus.ACTIVE)
+      },
       orderBy(schema, { asc }) {
         return [
           asc(schema.position),
@@ -14,8 +17,11 @@ export function useProduct() {
 
   function getCreditPackages(): Promise<Product[]> {
     return db.query.productTable.findMany({
-      where(schema, { eq }) {
-        return eq(schema.type, ProductType.CREDIT)
+      where(schema, { eq, and }) {
+        return and(
+          eq(schema.type, ProductType.CREDIT),
+          eq(schema.status, ProductStatus.ACTIVE),
+        )
       },
       orderBy(schema, { asc }) {
         return [
@@ -27,8 +33,11 @@ export function useProduct() {
 
   function getProductByProductId(productId: string): Promise<Pick<Product, 'id' | 'price' | 'amount'> | undefined> {
     return db.query.productTable.findFirst({
-      where(schema, { eq }) {
-        return eq(schema.id, productId)
+      where(schema, { eq, and }) {
+        return and(
+          eq(schema.id, productId),
+          eq(schema.status, ProductStatus.ACTIVE),
+        )
       },
       columns: {
         id: true,
