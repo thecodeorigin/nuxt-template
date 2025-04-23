@@ -13,6 +13,7 @@ export const productTable = pgTable('products', {
   title: text('title'),
   description: text('description'),
   price: numeric('price').notNull(),
+  price_discount: numeric('price_discount'),
   currency: text('currency').notNull(),
   amount: numeric('amount').notNull(),
   type: productType('type').default(ProductType.CREDIT).notNull(),
