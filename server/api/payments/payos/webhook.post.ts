@@ -31,6 +31,18 @@ export default defineEventHandler(async (event) => {
 
     logger.log(`[PayOS Webhook] Processing transaction: orderCode=${webhookData.orderCode}, status=${transactionStatus}`)
 
+    const priceDiscount = Number(paymentTransactionOfProvider.payment.order.package.price_discount)
+    const price = Number(paymentTransactionOfProvider.payment.order.package.price)
+
+    if (priceDiscount !== Number(webhookData.amount) && price !== Number(webhookData.amount)) {
+      logger.error(`[PayOS Webhook] Amount mismatch, transaction [${paymentTransactionOfProvider.id}]: expected=${price}, received=${webhookData.amount}`)
+
+      throw createError({
+        statusCode: 400,
+        message: 'Amount mismatch!',
+      })
+    }
+
     const creditAmount = Number(paymentTransactionOfProvider.payment.order.package.amount)
     const userId = paymentTransactionOfProvider.payment.order.user_id
 
