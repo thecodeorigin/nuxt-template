@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     if (!existingDeviceToken) {
       const createdToken = await createDeviceToken(session.id, token)
 
-      return { message: 'Token registration successful', token: createdToken[0].token_device }
+      return { message: 'Token registration successful', token: createdToken.token_device }
     }
 
     return { message: 'Token registration successful' }
