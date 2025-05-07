@@ -1,4 +1,4 @@
-import { boolean, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { identityTable } from './identities.schema'
 import { deviceTable } from './devices.schema'
@@ -21,7 +21,7 @@ export const userTable = pgTable('users', {
   // Custom fields from your original profiles schema
   facebook: text('facebook'),
   zalo: text('zalo'),
-  credit: numeric('credit').default('0'),
+  credit: integer('credit').default(0),
 
   // Notification settings with default values
   email_notifications: boolean('email_notifications').default(true),

@@ -17,7 +17,7 @@ export function useCredit() {
 
       // Updated to work with our database-first approach
       // The credit is directly on the user object now
-      credit.value = Number(response.data?.credit || 0)
+      credit.value = response.data?.credit || 0
     }
     catch {}
     finally {

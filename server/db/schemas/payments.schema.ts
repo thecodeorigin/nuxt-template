@@ -1,4 +1,4 @@
-import { numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { integer, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { orderTable } from './orders.schema'
 import { paymentStatus } from './enum.schema'
@@ -7,7 +7,7 @@ import { userTable } from './users.schema'
 
 export const paymentTable = pgTable('payments', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  amount: numeric('amount').notNull(),
+  amount: integer('amount').notNull(),
   status: paymentStatus('status').notNull(),
   order_id: uuid('order_id')
     .references(() => orderTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),

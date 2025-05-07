@@ -83,7 +83,7 @@ topupBus.on(() => {
 const { data: plans } = useAsyncData('products', () => useApiProduct().fetchProducts(), {
   transform(data) {
     return data.data.reduce((acc, item) => {
-      if (Number(item.amount) > 0) {
+      if (item.amount > 0) {
         acc.push({
           ...item,
           features: [],
@@ -178,15 +178,15 @@ async function handleCheckout() {
                     <template #item="{ item }">
                       {{ item.title }}
 
-                      <span class="text-gray-500">{{ formatPrice(Number(item.price), item.currency) }} / {{ item.amount }} credits</span>
+                      <span class="text-gray-500">{{ formatPrice(item.price, item.currency) }} / {{ item.amount }} credits</span>
                     </template>
                   </USelect>
 
                   <UButton id="topup" size="lg" color="neutral" trailing-icon="i-lucide-rocket" class="md:w-auto w-full" @click="handleCheckout">
                     <b>
-                      {{ $t('Buy') }} {{ Number(selectedPrice?.amount || 0) }} credits
+                      {{ $t('Buy') }} {{ selectedPrice?.amount || 0 }} credits
                     </b>
-                    ({{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }})
+                    ({{ formatPrice(selectedPrice?.amount || 0, selectedPrice?.currency || 'VND') }})
                   </UButton>
                 </div>
               </UFormField>

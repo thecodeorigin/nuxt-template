@@ -13,7 +13,8 @@ export function useUser() {
 
   async function getUserCreditById(userId: string): Promise<number> {
     const userProfile = await getUserById(userId)
-    return Number(userProfile?.credit || 0)
+
+    return userProfile?.credit || 0
   }
 
   async function createUser(userId: string, payload: UserInput): Promise<User> {

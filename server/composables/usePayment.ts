@@ -15,7 +15,7 @@ export function usePayment() {
   async function createPayment(orderId: string, userId: string, amount: number): Promise<Payment> {
     return (
       await db.insert(paymentTable).values({
-        amount: String(amount),
+        amount,
         status: PaymentStatus.PENDING,
         user_id: userId,
         order_id: orderId,

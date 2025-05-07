@@ -21,7 +21,7 @@ export function useCredit() {
   ): Promise<CreditHistory> {
     return (await db.insert(creditHistoryTable)
       .values({
-        amount: String(amount),
+        amount,
         type,
         user_id: userId,
       })
@@ -30,7 +30,7 @@ export function useCredit() {
 
   function updateUserCredit(userId: string, credit: number) {
     return useUser()
-      .upsertUser(userId, { credit: String(credit) })
+      .upsertUser(userId, { credit })
   }
 
   return {

@@ -1,11 +1,11 @@
-import { numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { integer, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
 import { creditHistoryType } from './enum.schema'
 import { userTable } from './users.schema'
 
 export const creditHistoryTable = pgTable('credit_histories', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
-  amount: numeric('amount').notNull(),
+  amount: integer('amount').notNull(),
   type: creditHistoryType('type').notNull(),
   user_id: uuid('user_id')
     .references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),

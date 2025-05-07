@@ -20,7 +20,7 @@ export async function createPaymentCheckout(
 
   const [productType, productId] = payload.productIdentifier.split(':')
 
-  let productInfo: { id: string, price: string, amount: string } | undefined
+  let productInfo: { id: string, price: number, amount: number } | undefined
 
   const { createOrder, createPayment, createProviderTransaction } = usePayment()
   const { getProductByProductId } = useProduct()
