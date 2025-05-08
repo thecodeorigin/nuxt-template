@@ -176,9 +176,19 @@ async function handleCheckout() {
                     class="flex-1 md:w-auto w-full"
                   >
                     <template #item="{ item }">
-                      {{ item.title }}
+                      <span class="text-gray-500">
+                        <template v-if="item.price_discount">
+                          {{ formatPrice(Number(item.price_discount), item.currency) }}
+                          / {{ item.amount }} {{ $t('credits') }}
 
-                      <span class="text-gray-500">{{ formatPrice(item.price, item.currency) }} / {{ item.amount }} credits</span>
+                          <UBadge class="line-through ml-2">Giá gốc:{{ formatPrice(Number(item.price), item.currency) }}</UBadge>
+                        </template>
+                        <template v-else>
+                          {{ formatPrice(Number(item.price), item.currency) }}
+                          / {{ item.amount }} {{ $t('credits') }}
+
+                        </template>
+                      </span>
                     </template>
                   </USelect>
 
@@ -186,7 +196,13 @@ async function handleCheckout() {
                     <b>
                       {{ $t('Buy') }} {{ selectedPrice?.amount || 0 }} credits
                     </b>
-                    ({{ formatPrice(selectedPrice?.amount || 0, selectedPrice?.currency || 'VND') }})
+                    <template v-if="selectedPrice?.price_discount">
+                      (<span class="line-through">{{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }}</span>
+                      {{ formatPrice(Number(selectedPrice?.price_discount || 0), selectedPrice?.currency || 'VND') }})
+                    </template>
+                    <template v-else>
+                      ({{ formatPrice(Number(selectedPrice?.price || 0), selectedPrice?.currency || 'VND') }})
+                    </template>
                   </UButton>
                 </div>
               </UFormField>
