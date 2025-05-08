@@ -31,7 +31,7 @@ export function useProduct() {
     })
   }
 
-  function getProductByProductId(productId: string): Promise<Pick<Product, 'id' | 'price' | 'amount'> | undefined> {
+  function getProductByProductId(productId: string): Promise<Pick<Product, 'id' | 'price' | 'amount' | 'price_discount'> | undefined> {
     return db.query.productTable.findFirst({
       where(schema, { eq, and }) {
         return and(
@@ -42,6 +42,7 @@ export function useProduct() {
       columns: {
         id: true,
         price: true,
+        price_discount: true,
         amount: true,
       },
     })
