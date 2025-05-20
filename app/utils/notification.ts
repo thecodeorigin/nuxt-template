@@ -2,40 +2,44 @@ interface NotificationOptions {
   content: string
 }
 export function notifyError(options: NotificationOptions) {
+  const { t } = useI18n()
   const toast = useToast()
 
   toast.add({
-    title: 'Error',
+    title: t('Error'),
     description: options.content,
     color: 'error',
   })
 }
 
 export function notifySuccess(options: NotificationOptions) {
+  const { t } = useI18n()
   const toast = useToast()
 
   toast.add({
-    title: 'Success',
+    title: t('Success'),
     description: options.content,
     color: 'success',
   })
 }
 
 export function notifyWarning(options: NotificationOptions) {
+  const { t } = useI18n()
   const toast = useToast()
 
   toast.add({
-    title: 'Warning',
+    title: t('Warning'),
     description: options.content,
     color: 'warning',
   })
 }
 
 export function notifyInfo(options: NotificationOptions) {
+  const { t } = useI18n()
   const toast = useToast()
 
   toast.add({
-    title: 'Infor',
+    title: t('Infor'),
     description: options.content,
     color: 'info',
   })

@@ -221,5 +221,9 @@
   "You are not subscribed to any monthly plan": "Bạn chưa đăng ký gói hàng tháng nào",
   "View Subscriptions": "Xem các gói đăng ký",
   "Most popular": "Phổ biến nhất",
-  "You are not authorized to perform this action.": "Bạn không có quyền thực hiện hành động này."
+  "You are not authorized to perform this action.": "Bạn không có quyền thực hiện hành động này.",
+  "Error": "Lỗi",
+  "Success": "Thành công",
+  "Warning": "Cảnh báo",
+  "Infor": "Thông tin"
 }
