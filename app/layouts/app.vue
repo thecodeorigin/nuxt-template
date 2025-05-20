@@ -6,7 +6,7 @@ const open = ref(false)
 
 const config = useRuntimeConfig()
 
-const links = [
+const links = computed(() => [
   [
     {
       label: t('Dashboard'),
@@ -68,13 +68,13 @@ const links = [
       target: '_blank',
     },
   ].filter(Boolean),
-]
+])
 
 const groups = computed(() => [
   {
     id: 'links',
     label: t('Go to'),
-    items: links.flat(),
+    items: links.value.flat(),
   },
 ])
 

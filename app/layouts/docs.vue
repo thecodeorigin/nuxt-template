@@ -15,7 +15,7 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
             <UPageAside>
               <template #top>
                 <UContentSearchButton
-                  :label="$t('Search...')"
+                  :label="$t('Search')"
                   variant="outline"
                   class="w-full"
                 >
