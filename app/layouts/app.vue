@@ -109,7 +109,10 @@ onMounted(async () => {
 
 <template>
   <UDashboardGroup>
-    <UDashboardSearch :groups="groups" />
+    <UDashboardSearch
+      :placeholder="$t('Search...')"
+      :groups="groups"
+    />
 
     <UDashboardSidebar
       v-model:open="open"

@@ -58,8 +58,9 @@ provide('navigation', navigation)
 
     <ClientOnly>
       <LazyUContentSearch
-        :files="files"
         shortcut="meta_k"
+        :placeholder="$t('Search...')"
+        :files="files"
         :navigation="navigation"
         :links="links"
         :fuse="{ resultLimit: 42 }"
