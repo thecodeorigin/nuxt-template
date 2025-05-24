@@ -285,6 +285,7 @@ export default defineNuxtConfig({
     '/blog/**': { swr: true },
     '/api/content/**': { csurf: false },
     '/api/logto/webhook': { csurf: false },
+    '/api/payments/sepay/webhook': { csurf: false },
     '/api/payments/payos/webhook': { csurf: false },
     '/api/payments/vnpay/callback': { csurf: false },
     '/api/payments/vnpay/IPN': { csurf: false },

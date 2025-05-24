@@ -4,7 +4,7 @@ import { createPayOSCheckout } from './payos'
 export * from './payos'
 
 export async function createPaymentCheckout(
-  provider: 'payos' | 'vnpay',
+  provider: 'payos' | 'vnpay' | 'sepay',
   payload: {
     clientIP?: string
     productIdentifier: string
@@ -67,9 +67,15 @@ export async function createPaymentCheckout(
     case 'payos':
       return await createPayOSCheckout({
         orderCode,
-        amount: Number(userPayment.amount),
+        amount: userPayment.amount,
         buyerEmail: payload.user.primary_email as string,
         buyerPhone: payload.user.primary_phone as string,
+        paymentProviderTransaction,
+      })
+    case 'sepay':
+      return await createSePayCheckout({
+        orderCode,
+        amount: userPayment.amount,
         paymentProviderTransaction,
       })
 
