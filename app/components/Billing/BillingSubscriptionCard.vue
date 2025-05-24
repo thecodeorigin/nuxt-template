@@ -65,7 +65,7 @@ const billingCycleProgress = computed(() => {
 
       <div class="mt-2">
         <strong>
-          {{ new Intl.NumberFormat('en-US', { style: 'currency', currency: (subscription?.currency || 'usd').toUpperCase() }).format((subscription?.items.data[0]?.price.unit_amount || 0) / 100) }} {{ $t('Per Month') }}
+          {{ new Intl.NumberFormat('en-US', { style: 'currency', currency: (subscription?.currency || 'USD').toUpperCase() }).format((subscription?.items.data[0]?.price.unit_amount || 0) / 100) }} {{ $t('Per Month') }}
         </strong>
 
         <UBadge v-if="subscription?.metadata.hightlight" :label="$t('Popular')" />

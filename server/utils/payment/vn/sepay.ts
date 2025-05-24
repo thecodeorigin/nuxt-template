@@ -2,7 +2,7 @@ import type { paymentProviderTransactionTable } from '@base/server/db/schemas'
 import { withQuery } from 'ufo'
 
 interface SePayCheckoutProps {
-  orderCode: string
+  orderCode: number
   amount: number
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
 }

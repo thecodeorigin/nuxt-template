@@ -73,9 +73,17 @@ async function handleCheckout() {
     await navigateTo({ path: '/sign-in' }, { external: true })
   }
 
-  const { data: checkoutData } = await paymentApi.checkout('payos', productIdentifier)
+  // const { data: checkoutData } = await paymentApi.checkout('payos', productIdentifier)
 
-  window.open(checkoutData.paymentUrl, '_blank')
+  // window.open(checkoutData.paymentUrl, '_blank')
+  const { data: checkoutData } = await paymentApi.checkout('sepay', productIdentifier)
+
+  navigateTo({
+    name: 'checkout',
+    query: {
+      qr: checkoutData.paymentUrl,
+    },
+  })
 }
 
 tryOnBeforeMount(async () => {
