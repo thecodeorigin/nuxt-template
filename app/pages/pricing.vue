@@ -79,7 +79,7 @@ async function handleCheckout() {
   const { data: checkoutData } = await paymentApi.checkout('sepay', productIdentifier)
 
   navigateTo({
-    name: 'checkout',
+    path: '/checkout',
     query: {
       qr: checkoutData.paymentUrl,
     },
@@ -98,7 +98,7 @@ tryOnBeforeMount(async () => {
       pendingPaymentPrice.value = null
 
       navigateTo({
-        name: 'checkout',
+        path: '/checkout',
         query: {
           qr: checkoutData.paymentUrl,
         },
