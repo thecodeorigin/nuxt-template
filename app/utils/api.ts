@@ -14,7 +14,7 @@ export const $api = $fetch.create({
       options.headers.set('Csrf-Token', authStore.crsfToken)
   },
   async onResponseError(error) {
-    const { t } = useI18n()
+    const { t } = useSafeI18n()
 
     const isRequestFromExternalUrl = !String(error.response.url).startsWith(String(useRuntimeConfig().public.appBaseUrl))
     switch (error.response?.status) {

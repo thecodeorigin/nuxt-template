@@ -2,7 +2,7 @@ interface NotificationOptions {
   content: string
 }
 export function notifyError(options: NotificationOptions) {
-  const { t } = useI18n()
+  const { t } = useSafeI18n()
   const toast = useToast()
 
   toast.add({
@@ -13,7 +13,7 @@ export function notifyError(options: NotificationOptions) {
 }
 
 export function notifySuccess(options: NotificationOptions) {
-  const { t } = useI18n()
+  const { t } = useSafeI18n()
   const toast = useToast()
 
   toast.add({
@@ -24,7 +24,7 @@ export function notifySuccess(options: NotificationOptions) {
 }
 
 export function notifyWarning(options: NotificationOptions) {
-  const { t } = useI18n()
+  const { t } = useSafeI18n()
   const toast = useToast()
 
   toast.add({
@@ -35,7 +35,7 @@ export function notifyWarning(options: NotificationOptions) {
 }
 
 export function notifyInfo(options: NotificationOptions) {
-  const { t } = useI18n()
+  const { t } = useSafeI18n()
   const toast = useToast()
 
   toast.add({

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { parseQuery } from 'ufo'
+import { PaymentStatus } from '@base/server/db/schemas'
 
 definePageMeta({
   middleware(to) {
@@ -29,9 +30,30 @@ const checkoutInfo = computed(() => {
   return query
 })
 
-function handleCheckStatus() {
-  //
-}
+const paymentApi = useApiPayment()
+
+const { data, error, execute: handleCheckStatus } = useAsyncData(
+  'checkoutInfo',
+  () => paymentApi.checkStatus('sepay', String(checkoutInfo.value.des)),
+  { server: false, immediate: false },
+)
+
+whenever(error, (err) => {
+  notifyError({
+    content: getErrorMessage(err),
+  })
+})
+
+whenever(data, (response) => {
+  if (response?.data?.status === PaymentStatus.RESOLVED) {
+    navigateTo({ name: 'app' })
+  }
+  else {
+    notifyError({
+      content: 'We have not received your payment yet. Please try again later, or contact support if the issue persists.',
+    })
+  }
+})
 </script>
 
 <template>
@@ -61,12 +83,12 @@ function handleCheckStatus() {
               <span class="text-lg font-medium text-gray-500 dark:text-gray-400">{{ $t('Bank Name') }}</span>
               <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ checkoutInfo.bank }}</span>
             </div>
-            <UDivider />
+
             <div class="flex justify-between items-center">
               <span class="text-lg font-medium text-gray-500 dark:text-gray-400">{{ $t('Amount') }}</span>
               <span class="text-xl font-bold text-primary-500 dark:text-primary-400">{{ checkoutInfo.amount }}</span>
             </div>
-            <UDivider />
+
             <div class="flex justify-between items-start">
               <span class="text-lg font-medium text-gray-500 dark:text-gray-400">{{ $t('Description') }}</span>
               <span class="text-lg text-gray-700 dark:text-gray-300 text-right">{{ checkoutInfo.des }}</span>
@@ -80,7 +102,7 @@ function handleCheckStatus() {
             <div>
               <UButton
                 class="w-full font-semibold mt-4" size="xl"
-                @click="handleCheckStatus"
+                @click="handleCheckStatus()"
               >
                 {{ $t('I have transfered the money! (Click here)') }}
               </UButton>

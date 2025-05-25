@@ -225,5 +225,11 @@
   "Error": "Error",
   "Success": "Success",
   "Warning": "Warning",
-  "Infor": "Infor"
+  "Infor": "Infor",
+  "Payment Summary": "Payment Summary",
+  "Bank Name": "Bank Name",
+  "Amount": "Amount",
+  "Description": "Description",
+  "Please verify the details before proceeding with the payment.": "Please verify the details before proceeding with the payment.",
+  "I have transfered the money! (Click here)": "I have transfered the money! (Click here)"
 }

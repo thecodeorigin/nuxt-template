@@ -225,5 +225,11 @@
   "Error": "Lỗi",
   "Success": "Thành công",
   "Warning": "Cảnh báo",
-  "Infor": "Thông tin"
+  "Infor": "Thông tin",
+  "Payment Summary": "Thông tin thanh toán",
+  "Bank Name": "Ngân hàng",
+  "Amount": "Số tiền",
+  "Description": "Mô tả",
+  "Please verify the details before proceeding with the payment.": "Vui lòng xác minh thông tin trước khi tiếp tục thanh toán.",
+  "I have transfered the money! (Click here)": "Tôi đã chuyển tiền! (Nhấp vào đây)"
 }

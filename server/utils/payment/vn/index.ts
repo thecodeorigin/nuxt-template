@@ -1,4 +1,5 @@
 import type { User } from '@base/server/types/models'
+import { v4 as uuid } from 'uuid'
 import { createPayOSCheckout } from './payos'
 
 export * from './payos'
@@ -52,7 +53,7 @@ export async function createPaymentCheckout(
     Number(productInfo.price_discount || productInfo.price),
   )
 
-  const orderCode = new Date().getTime()
+  const orderCode = uuid()
 
   const paymentProviderTransaction = await createProviderTransaction(
     userPayment.id,
@@ -64,14 +65,14 @@ export async function createPaymentCheckout(
   )
 
   switch (provider) {
-    case 'payos':
-      return await createPayOSCheckout({
-        orderCode,
-        amount: userPayment.amount,
-        buyerEmail: payload.user.primary_email as string,
-        buyerPhone: payload.user.primary_phone as string,
-        paymentProviderTransaction,
-      })
+    // case 'payos':
+    //   return await createPayOSCheckout({
+    //     orderCode,
+    //     amount: userPayment.amount,
+    //     buyerEmail: payload.user.primary_email as string,
+    //     buyerPhone: payload.user.primary_phone as string,
+    //     paymentProviderTransaction,
+    //   })
     case 'sepay':
       return await createSePayCheckout({
         orderCode,

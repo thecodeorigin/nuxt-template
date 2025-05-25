@@ -94,10 +94,15 @@ tryOnBeforeMount(async () => {
     const isProcessing = Boolean(pendingPaymentPrice.value)
 
     if (isProcessing) {
-      const { data: checkoutData } = await paymentApi.checkout('payos', pendingPaymentPrice.value)
+      const { data: checkoutData } = await paymentApi.checkout('sepay', pendingPaymentPrice.value)
       pendingPaymentPrice.value = null
 
-      window.open(checkoutData.paymentUrl, '_blank')
+      navigateTo({
+        name: 'checkout',
+        query: {
+          qr: checkoutData.paymentUrl,
+        },
+      })
     }
   }
 })

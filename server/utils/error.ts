@@ -21,6 +21,7 @@ export function parseError(error: any) {
       statusCode: 400,
       statusMessage: ErrorMessage.BAD_REQUEST,
       data: error,
+      stack: '',
     })
   }
 
@@ -28,5 +29,6 @@ export function parseError(error: any) {
     statusCode: error.statusCode || 500,
     statusMessage: error.message,
     data: error,
+    stack: '',
   })
 }

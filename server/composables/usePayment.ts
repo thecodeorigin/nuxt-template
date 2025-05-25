@@ -34,7 +34,7 @@ export function usePayment() {
   async function createProviderTransaction(
     paymentId: string,
     userId: string,
-    orderCode: number,
+    orderCode: string,
     provider: string,
     productType: string,
     productInfo: Record<string, any>,
@@ -42,7 +42,7 @@ export function usePayment() {
     return (
       await db.insert(paymentProviderTransactionTable).values({
         provider,
-        provider_transaction_id: String(orderCode),
+        provider_transaction_id: orderCode,
         provider_transaction_status: PaymentStatus.PENDING,
         provider_transaction_info: `${productType}:${productInfo.amount}`,
         payment_id: paymentId,
