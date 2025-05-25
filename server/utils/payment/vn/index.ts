@@ -1,6 +1,5 @@
 import type { User } from '@base/server/types/models'
-import { v4 as uuid } from 'uuid'
-import { createPayOSCheckout } from './payos'
+import { customAlphabet, nanoid } from 'nanoid'
 
 export * from './payos'
 
@@ -53,9 +52,10 @@ export async function createPaymentCheckout(
     Number(productInfo.price_discount || productInfo.price),
   )
 
-  const orderCode = uuid()
+  // exclude underscore _
+  const orderCode = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 16)()
 
-  const paymentProviderTransaction = await createProviderTransaction(
+  await createProviderTransaction(
     userPayment.id,
     payload.user.id,
     orderCode,
@@ -77,7 +77,6 @@ export async function createPaymentCheckout(
       return await createSePayCheckout({
         orderCode,
         amount: userPayment.amount,
-        paymentProviderTransaction,
       })
 
     default:

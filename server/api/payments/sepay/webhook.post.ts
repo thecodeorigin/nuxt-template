@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
         transactionDate: z.string(),
         transferAmount: z.number(),
         transferType: z.string(),
-      }).partial().parse(payload),
+      }).parse(payload),
     )
 
     if (process.env.SEPAY_WEBHOOK_SIGNING_KEY !== getHeader(event, 'Authorization')?.match(/Apikey (.*)/)?.[1]) {
@@ -48,17 +48,18 @@ export default defineEventHandler(async (event) => {
     // SePay Webhook always success (if not, it will not call this endpoint anyway)
 
     const transactionStatus = PaymentStatus.RESOLVED
+    const orderCode = body.code.slice(2) || '' // Remove the first 2 characters (SP)
 
     const { updatePaymentStatus, updateProviderTransactionStatus, getProviderTransactionByOrderCode } = usePayment()
 
-    const paymentTransactionOfProvider = await getProviderTransactionByOrderCode(String(body.code))
+    const paymentTransactionOfProvider = await getProviderTransactionByOrderCode(String(orderCode))
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
-      logger.warn(`[SePay Webhook] Transaction not found or invalid: code=${body.code}`)
+      logger.warn(`[SePay Webhook] Transaction not found or invalid: code=${orderCode}`)
       return { success: true }
     }
 
-    logger.log(`[SePay Webhook] Processing transaction: code=${body.code}, status=${transactionStatus}`)
+    logger.log(`[SePay Webhook] Processing transaction: code=${orderCode}, status=${transactionStatus}`)
 
     const priceDiscount = Number(paymentTransactionOfProvider.payment.order.package.price_discount)
     const price = Number(paymentTransactionOfProvider.payment.order.package.price)
@@ -84,7 +85,7 @@ export default defineEventHandler(async (event) => {
     logger.log(`[SePay Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
-      logger.error(`[SePay Webhook] No product found for transaction: ${body.code}`)
+      logger.error(`[SePay Webhook] No product found for transaction: ${orderCode}`)
       throw createError({
         statusCode: 400,
         message: 'No product found for this transaction!',
