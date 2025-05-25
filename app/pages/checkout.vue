@@ -5,7 +5,7 @@ import { PaymentStatus } from '@base/server/db/schemas'
 definePageMeta({
   middleware(to) {
     if (!to.query.qr) {
-      return navigateTo({ name: 'pricing' })
+      return navigateTo({ path: '/pricing' })
     }
   },
 })
@@ -46,7 +46,7 @@ whenever(error, (err) => {
 
 whenever(data, (response) => {
   if (response?.data?.status === PaymentStatus.RESOLVED) {
-    navigateTo({ name: 'app' })
+    navigateTo({ path: '/app' })
   }
   else {
     notifyError({
