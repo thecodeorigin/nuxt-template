@@ -103,9 +103,14 @@ const paymentApi = useApiPayment()
 async function handleCheckout() {
   const productIdentifier = `credit:${selectedPriceId.value}`
 
-  const { data: checkoutData } = await paymentApi.checkout('payos', productIdentifier)
+  const { data: checkoutData } = await paymentApi.checkout('sepay', productIdentifier)
 
-  window.open(checkoutData.paymentUrl, '_blank')
+  navigateTo({
+    path: '/checkout',
+    query: {
+      qr: checkoutData.paymentUrl,
+    },
+  })
 }
 </script>
 
