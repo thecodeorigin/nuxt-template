@@ -8,6 +8,7 @@ import type {
   paymentProviderTransactionTable,
   paymentTable,
   productTable,
+  referenceTable,
   userTable,
 } from '../db/schemas'
 
@@ -23,6 +24,7 @@ export type Payment = InferSelectModel<typeof paymentTable>
 export type PaymentProviderTransaction = InferSelectModel<typeof paymentProviderTransactionTable>
 export type Product = InferSelectModel<typeof productTable>
 export type Device = InferSelectModel<typeof deviceTable>
+export type Reference = InferSelectModel<typeof referenceTable>
 
 /**
  * Utility types for handling nullable values consistently

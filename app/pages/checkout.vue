@@ -21,11 +21,13 @@ useSeoMeta({
 
 defineOgImageComponent('Saas')
 
+const { t } = useI18n()
+
 const route = useRoute()
 
 const checkoutQr = computed(() => String(route.query.qr))
 const checkoutInfo = computed(() => {
-  const query = parseQuery(checkoutQr.value)
+  const query = parseQuery(checkoutQr.value.split('?')[1] || '')
 
   return query
 })
@@ -49,11 +51,11 @@ whenever(data, (response) => {
     navigateTo({ path: '/app' })
   }
   else {
-    notifyError({
-      content: 'We have not received your payment yet. Please try again later, or contact support if the issue persists.',
+    notifyWarning({
+      content: t('We have not received your payment yet. Please try again later, or contact support if the issue persists.'),
     })
   }
-})
+}, { immediate: true })
 </script>
 
 <template>
@@ -62,6 +64,12 @@ whenever(data, (response) => {
       :title="page.topup.title"
       :description="page.topup.description"
     >
+      <UBanner
+        icon="i-lucide-triangle-alert"
+        color="warning"
+        :title="$t('Modification of the transaction is prohibited and could potentially lead to account suspension!')"
+      />
+
       <div class="grid md:grid-cols-2 gap-4 items-start">
         <div class="flex justify-center">
           <img
@@ -85,8 +93,13 @@ whenever(data, (response) => {
             </div>
 
             <div class="flex justify-between items-center">
+              <span class="text-lg font-medium text-gray-500 dark:text-gray-400">{{ $t('Bank Number') }}</span>
+              <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ checkoutInfo.acc }}</span>
+            </div>
+
+            <div class="flex justify-between items-center">
               <span class="text-lg font-medium text-gray-500 dark:text-gray-400">{{ $t('Amount') }}</span>
-              <span class="text-xl font-bold text-primary-500 dark:text-primary-400">{{ checkoutInfo.amount }}</span>
+              <span class="text-xl font-bold text-primary-500 dark:text-primary-400">{{ new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(Number(checkoutInfo.amount)) }}</span>
             </div>
 
             <div class="flex justify-between items-start">

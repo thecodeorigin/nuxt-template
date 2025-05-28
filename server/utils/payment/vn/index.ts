@@ -1,5 +1,5 @@
 import type { User } from '@base/server/types/models'
-import { customAlphabet, nanoid } from 'nanoid'
+import { customAlphabet } from 'nanoid'
 
 export * from './payos'
 
@@ -44,12 +44,18 @@ export async function createPaymentCheckout(
     })
   }
 
+  const { getUserBestPrice } = useReference()
+
+  const referCode = getCookie(useEvent(), REFERENCE_CODE_COOKIE_NAME)
+
+  const price = await getUserBestPrice(payload.user.id, productInfo.price, productInfo.price_discount, referCode)
+
   const userOrder = await createOrder(productId, payload.user.id)
 
   const userPayment = await createPayment(
     userOrder.id,
     payload.user.id,
-    Number(productInfo.price_discount || productInfo.price),
+    price,
   )
 
   // exclude underscore _
@@ -65,14 +71,6 @@ export async function createPaymentCheckout(
   )
 
   switch (provider) {
-    // case 'payos':
-    //   return await createPayOSCheckout({
-    //     orderCode,
-    //     amount: userPayment.amount,
-    //     buyerEmail: payload.user.primary_email as string,
-    //     buyerPhone: payload.user.primary_phone as string,
-    //     paymentProviderTransaction,
-    //   })
     case 'sepay':
       return await createSePayCheckout({
         orderCode,

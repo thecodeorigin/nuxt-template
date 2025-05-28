@@ -3,11 +3,12 @@ import { PaymentStatus, orderTable, paymentProviderTransactionTable, paymentTabl
 import type { Order, Payment, PaymentProviderTransaction } from '../types/models'
 
 export function usePayment() {
-  async function createOrder(productId: string, userId: string): Promise<Order> {
+  async function createOrder(productId: string, userId: string, referenceId?: string): Promise<Order> {
     return (
       await db.insert(orderTable).values({
         product_id: productId,
         user_id: userId,
+        reference_id: referenceId,
       }).returning()
     )[0]
   }
@@ -55,6 +56,7 @@ export function usePayment() {
     | (PaymentProviderTransaction & {
       payment: Payment & {
         order: Order & {
+          reference: any
           package: any
         }
       }
@@ -68,6 +70,7 @@ export function usePayment() {
           with: {
             order: {
               with: {
+                reference: true,
                 package: true,
               },
             },

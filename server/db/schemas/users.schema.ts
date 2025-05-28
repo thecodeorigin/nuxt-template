@@ -6,6 +6,8 @@ import { creditHistoryTable } from './credit_histories.schema'
 import { notificationTable } from './notifications.schema'
 import { orderTable } from './orders.schema'
 import { paymentTable } from './payments.schema'
+import { referenceTable } from './references.schema'
+import { referenceUsageTable } from './reference_usages.schema'
 
 export const userTable = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
@@ -41,11 +43,13 @@ export const userTable = pgTable('users', {
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().$onUpdate(() => new Date()),
 })
 
-export const userRelations = relations(userTable, ({ many }) => ({
+export const userRelations = relations(userTable, ({ many, one }) => ({
   identities: many(identityTable),
   devices: many(deviceTable),
   creditHistories: many(creditHistoryTable),
   notifications: many(notificationTable),
   orders: many(orderTable),
   payments: many(paymentTable),
+  references: many(referenceTable),
+  referenceUsage: one(referenceUsageTable),
 }))

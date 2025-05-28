@@ -228,8 +228,13 @@
   "Infor": "Infor",
   "Payment Summary": "Payment Summary",
   "Bank Name": "Bank Name",
+  "Bank Number": "Bank Number",
   "Amount": "Amount",
   "Description": "Description",
+  "Discount": "Discount",
+  "We have not received your payment yet. Please try again later, or contact support if the issue persists.": "We have not received your payment yet. Please try again later, or contact support if the issue persists.",
   "Please verify the details before proceeding with the payment.": "Please verify the details before proceeding with the payment.",
-  "I have transfered the money! (Click here)": "I have transfered the money! (Click here)"
+  "Modification of the transaction is prohibited and could potentially lead to account suspension!": "Modification of the transaction is prohibited and could potentially lead to account suspension!",
+  "I have transfered the money! (Click here)": "I have transfered the money! (Click here)",
+  "No discount applied!": "No discount applied!"
 }

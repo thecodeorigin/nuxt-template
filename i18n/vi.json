@@ -228,8 +228,13 @@
   "Infor": "Thông tin",
   "Payment Summary": "Thông tin thanh toán",
   "Bank Name": "Ngân hàng",
+  "Bank Number": "Số tài khoản",
   "Amount": "Số tiền",
   "Description": "Mô tả",
-  "Please verify the details before proceeding with the payment.": "Vui lòng xác minh thông tin trước khi tiếp tục thanh toán.",
-  "I have transfered the money! (Click here)": "Tôi đã chuyển tiền! (Nhấp vào đây)"
+  "Discount": "Giảm giá",
+  "We have not received your payment yet. Please try again later, or contact support if the issue persists.": "Chúng tôi chưa nhận được thanh toán của bạn. Vui lòng thử lại trong giây lát, hoặc liên hệ với bộ phận hỗ trợ nếu vấn đề vẫn tiếp diễn.",
+  "Please verify the details before proceeding with the payment.": "Vui lòng xác minh các chi tiết trước khi tiếp tục thanh toán.",
+  "Modification of the transaction is prohibited and could potentially lead to account suspension!": "Việc sửa đổi nội dung giao dịch bị cấm và có thể dẫn đến việc tạm ngưng tài khoản!",
+  "I have transfered the money! (Click here)": "Tôi đã chuyển tiền! (Nhấp vào đây)",
+  "No discount applied!": "Không có mã giảm giá!"
 }
