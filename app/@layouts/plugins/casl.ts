@@ -8,8 +8,12 @@ export function canNavigate(to: RouteLocationNormalized) {
 
   const { can } = useAbility()
 
-  if (!to.meta.action || !to.meta.subject)
-    return true
+  return !to.meta.scopes || (
+    Array.isArray(to.meta.scopes)
+    && to.meta.scopes.some((scope: string) => {
+      const [action, subject] = scope.split(':') as [string, string]
 
-  return can(to.meta.action, to.meta.subject)
+      return can(action, subject)
+    })
+  )
 }

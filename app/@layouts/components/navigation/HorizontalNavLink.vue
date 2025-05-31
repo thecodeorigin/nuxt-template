@@ -20,10 +20,14 @@ const { can } = useAbility()
 const router = useRouter()
 
 const visible = computed(() => {
-  if (!props.item.action || !props.item.subject)
+  if (!props.item.scopes)
     return true
 
-  return can(props.item.action, props.item.subject)
+  return props.item.scopes.some((scope: string) => {
+    const [action, subject] = scope.split(':') as [string, string]
+
+    return can(action, subject)
+  })
 })
 </script>
 

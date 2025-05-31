@@ -21,11 +21,19 @@ export function createRouteTree(routes: RouteRecordNormalized[] = []): NavItem[]
       ])
     }
 
-    if (!route.meta.action || !route.meta.subject || can(route.meta.action, route.meta.subject)) {
+    const canNavigate = !route.meta.scopes || (
+      Array.isArray(route.meta.scopes)
+      && route.meta.scopes.some((scope: string) => {
+        const [action, subject] = scope.split(':') as [string, string]
+
+        return can(action, subject)
+      })
+    )
+
+    if (canNavigate) {
       tree.push({
         ...item,
-        action: route.meta.action,
-        subject: route.meta.subject,
+        scopes: route.meta.scopes,
         to,
       })
     }
