@@ -150,6 +150,7 @@ export default defineNuxtConfig({
     dirs: [
       fileURLToPath(new URL('./app/@core/utils', import.meta.url)),
       fileURLToPath(new URL('./app/@core/composable', import.meta.url)),
+      fileURLToPath(new URL('./app/api', import.meta.url)),
     ],
   },
 
