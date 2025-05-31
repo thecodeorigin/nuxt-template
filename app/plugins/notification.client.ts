@@ -1,5 +1,5 @@
 import { getMessaging, getToken } from 'firebase/messaging'
-import { isInAppBrowser } from '~/utils/browser'
+import { isInAppBrowser } from '@base/utils/browser'
 
 export default defineNuxtPlugin({
   setup(nuxtApp) {

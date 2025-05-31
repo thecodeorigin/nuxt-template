@@ -1,11 +1,7 @@
 {
   "extends": [
     "stylelint-config-standard-scss",
-    "stylelint-config-idiomatic-order",
-    "@stylistic/stylelint-config"
-  ],
-  "plugins": [
-    "@stylistic/stylelint-plugin"
+    "stylelint-config-idiomatic-order"
   ],
   "overrides": [
     {
@@ -22,13 +18,6 @@
     }
   ],
   "rules": {
-    "@stylistic/max-line-length": [
-      220,
-      {
-        "ignore": "comments"
-      }
-    ],
-    "@stylistic/indentation": 2,
     "selector-class-pattern": null,
     "color-function-notation": null,
     "annotation-no-unknown": [

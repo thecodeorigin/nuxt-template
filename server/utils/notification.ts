@@ -1,5 +1,4 @@
-import admin from 'firebase-admin'
-import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
+import firebaseAdmin from 'firebase-admin'
 
 interface NotificationBody {
   user_id: string
@@ -7,24 +6,26 @@ interface NotificationBody {
   body: string
   link: string
 }
+
 export async function pushNotification(param: NotificationBody) {
   if (!param.user_id)
     return
 
   const service = getFirebaseServiceAccount()
 
-  if (admin.apps.length === 0) {
-    admin.initializeApp({
-      credential: admin.credential.cert(service),
+  if (firebaseAdmin.apps.length === 0) {
+    firebaseAdmin.initializeApp({
+      credential: firebaseAdmin.credential.cert(service as firebaseAdmin.ServiceAccount),
     })
   }
 
-  const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id: param.user_id })
-  const response = await getUserDeviceAllTokens({} as ParsedFilterQuery)
+  const { getDeviceTokens } = useDeviceToken()
 
-  if (response && response.total === 0)
+  const response = await getDeviceTokens(param.user_id)
+
+  if (response && response.length === 0)
     return
-  const tokens = response.data!.map<string>((item: any) => item.token_device)
+  const tokens = response!.map<string>((item: any) => item.token_device)
   const body = {
     tokens,
     notification: {
@@ -38,7 +39,9 @@ export async function pushNotification(param: NotificationBody) {
     },
   }
 
-  const res = await admin.messaging().sendEachForMulticast(body)
-  console.log('push:', res)
+  const res = await firebaseAdmin.messaging().sendEachForMulticast(body)
+
+  logger.log('Notification pushed:', res)
+
   return res
 }

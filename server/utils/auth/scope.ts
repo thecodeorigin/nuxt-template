@@ -1,5 +1,6 @@
 import type { IncomingHttpHeaders } from 'node:http'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
+import { cleanDoubleSlashes } from 'ufo'
 
 function extractBearerTokenFromHeaders({ authorization }: IncomingHttpHeaders) {
   if (!authorization) {
@@ -19,7 +20,7 @@ export async function getUserScopes() {
   const event = useEvent()
 
   // Generate a JWKS using jwks_uri obtained from the Logto server
-  const jwks = createRemoteJWKSet(new URL(`${process.env.LOGTO_ENDPOINT}/oidc/jwks`))
+  const jwks = createRemoteJWKSet(new URL(cleanDoubleSlashes(`${process.env.LOGTO_ENDPOINT}/oidc/jwks`)))
 
   const token = extractBearerTokenFromHeaders(event.node.req.headers)
 
@@ -29,7 +30,7 @@ export async function getUserScopes() {
     jwks,
     {
       // Expected issuer of the token, issued by the Logto server
-      issuer: `${process.env.LOGTO_ENDPOINT}/oidc`,
+      issuer: cleanDoubleSlashes(`${process.env.LOGTO_ENDPOINT}/oidc`),
       // Expected audience token, the resource indicator of the current API
       audience: config.public.apiBaseUrl,
     },

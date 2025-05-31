@@ -12,10 +12,6 @@ const defaultOptions = {
   },
   vue: true,
   jsonc: true,
-  stylistic: {
-    indent: 2,
-    quotes: 'single',
-  },
   rules: {
     'no-console': 'off',
     'no-debugger': 'warn',

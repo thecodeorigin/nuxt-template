@@ -2,34 +2,39 @@ import type { paymentProviderTransactionTable } from '@base/server/db/schemas'
 
 import PayOS from '@payos/node'
 
-interface payOSCheckoutProps {
-  date: Date
+interface PayOSCheckoutProps {
+  orderCode: number
   amount: number
   buyerEmail?: string
   buyerPhone?: string
   paymentProviderTransaction: typeof paymentProviderTransactionTable.$inferSelect
 }
 
-export const payOSAdmin = new PayOS(
-  process.env.PAYOS_CLIENT_ID!,
-  process.env.PAYOS_API_KEY!,
-  process.env.PAYOS_CHECKSUM_KEY!,
-)
+export function getPayOSAdmin() {
+  const config = useRuntimeConfig()
+
+  return new PayOS(
+    config.payos.clientId,
+    config.payos.apiKey,
+    config.payos.checksumKey,
+  )
+}
 
 export async function createPayOSCheckout({
-  date,
+  orderCode,
   amount,
   buyerEmail,
   buyerPhone,
   paymentProviderTransaction,
-}: payOSCheckoutProps) {
-  const runtimeConfig = useRuntimeConfig()
-  const { checkoutUrl } = await payOSAdmin.createPaymentLink({
-    orderCode: date.getTime(),
+}: PayOSCheckoutProps) {
+  const config = useRuntimeConfig()
+
+  const { checkoutUrl } = await getPayOSAdmin().createPaymentLink({
+    orderCode,
     amount,
     description: paymentProviderTransaction.provider_transaction_info,
-    cancelUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/payos/cancel`,
-    returnUrl: `${runtimeConfig.public.appBaseUrl}/api/payments/payos/callback`,
+    cancelUrl: config.payos.cancelUrl || `${config.public.appBaseUrl}/app/settings/billing`,
+    returnUrl: config.payos.returnUrl || `${config.public.appBaseUrl}/app/settings/billing`,
     buyerEmail,
     buyerPhone,
   })

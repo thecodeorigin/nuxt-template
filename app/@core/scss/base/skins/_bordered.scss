@@ -25,9 +25,7 @@ $header: ".layout-navbar";
     .layout-nav-type-vertical.window-scrolled #{$header} {
       border-block-start: none !important;
     }
-  }
-  // stylelint-disable-next-line @stylistic/indentation
-  @else {
+  } @else {
     @include mixins.bordered-skin(".layout-nav-type-vertical.window-scrolled.layout-navbar-sticky #{$header}", "border-bottom");
   }
 

@@ -6,10 +6,10 @@ export default defineEventHandler(async (event) => {
 
   let subscriptions: Stripe.Subscription[] = []
 
-  let customer = await getStripeCustomerByEmail(session.email!)
+  let customer = await getStripeCustomerByEmail(session.email as string)
 
   if (!customer) {
-    const { subscription, customer: newCustomer } = await createStripeCustomerOnSignup(session.email!)
+    const { subscription, customer: newCustomer } = await createStripeCustomerOnSignup(session.email as string)
 
     customer = newCustomer
 

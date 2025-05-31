@@ -21,8 +21,23 @@ export enum SupportedCurrency {
   VND = 'VND',
 }
 
+export enum ProductType {
+  CREDIT = 'credit',
+  SUBSCRIPTION = 'subscription',
+  OTHER = 'other',
+}
+
+export enum ProductStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
 export const paymentStatus = pgEnum('payment_status', enumToPgEnum(PaymentStatus))
 
 export const creditHistoryType = pgEnum('credit_history_type', enumToPgEnum(CreditHistoryType))
 
 export const supportedCurrency = pgEnum('supported_currency', enumToPgEnum(SupportedCurrency))
+
+export const productType = pgEnum('product_type', enumToPgEnum(ProductType))
+
+export const productStatus = pgEnum('product_status', enumToPgEnum(ProductStatus))

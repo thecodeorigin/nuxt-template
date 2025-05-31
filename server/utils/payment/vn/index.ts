@@ -1,48 +1,39 @@
-import { PaymentStatus, creditPackageTable, paymentProviderTransactionTable, userOrderTable, userPaymentTable } from '@base/server/db/schemas'
-import type { UserInfoResponse } from '@logto/nuxt'
-import { eq } from 'drizzle-orm'
-import { createPayOSCheckout } from './payos'
-import { createVNPayCheckout } from './vnpay'
+import type { User } from '@base/server/types/models'
+import { customAlphabet } from 'nanoid'
 
 export * from './payos'
 
-export * from './vnpay'
-
 export async function createPaymentCheckout(
-  provider: 'payos' | 'vnpay',
+  provider: 'payos' | 'vnpay' | 'sepay',
   payload: {
     clientIP?: string
     productIdentifier: string
-    user: UserInfoResponse
+    user: User
   },
 ) {
-  if (!payload.productIdentifier || !payload.user || !payload.user.sub) {
+  if (!payload.productIdentifier || !payload.user || !payload.user.id) {
     throw createError({
       statusCode: 400,
-      statusMessage: ErrorMessage.INVALID_BODY,
+      statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
     })
   }
 
   const [productType, productId] = payload.productIdentifier.split(':')
 
-  let productInfo: any
+  let productInfo: { id: string, price: number, amount: number, price_discount: number | null } | undefined
+
+  const { createOrder, createPayment, createProviderTransaction } = usePayment()
+  const { getProductByProductId } = useProduct()
 
   switch (productType) {
     case 'credit':
-      productInfo = await db.query.creditPackageTable.findFirst({
-        where: eq(creditPackageTable.id, productId),
-        columns: {
-          id: true,
-          price: true,
-          amount: true,
-        },
-      })
+      productInfo = await getProductByProductId(productId)
       break
 
     default:
       throw createError({
         statusCode: 400,
-        statusMessage: ErrorMessage.INVALID_BODY,
+        statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
       })
   }
 
@@ -53,61 +44,43 @@ export async function createPaymentCheckout(
     })
   }
 
-  // TODO: what if the user has an existing order?
-  const date = new Date()
-  const {
-    userPayment,
-    paymentProviderTransaction,
-  } = await db.transaction(async (db) => {
-    const userOrder = (await db.insert(userOrderTable).values({
-      user_id: payload.user.sub,
-    }).returning())[0]
+  const { getUserBestPrice } = useReference()
 
-    const userPayment = (await db.insert(userPaymentTable).values({
-      amount: productInfo.price,
-      status: PaymentStatus.PENDING,
-      user_id: payload.user.sub,
-      order_id: userOrder.id,
-      created_at: date,
-    }).returning())[0]
+  const referCode = getCookie(useEvent(), REFERENCE_CODE_COOKIE_NAME)
 
-    const paymentProviderTransaction = (await db.insert(paymentProviderTransactionTable).values({
-      provider,
-      provider_transaction_id: date.getTime().toString(),
-      provider_transaction_status: PaymentStatus.PENDING,
-      provider_transaction_info: `${productType}:${productInfo.amount}`,
-      payment_id: userPayment.id,
-      user_id: payload.user.sub,
-      created_at: date,
-    }).returning())[0]
+  const price = await getUserBestPrice(payload.user.id, productInfo.price, productInfo.price_discount, referCode)
 
-    return {
-      userPayment,
-      paymentProviderTransaction,
-    }
-  })
+  const userOrder = await createOrder(productId, payload.user.id)
+
+  const userPayment = await createPayment(
+    userOrder.id,
+    payload.user.id,
+    price,
+  )
+
+  // exclude underscore _
+  const orderCode = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 16)()
+
+  await createProviderTransaction(
+    userPayment.id,
+    payload.user.id,
+    orderCode,
+    provider,
+    productType,
+    productInfo,
+  )
 
   switch (provider) {
-    case 'payos':
-      return await createPayOSCheckout({
-        date,
-        amount: Number.parseInt(userPayment.amount),
-        buyerEmail: payload.user.email as string,
-        buyerPhone: payload.user.phone_number as string,
-        paymentProviderTransaction,
-      })
-    case 'vnpay':
-      return createVNPayCheckout({
-        date,
-        clientIP: payload.clientIP as string,
-        userPayment,
-        paymentProviderTransaction,
+    case 'sepay':
+      return await createSePayCheckout({
+        orderCode,
+        amount: userPayment.amount,
       })
 
     default:
       throw createError({
         statusCode: 400,
-        statusMessage: ErrorMessage.INVALID_BODY,
+        statusMessage: ErrorMessage.INVALID_WEBHOOK_BODY,
       })
   }
 }

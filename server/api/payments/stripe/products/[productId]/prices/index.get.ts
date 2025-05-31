@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
-  const { productId } = await defineEventOptions(event, { auth: true, params: ['productId'] })
+  const { productId } = await defineEventOptions(event, { auth: false, params: ['productId'] })
 
   const prices = await getStripeAllPrices(productId)
 
-  return prices
+  return { data: prices }
 })

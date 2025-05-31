@@ -1,18 +1,25 @@
 import redisDriver from 'unstorage/drivers/redis'
+import upstashDriver from 'unstorage/drivers/upstash'
 
 export default defineNitroPlugin(() => {
   const storage = useStorage()
-  const config = useRuntimeConfig()
 
-  if (config.redis.host && config.redis.port && config.redis.password) {
-    const driver = redisDriver({
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    const driver = upstashDriver({
       base: 'redis',
-      host: config.redis.host,
-      port: Number(config.redis.port),
-      password: config.redis.password,
     })
 
-    // Mount driver
+    storage.mount('redis', driver)
+  }
+  else if (process.env.REDIS_HOST && process.env.REDIS_PASSWORD) {
+    const driver = redisDriver({
+      base: 'redis',
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      password: process.env.REDIS_PASSWORD,
+      maxRetriesPerRequest: 0,
+    })
+
     storage.mount('redis', driver)
   }
 })

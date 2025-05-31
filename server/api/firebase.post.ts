@@ -1,5 +1,4 @@
 import admin from 'firebase-admin'
-import { useUserDeviceCrud } from '@base/server/composables/useUserDeviceCrud'
 import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
@@ -13,19 +12,20 @@ export default defineEventHandler(async (event) => {
 
     if (admin.apps.length === 0) {
       admin.initializeApp({
-        credential: admin.credential.cert(service),
+        credential: admin.credential.cert(service as admin.ServiceAccount),
       })
     }
 
-    const { getUserDeviceAllTokens } = useUserDeviceCrud({ user_id })
-    const response = await getUserDeviceAllTokens({} as ParsedFilterQuery)
+    const { getDeviceTokens } = useDeviceToken()
 
-    if (response && response.total === 0) {
+    const response = await getDeviceTokens(user_id)
+
+    if (response && response.length === 0) {
       setResponseStatus(event, 200)
       return { message: 'No device found' }
     }
     else {
-      const tokens = response.data!.map<string>((item: any) => item.token_device)
+      const tokens = response.map<string>((item: any) => item.token_device)
       const body = {
         tokens,
         notification: {
@@ -47,6 +47,8 @@ export default defineEventHandler(async (event) => {
     }
   }
   catch (error: any) {
+    logger.error('[Firebase API] Error sending notification:', error)
+
     throw parseError(error)
   }
 })

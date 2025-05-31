@@ -5,6 +5,8 @@ export default defineEventHandler(async (event) => {
     return await getUserScopes()
   }
   catch (error: any) {
+    logger.error('[Scopes API] Error fetching scopes:', error)
+
     throw parseError(error)
   }
 })
