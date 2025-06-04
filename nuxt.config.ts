@@ -21,10 +21,16 @@ export default defineNuxtConfig({
     },
 
     nodemailer: {
-      secure: false,
+      secure: Boolean(process.env.SMTP_USER && process.env.SMTP_PASS),
       from: process.env.SMTP_FROM,
       host: process.env.SMTP_SERVER,
       port: Number(process.env.SMTP_PORT),
+      auth: process.env.SMTP_USER && process.env.SMTP_PASS
+        ? {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          }
+        : undefined,
     },
 
     nitro: {
@@ -240,6 +246,12 @@ export default defineNuxtConfig({
   nitro: {
     experimental: {
       tasks: true,
+    },
+
+    tasks: {
+      'email:test': {
+        description: 'Test email sending',
+      },
     },
 
     devProxy: {

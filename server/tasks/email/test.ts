@@ -8,7 +8,7 @@ export default defineTask({
 
     await sendMail({
       subject: 'Hehe test',
-      to: 'nguyenhuunguyeny.ny@gmail.com',
+      to: ['nguyenhuunguyeny.ny@gmail.com'],
       html: 'This is a test email',
     })
 
