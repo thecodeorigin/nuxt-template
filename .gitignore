@@ -53,9 +53,6 @@ public/mockServiceWorker.js
 # Ignore the build directory
 public/firebase-config.json
 
-docker/postgres
-docker/redis
-
 server/db/schemas/cjs
 server/db/schemas/mjs
 
