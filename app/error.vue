@@ -12,7 +12,7 @@ defineProps<{
 
 <template>
   <ErrorNotFound v-if="error?.statusCode === 404" />
-  <ErrorUnauthorized v-if="error?.statusCode === 403" />
+  <ErrorUnauthorized v-if="error?.statusCode === 403 || error?.statusCode === 401" />
   <ErrorUnderMaintenance v-if="error?.statusCode === 503" />
   <ErrorInternalServerError v-else :error="error" />
 </template>

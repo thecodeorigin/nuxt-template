@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/browser'
 export default defineNuxtPlugin({
   name: 'sentry',
   parallel: true,
-  dependsOn: ['auth'],
   setup(nuxtApp) {
     const config = useRuntimeConfig()
 

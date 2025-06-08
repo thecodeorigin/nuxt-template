@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from 'vuetify'
-import { getMessaging, onMessage } from 'firebase/messaging'
+import { getMessaging, getToken } from 'firebase/messaging'
 import ScrollToTop from '@base/@core/components/ScrollToTop.vue'
 import initCore from '@base/@core/initCore'
 import { initConfigStore, useConfigStore } from '@base/@core/stores/config'
@@ -18,14 +18,29 @@ const { global } = useTheme()
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
-onBeforeMount(async () => {
-  if (!isInAppBrowser()) {
-    onMessage(getMessaging(), () => {
-    // TODO: Handle incoming messages
-    // console.log('Client message:', payload)
-    // const linkSplits = payload.fcmOptions?.link?.split('/projects/')
-    // notify(payload.notification?.body as string, { type: 'primary', link: `/projects/${linkSplits![1]}` })
-    })
+const config = useRuntimeConfig()
+
+const tokenDevice = useLocalStorage<string | null>('tokenDevice', null)
+
+const notificationApi = useApiNotification()
+
+onMounted(async () => {
+  if (!isInAppBrowser() && !tokenDevice.value) {
+    try {
+      if (Notification.permission !== 'granted')
+        await Notification.requestPermission()
+
+      const authStore = useAuthStore()
+
+      whenever(() => authStore.currentUser, async (currentUser) => {
+        if (Notification.permission === 'granted' && currentUser) {
+          const token = await getToken(getMessaging(), { vapidKey: config.public.firebase.keyPair })
+
+          notificationApi.createTokenDevice(token)
+        }
+      })
+    }
+    catch {}
   }
 })
 </script>

@@ -216,13 +216,23 @@ export default defineNuxtConfig({
     replace: {
       'import-in-the-middle': fileURLToPath(new URL('./node_modules/import-in-the-middle', import.meta.url)),
     },
+
+    imports: {
+      dirs: [
+        fileURLToPath(new URL('./server/composables', import.meta.url)),
+      ],
+    },
   },
 
   routeRules: {
-    '/': { prerender: true },
-    '/api/payments/**/callback': { csurf: false },
-    '/api/payments/**/webhook': { csurf: false },
-    '/api/payments/**/IPN': { csurf: false },
+    '/auth/**': { swr: false, prerender: false },
+    '/callback': { cache: false, prerender: false, security: { enabled: false } },
+    '/api/logto/webhook': { csurf: false },
+    '/api/payments/sepay/webhook': { csurf: false },
+    '/api/payments/payos/webhook': { csurf: false },
+    '/api/payments/vnpay/callback': { csurf: false },
+    '/api/payments/vnpay/IPN': { csurf: false },
+    '/_nitro/tasks/**': { csurf: false },
   },
 
   pinia: {

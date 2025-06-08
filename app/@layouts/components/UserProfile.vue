@@ -4,18 +4,13 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
-const tokenDeviceStore = useTokenDeviceStore()
-const userEmail = computed(() => authStore.currentUser?.email)
-const userAvatar = computed(() => authStore.currentUser?.picture)
+const userEmail = computed(() => authStore.currentUser?.primary_email)
+const userAvatar = computed(() => authStore.currentUser?.avatar)
 const userFullname = computed(() => authStore.currentUser?.name)
-const userRole = computed(() => authStore.currentUser?.roles?.[0] || authStore.currentUser?.organization_roles?.[0] || t('User'))
 
 async function logout() {
   try {
-    if (authStore.currentUser)
-      await tokenDeviceStore.clearTokenDevice()
-
-    await authStore.signOut()
+    await navigateTo({ path: '/sign-out' }, { external: true })
 
     navigateTo({ name: 'auth-login' })
   }
@@ -51,12 +46,12 @@ const userProfileList = computed<Array<{
     title: t('Pricing'),
     to: { name: 'settings-pricing' },
   },
-  {
-    type: 'navItem',
-    icon: 'ri-question-line',
-    title: 'FAQ',
-    to: { name: 'faq' },
-  },
+  // {
+  //   type: 'navItem',
+  //   icon: 'ri-question-line',
+  //   title: 'FAQ',
+  //   to: { name: 'faq' },
+  // },
 ])
 </script>
 
@@ -114,8 +109,8 @@ const userProfileList = computed<Array<{
                 <div class="text-body-2 font-weight-medium text-high-emphasis">
                   {{ userFullname || userEmail }}
                 </div>
-                <div class="text-capitalize text-caption text-disabled">
-                  {{ userRole }}
+                <div class="text-caption text-disabled">
+                  {{ userEmail }}
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
+  auth: true,
   sidebar: {
     order: 0,
     title: 'Dashboard',

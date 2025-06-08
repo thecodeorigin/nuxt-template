@@ -14,7 +14,7 @@ export const useSubscriptionStore = defineStore('subscription', () => {
 
   async function fetchSubscriptions() {
     try {
-      const data = await $api('/api/payments/stripe/me')
+      const data = await useApiStripe().fetchStripeSubscription()
       customer.value = data.customer
       currentSubscription.value = data.subscription
       subscriptions.value = data.subscriptions
@@ -24,22 +24,11 @@ export const useSubscriptionStore = defineStore('subscription', () => {
     }
   }
 
-  async function createSubscriptionCheckoutUrl(customerId: string, priceId: string) {
-    return $api(`/api/payments/stripe/customers/${customerId}/checkout`, {
-      method: 'POST',
-      body: {
-        priceId,
-        redirectPath: '/settings/billing-plans',
-      },
-    })
-  }
-
   return {
     customer,
     subscriptions,
     isSubscriptionValid,
     currentSubscription,
     fetchSubscriptions,
-    createSubscriptionCheckoutUrl,
   }
 })

@@ -2,24 +2,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (to.meta.public)
     return
 
+  const authStore = useAuthStore()
+
+  if (to.meta.unauthenticatedOnly && authStore.currentUser) {
+    return navigateTo({ path: '/dashboard' })
+  }
+
   if (to.meta.auth || to.meta.auth === undefined) {
-    const authStore = useAuthStore()
-
-    if (authStore.currentUser) {
-      if (to.meta.unauthenticatedOnly)
-        return navigateTo('/')
-
-      try {
-        await authStore.fetchToken()
-      }
-      catch {
-        notifyError({
-          content: 'Failed to retrieve user token.',
-        })
-      }
+    try {
+      await authStore.fetchProfile()
     }
-    else if (!to.meta.unauthenticatedOnly) {
-      return navigateTo('/auth/login')
+    catch {}
+
+    if (!authStore.currentUser) {
+      return navigateTo({ path: '/auth/login' })
     }
   }
 })

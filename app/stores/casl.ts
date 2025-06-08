@@ -38,7 +38,7 @@ export const useCaslStore = defineStore('casl', () => {
   )
 
   async function fetchScopes() {
-    const response = await $api('/api/scopes')
+    const response = await useApiCasl().fetchScopes()
 
     if (Array.isArray(response)) {
       scopes.value = response.map((scope) => {

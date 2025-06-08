@@ -2,10 +2,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (to.meta.public || import.meta.prerender)
     return
 
-  const healthStore = useHealthStore()
-
   try {
-    await healthStore.fetchHealthCheck()
+    await useApiHealth().fetchHealthCheck()
   }
   catch {
     throw createError({

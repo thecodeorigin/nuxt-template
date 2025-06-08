@@ -1,5 +1,4 @@
 export default defineNuxtPlugin({
-  dependsOn: ['auth'],
   async setup() {
     const caslStore = useCaslStore()
 

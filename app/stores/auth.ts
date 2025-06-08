@@ -1,45 +1,30 @@
-import type { UserInfoResponse } from '@logto/nuxt'
+import type { User } from '@base/server/types/models'
 
 export const useAuthStore = defineStore('auth', () => {
-  const config = useRuntimeConfig()
+  const currentUser = useState<User | null>('currentUser', () => null)
 
-  const client = useLogtoClient()
+  const crsfToken = computed(() => {
+    if (import.meta.server)
+      return useNuxtApp().ssrContext?.event?.context?.csrfToken
 
-  const accessToken = useState<string | null>('accessToken', () => null)
+    return window.document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+  })
 
-  const currentUser = useLogtoUser() as UserInfoResponse & {
-    custom_data?: { credit: number }
-  } | null
+  const authApi = useApiAuth()
 
-  const currentRoles = computed(() => currentUser?.roles || null)
+  async function fetchProfile() {
+    if (!currentUser.value) {
+      const response = await authApi.fetchProfile()
 
-  async function fetchToken() {
-    if (client && !accessToken.value && await client.isAuthenticated())
-      accessToken.value = await client.getAccessToken(config.public.apiBaseUrl)
-  }
+      currentUser.value = response.data
+    }
 
-  function signIn() {
-    return navigateTo({ path: '/sign-in' }, { external: true })
-  }
-
-  function signOut() {
-    return navigateTo({ path: '/sign-out' }, { external: true })
-  }
-
-  function updateProfile(payload: Partial<{ username: string, name: string, avatar: string }>) {
-    return $api('/api/me', {
-      method: 'PATCH',
-      body: payload,
-    })
+    return currentUser.value
   }
 
   return {
-    accessToken,
+    crsfToken,
     currentUser,
-    currentRoles,
-    signIn,
-    signOut,
-    fetchToken,
-    updateProfile,
+    fetchProfile,
   }
 })

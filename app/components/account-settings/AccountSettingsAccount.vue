@@ -5,6 +5,8 @@ const config = useRuntimeConfig()
 
 const inputFileRef = ref<HTMLElement>()
 
+const authApi = useApiAuth()
+
 const authStore = useAuthStore()
 const formFile = ref<File | null>(null)
 
@@ -97,7 +99,7 @@ async function handleSubmit() {
     if (formFile.value && authStore.currentUser)
       avatarUrl = await uploadToS3(formFile.value, authStore.currentUser.sub)
 
-    await authStore.updateProfile({
+    await authApi.updateProfile({
       ...formData.value,
       avatar: avatarUrl,
     })
