@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { formatDistanceToNow } from '#imports'
+import { useEventBus } from '@vueuse/core'
 
 type Notification = any
 
-const systemNotificationStore = useNotificationStore()
+const notificationApi = useApiNotification()
 const emptyNotification = ref(false)
 const location = ref('bottom end' as const)
 const badgeProps = ref<object>({})
@@ -16,20 +17,24 @@ const notificationQuery = ref({
 })
 const notifications = ref<Notification[]>([])
 const notificationVisible = ref(false)
+const notificationUpdatedBus = useEventBus('notification-updated')
 
-const { data, refresh: fetchNotifications } = await useLazyAsyncData(() => systemNotificationStore.fetchNotifications(notificationQuery.value), {
+const { data, refresh: fetchNotifications } = useLazyAsyncData(() => notificationApi.fetchNotifications(notificationQuery.value), {
   default: () => ([] as Notification[]),
 })
-notifications.value.push(...data.value)
 
-const { data: unreadNotifications, refresh: fetchUnreadNotifications } = await useLazyAsyncData(() => systemNotificationStore.countUnreadNotifications(), {
+if (Array.isArray(data.value)) {
+  notifications.value.push(...data.value)
+}
+
+const { data: unreadNotifications, refresh: fetchUnreadNotifications } = useLazyAsyncData(() => notificationApi.countUnreadNotifications(), {
   default: () => ({ total: 0 }),
 })
-const { refresh: markAllUnread } = await useLazyAsyncData(() => systemNotificationStore.markAllUnread(), {
+const { refresh: markAllUnread } = useLazyAsyncData(() => notificationApi.markAllUnread(), {
   default: () => ({}),
   immediate: false,
 })
-const { refresh: markAllRead } = await useLazyAsyncData(() => systemNotificationStore.markAllRead(), {
+const { refresh: markAllRead } = useLazyAsyncData(() => notificationApi.markAllRead(), {
   default: () => ({}),
   immediate: false,
 })
@@ -47,7 +52,9 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
     notificationQuery.value.page++
 
     await fetchNotifications()
-    notifications.value.push(...data.value)
+    if (Array.isArray(data.value)) {
+      notifications.value.push(...data.value)
+    }
 
     if (!data || data.value?.length === 0) {
       emptyNotification.value = true
@@ -63,7 +70,7 @@ async function fetchMoreNotifications({ done }: { done: (type: 'ok' | 'empty' | 
 
 async function removeNotification(notificationId: string) {
   try {
-    await systemNotificationStore.deleteNotification(notificationId)
+    await notificationApi.deleteNotification(notificationId)
 
     notifications.value.forEach((item, index) => {
       if (notificationId === item.id) {
@@ -79,10 +86,10 @@ async function removeNotification(notificationId: string) {
 async function handleNotificationClick(notification: Notification) {
   try {
     if (!notification.read_at) {
-      await systemNotificationStore.markRead(notification.id)
+      await notificationApi.markRead(notification.id)
     }
     else {
-      await systemNotificationStore.markUnread(notification.id)
+      await notificationApi.markUnread(notification.id)
     }
 
     for (const item of notifications.value) {
@@ -92,6 +99,7 @@ async function handleNotificationClick(notification: Notification) {
       }
     }
     fetchUnreadNotifications()
+    notificationUpdatedBus.emit(notification)
   }
   catch (error) {
     console.error(error)
@@ -103,10 +111,10 @@ const isAllMarkRead = computed(() => unreadNotifications.value.total === 0)
 async function handleMarkAllReadOrUnread() {
   try {
     if (isAllMarkRead.value) {
-      markAllUnread()
+      await markAllUnread()
     }
     else {
-      markAllRead()
+      await markAllRead()
     }
     notifications.value.forEach((item) => {
       item.read_at = !isAllMarkRead.value ? new Date().toDateString() : null
