@@ -139,6 +139,25 @@ export function useNotification() {
     )
   }
 
+  async function getUnreadNotification(userId: string): Promise<PaginatedResponse<Notification>> {
+    const notifications = await db.query.notificationTable.findMany({
+      where(schema, { and, eq, isNull }) {
+        return and(
+          eq(schema.user_id, userId),
+          isNull(schema.read_at),
+        )
+      },
+      orderBy(schema, { desc }) {
+        return desc(schema.created_at)
+      },
+    })
+
+    return {
+      data: notifications,
+      total: notifications.length,
+    }
+  }
+
   return {
     getNotificationsPaginated,
     getNotificationCount,
@@ -149,5 +168,6 @@ export function useNotification() {
     deleteNotificationById,
     markAllRead,
     markAllUnread,
+    getUnreadNotification
   }
 }

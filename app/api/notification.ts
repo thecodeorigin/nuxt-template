@@ -8,7 +8,7 @@ export function useApiNotification() {
   }
 
   function markRead(id: string) {
-    return $api(`/api/notifications/${id}`, {
+    return $api(`/api/notifications/${id}/read`, {
       method: 'PATCH',
       body: {
         read_at: new Date(),
@@ -17,7 +17,7 @@ export function useApiNotification() {
   }
 
   function markUnread(id: string) {
-    return $api(`/api/notifications/${id}`, {
+    return $api(`/api/notifications/${id}/unread`, {
       method: 'PATCH',
       body: {
         read_at: null,

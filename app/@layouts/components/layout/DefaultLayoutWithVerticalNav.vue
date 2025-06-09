@@ -39,7 +39,7 @@ watch([
 
         <NavBarI18n />
         <NavbarThemeSwitcher />
-        <!-- <NavBarNotifications class="me-2" /> -->
+        <NavBarNotifications class="me-2" />
         <UserProfile />
       </div>
     </template>
