@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useToast } from 'vue-toastification'
 
 const { t } = useI18n()
 
@@ -25,16 +24,18 @@ const formattedAmount = computed(() =>
   }),
 )
 
-// Hàm xử lý checkout
 async function handleCheckout() {
   const { data } = await checkStatus('sepay', paymentInfo.value.description)
   if (data.status === 'resolved') {
-    useToast().success(t('Payment successful'))
+    notifyError({
+      content: t('Payment successful'),
+    })
     router.push('/settings/credit')
   }
   else {
-    // show toast error
-    useToast().error(t('We have not received your payment yet. Please try again later, or contact support if the issue persists.'))
+    notifyError({
+      content: t('We have not received your payment yet. Please try again later, or contact support if the issue persists.'),
+    })
   }
 }
 </script>

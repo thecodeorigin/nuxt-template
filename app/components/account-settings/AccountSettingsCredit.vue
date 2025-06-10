@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 const { fetchCreditPackages } = useApiProduct()
 const { checkout } = useApiPayment()
 const { fetchCredit } = useApiCredit()
@@ -6,12 +6,12 @@ const { fetchCredit } = useApiCredit()
 const { t } = useI18n()
 const router = useRouter()
 
-const dialog = ref(false)
+const topupVisible = ref(false)
 
-const { data } = await useAsyncData('creditPackages', () => fetchCreditPackages())
-const { data: userCredit } = await useAsyncData('userCredits', () => fetchCredit())
+const { data: packages } = await useAsyncData('credit-packages', () => fetchCreditPackages())
+const { data: userCredit } = await useAsyncData('user-credits', () => fetchCredit())
 
-const creditPackages = computed(() => data?.value?.data?.map(item => ({
+const creditPackages = computed(() => packages?.value?.data?.map(item => ({
   label: `${item.title} - ${item.amount} ${t('credits')} (${item.price} ${t('VND')})`,
   value: item.id,
 })))
@@ -30,7 +30,7 @@ async function handleTopup() {
   catch (error) {
     console.error(error)
   }
-  dialog.value = false
+  topupVisible.value = false
 }
 </script>
 
@@ -58,7 +58,7 @@ async function handleTopup() {
               </p>
 
               <VCol cols="2" class="pa-0">
-                <VBtn @click="dialog = true">
+                <VBtn @click="topupVisible = true">
                   {{ $t('Topup Credits') }}
                 </VBtn>
               </VCol>
@@ -69,7 +69,7 @@ async function handleTopup() {
     </VCard>
 
     <!-- Topup Modal -->
-    <VDialog v-model="dialog" max-width="400">
+    <VDialog v-model="topupVisible" max-width="400">
       <VCard>
         <VCardTitle>
           {{ $t('Topup Credits') }}
@@ -97,7 +97,7 @@ async function handleTopup() {
           <VBtn
             variant="text"
             color="secondary"
-            @click="dialog = false"
+            @click="topupVisible = false"
           >
             {{ $t('Cancel') }}
           </VBtn>
