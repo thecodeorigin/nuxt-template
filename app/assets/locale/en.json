@@ -137,5 +137,22 @@
   "Users": "Users",
   "Are you sure you want to delete this shortcut?": "Are you sure you want to delete this shortcut?",
   "Account settings updated successfully": "Account settings updated successfully",
-  "Stripe customer self-service portal is not currently available!": "Stripe customer self-service portal is not currently available!"
+  "Stripe customer self-service portal is not currently available!": "Stripe customer self-service portal is not currently available!",
+  "credits": "credits",
+  "Payment Information": "Payment Information",
+  "Please manage your payment information to ensure your service is not interrupted.": "Please manage your payment information to ensure your service is not interrupted.",
+  "Credits available": "Credits available:",
+  "We will notify you if your credit is running low.": "We will notify you if your credit is running low.",
+  "Topup Credits": "Topup Credits",
+  "Select a credit package": "Select a credit package",
+  "Topup Now": "Topup Now",
+  "Payment successful": "Payment successful",
+  "We have not received your payment yet. Please try again later, or contact support if the issue persists.": "We have not received your payment yet. Please try again later, or contact support if the issue persists.",
+  "Bank": "Bank",
+  "Account Number": "Account Number",
+  "Amount": "Amount",
+  "Description": "Description",
+  "Please scan the QR code or transfer the amount to the bank account to complete the payment.": "Please scan the QR code or transfer the amount to the bank account to complete the payment.",
+  "Confirm Payment": "Confirm Payment"
+
 }

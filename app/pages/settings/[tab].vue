@@ -60,7 +60,7 @@ definePageMeta({
         </VWindowItem>
 
         <VWindowItem v-if="config.public.features.credit" value="credit">
-          <LazyAccountSettingsCredit />
+          <AccountSettingsCredit />
         </VWindowItem>
 
         <VWindowItem v-if="config.public.features.subscription" value="subscription">

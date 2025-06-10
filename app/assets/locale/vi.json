@@ -137,5 +137,21 @@
   "Users": "Người dùng",
   "Are you sure you want to delete this shortcut?": "Bạn có chắc chắn muốn xóa phím tắt này không?",
   "Account settings updated successfully": "Thông tin tài khoản đã được cập nhật thành công",
-  "Stripe customer self-service portal is not currently available!": "Cổng tự phục vụ của thanh toán điện tử Stripe hiện không khả dụng!"
+  "Stripe customer self-service portal is not currently available!": "Cổng tự phục vụ khách hàng của Stripe hiện không khả dụng!",
+  "credits": "Tín dụng",
+  "Payment Information": "Thông tin thanh toán",
+  "Please manage your payment information to ensure your service is not interrupted.": "Vui lòng quản lý thông tin thanh toán của bạn để đảm bảo dịch vụ không bị gián đoạn.",
+  "Credits available": "Tín dụng khả dụng",
+  "We will notify you if your credit is running low.": "Chúng tôi sẽ thông báo nếu tín dụng của bạn sắp hết.",
+  "Topup Credits": "Nạp thêm tín dụng",
+  "Select a credit package": "Chọn gói tín dụng",
+  "Topup Now": "Nạp ngay",
+  "Payment successful": "Thanh toán thành công",
+  "We have not received your payment yet. Please try again later, or contact support if the issue persists.": "Chúng tôi chưa nhận được thanh toán của bạn. Vui lòng thử lại sau hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn.",
+  "Bank": "Ngân hàng",
+  "Account Number": "Số tài khoản",
+  "Amount": "Số tiền",
+  "Description": "Mô tả",
+  "Please scan the QR code or transfer the amount to the bank account to complete the payment.": "Vui lòng quét mã QR hoặc chuyển khoản số tiền vào tài khoản ngân hàng để hoàn tất thanh toán.",
+  "Confirm Payment": "Xác nhận thanh toán"
 }
