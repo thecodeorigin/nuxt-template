@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
 const { t } = useI18n()
 
 const { checkStatus } = useApiPayment()
@@ -93,7 +90,6 @@ async function handleCheckout() {
 </template>
 
 <style scoped>
-/* Đảm bảo layout responsive */
 .v-img {
   border-radius: 8px;
 }
