@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, and, isNull, count } from 'drizzle-orm'
 import { referenceTable, referenceUsageTable } from '../db/schemas'
 
 export const REFERENCE_CODE_COOKIE_NAME = 'referCode'
@@ -81,10 +81,90 @@ export function useReference() {
     return referenceUsage[0]
   }
 
+  async function createReference({
+    userId,
+    percentage,
+    amount,
+    quantity,
+  }: {
+    userId: string
+    percentage?: number
+    amount?: number
+    quantity?: number | null
+  }) {
+
+    const reference = await db.insert(referenceTable).values({
+      user_id: userId,
+      percentage: percentage,
+      amount: amount,
+      quantity: quantity ?? null,
+    }).returning()
+
+    return reference[0]
+  }
+
+  async function deleteReferenceByUserId(userId: string) {
+    const deletedReferences = await db
+      .delete(referenceTable)
+      .where(eq(referenceTable.user_id, userId))
+      .returning();
+
+    return deletedReferences;
+  }
+
+  async function getUnusedReferencesByUserId(userId: string) {
+    const references = await db.select({
+      reference: referenceTable,
+    })
+      .from(referenceTable)
+      .leftJoin(referenceUsageTable, eq(referenceTable.id, referenceUsageTable.reference_id))
+      .where(and(
+        eq(referenceTable.user_id, userId),
+        isNull(referenceUsageTable.id)
+      ))
+
+    return references.map((row) => row.reference)
+  }
+
+  async function isReferenceUsableByUser(refCode: string, userId: string): Promise<boolean> {
+    const reference = await db.query.referenceTable.findFirst({
+      where(schema, { eq }) {
+        return eq(schema.code, refCode)
+      },
+    })
+
+    if (!reference) return false
+
+    const userUsedAnyRef = await db.query.referenceUsageTable.findFirst({
+      where(schema, { eq }) {
+        return eq(schema.user_id, userId)
+      },
+    })
+
+    if (userUsedAnyRef) return false
+
+    const [{ count: usedCount }] = await db
+      .select({ count: count() })
+      .from(referenceUsageTable)
+      .where(eq(referenceUsageTable.reference_id, reference.id))
+
+    const quantity = reference.quantity
+
+    if (quantity === null) return true
+
+    if (usedCount >= quantity) return false
+
+    return true
+  }
+
   return {
     getReferenceById,
     getUserReferenceUsage,
     getUserBestPrice,
     createReferenceUsage,
+    createReference,
+    deleteReferenceByUserId,
+    getUnusedReferencesByUserId,
+    isReferenceUsableByUser
   }
 }
