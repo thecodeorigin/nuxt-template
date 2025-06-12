@@ -153,5 +153,7 @@
   "Amount": "Số tiền",
   "Description": "Mô tả",
   "Please scan the QR code or transfer the amount to the bank account to complete the payment.": "Vui lòng quét mã QR hoặc chuyển khoản số tiền vào tài khoản ngân hàng để hoàn tất thanh toán.",
-  "Confirm Payment": "Xác nhận thanh toán"
+  "Confirm Payment": "Xác nhận thanh toán",
+  "Available referral code links": "Liên kết mã giới thiệu khả dụng.",
+  "No reference links available": "Không có liên kết giới thiệu nào khả dụng."
 }

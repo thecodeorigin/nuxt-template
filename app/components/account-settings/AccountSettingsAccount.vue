@@ -6,9 +6,11 @@ const config = useRuntimeConfig()
 const inputFileRef = ref<HTMLElement>()
 
 const authApi = useApiAuth()
-
+const { fetchUnusedReferences } = useApiReference()
 const authStore = useAuthStore()
 const formFile = ref<File | null>(null)
+
+const { data: references } = await useAsyncData('unused-reference', () => fetchUnusedReferences())
 
 const formData = ref({
   avatar: authStore.currentUser?.avatar || '',
@@ -60,6 +62,16 @@ async function handleSubmit() {
   catch (error) {
     console.error(error)
   }
+}
+
+function copyToClipboard(text: string) {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      notifySuccess({ content: t('Copied to clipboard!') })
+    })
+    .catch(err => {
+      console.error('Copy failed:', err)
+    })
 }
 </script>
 
@@ -181,6 +193,39 @@ async function handleSubmit() {
               </VCol> -->
             </VRow>
           </VForm>
+        </VCardText>
+      </VCard>
+
+      <!-- 👉 Reference Codes -->
+      <VCard class="mt-6">
+        <VCardText>
+          <div class="mb-6">
+            <p class="mb-2">{{ $t('Available referral code links') }}</p>
+            <VList
+              v-if="references?.length"
+              lines="one"
+              class="bg-grey-100 rounded"
+            >
+              <VListItem
+                v-for="ref in references"
+                :key="ref.id"
+              >
+              <div class="d-flex justify-space-between align-center w-100">
+                <VListItemTitle>{{ `${config.public.apiBaseUrl}/api/ref/${ref.code}` }}</VListItemTitle>
+                <VBtn
+                  icon
+                  variant="text"
+                  @click="copyToClipboard(`${config.public.apiBaseUrl}/api/ref/${ref.code}`)"
+                >
+                  <VIcon icon="ri-file-copy-line" />
+                </VBtn>
+              </div>
+              </VListItem>
+            </VList>
+            <p v-else class="text-body-2 text-grey">
+              {{ $t('No reference links available') }}
+            </p>
+          </div>
         </VCardText>
       </VCard>
     </VCol>

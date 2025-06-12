@@ -150,6 +150,9 @@ export default defineEventHandler(async (event) => {
     const { upsertUser, updateLastSignIn, updateSuspensionStatus, deleteUser } = useUser()
     const { deleteIdentitiesByUserId } = useIdentity()
 
+    // Get reference composables
+    const { createReference, deleteReferenceByUserId } = useReference()
+
     // Handle different event types
     switch (eventType) {
       case 'PostSignIn': {
@@ -181,7 +184,7 @@ export default defineEventHandler(async (event) => {
 
         // Create or update user
         const createdUser = await upsertUser(data.id, mapLogtoUserToUserInput(data))
-
+        await createReference({ userId: createdUser.id, percentage: 5, amount: 0, quantity: 1 });
         // Process any identity information
         await processIdentities(createdUser.id, data.identities)
         break
@@ -208,6 +211,9 @@ export default defineEventHandler(async (event) => {
 
           // Then delete the user
           await deleteUser(user.id)
+
+          // Finally, delete any references associated with the user
+          await deleteReferenceByUserId(user.id)
         }
         break
       }

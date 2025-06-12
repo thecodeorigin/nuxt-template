@@ -10,6 +10,9 @@ const userFullname = computed(() => authStore.currentUser?.name)
 
 async function logout() {
   try {
+    const referCode = useCookie('referCode')
+    referCode.value = null
+
     await navigateTo({ path: '/sign-out' }, { external: true })
 
     navigateTo({ name: 'auth-login' })
