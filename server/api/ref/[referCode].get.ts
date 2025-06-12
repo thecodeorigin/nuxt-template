@@ -6,8 +6,8 @@ export default defineEventHandler(async (event) => {
     const { session } = await defineEventOptions(event, { auth: true })
 
     const { isReferenceUsableByUser } = useReference()
-    const flag = await isReferenceUsableByUser(referCode, session.id)
-    if(flag) {
+    const isUseable = await isReferenceUsableByUser(referCode, session.id)
+    if(isUseable) {
       setCookie(event, REFERENCE_CODE_COOKIE_NAME, referCode, {
         httpOnly: false
       })

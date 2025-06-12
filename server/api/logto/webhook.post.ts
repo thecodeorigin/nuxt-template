@@ -184,7 +184,7 @@ export default defineEventHandler(async (event) => {
 
         // Create or update user
         const createdUser = await upsertUser(data.id, mapLogtoUserToUserInput(data))
-        await createReference({ userId: createdUser.id, percentage: 5, amount: 0, quantity: 1 });
+        await createReference({ userId: createdUser.id, percentage: 5, amount: 0});
         // Process any identity information
         await processIdentities(createdUser.id, data.identities)
         break

@@ -1,4 +1,4 @@
-import { eq, sql, and, isNull } from 'drizzle-orm'
+import { eq, sql, and, isNull, count } from 'drizzle-orm'
 import { referenceTable, referenceUsageTable } from '../db/schemas'
 
 export const REFERENCE_CODE_COOKIE_NAME = 'referCode'
@@ -135,14 +135,6 @@ export function useReference() {
 
     if (!reference) return false
 
-    const isUsed = await db.query.referenceUsageTable.findFirst({
-      where(schema, { eq }) {
-        return eq(schema.reference_id, reference.id)
-      },
-    })
-
-    if (isUsed) return false
-
     const userUsedAnyRef = await db.query.referenceUsageTable.findFirst({
       where(schema, { eq }) {
         return eq(schema.user_id, userId)
@@ -150,6 +142,17 @@ export function useReference() {
     })
 
     if (userUsedAnyRef) return false
+
+    const [{ count: usedCount }] = await db
+      .select({ count: count() })
+      .from(referenceUsageTable)
+      .where(eq(referenceUsageTable.reference_id, reference.id))
+
+    const quantity = reference.quantity
+
+    if (quantity === null) return true
+
+    if (usedCount >= quantity) return false
 
     return true
   }
