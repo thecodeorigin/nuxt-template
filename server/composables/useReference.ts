@@ -165,6 +165,7 @@ export function useReference() {
     createReference,
     deleteReferenceByUserId,
     getUnusedReferencesByUserId,
-    isReferenceUsableByUser
+    isReferenceUsableByUser,
+    getReferenceByCode
   }
 }
