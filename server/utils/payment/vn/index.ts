@@ -25,6 +25,7 @@ export async function createPaymentCheckout(
 
   const { createOrder, createPayment, createProviderTransaction } = usePayment()
   const { getProductByProductId } = useProduct()
+  const { getReferenceByCode } = useReference()
 
   switch (productType) {
     case 'credit':
@@ -51,7 +52,8 @@ export async function createPaymentCheckout(
 
   const price = await getUserBestPrice(payload.user.id, productInfo.price, productInfo.price_discount, referCode)
 
-  const userOrder = await createOrder(productId, payload.user.id)
+  var reference = await getReferenceByCode(referCode || '')
+  const userOrder = await createOrder(productId, payload.user.id, reference?.id)
 
   const userPayment = await createPayment(
     userOrder.id,
