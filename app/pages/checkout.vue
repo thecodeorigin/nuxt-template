@@ -24,7 +24,7 @@ const formattedAmount = computed(() =>
 async function handleCheckout() {
   const { data } = await checkStatus('sepay', paymentInfo.value.description)
   if (data.status === 'resolved') {
-    notifyError({
+    notifySuccess({
       content: t('Payment successful'),
     })
     router.push('/settings/credit')
