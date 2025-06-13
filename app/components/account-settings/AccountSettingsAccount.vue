@@ -6,11 +6,11 @@ const config = useRuntimeConfig()
 const inputFileRef = ref<HTMLElement>()
 
 const authApi = useApiAuth()
-const { fetchUnusedReferences } = useApiReference()
+const { fetchAvailableReferences } = useApiReference()
 const authStore = useAuthStore()
 const formFile = ref<File | null>(null)
 
-const { data: references } = await useAsyncData('unused-reference', () => fetchUnusedReferences())
+const { data: references } = await useAsyncData('available-reference', () => fetchAvailableReferences())
 
 const formData = ref({
   avatar: authStore.currentUser?.avatar || '',

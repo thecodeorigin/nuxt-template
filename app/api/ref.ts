@@ -1,11 +1,11 @@
 export function useApiReference() {
-  function fetchUnusedReferences() {
-    return $api(`/api/ref/unused`, {
+  function fetchAvailableReferences() {
+    return $api(`/api/ref/available`, {
       method: 'GET',
   })
   }
 
   return {
-    fetchUnusedReferences
+    fetchAvailableReferences
   }
 }
