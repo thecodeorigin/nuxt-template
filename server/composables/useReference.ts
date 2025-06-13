@@ -1,4 +1,4 @@
-import { eq, sql, and, isNull, count } from 'drizzle-orm'
+import { eq, sql, and, isNull, count, or, gt } from 'drizzle-orm'
 import { referenceTable, referenceUsageTable } from '../db/schemas'
 
 export const REFERENCE_CODE_COOKIE_NAME = 'referCode'
@@ -112,18 +112,19 @@ export function useReference() {
     return deletedReferences;
   }
 
-  async function getUnusedReferencesByUserId(userId: string) {
-    const references = await db.select({
-      reference: referenceTable,
-    })
+  async function getAvailableReferencesByUserId(userId: string) {
+    const references = await db
+      .select()
       .from(referenceTable)
-      .leftJoin(referenceUsageTable, eq(referenceTable.id, referenceUsageTable.reference_id))
       .where(and(
         eq(referenceTable.user_id, userId),
-        isNull(referenceUsageTable.id)
+        or(
+          isNull(referenceTable.quantity),
+          gt(referenceTable.quantity, 0)
+        )
       ))
 
-    return references.map((row) => row.reference)
+    return references
   }
 
   async function isReferenceUsableByUser(refCode: string, userId: string): Promise<boolean> {
@@ -164,7 +165,7 @@ export function useReference() {
     createReferenceUsage,
     createReference,
     deleteReferenceByUserId,
-    getUnusedReferencesByUserId,
+    getAvailableReferencesByUserId,
     isReferenceUsableByUser,
     getReferenceByCode
   }
