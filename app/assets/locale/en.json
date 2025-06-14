@@ -154,6 +154,8 @@
   "Description": "Description",
   "Please scan the QR code or transfer the amount to the bank account to complete the payment.": "Please scan the QR code or transfer the amount to the bank account to complete the payment.",
   "Confirm Payment": "Confirm Payment",
-  "Available referral code links.": "Available referral code links.",
-  "No reference links available.": "No reference links available."
+  "Available referral code links": "Available referral code links",
+  "No reference links available": "No reference links available",
+  "Account information": "Account information",
+  "Reference history": "Reference History"
 }

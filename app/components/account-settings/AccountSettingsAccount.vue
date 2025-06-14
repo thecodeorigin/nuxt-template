@@ -122,23 +122,9 @@ function copyToClipboard(text: string) {
     <VCol cols="12">
       <VCard data-test="account-form">
         <VCardText>
-          <div class="d-flex mb-10">
+          <!-- <div class="d-flex mb-10"> -->
             <!-- 👉 Avatar -->
-            <VAvatar
-              rounded
-              size="100"
-              class="me-6 bg-grey-100"
-              @click="inputFileRef?.click()"
-            >
-              <VImg
-                v-if="formData.avatar"
-                :src="formData.avatar"
-              />
-              <VIcon
-                v-else
-                icon="ri-user-3-line text-grey-700"
-              />
-            </VAvatar>
+            
 
             <!-- 👉 Upload Photo -->
             <!-- <form class="d-flex flex-column justify-center gap-4">
@@ -180,14 +166,32 @@ function copyToClipboard(text: string) {
                 {{ $t('Allowed JPG, GIF or PNG, Max size of 800K') }}
               </p>
             </form> -->
-          </div>
-
+          <!-- </div> -->
+          <p class="mb-6 font-weight-medium">{{ $t('Account information') }}</p>
           <!-- 👉 Form -->
           <VForm @submit.prevent="handleSubmit">
             <VRow>
+              <VCol cols="auto">
+                <VAvatar
+                  rounded
+                  size="50"
+                  class="bg-grey-100 cursor-pointer"
+                  @click="inputFileRef?.click()"
+                >
+                  <VImg
+                    v-if="formData.avatar"
+                    :src="formData.avatar"
+                  />
+                  <VIcon
+                    v-else
+                    icon="ri-user-3-line text-grey-700"
+                  />
+                </VAvatar>
+              </VCol>
+
               <!-- 👉 Full Name -->
               <VCol
-                md="6"
+                md="5"
                 cols="12"
               >
                 <VTextField
@@ -273,7 +277,7 @@ function copyToClipboard(text: string) {
 
       <VCard class="mt-6">
         <VCardText>
-          <p class="mb-4 font-weight-medium">{{ $t('Reference usage history') }}</p>
+          <p class="mb-4 font-weight-medium">{{ $t('Reference history') }}</p>
 
           <VTable v-if="referenceHistory.length">
             <thead>
