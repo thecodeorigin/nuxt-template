@@ -50,8 +50,9 @@ export default defineEventHandler(async (event) => {
     const userId = paymentTransactionOfProvider.payment.order.user_id
 
     const { getUserBestPrice, createReferenceUsage } = useReference()
-
+    const { getReferenceDiscountAmountForUser } = useOrder()
     const reference = paymentTransactionOfProvider.payment.order.reference
+    const order = paymentTransactionOfProvider.payment.order
 
     const price = await getUserBestPrice(
       userId,
@@ -78,6 +79,16 @@ export default defineEventHandler(async (event) => {
     await addCreditToUser(userId, creditAmount)
 
     logger.log(`[SePay Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
+
+
+    // Affiliate
+    if(reference?.code) {
+      const affiliateAmount = await getReferenceDiscountAmountForUser(order.id, userId)
+
+      logger.log(`[SePay Webhook] Adding credits: userId=${reference?.user_id}, amount=${affiliateAmount}`)
+      await addCreditToUser(reference?.user_id, affiliateAmount)
+      logger.log(`[SePay Webhook] Credits added successfully: userId=${reference?.user_id}, amount=${affiliateAmount}`)
+    }
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
       logger.error(`[SePay Webhook] No product found for transaction: ${orderCode}`)
