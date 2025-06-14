@@ -1,5 +1,6 @@
 import { eq, sql, and, isNull, count, or, gt } from 'drizzle-orm'
-import { referenceTable, referenceUsageTable } from '../db/schemas'
+import { referenceTable, referenceUsageTable, userTable } from '../db/schemas'
+import type { PaginatedResponse, PaginationOptions } from '@base/server/types/models'
 
 export const REFERENCE_CODE_COOKIE_NAME = 'referCode'
 
@@ -54,6 +55,9 @@ export function useReference() {
         ? Math.min(discountPrice, price)
         : price,
     )
+
+    // clamp to minimum of 10000
+    price = Math.max(price, 10000);
 
     if (!price) {
       throw createError({
@@ -158,6 +162,56 @@ export function useReference() {
     return true
   }
 
+  async function getReferenceUsageHistoryByUser(
+    userId: string,
+    options: Partial<PaginationOptions>,
+  ): Promise<PaginatedResponse<any>> {
+    const limit = options.limit ?? 20
+    const page  = options.page  ?? 1
+
+    const query = db
+      .select({
+        referenceUsageId: referenceUsageTable.id,
+        paymentProviderTransactionId: referenceUsageTable.payment_provider_transaction_id,
+        usedAt: referenceUsageTable.created_at,
+
+        usedByUserId: referenceUsageTable.user_id,
+        usedByUserName: userTable.name,
+        usedByUserEmail: userTable.primary_email,
+
+        referenceId: referenceTable.id,
+        referenceCode: referenceTable.code,
+        referencePercentage: referenceTable.percentage,
+        referenceAmount: referenceTable.amount,
+      })
+      .from(referenceUsageTable)
+      .innerJoin(referenceTable, eq(referenceUsageTable.reference_id, referenceTable.id))
+      .innerJoin(userTable, eq(referenceUsageTable.user_id, userTable.id))
+      .where(eq(referenceTable.user_id, userId))
+      .orderBy(
+        options.sortAsc
+          ? sql.raw(`${options.sortBy || 'created_at'} ASC`)
+          : sql.raw(`${options.sortBy || 'created_at'} DESC`),
+      )
+      .limit(limit)
+      .offset(limit * (page - 1))
+
+    const data = await query
+
+    const total = options.withCount
+      ? (
+          await db
+            .select({ count: count() })
+            .from(referenceUsageTable)
+            .innerJoin(referenceTable, eq(referenceUsageTable.reference_id, referenceTable.id))
+            .where(eq(referenceTable.user_id, userId))
+        )[0].count
+      : data.length
+
+    return { data, total }
+  }
+
+
   return {
     getReferenceById,
     getUserReferenceUsage,
@@ -167,6 +221,7 @@ export function useReference() {
     deleteReferenceByUserId,
     getAvailableReferencesByUserId,
     isReferenceUsableByUser,
-    getReferenceByCode
+    getReferenceByCode,
+    getReferenceUsageHistoryByUser
   }
 }

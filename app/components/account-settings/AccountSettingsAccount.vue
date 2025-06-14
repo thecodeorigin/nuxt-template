@@ -1,16 +1,57 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+import { ref, reactive, computed, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+type ReferenceHistory = any
+
 const { t, locale } = useI18n()
 
 const config = useRuntimeConfig()
-
 const inputFileRef = ref<HTMLElement>()
 
 const authApi = useApiAuth()
-const { fetchAvailableReferences } = useApiReference()
+const apiReference = useApiReference()
 const authStore = useAuthStore()
 const formFile = ref<File | null>(null)
 
-const { data: references } = await useAsyncData('available-reference', () => fetchAvailableReferences())
+const pagination = reactive({
+  page: 1,
+  limit: 5,
+  total: 0,
+})
+
+const referenceQuery = computed(() => ({
+  page: pagination.page,
+  limit: pagination.limit,
+  keyword: '',
+  sortAsc: false,
+  sortBy: 'created_at',
+  withCount: true,
+}))
+
+const { data: references } = await useAsyncData('available-reference', () =>
+  apiReference.fetchAvailableReferences()
+)
+
+const {
+  data: referenceHistoryData,
+  refresh: refreshReferenceHistory,
+} = await useLazyAsyncData('reference-usage-history', () =>
+  apiReference.fetchUsageHistoryReferences(referenceQuery.value),
+  {
+    default: () => ({ data: [] as ReferenceHistory[], total: 0 }),
+    watch: [referenceQuery],
+  }
+)
+
+const referenceHistory = ref<ReferenceHistory[]>([])
+
+watchEffect(() => {
+  if (referenceHistoryData.value) {
+    referenceHistory.value = referenceHistoryData.value.data
+    pagination.total = referenceHistoryData.value.total
+  }
+})
 
 const formData = ref({
   avatar: authStore.currentUser?.avatar || '',
@@ -29,8 +70,9 @@ function changeAvatar(file: Event) {
   const { files } = file.target as HTMLInputElement
 
   fileReader.onload = () => {
-    if (typeof fileReader.result === 'string')
+    if (typeof fileReader.result === 'string') {
       formData.value.avatar = fileReader.result
+    }
   }
 
   if (files && files.length) {
@@ -58,14 +100,14 @@ async function handleSubmit() {
     notifySuccess({
       content: t('Account settings updated successfully'),
     })
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error)
   }
 }
 
 function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text)
+  navigator.clipboard
+    .writeText(text)
     .then(() => {
       notifySuccess({ content: t('Copied to clipboard!') })
     })
@@ -200,7 +242,7 @@ function copyToClipboard(text: string) {
       <VCard class="mt-6">
         <VCardText>
           <div class="mb-6">
-            <p class="mb-2">{{ $t('Available referral code links') }}</p>
+            <p class="mb-4 font-weight-medium">{{ $t('Available referral code links') }}</p>
             <VList
               v-if="references?.length"
               lines="one"
@@ -211,11 +253,11 @@ function copyToClipboard(text: string) {
                 :key="ref.id"
               >
               <div class="d-flex justify-space-between align-center w-100">
-                <VListItemTitle>{{ `${config.public.apiBaseUrl}/api/ref/${ref.code}` }}</VListItemTitle>
+                <VListItemTitle>{{ `${config.public.apiBaseUrl}/api/ref/${ref.code}/apply` }}</VListItemTitle>
                 <VBtn
                   icon
                   variant="text"
-                  @click="copyToClipboard(`${config.public.apiBaseUrl}/api/ref/${ref.code}`)"
+                  @click="copyToClipboard(`${config.public.apiBaseUrl}/api/ref/${ref.code}/apply`)"
                 >
                   <VIcon icon="ri-file-copy-line" />
                 </VBtn>
@@ -226,6 +268,48 @@ function copyToClipboard(text: string) {
               {{ $t('No reference links available') }}
             </p>
           </div>
+        </VCardText>
+      </VCard>
+
+      <VCard class="mt-6">
+        <VCardText>
+          <p class="mb-4 font-weight-medium">{{ $t('Reference usage history') }}</p>
+
+          <VTable v-if="referenceHistory.length">
+            <thead>
+              <tr>
+                <th>{{ $t('Used by') }}</th>
+                <th>{{ $t('Email') }}</th>
+                <th>{{ $t('Referral Code') }}</th>
+                <th>{{ $t('Discount') }}</th>
+                <th>{{ $t('Used at') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="entry in referenceHistory" :key="entry.referenceUsageId">
+                <td>{{ entry.usedByUserName }}</td>
+                <td>{{ entry.usedByUserEmail }}</td>
+                <td>{{ entry.referenceCode }}</td>
+                <td>
+                  <span v-if="entry.referenceAmount">-{{ entry.referenceAmount.toLocaleString() }}₫</span>
+                  <span v-else-if="entry.referencePercentage">-{{ entry.referencePercentage }}%</span>
+                  <span v-else>—</span>
+                </td>
+                <td>{{ new Date(entry.usedAt).toLocaleString(locale) }}</td>
+              </tr>
+            </tbody>
+          </VTable>
+
+          <div v-else class="text-body-2 text-grey">
+            {{ $t('No reference usage history found.') }}
+          </div>
+
+          <!-- 👉 AppPagination -->
+          <AppPagination
+            v-model:page="pagination.page"
+            v-model:limit="pagination.limit"
+            :total="pagination.total"
+          />
         </VCardText>
       </VCard>
     </VCol>
