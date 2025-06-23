@@ -98,10 +98,6 @@ export default defineNuxtConfig({
         authorization: Boolean(process.env.FEATURE_AUTHORIZATION),
       },
 
-      hotjar: {
-        projectId: process.env.HOTJAR_ID,
-      },
-
       theme: {
         appLogo: process.env.NUXT_PUBLIC_APP_LOGO || '/images/logo.svg',
         appName: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
@@ -284,7 +280,6 @@ export default defineNuxtConfig({
     'nuxt-security',
     'nuxt-vuefire',
     'nuxt-gtag',
-    'nuxt-module-hotjar',
     'nuxt-nodemailer',
   ],
 
@@ -308,12 +303,6 @@ export default defineNuxtConfig({
         id: process.env.FIREBASE_MEASUREMENT_ID || '',
       },
     ],
-  },
-
-  hotjar: {
-    hotjarId: process.env.HOTJAR_ID,
-    scriptVersion: 6,
-    debug: process.env.NODE_ENV === 'development',
   },
 
   nodemailer: process.env.NODE_ENV === 'development'
@@ -349,16 +338,24 @@ export default defineNuxtConfig({
       },
     },
     hidePoweredBy: true,
-    rateLimiter: {
-      driver: {
-        name: 'redis',
-        options: {
-          host: process.env.REDIS_HOST,
-          port: Number(process.env.REDIS_PORT),
-          password: process.env.REDIS_PASSWORD,
-        },
-      },
-    },
+    rateLimiter: process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+      ? {
+          driver: {
+            name: 'upstash',
+          },
+        }
+      : process.env.REDIS_HOST && process.env.REDIS_PASSWORD
+        ? {
+            driver: {
+              name: 'redis',
+              options: {
+                host: process.env.REDIS_HOST,
+                port: Number(process.env.REDIS_PORT),
+                password: process.env.REDIS_PASSWORD,
+              },
+            },
+          }
+        : false,
   },
 
   compatibilityDate: '2024-07-12',
