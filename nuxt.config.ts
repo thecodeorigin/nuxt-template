@@ -349,16 +349,24 @@ export default defineNuxtConfig({
       },
     },
     hidePoweredBy: true,
-    rateLimiter: {
-      driver: {
-        name: 'redis',
-        options: {
-          host: process.env.REDIS_HOST,
-          port: Number(process.env.REDIS_PORT),
-          password: process.env.REDIS_PASSWORD,
-        },
-      },
-    },
+    rateLimiter: process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+      ? {
+          driver: {
+            name: 'upstash',
+          },
+        }
+      : process.env.REDIS_HOST && process.env.REDIS_PASSWORD
+        ? {
+            driver: {
+              name: 'redis',
+              options: {
+                host: process.env.REDIS_HOST,
+                port: Number(process.env.REDIS_PORT),
+                password: process.env.REDIS_PASSWORD,
+              },
+            },
+          }
+        : false,
   },
 
   compatibilityDate: '2024-07-12',
