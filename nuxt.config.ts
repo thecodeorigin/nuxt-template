@@ -83,6 +83,11 @@ export default defineNuxtConfig({
       password: process.env.REDIS_PASSWORD,
     },
 
+    upstash: {
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    },
+
     public: {
       appVersion,
       appCredit: process.env.NUXT_PUBLIC_APP_CREDIT || 'Thecodeorigin',
@@ -342,6 +347,10 @@ export default defineNuxtConfig({
       ? {
           driver: {
             name: 'upstash',
+            options: {
+              url: process.env.UPSTASH_REDIS_REST_URL,
+              token: process.env.UPSTASH_REDIS_REST_TOKEN,
+            },
           },
         }
       : process.env.REDIS_HOST && process.env.REDIS_PASSWORD

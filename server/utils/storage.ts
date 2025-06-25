@@ -1,3 +1,5 @@
+import type { TransactionOptions } from 'unstorage'
+
 export function getStorageSessionKey(providerAccountId: string) {
   return `session:${providerAccountId}`
 }
@@ -9,14 +11,14 @@ export function getStorageStripeKey(identifier: string) {
 function getStorage() {
   const config = useRuntimeConfig()
 
-  return (config.redis.host && config.redis.port && config.redis.password)
+  return ((config.redis.host && config.redis.port && config.redis.password) || (config.upstash.url && config.upstash.token))
     ? useStorage('redis')
     : config.mongodb.connectionString
       ? useStorage('mongodb')
       : useStorage()
 }
 
-export async function tryWithCache<T>(key: string, getter: () => Promise<T | undefined | null>) {
+export async function tryWithCache<T>(key: string, getter: () => Promise<T | undefined | null>, options?: TransactionOptions) {
   const storage = getStorage()
 
   const cachedResult = await storage.getItem(key)
@@ -27,7 +29,7 @@ export async function tryWithCache<T>(key: string, getter: () => Promise<T | und
   const result = await getter()
 
   if (Array.isArray(result) ? result.length : result)
-    await storage.setItem(key, result as any)
+    await storage.setItem(key, result as any, options)
 
   return result as T
 }

@@ -7,6 +7,8 @@ export default defineNitroPlugin(() => {
   if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
     const driver = upstashDriver({
       base: 'redis',
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
     })
 
     storage.mount('redis', driver)
