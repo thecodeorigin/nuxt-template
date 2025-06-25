@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     const { getUserById } = useUser()
 
     // Get the user data from our database
-    const user = await getUserById(session.id)
+    const user = await tryWithCache(session.id, () => getUserById(session.id))
 
     if (!user) {
       throw createError({

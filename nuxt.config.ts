@@ -353,6 +353,10 @@ export default defineNuxtConfig({
       ? {
           driver: {
             name: 'upstash',
+            options: {
+              url: process.env.UPSTASH_REDIS_REST_URL,
+              token: process.env.UPSTASH_REDIS_REST_TOKEN,
+            },
           },
         }
       : process.env.REDIS_HOST && process.env.REDIS_PASSWORD
