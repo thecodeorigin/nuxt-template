@@ -39,3 +39,9 @@ export async function clearCache(key: string) {
 
   await storage.removeItem(key)
 }
+
+export async function getParallelCacheKeys(key: string) {
+  const storage = getStorage()
+
+  return await storage.getKeys(key)
+}
