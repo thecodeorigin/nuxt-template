@@ -9,6 +9,9 @@ export default defineNitroPlugin(() => {
       base: 'redis',
       url: process.env.UPSTASH_REDIS_REST_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      agent: {
+        keepAlive: false,
+      },
     })
 
     storage.mount('redis', driver)
