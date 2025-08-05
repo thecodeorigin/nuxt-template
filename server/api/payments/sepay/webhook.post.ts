@@ -93,6 +93,8 @@ export default defineEventHandler(async (event) => {
 
     await updatePaymentStatus(paymentTransactionOfProvider.payment.id, transactionStatus)
 
+    await useNitroApp().hooks.callHook('payment:success', { userId, transferAmount: body.transferAmount })
+
     if (reference) {
       await createReferenceUsage(
         userId,

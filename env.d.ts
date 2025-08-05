@@ -18,6 +18,7 @@ declare module 'nitropack' {
     'log:info': (data: { message: string, data?: any }) => void
     'log:error': (data: { message: string, data?: any }) => void
     'credit:change': (data: { userId: string, amount: number }) => void
+    'payment:success': (data: { userId: string, transferAmount: number }) => void
   }
 }
 
