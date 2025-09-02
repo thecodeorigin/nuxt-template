@@ -36,9 +36,7 @@ export class Logger {
 
   constructor(logsDirOpt?: string) {
     this.logsDir = logsDirOpt || join(process.cwd(), 'logs')
-    this.ensureLogDirectoryExistsSync()
     this.initS3Config()
-    this.initLogLevels()
 
     const winstonLogLevel = this.determineWinstonLogLevel()
 
@@ -173,6 +171,8 @@ export class Logger {
         region,
         credentials: { accessKeyId, secretAccessKey },
       })
+      this.ensureLogDirectoryExistsSync()
+      this.initLogLevels()
       console.info(`Logger: S3 uploads enabled to bucket ${bucket} in region ${region}.`)
     }
     else {
