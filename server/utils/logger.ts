@@ -74,20 +74,22 @@ export class Logger {
       console.error('Winston DailyRotateFile Transport Error:', error)
     })
 
-    this.logger = winston.createLogger({
-      level: winstonLogLevel,
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple(),
-            levelFilter(),
-          ),
-          silent: this.enabledLogLevels !== null && this.enabledLogLevels.size === 0,
-        }),
-        this.dailyRotateFileTransport,
-      ],
-    })
+    if (this.s3Bucket && this.s3Client) {
+      this.logger = winston.createLogger({
+        level: winstonLogLevel,
+        transports: [
+          new winston.transports.Console({
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.simple(),
+              levelFilter(),
+            ),
+            silent: this.enabledLogLevels !== null && this.enabledLogLevels.size === 0,
+          }),
+          this.dailyRotateFileTransport,
+        ],
+      })
+    }
 
     if (this.enabledLogLevels !== null && this.enabledLogLevels.size === 0) {
       console.info('Logger: All logging is disabled (LOG_LEVEL is empty array or all levels filtered out)')
@@ -232,19 +234,39 @@ export class Logger {
   }
 
   public log(message: any, meta?: Record<string, any>) {
-    this.logger.verbose(message, meta)
+    if (this.s3Bucket && this.s3Client) {
+      this.logger.verbose(message, meta)
+    }
+    else {
+      console.log(message, meta)
+    }
   }
 
   public info(message: any, meta?: Record<string, any>) {
-    this.logger.info(message, meta)
+    if (this.s3Bucket && this.s3Client) {
+      this.logger.info(message, meta)
+    }
+    else {
+      console.info(message, meta)
+    }
   }
 
   public warn(message: any, meta?: Record<string, any>) {
-    this.logger.warn(message, meta)
+    if (this.s3Bucket && this.s3Client) {
+      this.logger.warn(message, meta)
+    }
+    else {
+      console.warn(message, meta)
+    }
   }
 
   public error(message: any, meta?: Record<string, any>) {
-    this.logger.error(message, meta)
+    if (this.s3Bucket && this.s3Client) {
+      this.logger.error(message, meta)
+    }
+    else {
+      console.error(message, meta)
+    }
   }
 
   public createRequestLogger() {
