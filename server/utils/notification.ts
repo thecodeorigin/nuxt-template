@@ -41,7 +41,7 @@ export async function pushNotification(param: NotificationBody) {
 
   const res = await firebaseAdmin.messaging().sendEachForMulticast(body)
 
-  logger.log('Notification pushed:', res)
+  console.log('Notification pushed:', res)
 
   return res
 }

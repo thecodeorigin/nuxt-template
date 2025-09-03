@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     return markAllUnread(session.id)
   }
   catch (error: any) {
-    logger.error('[Notification API] Error marking all notifications as unread:', error)
+    console.error('[Notification API] Error marking all notifications as unread:', error)
 
     throw parseError(error)
   }

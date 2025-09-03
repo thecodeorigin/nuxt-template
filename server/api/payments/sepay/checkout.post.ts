@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     }
   }
   catch (error: any) {
-    logger.error('[Payment API] Error creating SePay checkout URL:', error)
+    console.error('[Payment API] Error creating SePay checkout URL:', error)
 
     throw parseError(error)
   }

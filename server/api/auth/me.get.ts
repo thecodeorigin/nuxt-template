@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     }
   }
   catch (error: any) {
-    logger.error('[User API] Error fetching user:', error)
+    console.error('[User API] Error fetching user:', error)
     throw parseError(error)
   }
 })

@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     return getNotificationsPaginated(session.id, getFilter(event))
   }
   catch (error: any) {
-    logger.error('[Notification API] Error fetching notifications:', error)
+    console.error('[Notification API] Error fetching notifications:', error)
 
     throw parseError(error)
   }

@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   }
   catch (error: any) {
-    logger.error('[Notification API] Error updating user notification settings:', error)
+    console.error('[Notification API] Error updating user notification settings:', error)
     throw parseError(error)
   }
 })

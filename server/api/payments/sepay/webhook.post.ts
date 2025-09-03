@@ -22,14 +22,14 @@ export default defineEventHandler(async (event) => {
     )
 
     if (process.env.SEPAY_WEBHOOK_SIGNING_KEY !== getHeader(event, 'Authorization')?.match(/Apikey (.*)/)?.[1]) {
-      logger.error('[SePay Webhook] Invalid webhook authentication')
+      console.error('[SePay Webhook] Invalid webhook authentication')
       throw createError({
         statusCode: 401,
         message: 'Invalid webhook authentication',
       })
     }
 
-    logger.log('[SePay Webhook] Verified webhook data:', body)
+    console.log('[SePay Webhook] Verified webhook data:', body)
 
     // SePay Webhook always success (if not, it will not call this endpoint anyway)
 
@@ -41,11 +41,11 @@ export default defineEventHandler(async (event) => {
     const paymentTransactionOfProvider = await getProviderTransactionByOrderCode(String(orderCode))
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
-      logger.warn(`[SePay Webhook] Transaction not found or invalid: code=${orderCode}`)
+      console.warn(`[SePay Webhook] Transaction not found or invalid: code=${orderCode}`)
       return { success: true }
     }
 
-    logger.log(`[SePay Webhook] Processing transaction: code=${orderCode}, status=${transactionStatus}`)
+    console.log(`[SePay Webhook] Processing transaction: code=${orderCode}, status=${transactionStatus}`)
 
     const userId = paymentTransactionOfProvider.payment.order.user_id
 
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
     )
 
     if (price !== Number(body.transferAmount)) {
-      logger.error(`[SePay Webhook] Amount mismatch, transaction [${paymentTransactionOfProvider.id}]: expected=${price}, received=${body.transferAmount}`)
+      console.error(`[SePay Webhook] Amount mismatch, transaction [${paymentTransactionOfProvider.id}]: expected=${price}, received=${body.transferAmount}`)
 
       throw createError({
         statusCode: 400,
@@ -73,21 +73,21 @@ export default defineEventHandler(async (event) => {
 
     // The userId is already the UUID from our database since we've updated
     // our schemas to use UUID references between tables
-    logger.log(`[SePay Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
+    console.log(`[SePay Webhook] Adding credits: userId=${userId}, amount=${creditAmount}`)
 
     await addCreditToUser(userId, creditAmount)
 
-    logger.log(`[SePay Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
+    console.log(`[SePay Webhook] Credits added successfully: userId=${userId}, amount=${creditAmount}`)
 
     if (!paymentTransactionOfProvider?.payment.order.package) {
-      logger.error(`[SePay Webhook] No product found for transaction: ${orderCode}`)
+      console.error(`[SePay Webhook] No product found for transaction: ${orderCode}`)
       throw createError({
         statusCode: 400,
         message: 'No product found for this transaction!',
       })
     }
 
-    logger.log(`[SePay Webhook] Updating transaction ${paymentTransactionOfProvider.id} to status: ${transactionStatus}`)
+    console.log(`[SePay Webhook] Updating transaction ${paymentTransactionOfProvider.id} to status: ${transactionStatus}`)
 
     await updateProviderTransactionStatus(paymentTransactionOfProvider.id, transactionStatus, body.transactionDate!)
 
@@ -103,13 +103,13 @@ export default defineEventHandler(async (event) => {
       )
     }
 
-    logger.log(`[SePay Webhook] Transaction updated successfully: id=${paymentTransactionOfProvider.id}, status=${transactionStatus}`)
+    console.log(`[SePay Webhook] Transaction updated successfully: id=${paymentTransactionOfProvider.id}, status=${transactionStatus}`)
 
-    logger.log('[SePay Webhook] Webhook processing completed successfully')
+    console.log('[SePay Webhook] Webhook processing completed successfully')
     return { success: true }
   }
   catch (error: any) {
-    logger.error('[SePay Webhook] Error processing webhook:', error)
+    console.error('[SePay Webhook] Error processing webhook:', error)
 
     throw parseError(error)
   }

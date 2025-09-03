@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     }
   }
   catch (error: any) {
-    logger.error('[Firebase API] Error sending notification:', error)
+    console.error('[Firebase API] Error sending notification:', error)
 
     throw parseError(error)
   }

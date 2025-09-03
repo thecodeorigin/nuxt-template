@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     return { data: products }
   }
   catch (error: any) {
-    logger.error('[Products API] Error fetching products:', error)
+    console.error('[Products API] Error fetching products:', error)
 
     throw parseError(error)
   }
