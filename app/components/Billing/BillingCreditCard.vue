@@ -25,10 +25,10 @@ const topupBus = useEventBus(topupBusKey)
         {{ $t('We will notify you if your credit is running low') }}
       </p>
     </div>
-    <div class="mt-4">
+    <!-- <div class="mt-4">
       <UButton color="neutral" variant="solid" @click="topupBus.emit()">
         {{ $t('Buy more credit') }}
       </UButton>
-    </div>
+    </div> -->
   </UCard>
 </template>
