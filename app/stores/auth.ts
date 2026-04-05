@@ -1,45 +1,36 @@
-import type { UserInfoResponse } from '@logto/nuxt'
+import type { AuthUser } from '~~/server/utils/auth'
+import { useAuthApi } from '~/api/useAuthApi'
 
 export const useAuthStore = defineStore('auth', () => {
-  const config = useRuntimeConfig()
+  const currentUser = useState<AuthUser | null>('user', () => null)
 
-  const client = useLogtoClient()
+  const authApi = useAuthApi()
 
-  const accessToken = useState<string | null>('accessToken', () => null)
-
-  const currentUser = useLogtoUser() as UserInfoResponse & {
-    custom_data?: { credit: number }
-  } | null
-
-  const currentRoles = computed(() => currentUser?.roles || null)
-
-  async function fetchToken() {
-    if (client && !accessToken.value && await client.isAuthenticated())
-      accessToken.value = await client.getAccessToken(config.public.apiBaseUrl)
+  async function fetchCurrentUser() {
+    const currentUserData = await authApi.fetchCurrentUser()
+    currentUser.value = currentUserData
   }
 
-  function signIn() {
-    return navigateTo({ path: '/sign-in' }, { external: true })
+  async function updateCurrentUser(data: { name: string }) {
+    await authApi.updateCurrentUser(data)
+    await fetchCurrentUser()
   }
 
-  function signOut() {
-    return navigateTo({ path: '/sign-out' }, { external: true })
+  function fetchUserNotificationSettings() {
+    return authApi.fetchUserNotificationSettings()
   }
 
-  function updateProfile(payload: Partial<{ username: string, name: string, avatar: string }>) {
-    return $api('/api/me', {
-      method: 'PATCH',
-      body: payload,
-    })
+  async function logout() {
+    await authApi.logout()
+
+    currentUser.value = null
   }
 
   return {
-    accessToken,
     currentUser,
-    currentRoles,
-    signIn,
-    signOut,
-    fetchToken,
-    updateProfile,
+    fetchCurrentUser,
+    updateCurrentUser,
+    fetchUserNotificationSettings,
+    logout,
   }
 })

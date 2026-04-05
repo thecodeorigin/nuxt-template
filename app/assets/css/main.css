@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+:root, .light {
+  --ui-primary: #8F5441;
+  --ui-secondary: #F6EEE2;
+  --ui-success: #6C8F66;
+  --ui-info: #5D8D9F;
+  --ui-warning: #CFA96C;
+  --ui-error: #AC5C5C;
+
+  --ui-text: #8F5441;
+  --ui-text-highlighted: #5A3A2E;
+  --ui-text-muted: #7A5A4F;
+  --ui-text-dimmed: #B5A39A;
+
+  --ui-bg-elevated: #F6EEE2;
+
+  --ui-border: #E6D8C7;
+}
+
+.dark {
+  --ui-primary:  #F6EEE2;
+  --ui-secondary: #E8DCCB;
+  --ui-success: #6C8F66;
+  --ui-info: #5D8D9F;
+  --ui-warning: #CFA96C;
+  --ui-error: #AC5C5C;
+
+  --ui-text: #F6EEE2;
+  --ui-text-highlighted: #F6EEE2;
+  --ui-text-muted: #D3CBC0;
+  --ui-text-dimmed: #E8E1D6;
+
+  --ui-bg: #122425;
+  --ui-bg-elevated: #1A2F30;
+  --ui-bg-muted: #122425;
+
+  --ui-border: #2A3B3C;
+}
+
+@theme static {
+  --font-sans: 'Public Sans', sans-serif;
+}
+
+iframe {
+  pointer-events: auto;
+}
+
+[data-tour-active="true"] {
+  --ui-primary: var(--ui-success) !important;
+}

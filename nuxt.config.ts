@@ -1,371 +1,281 @@
-import { fileURLToPath } from 'node:url'
-
-import svgLoader from 'vite-svg-loader'
-
-import { UserScope } from '@logto/node'
-
-import { version as appVersion } from './package.json'
+import tailwindcss from '@tailwindcss/vite'
+import packageJson from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  future: {
-    compatibilityVersion: 4,
-  },
-
-  app: {
-    head: {
-      titleTemplate: '%s - NuxtJS Admin Template',
-      title: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
-
-      link: [{
-        rel: 'icon',
-        type: 'image/x-icon',
-        href: '/favicon.ico',
-      }],
-    },
-
-    pageTransition: {
-      name: 'app-transition-slide-fade',
-      mode: 'out-in',
-    },
-
-    layoutTransition: {
-      name: 'app-transition-slide-fade',
-      mode: 'out-in',
-    },
-  },
-
-  devServer: {
-    port: 3000,
-  },
-
-  devtools: {
-    enabled: true,
-  },
-
-  css: [
-    '@base/@core/scss/template/index.scss',
-    '@base/styles/styles.scss',
-    '@base/plugins/iconify/icons.css',
+  modules: [
+    '@nuxt/a11y',
+    '@nuxt/eslint',
+    '@nuxt/fonts',
+    '@nuxt/hints',
+    '@nuxt/icon',
+    '@nuxt/scripts',
+    '@nuxt/test-utils',
+    '@nuxtjs/device',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    'magic-regexp',
+    'nuxt-security',
   ],
 
-  /*
-    ❗ Please read the docs before updating runtimeConfig
-    https://nuxt.com/docs/guide/going-further/runtime-config
-  */
-  runtimeConfig: {
-    logto: {
-      endpoint: process.env.LOGTO_ENDPOINT,
-      appId: process.env.LOGTO_APP_ID,
-      appSecret: process.env.LOGTO_APP_SECRET,
-      cookieEncryptionKey: process.env.LOGTO_COOKIE_ENCRYPTION_KEY,
-      fetchUserInfo: true,
-      resources: [
-        process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-        process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
-      ].filter(Boolean),
-      scopes: [
-        'create:upload',
-        UserScope.Profile,
-        UserScope.Identities,
-        UserScope.Email,
-        UserScope.Profile,
-        UserScope.Roles,
-        UserScope.Organizations,
-        UserScope.OrganizationRoles,
-        UserScope.CustomData,
+  $development: {
+    devtools: {
+      enabled: true,
+    },
+    routeRules: {
+      '/_nitro/**': { cors: false, csurf: false },
+    },
+    nitro: {
+      openAPI: {
+        meta: {
+          title: 'NuxtTemplate API',
+          version: packageJson.version,
+        },
+      },
+      experimental: {
+        tasks: true,
+      },
+    },
+    vite: {
+      plugins: [
+        tailwindcss(),
       ],
+      server: {
+        allowedHosts: true,
+      },
     },
-
-    redis: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      password: process.env.REDIS_PASSWORD,
-    },
-
-    upstash: {
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    },
-
-    public: {
-      appVersion,
-      appCredit: process.env.NUXT_PUBLIC_APP_CREDIT || 'Thecodeorigin',
-      appCreditURL: process.env.NUXT_PUBLIC_APP_CREDIT_URL || 'http://thecodeorigin.com',
-      appCreditEmail: process.env.NUXT_PUBLIC_APP_CREDIT_EMAIL || 'contact@thecodeorigin.com',
-      appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-      appPaymentRedirect: process.env.NUXT_PUBLIC_APP_PAYMENT_REDIRECT || '/app/settings/credit',
-
-      features: {
-        credit: Boolean(process.env.FEATURE_CREDIT),
-        subscription: Boolean(process.env.FEATURE_SUBSCRIPTION),
-        authorization: Boolean(process.env.FEATURE_AUTHORIZATION),
+    security: {
+      enabled: true,
+      removeLoggers: false,
+      sri: false,
+      rateLimiter: false,
+      csrf: {
+        enabled: false,
       },
-
-      theme: {
-        appLogo: process.env.NUXT_PUBLIC_APP_LOGO || '/images/logo.svg',
-        appName: process.env.NUXT_PUBLIC_APP_NAME || 'nuxt-template',
-        primaryColor: process.env.NUXT_PUBLIC_THEME_PRIMARY_COLOR || '#666CFF',
-        primaryDarkenColor: process.env.NUXT_PUBLIC_THEME_PRIMARY_DARKEN_COLOR || '#5C61E6',
+      headers: {
+        contentSecurityPolicy: false, // Prevents Vite HMR from breaking
+        strictTransportSecurity: false, // Prevents locking localhost to HTTPS
       },
-
-      firebase: {
-        keyPair: process.env.FIREBASE_KEY_PAIR,
-      },
-
-      sentry: {
-        dsn: process.env.SENTRY_DSN,
-        environment: process.env.SENTRY_ENVIRONMENT,
-        release: process.env.SENTRY_RELEASE,
-        tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE),
-        replaysOnErrorSampleRate: Number(process.env.SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE),
-      },
-
-      stripe: {
-        customerPortalURL: process.env.STRIPE_CUSTOMER_PORTAL,
+      corsHandler: {
+        origin: '*', // Easy local API testing
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
       },
     },
   },
 
-  components: {
-    dirs: [
-      {
-        path: '@base/@core/components',
-        pathPrefix: false,
+  $production: {
+    nitro: {
+      preset: process.env.NITRO_PRESET || 'node-server',
+    },
+
+    security: {
+      enabled: true,
+      removeLoggers: true,
+      sri: true,
+      csrf: {
+        enabled: true,
+        encryptSecret: process.env.NUXT_AUTH_SECRET?.substring(0, 32),
       },
-      {
-        path: '@base/@layouts/components',
-        extensions: ['.tsx', '.vue'],
-        pathPrefix: false,
+      rateLimiter: {
+        tokensPerInterval: 150,
+        interval: 5 * 60 * 1000, // 5 minutes
+        headers: false,
+        driver: {
+          name: 'upstash',
+          options: {
+            base: 'ratelimit',
+            url: process.env.NUXT_UPSTASH_REDIS_REST_URL,
+            token: process.env.NUXT_UPSTASH_REDIS_REST_TOKEN,
+          },
+        },
+        whiteList: ['127.0.0.1', '::1', 'localhost'],
+        throwError: true,
       },
-      {
-        path: '@base/components',
-        extensions: ['.vue'],
-        pathPrefix: false,
+      headers: {
+        contentSecurityPolicy: {
+          'default-src': ['\'self\''],
+          'script-src': ['\'self\'', '\'unsafe-inline\'', 'https://www.gstatic.com', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
+          'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://fonts.googleapis.com'],
+          'img-src': [
+            '\'self\'',
+            'data:',
+            'https://www.google.com/recaptcha/',
+            'https://www.gstatic.com/recaptcha/',
+            'https://raw.githubusercontent.com',
+            'https://github.com',
+            'https://api.iconify.design',
+            'https://avatars.githubusercontent.com',
+            'https://lh3.googleusercontent.com/',
+            'https://qr.sepay.vn',
+          ],
+          'font-src': ['\'self\'', 'https://fonts.gstatic.com'],
+          'connect-src': ['\'self\'', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https://www.googleapis.com', 'https://securetoken.googleapis.com', 'https://identitytoolkit.googleapis.com', 'https://firestore.googleapis.com', 'https://api.iconify.design', 'wss://*.runopen.cloud'],
+          'frame-src': [
+            '\'self\'',
+            'https://www.google.com/',
+            'https://www.gstatic.com/recaptcha/',
+            'https://www.google.com/recaptcha/',
+          ],
+        },
+        strictTransportSecurity: {
+          maxAge: 15552000,
+          includeSubdomains: true,
+        },
       },
-    ],
+      corsHandler: {
+        origin: process.env.NUXT_PUBLIC_SSL_ENABLED === 'true'
+          ? `https://${process.env.NUXT_PUBLIC_BASE_DOMAIN}`
+          : `http://${process.env.NUXT_PUBLIC_BASE_DOMAIN}`,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+        preflight: { statusCode: 204 },
+      },
+    },
   },
 
-  plugins: [
-    '@base/plugins/iconify/index.ts',
-  ],
+  $test: {
+    runtimeConfig: {
+      public: {
+        firebaseApiKey: 'test-api-key',
+        firebaseProjectId: 'test-project',
+        firebaseAppId: '1:123456789:web:123456',
+      },
+    },
+    security: {
+      enabled: false,
+      csrf: {
+        enabled: false,
+      },
+    },
+  },
 
   imports: {
     dirs: [
-      fileURLToPath(new URL('./app/@core/utils', import.meta.url)),
-      fileURLToPath(new URL('./app/@core/composable', import.meta.url)),
+      '~/lib',
     ],
   },
 
-  experimental: {
-    typedPages: true,
-    asyncContext: true,
-  },
+  css: ['~/assets/css/main.css'],
 
-  alias: {
-    '@base/validators': fileURLToPath(new URL('./app/@core/utils/validators', import.meta.url)),
-    '@base/images': fileURLToPath(new URL('./app/assets/images/', import.meta.url)),
-    '@base/styles': fileURLToPath(new URL('./app/assets/styles/', import.meta.url)),
-    '@base/configured-variables': fileURLToPath(new URL('./app/assets/styles/variables/_template.scss', import.meta.url)),
-    '@base/server': fileURLToPath(new URL('./server', import.meta.url)),
-    '@base/modules': fileURLToPath(new URL('./modules', import.meta.url)),
-    '@base': fileURLToPath(new URL('./app', import.meta.url)),
-    // Bug fix:
-    // 'vue-toastification': 'vue-toastification/dist/index.mjs',
-  },
+  runtimeConfig: {
+    authSecret: '',
 
-  // ℹ️ Disable source maps until this is resolved: https://github.com/vuetifyjs/vuetify-loader/issues/290
-  sourcemap: {
-    server: true,
-    client: true,
-  },
+    webhookSigningSecret: '',
 
-  vue: {
-    compilerOptions: {
-      isCustomElement: tag => tag === 'swiper-container' || tag === 'swiper-slide',
-    },
-  },
+    postgresUrl: '',
 
-  build: {
-    analyze: {
-      analyzerMode: 'static',
-    },
-  },
+    mongodbUri: '',
+    mongodbCollectionName: '',
+    mongodbDatabaseName: '',
 
-  vite: {
-    define: { 'process.env': {} },
+    upstashRedisRestUrl: '',
+    upstashRedisRestToken: '',
 
-    build: {
-      chunkSizeWarningLimit: 5000,
-    },
+    redisHost: '',
+    redisPassword: '',
+    redisPort: 6379,
 
-    optimizeDeps: {
-      exclude: ['vuetify'],
-      entries: [
-        './**/*.vue',
-      ],
+    smtpUser: '',
+    smtpPass: '',
+    smtpFrom: '',
+    smtpPort: 1025,
+    smtpHost: '',
+
+    googleClientId: '',
+    googleClientSecret: '',
+
+    githubClientId: '',
+    githubClientSecret: '',
+
+    sepayTransactionPrefix: '',
+    sepayBankNumber: '',
+    sepayBankName: '',
+
+    upstashEmail: '',
+    upstashApiKey: '',
+
+    taskSecret: '',
+
+    public: {
+      sslEnabled: false,
+
+      baseDomain: 'localhost:3000',
     },
 
-    plugins: [
-      svgLoader(),
-    ],
+    // Vercel use CRON_SECRET as environment variable for scheduled functions, so we need to use it here as well
+    cronSecret: process.env.CRON_SECRET || '',
+
+    customerSupportEmail: '',
   },
 
+  // Removed top-level routeRules and moved them to nitro.routeRules for Nuxt 4 compatibility
+
+  compatibilityDate: '2025-02-11',
   nitro: {
-    devProxy: {
-      host: 'localhost',
+    routeRules: {
+      '/api/payments/sepay/webhook': { cors: false, csurf: false },
+      '/api/auth/**': { cors: false, csurf: false },
+      '/api/cron/**': { cors: false, csurf: false },
     },
-
-    replace: {
-      'import-in-the-middle': fileURLToPath(new URL('./node_modules/import-in-the-middle', import.meta.url)),
-    },
-  },
-
-  routeRules: {
-    '/': { prerender: true },
-    '/api/payments/**/callback': { csurf: false },
-    '/api/payments/**/webhook': { csurf: false },
-    '/api/payments/**/IPN': { csurf: false },
-  },
-
-  pinia: {
-    storesDirs: [
-      fileURLToPath(new URL('./app/stores', import.meta.url)),
-    ],
-  },
-
-  i18n: {
-    lazy: true,
-    baseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || 'http://localhost:3000',
-    strategy: 'no_prefix',
-    defaultLocale: 'en',
-    vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),
-    bundle: {
-      runtimeOnly: true,
-      compositionOnly: true,
-    },
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'nuxt-template-language',
-    },
-    langDir: 'assets/locale',
-    locales: [
+    serverAssets: [
       {
-        code: 'en',
-        language: 'en-US',
-        name: 'English',
-        dir: 'ltr',
-        file: {
-          path: 'en.json',
-          cache: true,
-        },
-      },
-      {
-        code: 'vi',
-        language: 'vi-VN',
-        name: 'Tiếng Việt',
-        dir: 'ltr',
-        file: {
-          path: 'vi.json',
-          cache: true,
-        },
+        baseName: 'template',
+        dir: './server/assets/template',
       },
     ],
   },
 
-  modules: [
-    '@vueuse/nuxt',
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxtjs/device',
-    '@nuxtjs/i18n',
-    '@pinia/nuxt',
-    '@logto/nuxt',
-    'nuxt-security',
-    'nuxt-vuefire',
-    'nuxt-gtag',
-    'nuxt-nodemailer',
-  ],
-
-  vuefire: {
-    config: {
-      apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
-      databaseURL: process.env.FIREBASE_DB_URL,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.FIREBASE_APP_ID,
-      measurementId: process.env.FIREBASE_MEASUREMENT_ID,
-    },
+  a11y: {
+    logIssues: false,
   },
-
-  gtag: {
-    enabled: process.env.NODE_ENV === 'production',
-    tags: [
-      {
-        id: process.env.FIREBASE_MEASUREMENT_ID || '',
-      },
-    ],
-  },
-
-  nodemailer: process.env.NODE_ENV === 'development'
-    ? {
-        from: process.env.SMTP_FROM,
-        host: process.env.SMTP_SERVER,
-        port: Number(process.env.SMTP_PORT),
-      }
-    : {
-        from: process.env.SMTP_FROM,
-        host: process.env.SMTP_SERVER,
-        port: Number(process.env.SMTP_PORT),
-        secure: true,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      },
 
   eslint: {
     config: {
       standalone: false,
+      stylistic: false,
     },
   },
 
   security: {
-    csrf: {
-      cookieKey: 'csrfToken',
+    strict: true,
+    hidePoweredBy: true,
+    nonce: true,
+    xssValidator: { throwError: true },
+    allowedMethodsRestricter: { methods: '*', throwError: true },
+    requestSizeLimiter: {
+      maxRequestSizeInBytes: 2 * 1024 * 1024, // 2MB
+      maxUploadFileRequestInBytes: 8 * 1024 * 1024, // 8MB
+      throwError: true,
+    },
+    ssg: {
+      meta: true,
+      hashScripts: true,
+      hashStyles: false,
+      nitroHeaders: true,
+      exportToPresets: true,
     },
     headers: {
-      contentSecurityPolicy: {
-        'img-src': false,
+      crossOriginResourcePolicy: 'same-origin',
+      crossOriginOpenerPolicy: 'same-origin',
+      crossOriginEmbedderPolicy: false,
+      originAgentCluster: '?1',
+      referrerPolicy: 'no-referrer',
+      xContentTypeOptions: 'nosniff',
+      xDNSPrefetchControl: 'off',
+      xDownloadOptions: 'noopen',
+      xFrameOptions: 'SAMEORIGIN',
+      xPermittedCrossDomainPolicies: 'none',
+      xXSSProtection: '0',
+      permissionsPolicy: {
+        'camera': [],
+        'display-capture': [],
+        'fullscreen': [],
+        'geolocation': [],
+        'microphone': [],
       },
     },
-    hidePoweredBy: true,
-    rateLimiter: process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-      ? {
-          driver: {
-            name: 'upstash',
-            options: {
-              url: process.env.UPSTASH_REDIS_REST_URL,
-              token: process.env.UPSTASH_REDIS_REST_TOKEN,
-            },
-          },
-        }
-      : process.env.REDIS_HOST && process.env.REDIS_PASSWORD
-        ? {
-            driver: {
-              name: 'redis',
-              options: {
-                host: process.env.REDIS_HOST,
-                port: Number(process.env.REDIS_PORT),
-                password: process.env.REDIS_PASSWORD,
-              },
-            },
-          }
-        : false,
   },
-
-  compatibilityDate: '2024-07-12',
 })

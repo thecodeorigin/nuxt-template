@@ -1,17 +1,34 @@
-import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { defineVitestProject } from '@nuxt/test-utils/config'
 import { defineConfig } from 'vitest/config'
 
-const rootDir = path.dirname(fileURLToPath(import.meta.url))
-
 export default defineConfig({
-  define: {
-    $page: 'globalThis.$page',
-  },
   test: {
-    globals: true,
-    setupFiles: [
-      path.resolve(rootDir, './e2e/setup/1.init.ts'),
+    projects: [
+      {
+        test: {
+          name: 'unit',
+          include: ['test/unit/*.{test,spec}.ts'],
+          environment: 'node',
+        },
+      },
+      await defineVitestProject({
+        test: {
+          name: 'nuxt',
+          include: ['test/nuxt/*.{test,spec}.ts'],
+          environment: 'nuxt',
+          environmentOptions: {
+            nuxt: {
+              rootDir: fileURLToPath(new URL('.', import.meta.url)),
+              domEnvironment: 'happy-dom',
+            },
+          },
+        },
+      }),
     ],
+    coverage: {
+      enabled: true,
+      provider: 'v8',
+    },
   },
 })

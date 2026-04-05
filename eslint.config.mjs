@@ -1,17 +1,37 @@
-import eslint from '@thecodeorigin/eslint-config'
-import piniaPlugin from '@thecodeorigin/eslint-config/pinia'
-
+import antfu from '@antfu/eslint-config'
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
-  eslint(),
+  antfu({
+    stylistic: true,
+    imports: true,
+    pnpm: true,
+    typescript: true,
+    vue: true,
+  }),
   {
-    files: ['**/*.ts', '**/*.vue'],
-    plugins: {
-      pinia: piniaPlugin,
-    },
     rules: {
-      'pinia/no-destructuring-pinia-store': 'error',
+      'ts/no-explicit-any': 'off',
+      'ts/prefer-literal-enum-member': 'off',
+      'ts/no-dynamic-delete': 'off',
+      'ts/unified-signatures': 'off',
+      'ts/no-use-before-define': 'off',
+      'comma-dangle': ['error', 'always-multiline'],
+      'no-alert': 'off',
+      'no-console': 'off',
+      'node/prefer-global/buffer': 'off',
+      'node/prefer-global/process': 'off',
+      'style/brace-style': 'off',
+      'vue/no-multiple-template-root': 'off',
     },
+  },
+  {
+    files: ['docs/content/**/*.md'],
+    rules: {
+      'markdown/no-multiple-h1': 'off',
+    },
+  },
+  {
+    ignores: ['node_modules', '.nuxt', '.agents', '.agent', '.docker', 'dist'],
   },
 )
