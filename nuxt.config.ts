@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/scripts',
     '@nuxt/test-utils',
+    '@nuxt/ui',
     '@nuxtjs/device',
     '@pinia/nuxt',
     '@vueuse/nuxt',
