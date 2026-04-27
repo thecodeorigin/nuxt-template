@@ -29,3 +29,6 @@ coverage/
 # Playwright
 playwright-report/
 test-results/
+
+# Claude Code skill sources (cloned via pnpm skills:sync; symlinked into .claude/skills)
+.claude/skill-sources/
