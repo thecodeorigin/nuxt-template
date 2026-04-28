@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/nuxt',
     'magic-regexp',
-    'nuxt-security',
+    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['nuxt-security' as const]),
   ],
 
   $development: {
