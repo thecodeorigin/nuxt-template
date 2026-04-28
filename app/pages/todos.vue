@@ -2,6 +2,7 @@
 import type { Todo } from '~~/shared/schemas/todo'
 import { NewTodoSchema } from '~~/shared/schemas/todo'
 
+definePageMeta({ public: true })
 useHead({ title: 'Todos' })
 
 const store = useTodosStore()

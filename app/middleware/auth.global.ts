@@ -6,18 +6,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await authStore.fetchCurrentUser()
     }
     catch {
-      await authStore.logout()
+      // session invalid; treat as unauthenticated
     }
   }
 
-  const publicRoutes = ['/terms', '/privacy', '/auth/login']
-  const isPublic = publicRoutes.some(route => to.path.startsWith(route) || to.path === '/')
+  const isAuthenticated = !!authStore.currentUser
+  const isPublic = to.meta.public === true || to.meta.unauthenticatedOnly === true
 
-  if (!authStore.currentUser && !isPublic) {
-    return navigateTo('/auth/login')
+  if (isAuthenticated && to.meta.unauthenticatedOnly) {
+    return navigateTo('/')
   }
 
-  if (authStore.currentUser && to.path === '/auth/login') {
-    return navigateTo('/dashboard')
+  if (!isAuthenticated && !isPublic) {
+    return navigateTo('/auth/login')
   }
 })

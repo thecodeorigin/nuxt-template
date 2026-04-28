@@ -77,11 +77,33 @@ scripts/            One-off node scripts (key generation, skills sync)
 - File: `server/api/<resource>/<action>.{method}.ts` (e.g. `todos/index.get.ts`,
   `todos/[id].patch.ts`).
 - Handler: use `defineEventHandler` (or `defineAuthenticatedHandler` for routes
-  that require a session).
+  that require a session, or `defineAuthorizedHandler` for ability-gated routes).
 - Validate body with a Zod schema imported from `shared/schemas/`.
 - Throw `createError({ statusCode, statusMessage })` on failure; don't return
   bare 500s.
 - Rate-limited endpoints use `useStorage('redis')` (see `server/api/auth/`).
+
+## Auth & authorization
+
+- **Sessions** live in `useStorage('redis')` keyed by `session:{sessionId}`,
+  where `sessionId` is the `sessionid` cookie (or `x-session-id` header).
+- **`AuthUser`** (`server/utils/auth.ts`) carries `abilities: string[]`.
+- **`defineAuthenticatedHandler((event, session) => ...)`** — auto-imported,
+  throws 401 if no valid session.
+- **`defineAuthorizedHandler(checks, (event, { session, ...extras }) => ...)`** —
+  wraps the authenticated handler, throws 403 if no check passes (OR semantics).
+  Checks: ability strings (`'blog:read'`, `'blog:read:self'`) or async functions
+  returning `{ allowed, ...extras }`. The matching check's extras are merged
+  into the handler context. Register fetchers for `:self` via
+  `defineSubject('blog', { fetch })`. See `test/unit/casl-server.test.ts` for
+  every supported syntax.
+- **Frontend** uses `@casl/vue`. `app/plugins/casl.ts` syncs ability rules to
+  `useAuthStore().currentUser.abilities`. Page-level gating via
+  `definePageMeta({ can: ['blog:write'] })` (redirects to `/forbidden`).
+  Component-level via standard `<Can I="read" a="blog">…</Can>` or
+  `useAbility()`. See `test/unit/casl-frontend.test.ts`.
+- **Page meta** flags (`public`, `unauthenticatedOnly`, `can`) are typed in
+  `app/types/router.d.ts`. Default = requires auth.
 
 ## Drizzle conventions
 
