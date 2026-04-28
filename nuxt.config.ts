@@ -204,6 +204,8 @@ export default defineNuxtConfig({
       sslEnabled: false,
 
       baseDomain: 'localhost:3000',
+
+      demoMode: false,
     },
 
     // Vercel use CRON_SECRET as environment variable for scheduled functions, so we need to use it here as well
