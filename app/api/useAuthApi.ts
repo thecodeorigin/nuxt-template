@@ -1,6 +1,18 @@
+import type { AuthUser } from '~~/server/utils/auth'
+
+export interface ImpersonationCandidate {
+  id: string
+  username: string | null
+  name: string | null
+  primary_email: string
+  avatar: string | null
+  abilities: string[]
+  is_suspended: boolean | null
+}
+
 export function useAuthApi() {
   function fetchCurrentUser() {
-    return $http('/api/auth/me')
+    return $http<AuthUser>('/api/auth/me')
   }
 
   function updateCurrentUser(data: { name: string }) {
@@ -33,6 +45,23 @@ export function useAuthApi() {
     })
   }
 
+  function fetchImpersonationCandidates() {
+    return $http<ImpersonationCandidate[]>('/api/auth/impersonate/users')
+  }
+
+  function startImpersonation(userId: string) {
+    return $http<AuthUser>('/api/auth/impersonate/start', {
+      method: 'POST',
+      body: { user_id: userId },
+    })
+  }
+
+  function stopImpersonation() {
+    return $http<AuthUser>('/api/auth/impersonate/stop', {
+      method: 'POST',
+    })
+  }
+
   function logout() {
     return $http('/api/auth/logout')
   }
@@ -43,6 +72,9 @@ export function useAuthApi() {
     fetchUserNotificationSettings,
     updateUserNotificationSettings,
     updatePhoneNumber,
+    fetchImpersonationCandidates,
+    startImpersonation,
+    stopImpersonation,
     logout,
   }
 }

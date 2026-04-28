@@ -1,0 +1,176 @@
+import type { APIRequestContext } from '@playwright/test'
+import { expect, test } from '@nuxt/test-utils/playwright'
+import { SEED_USERS } from '../shared/seed/users'
+
+const ADMIN_EMAIL = 'admin@seed.local'
+const ALICE_EMAIL = 'alice@seed.local'
+const BOB_EMAIL = 'bob@seed.local'
+const FORBIDDEN_URL = /\/forbidden$/
+
+const issuedSessionIds = new Set<string>()
+
+async function devSeed(request: APIRequestContext) {
+  const res = await request.post('/api/auth/dev-seed')
+  expect(res.ok()).toBeTruthy()
+  return res.json() as Promise<{ users: Array<{ id: string, primary_email: string }> }>
+}
+
+async function devLogin(request: APIRequestContext, email: string) {
+  const res = await request.post('/api/auth/dev-login', { data: { email } })
+  expect(res.ok()).toBeTruthy()
+  const body = (await res.json()) as { session_id: string, user_id: string }
+  issuedSessionIds.add(body.session_id)
+  return body
+}
+
+async function devCleanup(request: APIRequestContext) {
+  await request.post('/api/auth/dev-cleanup', {
+    data: {
+      emails: SEED_USERS.map(u => u.primary_email),
+      session_ids: Array.from(issuedSessionIds),
+    },
+  })
+  issuedSessionIds.clear()
+}
+
+test.describe('impersonation', () => {
+  test.beforeAll(async ({ request }) => {
+    await devSeed(request)
+  })
+
+  test.afterAll(async ({ request }) => {
+    await devCleanup(request)
+  })
+
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies()
+  })
+
+  test('non-admin is redirected to /forbidden when visiting the sandbox', async ({ page, context, request, baseURL }) => {
+    const { session_id } = await devLogin(request, BOB_EMAIL)
+    await context.addCookies([{
+      name: 'sessionid',
+      value: session_id,
+      url: baseURL!,
+      httpOnly: true,
+      sameSite: 'Lax',
+    }])
+
+    await page.goto('/sandbox/impersonate')
+    await expect(page).toHaveURL(FORBIDDEN_URL)
+  })
+
+  test('admin can impersonate alice; session swaps + banner appears', async ({ page, context, request, baseURL }) => {
+    const { session_id } = await devLogin(request, ADMIN_EMAIL)
+    await context.addCookies([{
+      name: 'sessionid',
+      value: session_id,
+      url: baseURL!,
+      httpOnly: true,
+      sameSite: 'Lax',
+    }])
+
+    await page.goto('/sandbox/impersonate', { waitUntil: 'hydration' })
+    await expect(page.getByRole('heading', { name: 'Impersonation sandbox' })).toBeVisible()
+    await expect(page.getByTestId('current-user-name')).toContainText('Seed Admin')
+
+    await page.getByTestId(`impersonate-${ALICE_EMAIL}`).click()
+
+    await expect(page.getByTestId('global-impersonation-banner')).toBeVisible()
+    await expect(page.getByTestId('impersonating-badge')).toBeVisible()
+    await expect(page.getByTestId('current-user-name')).toContainText('Seed Alice')
+    await expect(page.getByTestId('impersonator-email')).toContainText(ADMIN_EMAIL)
+
+    // Server-side: /api/auth/me should now return alice with impersonator info
+    const meRes = await request.get('/api/auth/me', {
+      headers: { 'x-session-id': session_id },
+    })
+    const me = (await meRes.json()) as { id: string, primary_email: string, impersonator: { primary_email: string } | null }
+    expect(me.primary_email).toBe(ALICE_EMAIL)
+    expect(me.impersonator?.primary_email).toBe(ADMIN_EMAIL)
+  })
+
+  test('redirection block: after impersonating bob (no impersonate ability), the sandbox redirects to /forbidden', async ({ page, context, request, baseURL }) => {
+    const { session_id } = await devLogin(request, ADMIN_EMAIL)
+    await context.addCookies([{
+      name: 'sessionid',
+      value: session_id,
+      url: baseURL!,
+      httpOnly: true,
+      sameSite: 'Lax',
+    }])
+
+    await page.goto('/sandbox/impersonate', { waitUntil: 'hydration' })
+    await page.getByTestId(`impersonate-${BOB_EMAIL}`).click()
+    await expect(page.getByTestId('global-impersonation-banner')).toBeVisible()
+
+    // Now navigate away and back — Bob has no user:impersonate, so casl middleware redirects.
+    await page.goto('/sandbox/impersonate')
+    await expect(page).toHaveURL(FORBIDDEN_URL)
+  })
+
+  test('stop impersonation restores the admin session', async ({ page, context, request, baseURL }) => {
+    const { session_id } = await devLogin(request, ADMIN_EMAIL)
+    await context.addCookies([{
+      name: 'sessionid',
+      value: session_id,
+      url: baseURL!,
+      httpOnly: true,
+      sameSite: 'Lax',
+    }])
+
+    await page.goto('/sandbox/impersonate', { waitUntil: 'hydration' })
+    await page.getByTestId(`impersonate-${ALICE_EMAIL}`).click()
+    await expect(page.getByTestId('global-impersonation-banner')).toBeVisible()
+
+    await page.getByTestId('banner-stop-impersonation').click()
+    await expect(page.getByTestId('global-impersonation-banner')).toBeHidden()
+    await expect(page.getByTestId('current-user-name')).toContainText('Seed Admin')
+
+    // Server-side verification
+    const meRes = await request.get('/api/auth/me', {
+      headers: { 'x-session-id': session_id },
+    })
+    const me = (await meRes.json()) as { primary_email: string, impersonator: unknown }
+    expect(me.primary_email).toBe(ADMIN_EMAIL)
+    expect(me.impersonator).toBeNull()
+  })
+
+  test('cannot start impersonation while already impersonating', async ({ request }) => {
+    const { session_id, user_id: adminId } = await devLogin(request, ADMIN_EMAIL)
+    const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
+    void adminId
+
+    const start1 = await request.post('/api/auth/impersonate/start', {
+      headers: { 'x-session-id': session_id },
+      data: { user_id: aliceId },
+    })
+    expect(start1.ok()).toBeTruthy()
+
+    const start2 = await request.post('/api/auth/impersonate/start', {
+      headers: { 'x-session-id': session_id },
+      data: { user_id: aliceId },
+    })
+    expect(start2.status()).toBe(400)
+  })
+
+  test('cannot self-impersonate', async ({ request }) => {
+    const { session_id, user_id } = await devLogin(request, ADMIN_EMAIL)
+    const res = await request.post('/api/auth/impersonate/start', {
+      headers: { 'x-session-id': session_id },
+      data: { user_id },
+    })
+    expect(res.status()).toBe(400)
+  })
+
+  test('non-admin server call to /api/auth/impersonate/start returns 403', async ({ request }) => {
+    const { session_id } = await devLogin(request, BOB_EMAIL)
+    const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
+
+    const res = await request.post('/api/auth/impersonate/start', {
+      headers: { 'x-session-id': session_id },
+      data: { user_id: aliceId },
+    })
+    expect(res.status()).toBe(403)
+  })
+})

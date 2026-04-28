@@ -14,6 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:preview": "drizzle-kit studio",
+    "db:seed": "tsx ./scripts/seed.ts",
+    "db:seed:down": "tsx ./scripts/seed.ts down",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
@@ -73,6 +75,7 @@
     "magic-regexp": "^0.11.0",
     "nuxt-security": "^2.5.1",
     "playwright-core": "^1.59.1",
+    "tsx": "^4.21.0",
     "type-fest": "^5.5.0",
     "vitest": "^4.1.2"
   }

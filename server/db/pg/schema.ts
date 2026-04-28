@@ -8,6 +8,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  text,
   timestamp,
   uniqueIndex,
   uuid,
@@ -49,6 +50,8 @@ export const providerEnum = pgEnum('auth_provider', enumToPgEnum(AuthProvider))
 export enum ActivityAction {
   SIGN_IN = 'auth:sign_in',
   SIGN_UP = 'auth:sign_up',
+  IMPERSONATE_START = 'auth:impersonate_start',
+  IMPERSONATE_STOP = 'auth:impersonate_stop',
 }
 
 export const activityActionEnum = pgEnum('activity_action', ActivityAction)
@@ -68,6 +71,7 @@ export const userTable = pgTable('users', {
   // Settings
   verified: boolean('verified').default(false),
   email_notifications: boolean('email_notifications').default(true),
+  abilities: text('abilities').array().notNull().default([]),
 
   // Metadata
   custom_data: jsonb('custom_data').default({}),

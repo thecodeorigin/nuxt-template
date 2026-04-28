@@ -1,5 +1,13 @@
 import type { H3Event } from 'h3'
 
+export interface ImpersonatorInfo {
+  id: string
+  username: string
+  name: string
+  primary_email: string
+  abilities: string[]
+}
+
 export interface AuthUser {
   id: string
   primary_email: string
@@ -10,6 +18,7 @@ export interface AuthUser {
   verified: boolean
   provider: string
   abilities: string[]
+  impersonator?: ImpersonatorInfo | null
 }
 
 /**
