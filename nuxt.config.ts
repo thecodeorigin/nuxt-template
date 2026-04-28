@@ -5,12 +5,12 @@ import packageJson from './package.json'
 export default defineNuxtConfig({
   modules: [
     '@nuxt/a11y',
-    '@nuxt/eslint',
+    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['@nuxt/eslint' as const]),
     '@nuxt/fonts',
     '@nuxt/hints',
     '@nuxt/icon',
     '@nuxt/scripts',
-    '@nuxt/test-utils',
+    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['@nuxt/test-utils' as const]),
     '@nuxt/ui',
     '@nuxtjs/device',
     '@pinia/nuxt',
@@ -229,6 +229,12 @@ export default defineNuxtConfig({
         dir: './server/assets/template',
       },
     ],
+    // Vue 3.5.x ships index.mjs that does `export * from './index.js'` which
+    // omits the default export — Node ESM then crashes when Nitro externalises
+    // Vue. Inline Vue + the SSR runtime so the bundle is self-contained.
+    externals: {
+      inline: ['vue', '@vue/runtime-core', '@vue/runtime-dom', '@vue/server-renderer', '@vue/shared', '@vue/reactivity'],
+    },
   },
 
   a11y: {
