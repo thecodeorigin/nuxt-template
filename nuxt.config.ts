@@ -230,10 +230,11 @@ export default defineNuxtConfig({
       },
     ],
     // Vue 3.5.x ships index.mjs that does `export * from './index.js'` which
-    // omits the default export — Node ESM then crashes when Nitro externalises
-    // Vue. Inline Vue + the SSR runtime so the bundle is self-contained.
-    externals: {
-      inline: ['vue', '@vue/runtime-core', '@vue/runtime-dom', '@vue/server-renderer', '@vue/shared', '@vue/reactivity'],
+    // omits the default export — Node ESM then crashes resolving
+    // `import vue__default from "vue"`. Alias the bundler-targeted dist that
+    // exposes the default export.
+    alias: {
+      vue: 'vue/dist/vue.runtime.esm-bundler.js',
     },
   },
 
