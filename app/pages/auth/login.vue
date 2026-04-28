@@ -5,30 +5,34 @@ useHead({ title: 'Sign in' })
 const config = useRuntimeConfig()
 const isDemo = computed(() => Boolean(config.public.demoMode))
 
-const authStore = useAuthStore()
 const toast = useToast()
 const busy = ref<'admin' | 'user' | null>(null)
 
 async function signInAsDemoAgent(agent: 'admin' | 'user') {
   busy.value = agent
   try {
-    await $fetch('/api/auth/demo-login', { method: 'POST', body: { agent } })
-    await authStore.fetchCurrentUser()
-    toast.add({
-      title: agent === 'admin' ? 'Signed in as Admin Agent' : 'Signed in as User Agent',
-      color: 'success',
+    await $fetch('/api/auth/demo-login', {
+      method: 'POST',
+      body: { agent },
+      credentials: 'include',
     })
-    await navigateTo(agent === 'admin' ? '/sandbox/impersonate' : '/')
+    // Hard redirect: forces a full reload so the freshly-set Set-Cookie travels
+    // with the next request and Nuxt's auth.global middleware repopulates the
+    // store from /api/auth/me. Avoids any client-side state-sync timing.
+    window.location.href = agent === 'admin' ? '/sandbox/impersonate' : '/'
   }
   catch (err: unknown) {
-    const error = err as { statusCode?: number, statusMessage?: string }
+    const error = err as { statusCode?: number, statusMessage?: string, message?: string, data?: { statusMessage?: string, message?: string } }
     toast.add({
       title: 'Demo sign-in failed',
-      description: error?.statusMessage ?? 'Unknown error',
+      description:
+        error?.data?.statusMessage
+        ?? error?.data?.message
+        ?? error?.statusMessage
+        ?? error?.message
+        ?? `Status ${error?.statusCode ?? 'unknown'}`,
       color: 'error',
     })
-  }
-  finally {
     busy.value = null
   }
 }
