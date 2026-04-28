@@ -1,0 +1,2 @@
+patchedDependencies:
+  vue@3.5.32: patches/vue@3.5.32.patch
