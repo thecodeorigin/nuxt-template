@@ -52,6 +52,7 @@ export default defineEventHandler(async (event) => {
     avatar: user.avatar,
     verified: user.verified,
     provider: 'agent',
+    abilities: ['user:read', 'todo:read', 'todo:write', 'todo:delete:self'],
   })
 
   setCookie(event, 'sessionid', sessionId, {

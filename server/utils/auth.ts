@@ -9,6 +9,7 @@ export interface AuthUser {
   avatar: string | null
   verified: boolean
   provider: string
+  abilities: string[]
 }
 
 /**
@@ -33,10 +34,12 @@ export function defineAuthenticatedHandler<T>(
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
-    const session = await storage.getItem<AuthUser>(`session:${sessionId}`)
-    if (!session) {
+    const stored = await storage.getItem<AuthUser>(`session:${sessionId}`)
+    if (!stored) {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
+
+    const session: AuthUser = { ...stored, abilities: stored.abilities ?? [] }
 
     return handler(event, session)
   })
