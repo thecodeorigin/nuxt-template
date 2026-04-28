@@ -243,6 +243,7 @@ export default defineNuxtConfig({
   },
 
   security: {
+    enabled: process.env.NUXT_DEMO_MODE !== 'true',
     strict: true,
     hidePoweredBy: true,
     nonce: true,
