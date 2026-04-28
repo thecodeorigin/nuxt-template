@@ -1,0 +1,54 @@
+import { eq } from 'drizzle-orm'
+import { z } from 'zod'
+import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
+import { getPgClient } from '~~/server/utils/pg'
+import { simplifyNanoId } from '~~/shared/utils/id'
+
+const DevLoginSchema = z.object({
+  email: z.string().email(),
+})
+
+export default defineEventHandler(async (event) => {
+  if (!import.meta.dev) {
+    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+  }
+
+  const { email } = await readValidatedBody(event, DevLoginSchema.parse)
+  const db = getPgClient()
+
+  const [user] = await db.select().from(userTable).where(eq(userTable.primary_email, email)).limit(1)
+  if (!user) {
+    throw createError({ statusCode: 404, statusMessage: 'User not found' })
+  }
+
+  const sessionId = simplifyNanoId()
+  const storage = useStorage('redis')
+
+  await storage.setItem(`session:${sessionId}`, {
+    id: user.id,
+    primary_email: user.primary_email,
+    primary_phone: user.primary_phone,
+    username: user.username,
+    name: user.name,
+    avatar: user.avatar,
+    verified: user.verified,
+    provider: 'dev-login',
+    abilities: user.abilities ?? [],
+  })
+
+  setCookie(event, 'sessionid', sessionId, {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7,
+    path: '/',
+  })
+
+  await db.update(userTable)
+    .set({ last_sign_in_at: new Date() })
+    .where(eq(userTable.id, user.id))
+
+  await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_IN })
+
+  return { session_id: sessionId, user_id: user.id }
+})
