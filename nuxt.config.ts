@@ -1,5 +1,26 @@
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import packageJson from './package.json'
+
+const MIGRATIONS_DIR = './server/db/pg/migrations'
+
+function readMigrationsModule(): string {
+  let entries: Array<{ name: string, content: string }> = []
+  try {
+    entries = readdirSync(MIGRATIONS_DIR)
+      .filter(f => f.endsWith('.sql'))
+      .sort()
+      .map(name => ({
+        name,
+        content: readFileSync(join(MIGRATIONS_DIR, name), 'utf8'),
+      }))
+  }
+  catch {
+    entries = []
+  }
+  return `export default ${JSON.stringify(entries)}`
+}
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -231,11 +252,14 @@ export default defineNuxtConfig({
         baseName: 'template',
         dir: './server/assets/template',
       },
-      {
-        baseName: 'db-migrations',
-        dir: './server/db/pg/migrations',
-      },
     ],
+    // Inline the SQL migrations as a virtual module so the deployed
+    // function carries them in-bundle. This sidesteps Nitro's
+    // serverAssets path which `_assets = {}` (i.e. didn't bundle them)
+    // for this version of nitropack.
+    virtual: {
+      '#migrations/sql': readMigrationsModule,
+    },
   },
 
   a11y: {

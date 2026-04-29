@@ -1,48 +1,20 @@
 /**
- * Dev-only diagnostic that shows what the runtime can see at the
- * `assets:db-migrations` storage namespace. Used once to confirm the
- * serverAssets bundling works — safe to remove afterwards.
+ * Dev-only diagnostic that confirms migrations are bundled and visible
+ * to the runtime. Safe to delete once verified.
  */
-export default defineEventHandler(async () => {
+// @ts-expect-error virtual module
+import migrations from '#migrations/sql'
+
+interface MigrationFile { name: string, content: string }
+
+export default defineEventHandler(() => {
   if (!import.meta.dev && process.env.NUXT_DEMO_MODE !== 'true')
     throw createError({ statusCode: 404, statusMessage: 'Not Found' })
 
-  const namespaces = [
-    'assets:db-migrations',
-    'assets:server',
-    'assets:template',
-    'assets',
-    '/assets',
-    '/assets/db-migrations',
-    '/assets/server',
-    '/assets/template',
-  ]
-  const out: Record<string, unknown> = {}
+  const list = (migrations as MigrationFile[]) ?? []
 
-  for (const ns of namespaces) {
-    try {
-      const storage = useStorage(ns)
-      const keys = await storage.getKeys()
-      out[ns] = { keyCount: keys.length, keys: keys.slice(0, 20) }
-    }
-    catch (err) {
-      out[ns] = { error: (err as Error).message }
-    }
+  return {
+    count: list.length,
+    files: list.map(m => ({ name: m.name, bytes: m.content.length })),
   }
-
-  // Also probe the unified root storage
-  try {
-    const root = useStorage()
-    const allKeys = await root.getKeys()
-    out['_root'] = {
-      keyCount: allKeys.length,
-      withAssetPrefix: allKeys.filter((k: string) => k.includes('assets')).slice(0, 20),
-      first20: allKeys.slice(0, 20),
-    }
-  }
-  catch (err) {
-    out._root = { error: (err as Error).message }
-  }
-
-  return out
 })

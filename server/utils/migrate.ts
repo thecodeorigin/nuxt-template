@@ -1,11 +1,14 @@
 /**
  * Lightweight migration runner that works in any Nitro runtime (including
- * Vercel serverless functions). It reads SQL files bundled as Nitro server
- * assets, tracks applied filenames in a `__migrations` table, and applies
- * pending ones idempotently. Concurrent runs are safe because the INSERT
- * uses the table's primary key as a guard.
+ * Vercel serverless functions). It reads SQL files inlined at build time
+ * via the `#migrations/sql` virtual module, tracks applied filenames in a
+ * `__migrations` table, and applies pending ones idempotently. Concurrent
+ * runs are safe because the INSERT uses the table's primary key as a
+ * guard.
  */
 
+// @ts-expect-error virtual module provided by nitro.virtual['#migrations/sql']
+import migrations from '#migrations/sql'
 import { neon } from '@neondatabase/serverless'
 
 export interface MigrationResult {
@@ -13,10 +16,16 @@ export interface MigrationResult {
   skipped: string[]
 }
 
-const ASSET_NAMESPACE = 'assets:db-migrations'
+interface MigrationFile {
+  name: string
+  content: string
+}
+
 const STMT_SEPARATOR = '--> statement-breakpoint'
 const MAX_ATTEMPTS = 4
 const BASE_BACKOFF_MS = 500
+
+const sources: MigrationFile[] = (migrations as MigrationFile[]) ?? []
 
 export async function runMigrations(): Promise<MigrationResult> {
   const config = useRuntimeConfig()
@@ -68,40 +77,21 @@ async function runMigrationsOnce(url: string): Promise<MigrationResult> {
   const appliedRows = await sql`SELECT name FROM __migrations` as Array<{ name: string }>
   const applied = new Set(appliedRows.map(r => r.name))
 
-  const assets = useStorage(ASSET_NAMESPACE)
-  const keys = (await assets.getKeys()).filter(k => k.endsWith('.sql')).sort()
-
   const result: MigrationResult = { applied: [], skipped: [] }
 
-  for (const key of keys) {
-    const name = normalizeMigrationName(key)
-    if (applied.has(name)) {
-      result.skipped.push(name)
+  for (const migration of sources) {
+    if (applied.has(migration.name)) {
+      result.skipped.push(migration.name)
       continue
     }
 
-    const content = await assets.getItemRaw<string>(key)
-    if (!content)
-      continue
-
-    const text = typeof content === 'string' ? content : new TextDecoder().decode(content as ArrayBuffer)
-    const statements = text.split(STMT_SEPARATOR).map(s => s.trim()).filter(Boolean)
-
+    const statements = migration.content.split(STMT_SEPARATOR).map(s => s.trim()).filter(Boolean)
     for (const stmt of statements)
       await sql.query(stmt)
 
-    await sql`INSERT INTO __migrations (name) VALUES (${name}) ON CONFLICT (name) DO NOTHING`
-    result.applied.push(name)
+    await sql`INSERT INTO __migrations (name) VALUES (${migration.name}) ON CONFLICT (name) DO NOTHING`
+    result.applied.push(migration.name)
   }
 
   return result
-}
-
-// unstorage namespaced keys can come back with `:` separators; we just
-// want the bare filename so two different storage drivers produce the
-// same identity in __migrations.
-const PATH_PREFIX = /^.*[:/]/
-
-function normalizeMigrationName(key: string): string {
-  return key.replace(PATH_PREFIX, '')
 }
