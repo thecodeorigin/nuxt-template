@@ -1,0 +1,156 @@
+name: Preview
+
+# Preview deployment pipeline driven by GitHub Actions (Vercel only hosts).
+#
+# On PR opened / reopened / synchronize:
+#   1. Resolve the PR's git branch name.
+#   2. Create a Neon branch named `preview/pr-<pr#>-<branch>` from
+#      the parent (default branch).
+#   3. Run drizzle migrations against that ephemeral Neon branch.
+#   4. Build the Nuxt app with NUXT_POSTGRES_URL pointing at the new
+#      Neon branch (so SSR + runtime queries use the isolated DB).
+#   5. Deploy the prebuilt artifact to Vercel as a preview deployment
+#      and inject the per-PR DB URLs as deployment env vars so they
+#      override anything the project has at the project level.
+#   6. Update / post a sticky PR comment with the preview URL.
+#
+# On PR closed:
+#   1. Delete the Neon branch.
+#
+# Required GitHub repository secrets:
+#   NEON_API_KEY        — Neon-GitHub integration provisions this
+#   VERCEL_TOKEN        — Vercel team token with project deploy access
+#
+# Required GitHub repository variables:
+#   NEON_PROJECT_ID     — Neon-GitHub integration provisions this
+#   VERCEL_PROJECT_ID   — prj_lpbCXMg9y2A8jgWxfPFUZDUqbiPR
+#   VERCEL_TEAM_ID      — team_QZiKbPEl7KVrSR7zzASaL770
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Resolve branch
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.branch_name.outputs.current_branch }}
+      neon_branch: preview/pr-${{ github.event.number }}-${{ steps.branch_name.outputs.current_branch }}
+    steps:
+      - name: Get branch name
+        id: branch_name
+        uses: tj-actions/branch-names@v8
+
+  deploy:
+    name: Migrate · build · deploy
+    needs: setup
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_TEAM_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Compute Neon branch expiry (14 days)
+        id: expiry
+        run: echo "expires_at=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+
+      - name: Create / reset Neon branch
+        id: neon
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: ${{ needs.setup.outputs.neon_branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          expires_at: ${{ steps.expiry.outputs.expires_at }}
+
+      - name: Apply drizzle migrations to the Neon branch
+        env:
+          NUXT_POSTGRES_URL: ${{ steps.neon.outputs.db_url }}
+        run: pnpm db:migrate
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Pull Vercel preview project settings + env
+        run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+
+      - name: Override DB env to point at the per-PR Neon branch
+        run: |
+          {
+            echo "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}"
+            echo "POSTGRES_URL_NON_POOLING=${{ steps.neon.outputs.db_url }}"
+            echo "POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}"
+          } >> .vercel/.env.preview.local
+
+      - name: Build (NITRO_PRESET=vercel) against Neon branch
+        run: vercel build --token=$VERCEL_TOKEN
+
+      - name: Deploy prebuilt artifact to Vercel
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Sticky PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = '${{ steps.deploy.outputs.url }}'
+            const branch = '${{ needs.setup.outputs.neon_branch }}'
+            const sha = '${{ github.event.pull_request.head.sha }}'.slice(0, 7)
+            const body = [
+              '🚀 **Preview ready**',
+              '',
+              `- URL: ${url}`,
+              `- Neon branch: \`${branch}\` (migrations applied)`,
+              `- Commit: \`${sha}\``,
+            ].join('\n')
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const existing = comments.find(c => c.user.type === 'Bot' && c.body && c.body.includes('Preview ready'))
+            if (existing) {
+              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body })
+            }
+            else {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body })
+            }
+
+  cleanup:
+    name: Delete Neon branch
+    needs: setup
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: ${{ needs.setup.outputs.neon_branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
