@@ -41,10 +41,20 @@ export const $http = $fetch.create({
       }
     }
 
-    const csrfConfig = useCsrf()
-    options.headers = {
-      ...options.headers,
-      [csrfConfig.headerName]: csrfConfig.csrf,
+    // useCsrf is provided by nuxt-security. In demo builds the module is
+    // removed from `modules` and the auto-import isn't generated, so the
+    // call would throw a ReferenceError. Wrap to make $http still work.
+    try {
+      const csrfConfig = useCsrf()
+      if (csrfConfig?.headerName) {
+        options.headers = {
+          ...options.headers,
+          [csrfConfig.headerName]: csrfConfig.csrf,
+        }
+      }
+    }
+    catch {
+      // nuxt-security not loaded — skip CSRF header
     }
   },
   onResponse(context) {
