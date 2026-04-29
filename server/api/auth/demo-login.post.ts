@@ -5,7 +5,14 @@ import { getPgClient } from '~~/server/utils/pg'
 import { ABILITY_PRESETS } from '~~/shared/seed/users'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
-const DEMO_AGENTS = {
+interface DemoAgent {
+  email: string
+  username: string
+  name: string
+  abilities: string[]
+}
+
+const DEMO_AGENTS: Record<'admin' | 'user', DemoAgent> = {
   admin: {
     email: 'admin@demo.local',
     username: 'demo_admin',
@@ -18,7 +25,7 @@ const DEMO_AGENTS = {
     name: 'User Agent',
     abilities: [...ABILITY_PRESETS.member],
   },
-} as const
+}
 
 const DemoLoginSchema = z.object({
   agent: z.enum(['admin', 'user']),

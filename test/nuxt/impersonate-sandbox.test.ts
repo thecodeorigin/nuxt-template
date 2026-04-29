@@ -1,6 +1,6 @@
 // @vitest-environment nuxt
 import type { AuthUser } from '~~/server/utils/auth'
-import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import ImpersonatePage from '~/pages/sandbox/impersonate.vue'
@@ -58,6 +58,18 @@ vi.mock('~/api/useAuthApi', () => ({
     logout: vi.fn(),
   }),
 }))
+
+registerEndpoint('/api/auth/impersonate/users', () => [
+  {
+    id: 'alice-1',
+    username: 'alice',
+    name: 'Alice',
+    primary_email: 'alice@seed.local',
+    avatar: null,
+    abilities: ['todo:read'],
+    is_suspended: false,
+  },
+])
 
 describe('impersonation sandbox page', () => {
   beforeEach(() => {
