@@ -218,6 +218,9 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-02-11',
   nitro: {
+    experimental: {
+      tasks: true,
+    },
     routeRules: {
       '/api/payments/sepay/webhook': { cors: false, csurf: false },
       '/api/auth/**': { cors: false, csurf: false },
@@ -227,6 +230,10 @@ export default defineNuxtConfig({
       {
         baseName: 'template',
         dir: './server/assets/template',
+      },
+      {
+        baseName: 'db-migrations',
+        dir: './server/db/pg/migrations',
       },
     ],
   },

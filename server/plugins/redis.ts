@@ -1,14 +1,16 @@
 import memoryDriver from 'unstorage/drivers/memory'
 import redisDriver from 'unstorage/drivers/redis'
 import upstashDriver from 'unstorage/drivers/upstash'
+import { getRedisBase } from '../utils/storage-base'
 
 export default defineNitroPlugin(() => {
   const runtimeConfig = useRuntimeConfig()
   const storage = useStorage()
+  const base = getRedisBase()
 
   if (runtimeConfig.upstashRedisRestUrl && runtimeConfig.upstashRedisRestToken) {
     const driver = upstashDriver({
-      base: 'redis',
+      base,
       url: runtimeConfig.upstashRedisRestUrl,
       token: runtimeConfig.upstashRedisRestToken,
     })
@@ -17,7 +19,7 @@ export default defineNitroPlugin(() => {
   }
   else if (runtimeConfig.redisHost && runtimeConfig.redisPort) {
     const driver = redisDriver({
-      base: 'redis',
+      base,
       host: runtimeConfig.redisHost,
       port: runtimeConfig.redisPort,
       password: runtimeConfig.redisPassword || undefined,
