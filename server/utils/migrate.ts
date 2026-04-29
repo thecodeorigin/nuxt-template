@@ -15,13 +15,47 @@ export interface MigrationResult {
 
 const ASSET_NAMESPACE = 'assets:db-migrations'
 const STMT_SEPARATOR = '--> statement-breakpoint'
+const MAX_ATTEMPTS = 4
+const BASE_BACKOFF_MS = 500
 
 export async function runMigrations(): Promise<MigrationResult> {
   const config = useRuntimeConfig()
-  const url = config.postgresUrl as string | undefined
+  // Prefer the unpooled connection for migrations — schema-changing DDL
+  // shouldn't go through the pooler, and the unpooled endpoint is more
+  // tolerant of cold-start fetch failures than Neon's HTTP pooler.
+  const url
+    = (process.env.POSTGRES_URL_NON_POOLING as string | undefined)
+      ?? (config.postgresUrl as string | undefined)
   if (!url)
-    throw new Error('NUXT_POSTGRES_URL is not set; cannot run migrations.')
+    throw new Error('No Postgres URL configured (NUXT_POSTGRES_URL / POSTGRES_URL_NON_POOLING).')
 
+  return withRetry(() => runMigrationsOnce(url))
+}
+
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      return await fn()
+    }
+    catch (err: unknown) {
+      lastErr = err
+      const message = (err as Error)?.message ?? ''
+      const isTransient
+        = message.includes('fetch failed')
+          || message.includes('socket')
+          || message.includes('ECONNRESET')
+          || message.includes('ETIMEDOUT')
+      if (!isTransient || attempt === MAX_ATTEMPTS)
+        break
+      const delay = BASE_BACKOFF_MS * 2 ** (attempt - 1)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  throw lastErr
+}
+
+async function runMigrationsOnce(url: string): Promise<MigrationResult> {
   const sql = neon(url)
 
   await sql`
