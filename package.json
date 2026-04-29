@@ -37,7 +37,7 @@
     "drizzle-orm": "^0.45.2",
     "es-toolkit": "^1.45.1",
     "google-auth-library": "^10.6.2",
-    "h3": "2.0.1-rc.20",
+    "h3": "^1.15.10",
     "ioredis": "^5.10.1",
     "mongodb": "^7.1.1",
     "nanoid": "^5.1.7",
@@ -55,6 +55,8 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.0.0",
+    "@iconify-json/lucide": "^1.2.104",
+    "@iconify-json/simple-icons": "^1.2.80",
     "@nuxt/a11y": "1.0.0-alpha.1",
     "@nuxt/eslint": "1.15.2",
     "@nuxt/fonts": "0.14.0",
