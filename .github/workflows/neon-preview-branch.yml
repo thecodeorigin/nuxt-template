@@ -1,0 +1,188 @@
+name: Neon preview branch
+
+# For each pull request:
+#   - on open / sync / reopen → create a Neon branch named
+#     `preview/pr-<pr#>-<git-branch>`, run drizzle migrations against it,
+#     then push the branch's connection string to Vercel as a
+#     git-branch-scoped Preview env var (NUXT_POSTGRES_URL +
+#     POSTGRES_URL_NON_POOLING) so the preview deployment uses the
+#     ephemeral DB instead of production's.
+#   - on close → delete both the Neon branch and the per-branch Vercel
+#     env vars.
+#
+# Required GitHub repository secrets:
+#   NEON_API_KEY        — provisioned by the Neon-GitHub integration
+#   VERCEL_TOKEN        — Vercel personal/team token with project access
+# Required GitHub repository variables:
+#   NEON_PROJECT_ID     — provisioned by the Neon-GitHub integration
+#   VERCEL_PROJECT_ID   — `prj_lpbCXMg9y2A8jgWxfPFUZDUqbiPR`
+#   VERCEL_TEAM_ID      — `team_QZiKbPEl7KVrSR7zzASaL770`
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    name: Resolve branch name
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.branch_name.outputs.current_branch }}
+      neon_branch: preview/pr-${{ github.event.number }}-${{ steps.branch_name.outputs.current_branch }}
+    steps:
+      - name: Get branch name
+        id: branch_name
+        uses: tj-actions/branch-names@v8
+
+  create_or_update:
+    name: Create Neon branch + migrate + sync env to Vercel
+    needs: setup
+    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Compute branch expiry (14 days)
+        id: expiry
+        run: echo "expires_at=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+
+      - name: Create or reset Neon branch
+        id: neon
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: ${{ needs.setup.outputs.neon_branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          expires_at: ${{ steps.expiry.outputs.expires_at }}
+
+      - name: Apply drizzle migrations to the new Neon branch
+        env:
+          NUXT_POSTGRES_URL: ${{ steps.neon.outputs.db_url }}
+        run: pnpm db:migrate
+
+      - name: Push per-PR DB URLs to Vercel Preview env (scoped to git branch)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          GIT_BRANCH: ${{ needs.setup.outputs.branch }}
+          DB_URL_POOLED: ${{ steps.neon.outputs.db_url_with_pooler }}
+          DB_URL_UNPOOLED: ${{ steps.neon.outputs.db_url }}
+        run: |
+          set -euo pipefail
+          api() {
+            local method=$1 path=$2 body=${3:-}
+            local args=(-sS -X "$method" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json")
+            [[ -n "$body" ]] && args+=(--data "$body")
+            curl -w '\n%{http_code}' "${args[@]}" "https://api.vercel.com$path?teamId=$VERCEL_TEAM_ID"
+          }
+
+          upsert_env() {
+            local key=$1 value=$2
+            # Find any existing per-branch env var with this key + this gitBranch
+            local list
+            list=$(curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?teamId=$VERCEL_TEAM_ID&decrypt=false" \
+              | jq -r --arg k "$key" --arg b "$GIT_BRANCH" \
+                '.envs[] | select(.key == $k and .gitBranch == $b) | .id')
+
+            for id in $list; do
+              echo "  → deleting stale id=$id for key=$key branch=$GIT_BRANCH"
+              curl -sS -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+                "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/env/$id?teamId=$VERCEL_TEAM_ID" > /dev/null
+            done
+
+            local payload
+            payload=$(jq -nc --arg k "$key" --arg v "$value" --arg b "$GIT_BRANCH" \
+              '{key:$k, value:$v, type:"encrypted", target:["preview"], gitBranch:$b}')
+
+            local resp
+            resp=$(curl -sS -X POST -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" \
+              --data "$payload" \
+              "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?teamId=$VERCEL_TEAM_ID&upsert=true")
+            echo "  ← $key: $(echo "$resp" | jq -c '{created: (.created // .id // "?"), failed: .failed}')"
+          }
+
+          echo "Wiring NUXT_POSTGRES_URL + POSTGRES_URL_NON_POOLING for branch '$GIT_BRANCH'…"
+          upsert_env NUXT_POSTGRES_URL "$DB_URL_POOLED"
+          upsert_env POSTGRES_URL_NON_POOLING "$DB_URL_UNPOOLED"
+
+      - name: Comment on the PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = '${{ needs.setup.outputs.neon_branch }}'
+            const body = [
+              '🌿 **Neon preview branch ready**',
+              '',
+              `- Branch: \`${branch}\``,
+              '- Migrations applied',
+              '- `NUXT_POSTGRES_URL` + `POSTGRES_URL_NON_POOLING` pushed to Vercel Preview (scoped to this PR\'s git branch)',
+              '',
+              'The next preview deployment will use this isolated database. Push another commit to redeploy.',
+            ].join('\n')
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const mine = comments.find(c => c.user.type === 'Bot' && c.body && c.body.includes('Neon preview branch ready'))
+            if (mine) {
+              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: mine.id, body })
+            }
+            else {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body })
+            }
+
+  delete:
+    name: Delete Neon branch + Vercel env vars
+    needs: setup
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: ${{ needs.setup.outputs.neon_branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Remove per-PR Vercel env vars
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          GIT_BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          for KEY in NUXT_POSTGRES_URL POSTGRES_URL_NON_POOLING; do
+            ids=$(curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?teamId=$VERCEL_TEAM_ID&decrypt=false" \
+              | jq -r --arg k "$KEY" --arg b "$GIT_BRANCH" \
+                '.envs[] | select(.key == $k and .gitBranch == $b) | .id')
+            for id in $ids; do
+              echo "Deleting env id=$id key=$KEY branch=$GIT_BRANCH"
+              curl -sS -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+                "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/env/$id?teamId=$VERCEL_TEAM_ID" > /dev/null
+            done
+          done
