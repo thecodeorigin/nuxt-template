@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isPublic = to.meta.public === true || to.meta.unauthenticatedOnly === true
 
   if (isAuthenticated && to.meta.unauthenticatedOnly) {
-    return navigateTo('/')
+    return navigateTo('/dashboard')
   }
 
   if (!isAuthenticated && !isPublic) {

@@ -1,15 +1,11 @@
 <script setup lang="ts">
-useHead({ title: 'Todos' })
-
-const store = useTodosStore()
-
-await useAsyncData('todos', () => store.fetchTodos())
+useHead({ title: 'Dashboard' })
 </script>
 
 <template>
-  <UDashboardPanel id="todos">
+  <UDashboardPanel id="dashboard">
     <template #header>
-      <UDashboardNavbar title="Todos">
+      <UDashboardNavbar title="Home">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -17,9 +13,9 @@ await useAsyncData('todos', () => store.fetchTodos())
     </template>
 
     <template #body>
-      <div class="space-y-6 max-w-2xl">
-        <TodoForm />
-        <TodoList />
+      <div class="space-y-6">
+        <DashboardSessionCard />
+        <DashboardGettingStarted />
       </div>
     </template>
   </UDashboardPanel>

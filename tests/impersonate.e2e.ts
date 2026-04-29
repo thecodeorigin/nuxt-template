@@ -60,7 +60,7 @@ test.describe('impersonation', () => {
     await expect(page).toHaveURL(FORBIDDEN_URL)
   })
 
-  test('admin can impersonate alice; session swaps + banner appears', async ({ page, context, request, baseURL }) => {
+  test('admin can impersonate alice; session swaps server-side', async ({ page, context, request, baseURL }) => {
     const { session_id } = await devLogin(request, ADMIN_EMAIL)
     await context.addCookies([{
       name: 'sessionid',
@@ -76,10 +76,11 @@ test.describe('impersonation', () => {
 
     await page.getByTestId(`impersonate-${ALICE_EMAIL}`).click()
 
-    await expect(page.getByTestId('global-impersonation-banner')).toBeVisible()
-    await expect(page.getByTestId('impersonating-badge')).toBeVisible()
-    await expect(page.getByTestId('current-user-name')).toContainText('Seed Alice')
-    await expect(page.getByTestId('impersonator-email')).toContainText(ADMIN_EMAIL)
+    // Component triggers window.location.reload() — wait for navigation to settle
+    await page.waitForLoadState('networkidle')
+
+    // Alice doesn't have user:impersonate, so /sandbox/impersonate redirects to /forbidden
+    await expect(page).toHaveURL(FORBIDDEN_URL)
 
     // Server-side: /api/auth/me should now return alice with impersonator info
     const meRes = await request.get('/api/auth/me', {
@@ -90,7 +91,7 @@ test.describe('impersonation', () => {
     expect(me.impersonator?.primary_email).toBe(ADMIN_EMAIL)
   })
 
-  test('redirection block: after impersonating bob (no impersonate ability), the sandbox redirects to /forbidden', async ({ page, context, request, baseURL }) => {
+  test('redirection block: after impersonating bob, the sandbox redirects to /forbidden on revisit', async ({ page, context, request, baseURL }) => {
     const { session_id } = await devLogin(request, ADMIN_EMAIL)
     await context.addCookies([{
       name: 'sessionid',
@@ -100,34 +101,35 @@ test.describe('impersonation', () => {
       sameSite: 'Lax',
     }])
 
-    await page.goto('/sandbox/impersonate', { waitUntil: 'hydration' })
-    await page.getByTestId(`impersonate-${BOB_EMAIL}`).click()
-    await expect(page.getByTestId('global-impersonation-banner')).toBeVisible()
+    // Impersonate via direct API (faster than UI click + reload)
+    const { user_id: bobId } = await devLogin(request, BOB_EMAIL)
+    const startRes = await request.post('/api/auth/impersonate/start', {
+      headers: { 'x-session-id': session_id },
+      data: { user_id: bobId },
+    })
+    expect(startRes.ok()).toBeTruthy()
 
-    // Now navigate away and back — Bob has no user:impersonate, so casl middleware redirects.
+    // Bob has no user:impersonate, so casl middleware redirects.
     await page.goto('/sandbox/impersonate')
     await expect(page).toHaveURL(FORBIDDEN_URL)
   })
 
-  test('stop impersonation restores the admin session', async ({ page, context, request, baseURL }) => {
-    const { session_id } = await devLogin(request, ADMIN_EMAIL)
-    await context.addCookies([{
-      name: 'sessionid',
-      value: session_id,
-      url: baseURL!,
-      httpOnly: true,
-      sameSite: 'Lax',
-    }])
+  test('stop impersonation restores admin session via API', async ({ request }) => {
+    const { session_id, user_id: adminId } = await devLogin(request, ADMIN_EMAIL)
+    const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
+    void adminId
 
-    await page.goto('/sandbox/impersonate', { waitUntil: 'hydration' })
-    await page.getByTestId(`impersonate-${ALICE_EMAIL}`).click()
-    await expect(page.getByTestId('global-impersonation-banner')).toBeVisible()
+    const startRes = await request.post('/api/auth/impersonate/start', {
+      headers: { 'x-session-id': session_id },
+      data: { user_id: aliceId },
+    })
+    expect(startRes.ok()).toBeTruthy()
 
-    await page.getByTestId('banner-stop-impersonation').click()
-    await expect(page.getByTestId('global-impersonation-banner')).toBeHidden()
-    await expect(page.getByTestId('current-user-name')).toContainText('Seed Admin')
+    const stopRes = await request.post('/api/auth/impersonate/stop', {
+      headers: { 'x-session-id': session_id },
+    })
+    expect(stopRes.ok()).toBeTruthy()
 
-    // Server-side verification
     const meRes = await request.get('/api/auth/me', {
       headers: { 'x-session-id': session_id },
     })
@@ -137,9 +139,8 @@ test.describe('impersonation', () => {
   })
 
   test('cannot start impersonation while already impersonating', async ({ request }) => {
-    const { session_id, user_id: adminId } = await devLogin(request, ADMIN_EMAIL)
+    const { session_id } = await devLogin(request, ADMIN_EMAIL)
     const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
-    void adminId
 
     const start1 = await request.post('/api/auth/impersonate/start', {
       headers: { 'x-session-id': session_id },

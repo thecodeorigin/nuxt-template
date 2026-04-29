@@ -5,18 +5,18 @@ import packageJson from './package.json'
 export default defineNuxtConfig({
   modules: [
     '@nuxt/a11y',
-    '@nuxt/eslint',
+    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['@nuxt/eslint' as const]),
     '@nuxt/fonts',
     '@nuxt/hints',
     '@nuxt/icon',
     '@nuxt/scripts',
-    '@nuxt/test-utils',
+    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['@nuxt/test-utils' as const]),
     '@nuxt/ui',
     '@nuxtjs/device',
     '@pinia/nuxt',
     '@vueuse/nuxt',
     'magic-regexp',
-    'nuxt-security',
+    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['nuxt-security' as const]),
   ],
 
   $development: {
@@ -243,6 +243,7 @@ export default defineNuxtConfig({
   },
 
   security: {
+    enabled: process.env.NUXT_DEMO_MODE !== 'true',
     strict: true,
     hidePoweredBy: true,
     nonce: true,
