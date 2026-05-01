@@ -215,6 +215,9 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-02-11',
   nitro: {
+    experimental: {
+      tasks: true,
+    },
     routeRules: {
       '/api/payments/sepay/webhook': { cors: false, csurf: false },
       '/api/auth/**': { cors: false, csurf: false },

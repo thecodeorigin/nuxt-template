@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { AuthUser } from '~~/server/utils/auth'
+import type { AuthUser } from '~~/server/services/auth'
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   _resetSubjects,
@@ -10,7 +10,7 @@ import {
   matchesSubjectAction,
   parseAbility,
   runAuthorizedHandler,
-} from '~~/server/utils/casl'
+} from '~~/server/services/casl'
 
 function makeEvent(params: Record<string, string> = {}): H3Event {
   return { context: { params } } as unknown as H3Event

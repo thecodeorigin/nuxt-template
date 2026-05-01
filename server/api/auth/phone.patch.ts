@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import z from 'zod'
 import { userTable } from '~~/server/db/pg/schema'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
+import { defineAuthenticatedHandler } from '~~/server/services/auth'
 import { getPgClient } from '~~/server/utils/pg'
 
 const phoneSchema = z.object({

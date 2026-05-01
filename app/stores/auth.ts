@@ -1,4 +1,4 @@
-import type { AuthUser, ImpersonatorInfo } from '~~/server/utils/auth'
+import type { AuthUser, ImpersonatorInfo } from '~~/server/services/auth'
 import { useAuthApi } from '~/api/useAuthApi'
 
 export const useAuthStore = defineStore('auth', () => {

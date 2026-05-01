@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { abilitiesToRules, pageMetaCanCheck, parseAbility } from '~/lib/casl'
+import { abilitiesToRules, pageMetaCanCheck, parseAbility } from '~/services/casl'
 
 describe('parseAbility (frontend)', () => {
   it('parses "subject:action"', () => {

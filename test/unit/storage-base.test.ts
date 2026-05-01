@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { getRedisBase } from '~~/server/utils/storage-base'
+import { getRedisBase } from '~~/server/utils/storage'
 
 const ENV_KEYS = ['NUXT_REDIS_BASE', 'VERCEL_ENV', 'VERCEL_GIT_COMMIT_REF'] as const
 

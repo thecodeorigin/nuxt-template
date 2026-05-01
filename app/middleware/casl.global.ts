@@ -1,4 +1,4 @@
-import { pageMetaCanCheck } from '~/lib/casl'
+import { pageMetaCanCheck } from '~/services/casl'
 
 export default defineNuxtRouteMiddleware((to) => {
   const required = (to.meta.can ?? []) as string[]

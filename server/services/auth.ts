@@ -25,7 +25,7 @@ export interface AuthUser {
  * An authenticated wrapper of Nitro defineEventHandler
  *
  * @example ```ts
- * import { defineAuthenticatedHandler } from '~~/server/utils/auth'
+ * import { defineAuthenticatedHandler } from '~~/server/services/auth'
  *
  * export default defineAuthenticatedHandler(async (event, session) => {
  *   // Your authenticated logic here

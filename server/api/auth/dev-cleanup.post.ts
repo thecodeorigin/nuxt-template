@@ -1,11 +1,11 @@
 import { inArray } from 'drizzle-orm'
 import { z } from 'zod'
 import { userTable } from '~~/server/db/pg/schema'
-import { backupKey, sessionKey } from '~~/server/utils/impersonate'
+import { backupKey, sessionKey } from '~~/server/services/impersonate'
 import { getPgClient } from '~~/server/utils/pg'
 
 const DevCleanupSchema = z.object({
-  emails: z.array(z.string().email()).default([]),
+  emails: z.array(z.email()).default([]),
   session_ids: z.array(z.string().min(1)).default([]),
 })
 

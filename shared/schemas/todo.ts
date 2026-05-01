@@ -4,7 +4,7 @@ export const TodoSchema = z.object({
   id: z.string(),
   title: z.string().min(1).max(200),
   completed: z.boolean(),
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 })
 
 export const NewTodoSchema = z.object({

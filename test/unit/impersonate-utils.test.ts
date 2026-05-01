@@ -1,4 +1,4 @@
-import type { AuthUser } from '~~/server/utils/auth'
+import type { AuthUser } from '~~/server/services/auth'
 import { describe, expect, it } from 'vitest'
 import {
   backupKey,
@@ -6,7 +6,7 @@ import {
   IMPERSONATE_ABILITY,
   impersonatorInfoFromSession,
   sessionKey,
-} from '~~/server/utils/impersonate'
+} from '~~/server/services/impersonate'
 import { ImpersonateStartSchema } from '~~/shared/schemas/impersonate'
 
 function makeAdmin(over: Partial<AuthUser> = {}): AuthUser {

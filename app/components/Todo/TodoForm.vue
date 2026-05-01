@@ -1,17 +1,22 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { NewTodoSchema } from '~~/shared/schemas/todo'
 
-const store = useTodosStore()
+const { createTodo } = useTodos()
 const toast = useToast()
 const state = reactive({ title: '' })
+const isSubmitting = ref(false)
 
 async function onSubmit() {
+  isSubmitting.value = true
   try {
-    await store.createTodo({ title: state.title })
+    await createTodo({ title: state.title })
     state.title = ''
   }
   catch {
     toast.add({ title: 'Failed to create todo', color: 'error' })
+  }
+  finally {
+    isSubmitting.value = false
   }
 }
 </script>
@@ -32,7 +37,7 @@ async function onSubmit() {
           class="w-full"
         />
       </UFormField>
-      <UButton type="submit" :loading="store.isLoading" icon="i-lucide-plus">
+      <UButton type="submit" :loading="isSubmitting" icon="i-lucide-plus">
         Add
       </UButton>
     </UForm>

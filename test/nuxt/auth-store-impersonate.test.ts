@@ -1,5 +1,5 @@
 // @vitest-environment nuxt
-import type { AuthUser } from '~~/server/utils/auth'
+import type { AuthUser } from '~~/server/services/auth'
 import { describe, expect, it } from 'vitest'
 
 const ADMIN: AuthUser = {

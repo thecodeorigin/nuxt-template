@@ -1,16 +1,16 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { Todo } from '~~/shared/schemas/todo'
 
 const props = defineProps<{
   todo: Todo
 }>()
 
-const store = useTodosStore()
+const { updateTodoStatus, deleteTodo } = useTodos()
 const toast = useToast()
 
 async function toggleCompletion() {
   try {
-    await store.updateTodoStatus(props.todo.id, !props.todo.completed)
+    await updateTodoStatus(props.todo.id, !props.todo.completed)
   }
   catch {
     toast.add({ title: 'Failed to update todo', color: 'error' })
@@ -19,7 +19,7 @@ async function toggleCompletion() {
 
 async function removeTodo() {
   try {
-    await store.deleteTodo(props.todo.id)
+    await deleteTodo(props.todo.id)
   }
   catch {
     toast.add({ title: 'Failed to delete todo', color: 'error' })

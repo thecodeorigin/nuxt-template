@@ -1,12 +1,13 @@
 import { eq } from 'drizzle-orm'
 import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
+import { defineAuthorizedHandler } from '~~/server/services/casl'
 import {
   backupKey,
   buildImpersonatedSession,
   IMPERSONATE_ABILITY,
   impersonatorInfoFromSession,
   sessionKey,
-} from '~~/server/utils/impersonate'
+} from '~~/server/services/impersonate'
 import { getPgClient } from '~~/server/utils/pg'
 import { ImpersonateStartSchema } from '~~/shared/schemas/impersonate'
 

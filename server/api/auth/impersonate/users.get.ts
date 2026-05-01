@@ -1,6 +1,7 @@
 import { ne } from 'drizzle-orm'
 import { userTable } from '~~/server/db/pg/schema'
-import { IMPERSONATE_ABILITY } from '~~/server/utils/impersonate'
+import { defineAuthorizedHandler } from '~~/server/services/casl'
+import { IMPERSONATE_ABILITY } from '~~/server/services/impersonate'
 import { getPgClient } from '~~/server/utils/pg'
 
 export default defineAuthorizedHandler(

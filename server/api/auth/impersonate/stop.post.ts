@@ -1,6 +1,7 @@
-import type { AuthUser } from '~~/server/utils/auth'
+import type { AuthUser } from '~~/server/services/auth'
 import { ActivityAction, activityTable } from '~~/server/db/pg/schema'
-import { backupKey, sessionKey } from '~~/server/utils/impersonate'
+import { defineAuthenticatedHandler } from '~~/server/services/auth'
+import { backupKey, sessionKey } from '~~/server/services/impersonate'
 import { getPgClient } from '~~/server/utils/pg'
 
 export default defineAuthenticatedHandler(async (event, session) => {

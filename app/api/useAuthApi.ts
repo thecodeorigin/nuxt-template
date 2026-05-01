@@ -1,4 +1,4 @@
-import type { AuthUser } from '~~/server/utils/auth'
+import type { AuthUser } from '~~/server/services/auth'
 
 export interface ImpersonationCandidate {
   id: string

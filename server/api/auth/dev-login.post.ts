@@ -5,7 +5,7 @@ import { getPgClient } from '~~/server/utils/pg'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 const DevLoginSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 })
 
 export default defineEventHandler(async (event) => {

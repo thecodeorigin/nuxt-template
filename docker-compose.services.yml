@@ -1,8 +1,6 @@
-version: '3.7'
-
 services:
   postgres:
-    container_name: opencloud-pg
+    container_name: nuxt-template-pg
     image: postgres:latest
     volumes:
       - ./.docker/postgres:/var/lib/postgresql/data
@@ -13,10 +11,10 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
-    restart: always
+    restart: unless-stopped
 
   redis:
-    container_name: opencloud-redis
+    container_name: nuxt-template-redis
     image: redis:latest
     volumes:
       - ./.docker/redis:/data
@@ -24,17 +22,17 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-redis}
     ports:
       - '${REDIS_PORT:-6379}:6379'
-    restart: always
+    restart: unless-stopped
 
   redisinsight:
     image: redis/redisinsight:latest
-    container_name: redisinsight
+    container_name: nuxt-template-redisinsight
     ports:
       - '5540:5540'
-    restart: always
+    restart: unless-stopped
 
   mondodb:
-    container_name: opencloud-mongodb
+    container_name: nuxt-template-mongodb
     image: mongo:latest
     volumes:
       - ./.docker/mongodb:/data/db
@@ -43,14 +41,14 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
     ports:
       - '27017:27017'
-    restart: always
+    restart: unless-stopped
 
   mailhog:
-    container_name: opencloud-mailhog
+    container_name: nuxt-template-mailhog
     image: mailhog/mailhog:latest
     volumes:
       - ./.docker/mailhog:/data
     ports:
       - '${SMTP_PORT:-1025}:1025' # SMTP server port
       - '${SMTP_WEB_PORT:-8025}:8025' # Web UI port
-    restart: always
+    restart: unless-stopped

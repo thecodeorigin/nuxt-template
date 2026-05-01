@@ -1,15 +1,10 @@
-import type { AuthUser, ImpersonatorInfo } from '~~/server/utils/auth'
+import type { AuthUser, ImpersonatorInfo } from '~~/server/services/auth'
+import { pick } from 'es-toolkit'
 
 export const IMPERSONATE_ABILITY = 'user:impersonate'
 
 export function impersonatorInfoFromSession(session: AuthUser): ImpersonatorInfo {
-  return {
-    id: session.id,
-    username: session.username,
-    name: session.name,
-    primary_email: session.primary_email,
-    abilities: session.abilities,
-  }
+  return pick(session, ['id', 'username', 'name', 'primary_email', 'abilities'])
 }
 
 export interface TargetUserRecord {

@@ -1,7 +1,7 @@
 import memoryDriver from 'unstorage/drivers/memory'
 import redisDriver from 'unstorage/drivers/redis'
 import upstashDriver from 'unstorage/drivers/upstash'
-import { getRedisBase } from '../utils/storage-base'
+import { getRedisBase } from '../utils/storage'
 
 export default defineNitroPlugin(() => {
   const runtimeConfig = useRuntimeConfig()

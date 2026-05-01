@@ -1,6 +1,6 @@
 import type { APIRequestContext } from '@playwright/test'
 import { expect, test } from '@nuxt/test-utils/playwright'
-import { SEED_USERS } from '../shared/seed/users'
+import { SEED_USERS } from '../server/services/seed'
 
 const ADMIN_EMAIL = 'admin@seed.local'
 const ALICE_EMAIL = 'alice@seed.local'

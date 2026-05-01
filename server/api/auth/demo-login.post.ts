@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
 import { getPgClient } from '~~/server/utils/pg'
-import { ABILITY_PRESETS } from '~~/shared/seed/users'
+import { ABILITY_PRESETS } from '~~/server/services/seed'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 interface DemoAgent {

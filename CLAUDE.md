@@ -48,7 +48,13 @@ guessing.
 8. **No new abstractions for hypothetical needs.** Three similar lines beats a
    premature helper.
 9. **No comments unless they explain a non-obvious WHY.** Don't narrate WHAT.
-10. **Naming conventions.**
+10. **No business logic in `utils/` folders.** Domain-specific code (seed
+    definitions, billing rules, email composition, etc.) goes in
+    `server/services/`. `server/utils/` and `app/lib/`/`shared/utils/` are
+    reserved for cross-cutting infrastructure helpers (auth wrappers, PG
+    client, cache, base64, URL builders). When in doubt: would a different
+    feature plausibly reuse this verbatim? If no → it's a service.
+11. **Naming conventions.**
     - **Components**: PascalCase Vue files in namespaced folders. Each filename
       starts with the folder name so Nuxt's auto-import dedupes correctly:
       `app/components/Todo/TodoList.vue` → `<TodoList>`,
@@ -81,18 +87,28 @@ app/                  Nuxt frontend (srcDir)
     Layout/           Sidebar pieces if/when added
     Todo/             TodoForm.vue, TodoList.vue, TodoItem.vue
     User/             UserMenu.vue (sidebar footer)
-  lib/                Auto-imported via nuxt.config (composables, helpers)
+  lib/                Auto-imported via nuxt.config — cross-cutting helpers
+                      ONLY (cn, $http). No business logic.
+  services/           Frontend business logic, imported explicitly
+                      (e.g. casl.ts → ability parsing, page-meta gating).
   stores/             Pinia stores
   middleware/         auth.global.ts, casl.global.ts
   api/                Client-side API helpers (ofetch wrappers)
 server/               Nitro backend
   api/                File-based routes, naming: <resource>/<verb>.{method}.ts
   db/pg/              Drizzle schema + migrations (PostgreSQL)
-  utils/              Auth helpers, PG client, cache, getRedisBase()
+  services/           Server business logic, imported explicitly. Currently:
+                      auth.ts (defineAuthenticatedHandler, AuthUser),
+                      casl.ts (defineAuthorizedHandler, defineSubject, ability
+                      parsing), impersonate.ts (impersonation feature),
+                      seed.ts (seed user definitions + runner functions).
+  tasks/              Nitro tasks (e.g. seed/user.ts → task `seed:user`)
+  utils/              Cross-cutting helpers only (PG client, cache, base64,
+                      cron/webhook/task auth wrappers, URL builder, Redis
+                      key prefix). No business logic.
   plugins/            Nitro plugins (redis storage mount etc.)
 shared/               Code imported by both app and server
   schemas/            Zod schemas (single source of truth)
-  seed/               Seed user definitions + ability presets
 test/
   unit/               Pure unit tests (vitest, node env)
   nuxt/               Component / composable tests (vitest, nuxt env)
@@ -102,7 +118,7 @@ tests/                Playwright e2e specs
   skills/             Symlinks to .claude/skill-sources/<repo>/skills/<name>
   skill-sources/      Gitignored; populated by `pnpm skills:sync`
   settings.json       Allowlist for safe Bash/MCP tools, hooks
-scripts/              One-off node scripts (key generation, skills sync, seed)
+scripts/              One-off node scripts (key generation)
 patches/              `pnpm patch` outputs (registered in pnpm-workspace.yaml)
 vercel.json           Project config; `git.deploymentEnabled: false` so only CI deploys
 ```
@@ -122,12 +138,14 @@ vercel.json           Project config; `git.deploymentEnabled: false` so only CI 
 
 - **Sessions** live in `useStorage('redis')` keyed by `session:{sessionId}`,
   where `sessionId` is the `sessionid` cookie (or `x-session-id` header).
-- **`AuthUser`** (`server/utils/auth.ts`) carries `abilities: string[]` and an
+- **`AuthUser`** (`server/services/auth.ts`) carries `abilities: string[]` and an
   optional `impersonator: ImpersonatorInfo | null` for the impersonation flow.
-- **`defineAuthenticatedHandler((event, session) => ...)`** — auto-imported,
-  throws 401 if no valid session.
+- **`defineAuthenticatedHandler((event, session) => ...)`** — import from
+  `~~/server/services/auth`. Throws 401 if no valid session. Not auto-imported
+  — services are explicit by design.
 - **`defineAuthorizedHandler(checks, (event, { session, ...extras }) => ...)`** —
-  wraps the authenticated handler, throws 403 if no check passes (OR semantics).
+  import from `~~/server/services/casl`. Wraps the authenticated handler, throws
+  403 if no check passes (OR semantics).
   Checks: ability strings (`'blog:read'`, `'blog:read:self'`) or async functions
   returning `{ allowed, ...extras }`. The matching check's extras are merged
   into the handler context. Register fetchers for `:self` via
@@ -162,7 +180,7 @@ vercel.json           Project config; `git.deploymentEnabled: false` so only CI 
 - `useStorage('redis')` is mounted by `server/plugins/redis.ts` against
   Upstash via the `unstorage/drivers/upstash` driver.
 - The same Upstash instance backs all environments. Keys are namespaced by
-  `getRedisBase()` (`server/utils/storage-base.ts`):
+  `getRedisBase()` (`server/utils/storage.ts`):
   - production → `redis:prod`
   - preview branch slug → `redis:preview:<slug>`
   - local dev → `redis:local`
@@ -248,8 +266,8 @@ If a check fails:
 | `pnpm db:generate` | Generate Drizzle migration from schema diff |
 | `pnpm db:migrate` | Apply pending migrations (uses `NUXT_POSTGRES_URL`) |
 | `pnpm db:preview` | Open Drizzle Studio |
-| `pnpm db:seed` | Upsert the `admin@seed.local` / `alice@seed.local` / `bob@seed.local` users with their preset abilities |
-| `pnpm db:seed:down` | Remove the seed users |
+| `pnpm db:seed` | Run the `seed:user` Nitro task — upsert the `admin@seed.local` / `alice@seed.local` / `bob@seed.local` users. Requires `pnpm dev` to be running in another terminal. |
+| `pnpm db:seed:down` | Same task with `direction=down` — remove the seed users. |
 | `pnpm skills:sync` | Refresh `.claude/skill-sources/` (run after `git pull`) |
 | `pnpm auth:generate` | Generate auth signing keys |
 
@@ -261,15 +279,21 @@ A complete example feature lives across:
 - `server/api/todos/index.get.ts`, `index.post.ts`, `[id].patch.ts`,
   `[id].delete.ts` — CRUD endpoints (uses `useStorage('todos')` for simplicity;
   for relational data follow the Drizzle pattern in `server/api/auth/*`)
-- `app/pages/todos.vue` — page using `<UDashboardPanel>`
+- `app/api/useTodoApi.ts` — API composable (verb-noun functions wrapping
+  `$http`)
+- `app/pages/todos.vue` — page owns the data via `useAsyncData` and
+  `provide`s mutations down
+- `app/lib/useTodos.ts` — typed `provide`/`inject` helper for the page
+  context (todos are page-scoped, **not** in Pinia — see
+  `app/stores/CLAUDE.md`)
 - `app/components/Todo/TodoForm.vue`, `Todo/TodoList.vue`, `Todo/TodoItem.vue`
-  — namespaced presentational components
-- `app/stores/todos.ts` — Pinia store (`fetchTodos`, `createTodo`,
-  `updateTodo`, `updateTodoStatus`, `deleteTodo`)
+  — namespaced presentational components, consume via `useTodos()`
 - `test/unit/todo-schema.test.ts` — schema unit test
 - `test/nuxt/todos-page.test.ts` — component test
 - `tests/todos.e2e.ts` — Playwright e2e
 
 When adding a new feature, **copy this slice's structure**:
-namespaced components, verb-noun store actions, schemas in `shared/`, three
-test files. Do not invent a new layout.
+namespaced components, verb-noun functions in `app/api/use<Name>Api.ts`,
+schemas in `shared/`, page-level state via `provide`/`inject`, three
+test files. Promote to a Pinia store **only** if the data is genuinely
+global. Do not invent a new layout.
