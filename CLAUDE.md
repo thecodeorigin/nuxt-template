@@ -6,6 +6,12 @@ For UI work, also load the **`nuxt-ui` skill** (already symlinked at
 server (`claude mcp add --transport http nuxt-ui https://ui.nuxt.com/mcp`) over
 guessing.
 
+For non-trivial features, prefer the **agent team workflow** over a solo
+session. Run `/team-feature <description>` to spawn parallel `fullstack-dev`
++ `qa-visual` + `ux-researcher` teammates. See [`.claude/agents/README.md`](./.claude/agents/README.md)
+for roles, coordination rules, and the layer-ownership invariant that keeps
+parallel work untangled.
+
 ## Stack
 
 - **Nuxt 4** with **layers** for feature isolation (`layers/auth/`,
@@ -122,8 +128,7 @@ test/
   unit/               Cross-cutting unit tests (storage-base etc.)
 .github/workflows/    GitHub Actions — see "Deployment pipeline" below
 .claude/
-  skills/             Symlinks to .claude/skill-sources/<repo>/skills/<name>
-  skill-sources/      Gitignored; populated by `pnpm skills:sync`
+  skills/             Symlinks to .agents/skills
   settings.json       Allowlist for safe Bash/MCP tools, hooks
 scripts/              One-off node scripts (key generation)
 patches/              `pnpm patch` outputs (registered in pnpm-workspace.yaml)
@@ -326,7 +331,6 @@ If a check fails:
 | `pnpm db:preview` | Open Drizzle Studio |
 | `pnpm db:seed` | Run the `seed:user` Nitro task — upsert the `admin@seed.local` / `alice@seed.local` / `bob@seed.local` users. Requires `pnpm dev` to be running in another terminal. |
 | `pnpm db:seed:down` | Same task with `direction=down` — remove the seed users. |
-| `pnpm skills:sync` | Refresh `.claude/skill-sources/` (run after `git pull`) |
 | `pnpm auth:generate` | Generate auth signing keys |
 
 ## Reference vertical slice: `layers/todo`

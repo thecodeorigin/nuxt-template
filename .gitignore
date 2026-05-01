@@ -33,4 +33,17 @@ test-results/
 
 # Claude Code skill sources (cloned via pnpm skills:sync; symlinked into .claude/skills)
 .claude/skill-sources/
+
+# Claude Code agent-team runtime state (regenerated per session)
+.claude/teams/
+.claude/tasks/
+
+# Claude Code per-developer settings (the project default lives in .claude/settings.json)
+.claude/settings.local.json
+
+# Agent run artifacts (QA + UX screenshots, reports, lighthouse output)
+.claude/runs/
+ux/
+screenshots/
+
 .vercel
