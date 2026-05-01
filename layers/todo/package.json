@@ -1,0 +1,9 @@
+{
+  "name": "@layers/todo",
+  "type": "module",
+  "private": true,
+  "main": "./nuxt.config.ts",
+  "scripts": {
+    "prepare": "nuxt prepare"
+  }
+}

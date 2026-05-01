@@ -8,9 +8,13 @@ guessing.
 
 ## Stack
 
-- **Nuxt 4** (`app/` srcDir), Vue 3, TypeScript
+- **Nuxt 4** with **layers** for feature isolation (`layers/auth/`,
+  `layers/todo/`). Each layer is auto-discovered and contributes its own
+  `app/`, `server/`, `shared/`. Cross-cutting infrastructure stays in the
+  project root.
+- Vue 3, TypeScript
 - **Nuxt UI v4** for every UI primitive
-- **Pinia** for client state
+- **Pinia** for client state (only when truly global — see auth layer)
 - **Drizzle ORM** + Neon serverless Postgres (`server/db/pg/`)
 - **Upstash Redis** for sessions / caching (`useStorage('redis')`)
 - **Zod** for validation at every boundary
@@ -41,27 +45,44 @@ guessing.
 5. **Wrap the app in `<UApp>`** (already done in `app/app.vue`). Keep it.
 6. **Validate everything at boundaries.** Every server route must validate input
    with `readValidatedBody(event, schema.parse)` (or `getValidatedQuery`,
-   `getValidatedRouterParams`). Schemas live in `shared/schemas/` and are
-   imported by both client and server.
+   `getValidatedRouterParams`). Schemas live in
+   `<layer>/shared/schemas/` (or root `shared/schemas/` for cross-cutting
+   ones) and are imported by both client and server.
 7. **Keep type safety.** Don't introduce `any` to silence the compiler. Don't
    disable eslint rules without explanation.
 8. **No new abstractions for hypothetical needs.** Three similar lines beats a
    premature helper.
 9. **No comments unless they explain a non-obvious WHY.** Don't narrate WHAT.
-10. **No business logic in `utils/` folders.** Domain-specific code (seed
-    definitions, billing rules, email composition, etc.) goes in
-    `server/services/`. `server/utils/` and `app/lib/`/`shared/utils/` are
-    reserved for cross-cutting infrastructure helpers (auth wrappers, PG
-    client, cache, base64, URL builders). When in doubt: would a different
-    feature plausibly reuse this verbatim? If no → it's a service.
-11. **Naming conventions.**
+10. **No business logic in `utils/` folders.** Domain-specific code goes in
+    a layer: backend logic in `server/services/` (seed definitions, billing
+    rules, email composition, etc.), frontend logic in `app/composables/`
+    (ability parsing, page-meta gating, formatters). `server/utils/`,
+    `app/lib/`, and `shared/utils/` are reserved for cross-cutting
+    infrastructure helpers (PG client, cache, base64, URL builders). When
+    in doubt: would a different feature plausibly reuse this verbatim? If
+    no → it belongs in the matching layer.
+11. **Layer ownership.** A new feature gets its own layer under `layers/<name>/`
+    with the same internal shape as the existing two. Don't drop feature code
+    into the project root unless it is genuinely cross-cutting (the dashboard
+    shell, the loading indicator, the `cn` helper, etc.).
+12. **No auto-imports for user components.** `nuxt.config.ts` sets
+    `components: false` so `<TodoForm>`, `<UserMenu>`, etc. are NOT
+    auto-registered. Import them explicitly in `<script setup>`:
+    `import TodoForm from '#layers/todo/app/components/Todo/TodoForm.vue'`.
+    Nuxt UI's `<U*>` and the framework's `<NuxtPage>`/`<NuxtLink>` are
+    still auto-imported (they're registered by their respective modules).
+    Composables (`app/composables/`, layer composables) and utils
+    (`app/utils/`, `server/utils/`) keep Nuxt's default auto-import
+    behaviour, plus `~/lib` is explicitly added to `imports.dirs`.
+13. **Naming conventions.**
     - **Components**: PascalCase Vue files in namespaced folders. Each filename
-      starts with the folder name so Nuxt's auto-import dedupes correctly:
-      `app/components/Todo/TodoList.vue` → `<TodoList>`,
-      `app/components/Auth/AuthLoginCard.vue` → `<AuthLoginCard>`.
-      Existing namespaces: `Auth/`, `Dashboard/`, `Impersonate/`, `Layout/`,
-      `Todo/`, `User/`. Add a new namespace for a new feature; don't drop
-      flat files into `components/`.
+      starts with the folder name so the import name is unambiguous and
+      `grep`-friendly: `layers/todo/app/components/Todo/TodoList.vue` →
+      `import TodoList from '...'`,
+      `layers/auth/app/components/Auth/AuthLoginCard.vue` →
+      `import AuthLoginCard from '...'`. Existing namespaces: `Auth/`,
+      `Dashboard/`, `Impersonate/`, `Todo/`, `User/`. Add a new namespace for
+      a new feature; don't drop flat files into `components/`.
     - **Functions / store actions**: verb + noun, no abbreviations.
       `fetchTodos`, `fetchTodo`, `createTodo`, `updateTodo`,
       `updateTodoStatus`, `deleteTodo`, `startImpersonation`,
@@ -71,48 +92,34 @@ guessing.
 ## Project layout
 
 ```
-app/                  Nuxt frontend (srcDir)
+app/                  Cross-cutting Nuxt frontend (project srcDir)
   app.vue             Root, wrapped in <UApp>
   app.config.ts       Nuxt UI theme tokens (primary/neutral palettes, defaults)
   assets/css/         main.css imports tailwindcss + @nuxt/ui + CSS-var overrides
-  layouts/
-    default.vue       UDashboardGroup + sidebar shell (used by all auth pages)
-    auth.vue          Centered card shell for /auth/login
-  pages/              File-based routing
-  components/         Auto-imported, PascalCase + namespaced folders:
-    Auth/             AuthLoginCard.vue …
-    Dashboard/        DashboardSessionCard.vue, DashboardGettingStarted.vue
-    Impersonate/      ImpersonateMenu.vue (sidebar header), ImpersonateCandidateList.vue,
-                      ImpersonateStopButton.vue
-    Layout/           Sidebar pieces if/when added
-    Todo/             TodoForm.vue, TodoList.vue, TodoItem.vue
-    User/             UserMenu.vue (sidebar footer)
+  layouts/default.vue UDashboardGroup + sidebar shell (consumes layer
+                      components: <ImpersonateMenu>, <UserMenu>)
+  pages/              Cross-cutting pages: index.vue, dashboard.vue
+  components/
+    Dashboard/        DashboardSessionCard, DashboardGettingStarted
   lib/                Auto-imported via nuxt.config — cross-cutting helpers
                       ONLY (cn, $http). No business logic.
-  services/           Frontend business logic, imported explicitly
-                      (e.g. casl.ts → ability parsing, page-meta gating).
-  stores/             Pinia stores
-  middleware/         auth.global.ts, casl.global.ts
-  api/                Client-side API helpers (ofetch wrappers)
-server/               Nitro backend
-  api/                File-based routes, naming: <resource>/<verb>.{method}.ts
+  types/utils.d.ts    Generic TS helpers (ExtractResponse)
+  utils/error.ts      whenError, getErrorMessage
+server/               Cross-cutting Nitro backend (project)
   db/pg/              Drizzle schema + migrations (PostgreSQL)
-  services/           Server business logic, imported explicitly. Currently:
-                      auth.ts (defineAuthenticatedHandler, AuthUser),
-                      casl.ts (defineAuthorizedHandler, defineSubject, ability
-                      parsing), impersonate.ts (impersonation feature),
-                      seed.ts (seed user definitions + runner functions).
-  tasks/              Nitro tasks (e.g. seed/user.ts → task `seed:user`)
   utils/              Cross-cutting helpers only (PG client, cache, base64,
                       cron/webhook/task auth wrappers, URL builder, Redis
                       key prefix). No business logic.
   plugins/            Nitro plugins (redis storage mount etc.)
-shared/               Code imported by both app and server
-  schemas/            Zod schemas (single source of truth)
+shared/utils/         Cross-cutting pure utils (id, number, string, uuid)
+layers/
+  auth/               Sessions, OAuth, CASL, impersonation, seed users.
+                      Self-contained app/ + server/ + shared/ + tests.
+                      See layers/auth/CLAUDE.md.
+  todo/               Reference vertical slice (CRUD via provide/inject).
+                      See layers/todo/CLAUDE.md.
 test/
-  unit/               Pure unit tests (vitest, node env)
-  nuxt/               Component / composable tests (vitest, nuxt env)
-tests/                Playwright e2e specs
+  unit/               Cross-cutting unit tests (storage-base etc.)
 .github/workflows/    GitHub Actions — see "Deployment pipeline" below
 .claude/
   skills/             Symlinks to .claude/skill-sources/<repo>/skills/<name>
@@ -123,50 +130,82 @@ patches/              `pnpm patch` outputs (registered in pnpm-workspace.yaml)
 vercel.json           Project config; `git.deploymentEnabled: false` so only CI deploys
 ```
 
+## Layers
+
+Nuxt auto-discovers any directory under `<root>/layers/`. Each layer is a
+mini Nuxt app with its own `nuxt.config.ts`, `app/`, `server/`, `shared/`,
+`test/`, and `tests/`. Auto-imports merge across layers, so a layer's
+component is callable from the root or another layer without an explicit
+import. Explicit cross-layer imports use `#layers/<name>/...`.
+
+| Layer | Owns | Top-level guide |
+|-------|------|-----------------|
+| `auth` | Sessions, OAuth, CASL authorization, impersonation, seed users | `layers/auth/CLAUDE.md` |
+| `todo` | Reference CRUD slice (page-scoped state via `provide`/`inject`) | `layers/todo/CLAUDE.md` |
+
+When you add a new feature:
+1. Create `layers/<name>/` mirroring the existing two.
+2. Drop `nuxt.config.ts` (with `$meta: { name: '<name>' }`) and a stub
+   `package.json` in the layer root.
+3. Mirror the existing `CLAUDE.md` trace inside the layer (top-level +
+   `app/api/`, `app/components/`, plus `app/stores/` if you really need a
+   global store).
+4. Don't add it to `extends` in the root `nuxt.config.ts` — auto-discovery
+   picks it up.
+
 ## API route conventions
 
-- File: `server/api/<resource>/<action>.{method}.ts` (e.g. `todos/index.get.ts`,
-  `todos/[id].patch.ts`).
+- File: `<layer>/server/api/<resource>/<action>.{method}.ts` (e.g.
+  `layers/todo/server/api/todos/index.get.ts`,
+  `layers/todo/server/api/todos/[id].patch.ts`).
 - Handler: use `defineEventHandler` (or `defineAuthenticatedHandler` for routes
   that require a session, or `defineAuthorizedHandler` for ability-gated routes).
-- Validate body with a Zod schema imported from `shared/schemas/`.
+- Validate body with a Zod schema imported from `<layer>/shared/schemas/`.
 - Throw `createError({ statusCode, statusMessage })` on failure; don't return
   bare 500s.
-- Rate-limited endpoints use `useStorage('redis')` (see `server/api/auth/`).
+- Rate-limited endpoints use `useStorage('redis')` (see
+  `layers/auth/server/api/auth/phone.patch.ts`).
 
 ## Auth & authorization
 
+All auth/authz code lives in `layers/auth/`. The high-level shape:
+
 - **Sessions** live in `useStorage('redis')` keyed by `session:{sessionId}`,
   where `sessionId` is the `sessionid` cookie (or `x-session-id` header).
-- **`AuthUser`** (`server/services/auth.ts`) carries `abilities: string[]` and an
-  optional `impersonator: ImpersonatorInfo | null` for the impersonation flow.
+- **`AuthUser`** (`layers/auth/server/services/auth.ts`) carries
+  `abilities: string[]` and an optional
+  `impersonator: ImpersonatorInfo | null` for the impersonation flow.
 - **`defineAuthenticatedHandler((event, session) => ...)`** — import from
-  `~~/server/services/auth`. Throws 401 if no valid session. Not auto-imported
-  — services are explicit by design.
+  `#layers/auth/server/services/auth`. Throws 401 if no valid session. Not
+  auto-imported — services are explicit by design. Inside the auth layer use
+  the same alias; `~~/...` resolves to the project root, not the layer.
 - **`defineAuthorizedHandler(checks, (event, { session, ...extras }) => ...)`** —
-  import from `~~/server/services/casl`. Wraps the authenticated handler, throws
-  403 if no check passes (OR semantics).
-  Checks: ability strings (`'blog:read'`, `'blog:read:self'`) or async functions
-  returning `{ allowed, ...extras }`. The matching check's extras are merged
-  into the handler context. Register fetchers for `:self` via
-  `defineSubject('blog', { fetch })`. See `test/unit/casl-server.test.ts` for
-  every supported syntax.
-- **Frontend** uses `@casl/vue`. `app/plugins/casl.ts` syncs ability rules to
-  `useAuthStore().currentUser.abilities`. Page-level gating via
+  import from `#layers/auth/server/services/casl`. Wraps the authenticated
+  handler, throws 403 if no check passes (OR semantics). Checks: ability strings (`'blog:read'`,
+  `'blog:read:self'`) or async functions returning `{ allowed, ...extras }`.
+  Register fetchers for `:self` via `defineSubject('blog', { fetch })`. See
+  `layers/auth/test/unit/casl-server.test.ts`.
+- **Frontend** uses `@casl/vue`. `layers/auth/app/plugins/casl.ts` syncs ability
+  rules to `useAuthStore().currentUser.abilities`. Page-level gating via
   `definePageMeta({ can: ['blog:write'] })` (redirects to `/forbidden`).
   Component-level via standard `<Can I="read" a="blog">…</Can>` or
-  `useAbility()`. See `test/unit/casl-frontend.test.ts`.
+  `useAbility()`. See `layers/auth/test/unit/casl-frontend.test.ts`.
 - **Page meta** flags (`public`, `unauthenticatedOnly`, `can`) are typed in
-  `app/types/router.d.ts`. Default = requires auth.
+  `layers/auth/app/types/router.d.ts`. Default = requires auth.
 - **Impersonation**: `POST /api/auth/impersonate/{start,stop}` swap the Redis
   session in-place (admin's session is backed up at
   `impersonator:session:<sid>`, the live session becomes the target user).
   The admin's identity rides along on `session.impersonator` so the UI knows
   who's actually piloting.
 
+For the full ownership map, conventions for adding new auth routes, and the
+impersonation invariant, read `layers/auth/CLAUDE.md`.
+
 ## Drizzle conventions
 
-- Schema lives in `server/db/pg/schema.ts`. Generate migrations with
+- Schema lives in `server/db/pg/schema.ts` at the project root because the
+  tables are referenced by multiple layers (auth seeds users; future layers
+  may add their own tables alongside). Generate migrations with
   `pnpm db:generate` and commit them. Migrations apply automatically in CI
   (preview = per-PR Neon branch; production = main Neon DB).
 - For local dev or manual runs: `pnpm db:migrate` (reads `NUXT_POSTGRES_URL`
@@ -187,6 +226,25 @@ vercel.json           Project config; `git.deploymentEnabled: false` so only CI 
   - explicit override → `NUXT_REDIS_BASE=...`
 - Don't reach for `unstorage/drivers/memory` outside of fallbacks; production
   data must hit Upstash.
+
+## Tests
+
+`vitest.config.ts` discovers tests in both `test/` (project root,
+cross-cutting) and `layers/*/test/` (per-layer). Same for `playwright.config.ts`
+which collects e2e specs from `tests/` and `layers/*/tests/`.
+
+| Suite | Location | Env |
+|-------|----------|-----|
+| Cross-cutting unit | `test/unit/*.test.ts` | node |
+| Layer unit | `layers/*/test/unit/*.test.ts` | node |
+| Layer Nuxt-env | `layers/*/test/nuxt/*.test.ts` | nuxt (happy-dom) |
+| Layer e2e | `layers/*/tests/*.e2e.ts` | Playwright |
+
+Inside a layer, layer-internal imports use `#layers/<name>/...` aliases
+(generated by `nuxt prepare`) for both source and test files. `~~/...` and
+`~/...` always resolve to the project root, so use them only when reaching
+for cross-cutting infra (`~~/server/db/pg/schema`, `~~/server/utils/pg`,
+`~~/shared/utils/id`).
 
 ## Deployment pipeline
 
@@ -259,9 +317,9 @@ If a check fails:
 | `pnpm dev` | Nuxt dev server with HMR |
 | `pnpm typecheck` | `nuxt typecheck` (vue-tsc) |
 | `pnpm lint` | ESLint over the whole repo |
-| `pnpm test` | Vitest unit + nuxt projects |
+| `pnpm test` | Vitest unit + nuxt projects (root + layers) |
 | `pnpm test:watch` | Vitest in watch mode |
-| `pnpm test:e2e` | Playwright headless |
+| `pnpm test:e2e` | Playwright headless (root + layers) |
 | `pnpm test:e2e:ui` | Playwright UI mode for debugging |
 | `pnpm db:generate` | Generate Drizzle migration from schema diff |
 | `pnpm db:migrate` | Apply pending migrations (uses `NUXT_POSTGRES_URL`) |
@@ -271,29 +329,11 @@ If a check fails:
 | `pnpm skills:sync` | Refresh `.claude/skill-sources/` (run after `git pull`) |
 | `pnpm auth:generate` | Generate auth signing keys |
 
-## Reference vertical slice: `todos`
+## Reference vertical slice: `layers/todo`
 
-A complete example feature lives across:
-
-- `shared/schemas/todo.ts` — Zod schemas (Todo, NewTodo, UpdateTodo)
-- `server/api/todos/index.get.ts`, `index.post.ts`, `[id].patch.ts`,
-  `[id].delete.ts` — CRUD endpoints (uses `useStorage('todos')` for simplicity;
-  for relational data follow the Drizzle pattern in `server/api/auth/*`)
-- `app/api/useTodoApi.ts` — API composable (verb-noun functions wrapping
-  `$http`)
-- `app/pages/todos.vue` — page owns the data via `useAsyncData` and
-  `provide`s mutations down
-- `app/lib/useTodos.ts` — typed `provide`/`inject` helper for the page
-  context (todos are page-scoped, **not** in Pinia — see
-  `app/stores/CLAUDE.md`)
-- `app/components/Todo/TodoForm.vue`, `Todo/TodoList.vue`, `Todo/TodoItem.vue`
-  — namespaced presentational components, consume via `useTodos()`
-- `test/unit/todo-schema.test.ts` — schema unit test
-- `test/nuxt/todos-page.test.ts` — component test
-- `tests/todos.e2e.ts` — Playwright e2e
-
-When adding a new feature, **copy this slice's structure**:
-namespaced components, verb-noun functions in `app/api/use<Name>Api.ts`,
-schemas in `shared/`, page-level state via `provide`/`inject`, three
-test files. Promote to a Pinia store **only** if the data is genuinely
-global. Do not invent a new layout.
+The todo layer is the canonical CRUD example. When adding a new feature,
+**copy that layer's structure** — namespaced components, verb-noun functions
+in `app/api/use<Name>Api.ts`, schemas in `<layer>/shared/schemas/`,
+page-level state via `provide`/`inject`, three test files. Promote to a Pinia
+store **only** if the data is genuinely global (the auth layer is the
+template for that case). Do not invent a new layout.

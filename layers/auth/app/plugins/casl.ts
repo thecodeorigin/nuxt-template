@@ -1,0 +1,23 @@
+import type { MongoAbility, RawRuleOf } from '@casl/ability'
+import { abilitiesToRules } from '#layers/auth/app/composables/casl'
+import { createMongoAbility } from '@casl/ability'
+import { abilitiesPlugin } from '@casl/vue'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const ability = createMongoAbility([])
+  nuxtApp.vueApp.use(abilitiesPlugin, ability, { useGlobalProperties: true })
+
+  const authStore = useAuthStore()
+  watch(
+    () => [authStore.currentUser?.abilities ?? [], authStore.currentUser?.id] as const,
+    ([abilities, id]) => {
+      const rules = abilitiesToRules(abilities as string[], id as string | undefined)
+      ability.update(rules as RawRuleOf<MongoAbility>[])
+    },
+    { immediate: true },
+  )
+
+  return {
+    provide: { ability },
+  }
+})

@@ -3,8 +3,9 @@
 > Auto-imported via `imports.dirs: ['~/lib']` in `nuxt.config.ts` — call
 > exports directly without an `import` statement.
 >
-> **Cross-cutting infrastructure helpers ONLY.** Business logic goes in
-> `app/services/`.
+> **Cross-cutting infrastructure helpers ONLY.** Anything domain-specific
+> belongs in a layer's `app/composables/` (frontend) or `server/services/`
+> (backend). The auth layer is the canonical example.
 
 ## Data fetching
 
@@ -20,9 +21,12 @@
 
 - **`cn(...classes)`** (`utils.ts`) — `clsx` + `tailwind-merge`. Use for any
   conditional Tailwind class composition.
+- **`valueUpdater`** (`utils.ts`) — `@tanstack/vue-table` updater bridge.
 
 ## Lives elsewhere
 
 | Concept | Location |
 |---------|----------|
-| CASL ability helpers (`parseAbility`, `abilitiesToRules`, `pageMetaCanCheck`) | `app/services/casl.ts` — auth/authz is business logic |
+| CASL ability helpers (`parseAbility`, `abilitiesToRules`, `pageMetaCanCheck`) | `layers/auth/app/composables/casl.ts` — frontend business logic lives in the auth layer's composables (auto-imported) |
+| Page-scoped `provide`/`inject` helpers (`useTodos` etc.) | The owning layer's `app/composables/` (e.g. `layers/todo/app/composables/useTodos.ts`) |
+| Pinia store (`useAuthStore`) | `layers/auth/app/stores/auth.ts` (auto-imported, no path needed) |

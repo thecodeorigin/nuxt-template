@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import DashboardGettingStarted from '~/components/Dashboard/DashboardGettingStarted.vue'
+import DashboardSessionCard from '~/components/Dashboard/DashboardSessionCard.vue'
+
 useHead({ title: 'Dashboard' })
 </script>
 

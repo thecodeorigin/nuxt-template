@@ -1,7 +1,7 @@
 # server/utils
 
 > Cross-cutting infrastructure for the Nitro backend. **No business logic** —
-> domain-specific code goes in `server/services/`.
+> domain-specific code goes in a layer's `server/services/`.
 
 ## What lives here
 
@@ -20,12 +20,12 @@
 
 | Concept | Location |
 |---------|----------|
-| Auth (`AuthUser`, `defineAuthenticatedHandler`) | `server/services/auth.ts` |
-| Authz (`defineAuthorizedHandler`, `parseAbility`, `defineSubject`) | `server/services/casl.ts` |
-| Impersonation feature | `server/services/impersonate.ts` |
-| Seed user definitions + runner functions | `server/services/seed.ts` |
+| Auth (`AuthUser`, `defineAuthenticatedHandler`) | `layers/auth/server/services/auth.ts` |
+| Authz (`defineAuthorizedHandler`, `parseAbility`, `defineSubject`) | `layers/auth/server/services/casl.ts` |
+| Impersonation feature | `layers/auth/server/services/impersonate.ts` |
+| Seed user definitions + runner functions | `layers/auth/server/services/seed.ts` |
 
 ## Heuristic
 
 Would a different feature plausibly reuse this **verbatim**? If yes → it
-belongs here. If no → it's a service.
+belongs here. If no → it's a service in the matching layer.

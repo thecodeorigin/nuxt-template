@@ -1,5 +1,5 @@
 import type { $Fetch } from 'nitropack'
-import { useAuthApi } from '~/api/useAuthApi'
+import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
 
 declare module 'ofetch' {
   interface FetchOptions {

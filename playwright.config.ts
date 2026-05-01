@@ -3,7 +3,8 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig<ConfigOptions>({
-  testDir: './tests',
+  testDir: '.',
+  testMatch: ['tests/**/*.e2e.ts', 'layers/*/tests/**/*.e2e.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

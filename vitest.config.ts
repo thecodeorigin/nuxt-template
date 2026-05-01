@@ -4,28 +4,41 @@ import { defineConfig } from 'vitest/config'
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
 
+const layerAliases = [
+  { find: /^#layers\/auth\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/auth/$1$2` },
+  { find: /^#layers\/todo\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/todo/$1$2` },
+]
+
+const rootAliases = [
+  { find: /^~~\/(.*)$/, replacement: `${ROOT}/$1` },
+  { find: /^@@\/(.*)$/, replacement: `${ROOT}/$1` },
+  { find: /^~\/(.*)$/, replacement: `${ROOT}/app/$1` },
+  { find: /^@\/(.*)$/, replacement: `${ROOT}/app/$1` },
+]
+
 export default defineConfig({
   test: {
     projects: [
       {
         resolve: {
-          alias: {
-            '~~/': `${ROOT}/`,
-            '@@/': `${ROOT}/`,
-            '~/': `${ROOT}/app/`,
-            '@/': `${ROOT}/app/`,
-          },
+          alias: [...layerAliases, ...rootAliases],
         },
         test: {
           name: 'unit',
-          include: ['test/unit/*.{test,spec}.ts'],
+          include: [
+            'test/unit/*.{test,spec}.ts',
+            'layers/*/test/unit/*.{test,spec}.ts',
+          ],
           environment: 'node',
         },
       },
       await defineVitestProject({
         test: {
           name: 'nuxt',
-          include: ['test/nuxt/*.{test,spec}.ts'],
+          include: [
+            'test/nuxt/*.{test,spec}.ts',
+            'layers/*/test/nuxt/*.{test,spec}.ts',
+          ],
           environment: 'nuxt',
           environmentOptions: {
             nuxt: {

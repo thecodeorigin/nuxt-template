@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import ImpersonateMenu from '#layers/auth/app/components/Impersonate/ImpersonateMenu.vue'
+import UserMenu from '#layers/auth/app/components/User/UserMenu.vue'
 
 const open = ref(false)
 

@@ -151,10 +151,17 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    dirs: [
-      '~/lib',
-    ],
+    // ~/lib is auto-imported on top of Nuxt's defaults ($http, cn,
+    // valueUpdater are used everywhere). Composables and utils (root +
+    // layers) keep Nuxt's default auto-import behaviour.
+    dirs: ['~/lib'],
   },
+
+  // Disable user component auto-import so call sites have explicit imports —
+  // makes the source path obvious for both AI agents and humans. Nuxt UI's
+  // <U*> components are registered via @nuxt/ui's addComponentsDir call
+  // (from the module) and stay auto-imported.
+  components: false,
 
   css: ['~/assets/css/main.css'],
 
