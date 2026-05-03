@@ -294,19 +294,25 @@ secret-bound integration.
 | Variable | `VERCEL_PROJECT_ID` | manual |
 | Variable | `VERCEL_TEAM_ID` | manual |
 
-`NUXT_DEMO_MODE=true` on Vercel preview/production env strips
-`nuxt-security` / `@nuxt/eslint` / `@nuxt/test-utils` from `modules` and
-ungates `/api/auth/demo-login`. **Never set this on a non-demo
-deployment** — it's a deliberate production backdoor.
+`nuxt-security` is loaded uniformly across **development, preview, and
+production** with the same production-grade configuration (CSP, HSTS,
+CSRF, rate limiter, request-size limiter, XSS validator, full headers
+suite). The only env-aware bit is the rate-limiter driver: Upstash when
+`NUXT_UPSTASH_REDIS_REST_URL` + `NUXT_UPSTASH_REDIS_REST_TOKEN` are set,
+`lru-cache` (in-process) otherwise. Don't add a `$development.security`
+or `$test.security` block — the goal is for dev/preview to behave just
+like production.
+
+`NUXT_DEMO_MODE=true` on Vercel preview/production env ungates
+`/api/auth/demo-login` so the deployed app accepts the
+"Sign in as Admin/User Agent" buttons. **Don't set it on a non-demo
+deployment** — it's a deliberate backdoor for the demo project.
 
 ## Workflow before declaring "done"
 
 The pre-commit hook (`.husky/pre-commit`) already runs `lint-staged`
 (eslint --fix on staged `*.{ts,mts,cts,vue,js,mjs,cjs}`) and
-`pnpm typecheck` (with `NUXT_DEMO_MODE=` so `nuxt-security` /
-`@nuxt/test-utils` stay loaded — the demo strip would otherwise
-leave `nuxt.config.ts` + `app/lib/ofetch.ts` un-typed). Don't bypass
-it with `--no-verify`.
+`pnpm typecheck`. Don't bypass it with `--no-verify`.
 
 Before pushing, also run:
 

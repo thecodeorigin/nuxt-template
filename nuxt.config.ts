@@ -10,21 +10,18 @@ export default defineNuxtConfig({
     '@nuxt/hints',
     '@nuxt/icon',
     '@nuxt/scripts',
-    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['@nuxt/test-utils' as const]),
+    '@nuxt/test-utils',
     '@nuxt/ui',
     '@nuxtjs/device',
     '@pinia/nuxt',
     '@vueuse/nuxt',
     'magic-regexp',
-    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['nuxt-security' as const]),
+    'nuxt-security',
   ],
 
   $development: {
     devtools: {
       enabled: true,
-    },
-    routeRules: {
-      '/_nitro/**': { cors: false, csurf: false },
     },
     nitro: {
       openAPI: {
@@ -32,6 +29,11 @@ export default defineNuxtConfig({
           title: 'NuxtTemplate API',
           version: packageJson.version,
         },
+      },
+      // Nuxt DevTools' nitro inspector hits /_nitro/** — cors + csurf
+      // would block it in dev (no equivalent path exists in prod).
+      routeRules: {
+        '/_nitro/**': { cors: false, csurf: false },
       },
     },
     vite: {
@@ -42,111 +44,11 @@ export default defineNuxtConfig({
         allowedHosts: true,
       },
     },
-    security: {
-      enabled: true,
-      removeLoggers: false,
-      sri: false,
-      rateLimiter: false,
-      csrf: {
-        enabled: false,
-      },
-      headers: {
-        contentSecurityPolicy: false, // Prevents Vite HMR from breaking
-        strictTransportSecurity: false, // Prevents locking localhost to HTTPS
-      },
-      corsHandler: {
-        origin: '*', // Easy local API testing
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
-      },
-    },
   },
 
   $production: {
     nitro: {
       preset: process.env.NITRO_PRESET || 'node-server',
-    },
-
-    security: {
-      enabled: true,
-      removeLoggers: true,
-      sri: true,
-      csrf: {
-        enabled: true,
-        encryptSecret: process.env.NUXT_AUTH_SECRET?.substring(0, 32),
-      },
-      rateLimiter: {
-        tokensPerInterval: 150,
-        interval: 5 * 60 * 1000, // 5 minutes
-        headers: false,
-        driver: {
-          name: 'upstash',
-          options: {
-            base: 'ratelimit',
-            url: process.env.NUXT_UPSTASH_REDIS_REST_URL,
-            token: process.env.NUXT_UPSTASH_REDIS_REST_TOKEN,
-          },
-        },
-        whiteList: ['127.0.0.1', '::1', 'localhost'],
-        throwError: true,
-      },
-      headers: {
-        contentSecurityPolicy: {
-          'default-src': ['\'self\''],
-          'script-src': ['\'self\'', '\'unsafe-inline\'', 'https://www.gstatic.com', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
-          'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://fonts.googleapis.com'],
-          'img-src': [
-            '\'self\'',
-            'data:',
-            'https://www.google.com/recaptcha/',
-            'https://www.gstatic.com/recaptcha/',
-            'https://raw.githubusercontent.com',
-            'https://github.com',
-            'https://api.iconify.design',
-            'https://avatars.githubusercontent.com',
-            'https://lh3.googleusercontent.com/',
-            'https://qr.sepay.vn',
-          ],
-          'font-src': ['\'self\'', 'https://fonts.gstatic.com'],
-          'connect-src': ['\'self\'', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https://www.googleapis.com', 'https://securetoken.googleapis.com', 'https://identitytoolkit.googleapis.com', 'https://firestore.googleapis.com', 'https://api.iconify.design', 'wss://*.runopen.cloud'],
-          'frame-src': [
-            '\'self\'',
-            'https://www.google.com/',
-            'https://www.gstatic.com/recaptcha/',
-            'https://www.google.com/recaptcha/',
-          ],
-        },
-        strictTransportSecurity: {
-          maxAge: 15552000,
-          includeSubdomains: true,
-        },
-      },
-      corsHandler: {
-        origin: process.env.NUXT_PUBLIC_SSL_ENABLED === 'true'
-          ? `https://${process.env.NUXT_PUBLIC_BASE_DOMAIN}`
-          : `http://${process.env.NUXT_PUBLIC_BASE_DOMAIN}`,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization'],
-        credentials: true,
-        preflight: { statusCode: 204 },
-      },
-    },
-  },
-
-  $test: {
-    runtimeConfig: {
-      public: {
-        firebaseApiKey: 'test-api-key',
-        firebaseProjectId: 'test-project',
-        firebaseAppId: '1:123456789:web:123456',
-      },
-    },
-    security: {
-      enabled: false,
-      csrf: {
-        enabled: false,
-      },
     },
   },
 
@@ -218,14 +120,16 @@ export default defineNuxtConfig({
     customerSupportEmail: '',
   },
 
-  // Removed top-level routeRules and moved them to nitro.routeRules for Nuxt 4 compatibility
-
   compatibilityDate: '2025-02-11',
   nitro: {
     experimental: {
       tasks: true,
     },
     routeRules: {
+      // Webhook + auth routes are exempt from CORS / CSRF — they either
+      // self-validate (webhook signature, OAuth state) or operate as the
+      // session-establishment surface where same-origin assumptions
+      // don't apply yet.
       '/api/payments/sepay/webhook': { cors: false, csurf: false },
       '/api/auth/**': { cors: false, csurf: false },
       '/api/cron/**': { cors: false, csurf: false },
@@ -249,11 +153,18 @@ export default defineNuxtConfig({
     },
   },
 
+  // Production-grade security applied uniformly across development,
+  // preview and production so the dev experience matches what ships.
+  // Env-specific overrides only kick in for things that genuinely have
+  // to vary (Upstash creds, prod domain) — see runtimeConfig + the
+  // upstash/memory rateLimiter driver fallback below.
   security: {
-    enabled: process.env.NUXT_DEMO_MODE !== 'true',
+    enabled: true,
     strict: true,
     hidePoweredBy: true,
     nonce: true,
+    removeLoggers: true,
+    sri: true,
     xssValidator: { throwError: true },
     allowedMethodsRestricter: { methods: '*', throwError: true },
     requestSizeLimiter: {
@@ -268,7 +179,73 @@ export default defineNuxtConfig({
       nitroHeaders: true,
       exportToPresets: true,
     },
+    csrf: {
+      enabled: true,
+    },
+    // Upstash in production / preview; memory driver in local dev or any
+    // environment where the Upstash creds aren't wired up. Keeps rate
+    // limiting active everywhere without forcing a Redis on devs.
+    rateLimiter: {
+      tokensPerInterval: 150,
+      interval: 5 * 60 * 1000, // 5 minutes
+      headers: false,
+      driver: process.env.NUXT_UPSTASH_REDIS_REST_URL && process.env.NUXT_UPSTASH_REDIS_REST_TOKEN
+        ? {
+            name: 'upstash',
+            options: {
+              base: 'ratelimit',
+              url: process.env.NUXT_UPSTASH_REDIS_REST_URL,
+              token: process.env.NUXT_UPSTASH_REDIS_REST_TOKEN,
+            },
+          }
+        : { name: 'lru-cache' },
+      whiteList: ['127.0.0.1', '::1', 'localhost'],
+      throwError: true,
+    },
     headers: {
+      contentSecurityPolicy: {
+        'default-src': ['\'self\''],
+        'script-src': ['\'self\'', '\'unsafe-inline\'', 'https://www.gstatic.com', 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
+        'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://fonts.googleapis.com'],
+        'img-src': [
+          '\'self\'',
+          'data:',
+          'https://www.google.com/recaptcha/',
+          'https://www.gstatic.com/recaptcha/',
+          'https://raw.githubusercontent.com',
+          'https://github.com',
+          'https://api.iconify.design',
+          'https://avatars.githubusercontent.com',
+          'https://lh3.googleusercontent.com/',
+          'https://qr.sepay.vn',
+        ],
+        'font-src': ['\'self\'', 'https://fonts.gstatic.com'],
+        // ws:/wss: cover Vite HMR in dev and any WebSocket APIs in prod;
+        // browsers ignore the protocol-only entries when not in use, so
+        // there's no production cost to keeping them here.
+        'connect-src': [
+          '\'self\'',
+          'ws:',
+          'wss:',
+          'https://www.google.com/recaptcha/',
+          'https://www.gstatic.com/recaptcha/',
+          'https://www.googleapis.com',
+          'https://securetoken.googleapis.com',
+          'https://identitytoolkit.googleapis.com',
+          'https://firestore.googleapis.com',
+          'https://api.iconify.design',
+        ],
+        'frame-src': [
+          '\'self\'',
+          'https://www.google.com/',
+          'https://www.gstatic.com/recaptcha/',
+          'https://www.google.com/recaptcha/',
+        ],
+      },
+      strictTransportSecurity: {
+        maxAge: 15552000,
+        includeSubdomains: true,
+      },
       crossOriginResourcePolicy: 'same-origin',
       crossOriginOpenerPolicy: 'same-origin',
       crossOriginEmbedderPolicy: false,
@@ -287,6 +264,15 @@ export default defineNuxtConfig({
         'geolocation': [],
         'microphone': [],
       },
+    },
+    corsHandler: {
+      origin: process.env.NUXT_PUBLIC_SSL_ENABLED === 'true'
+        ? `https://${process.env.NUXT_PUBLIC_BASE_DOMAIN}`
+        : `http://${process.env.NUXT_PUBLIC_BASE_DOMAIN}`,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+      preflight: { statusCode: 204 },
     },
   },
 })

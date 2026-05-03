@@ -23,11 +23,6 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
-  "lint-staged": {
-    "*.{ts,mts,cts,vue,js,mjs,cjs}": [
-      "eslint --fix"
-    ]
-  },
   "dependencies": {
     "@casl/ability": "^6.8.1",
     "@casl/vue": "^2.2.6",
@@ -89,5 +84,10 @@
     "type-fest": "^5.5.0",
     "vitest": "^4.1.2",
     "vue-tsc": "^3.2.7"
+  },
+  "lint-staged": {
+    "*.{ts,mts,cts,vue,js,mjs,cjs}": [
+      "eslint --fix"
+    ]
   }
 }
