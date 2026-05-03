@@ -101,9 +101,9 @@ jobs:
       - name: Override build-time DB env to point at the per-PR Neon branch
         run: |
           {
-            echo "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}"
+            echo "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_pooled }}"
             echo "POSTGRES_URL_NON_POOLING=${{ steps.neon.outputs.db_url }}"
-            echo "POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}"
+            echo "POSTGRES_URL=${{ steps.neon.outputs.db_url_pooled }}"
           } >> .vercel/.env.preview.local
 
       - name: Build (NITRO_PRESET=vercel) against Neon branch
@@ -119,8 +119,8 @@ jobs:
         id: deploy
         run: |
           url=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz \
-            --env "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}" \
-            --env "POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}" \
+            --env "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_pooled }}" \
+            --env "POSTGRES_URL=${{ steps.neon.outputs.db_url_pooled }}" \
             --env "POSTGRES_URL_NON_POOLING=${{ steps.neon.outputs.db_url }}")
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
