@@ -85,18 +85,10 @@ jobs:
           set -a
           . .vercel/.env.production.local
           set +a
-          # Prefer the user-managed NUXT_POSTGRES_URL; fall back to the
-          # Neon-Vercel integration's unpooled URL. Migrations run faster
-          # and more reliably against the unpooled endpoint.
+          # User-managed NUXT_POSTGRES_URL is sensitive (only available
+          # at runtime); fall back to the Neon-Vercel integration's
+          # unpooled URL, which IS exposed via `vercel pull`.
+          # Unpooled is the right choice for migrations.
           export NUXT_POSTGRES_URL="${NUXT_POSTGRES_URL:-${POSTGRES_URL_NON_POOLING:-${DATABASE_URL_UNPOOLED:-$POSTGRES_URL}}}"
-          # Neon enforces SSL; the migrator script handles the cert chain.
           export NUXT_POSTGRES_SSL=true
-          if [ -z "$NUXT_POSTGRES_URL" ]; then
-            echo "::error::No Postgres URL available — neither NUXT_POSTGRES_URL nor any Neon-integration fallback was found in .vercel/.env.production.local"
-            grep -oE '^[A-Z_]+=' .vercel/.env.production.local | tr -d = | sort
-            exit 1
-          fi
-          # Use a direct Node script instead of `drizzle-kit migrate` —
-          # the CLI's ora spinner clobbers errors via terminal escapes
-          # so failures surface as a bare exit-1 with no diagnostic.
-          node scripts/migrate.mjs
+          pnpm db:migrate
