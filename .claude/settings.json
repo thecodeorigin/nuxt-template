@@ -3,40 +3,5 @@
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "teammateMode": "in-process",
-  "permissions": {
-    "allow": [
-      "Read",
-      "Glob",
-      "Grep",
-      "Edit",
-      "Write",
-      "Bash(pnpm:*)",
-      "Bash(npx:*)",
-      "Bash(node:*)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git branch:*)",
-      "Bash(git show:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git checkout:*)",
-      "Bash(git restore:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(rg:*)",
-      "Bash(find:*)",
-      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*"
-    ],
-    "deny": [
-      "Bash(rm -rf:*)",
-      "Bash(git push --force:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(git push:* main)",
-      "Bash(git push:* master)"
-    ]
-  }
+  "teammateMode": "in-process"
 }

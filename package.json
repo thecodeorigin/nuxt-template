@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --port 3002",
     "preview": "nuxt preview",
     "prepare": "nuxt prepare",
     "lint": "eslint .",
@@ -14,8 +14,6 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:preview": "drizzle-kit studio",
-    "db:seed": "nitro task run seed:user",
-    "db:seed:down": "nitro task run seed:user --payload '{\"direction\":\"down\"}'",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",

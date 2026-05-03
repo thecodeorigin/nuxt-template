@@ -8,9 +8,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_PORT: ${POSTGRES_PORT:-15432}
     ports:
-      - '${POSTGRES_PORT:-5432}:5432'
+      - '${POSTGRES_PORT:-15432}:5432'
     restart: unless-stopped
 
   redis:
@@ -21,14 +21,14 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-redis}
     ports:
-      - '${REDIS_PORT:-6379}:6379'
+      - '${REDIS_PORT:-16379}:6379'
     restart: unless-stopped
 
   redisinsight:
     image: redis/redisinsight:latest
     container_name: nuxt-template-redisinsight
     ports:
-      - '5540:5540'
+      - '${REDISINSIGHT_PORT:-15540}:5540'
     restart: unless-stopped
 
   mondodb:
@@ -40,7 +40,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-root}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-password}
     ports:
-      - '27017:27017'
+      - '${MONGO_PORT:-37017}:27017'
     restart: unless-stopped
 
   mailhog:
@@ -49,6 +49,6 @@ services:
     volumes:
       - ./.docker/mailhog:/data
     ports:
-      - '${SMTP_PORT:-1025}:1025' # SMTP server port
-      - '${SMTP_WEB_PORT:-8025}:8025' # Web UI port
+      - '${SMTP_PORT:-11025}:1025' # SMTP server port
+      - '${SMTP_WEB_PORT:-18025}:8025' # Web UI port
     restart: unless-stopped

@@ -5,14 +5,20 @@ name: Preview
 # On PR opened / reopened / synchronize:
 #   1. Resolve the PR's git branch name.
 #   2. Create a Neon branch named `preview/pr-<pr#>-<branch>` from
-#      the parent (default branch).
-#   3. Run drizzle migrations against that ephemeral Neon branch.
-#   4. Build the Nuxt app with NUXT_POSTGRES_URL pointing at the new
-#      Neon branch (so SSR + runtime queries use the isolated DB).
-#   5. Deploy the prebuilt artifact to Vercel as a preview deployment
-#      and inject the per-PR DB URLs as deployment env vars so they
-#      override anything the project has at the project level.
+#      the parent (default branch). Schema is inherited from the parent.
+#   3. Build the Nuxt app and inject the per-PR DB URLs as deployment
+#      env vars so they override anything the project has at the
+#      project level.
+#   4. Deploy the prebuilt artifact to Vercel as a preview deployment.
+#   5. Run drizzle migrations against the ephemeral Neon branch *only
+#      after* the deploy succeeds — keeps the schema and the deployed
+#      artifact in sync, and avoids migrating on a failed deploy.
 #   6. Update / post a sticky PR comment with the preview URL.
+#
+# Tradeoff: between step 4 and step 5 the deployed app is running
+# against the parent branch's schema. Safe for additive migrations
+# (new tables / nullable columns); risky for renames or drops — use
+# expand-contract for those.
 #
 # On PR closed:
 #   1. Delete the Neon branch.
@@ -86,11 +92,6 @@ jobs:
           api_key: ${{ secrets.NEON_API_KEY }}
           expires_at: ${{ steps.expiry.outputs.expires_at }}
 
-      - name: Apply drizzle migrations to the Neon branch
-        env:
-          NUXT_POSTGRES_URL: ${{ steps.neon.outputs.db_url }}
-        run: pnpm db:migrate
-
       - name: Install Vercel CLI
         run: npm i -g vercel@latest
 
@@ -113,6 +114,11 @@ jobs:
         run: |
           url=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz)
           echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Apply drizzle migrations to the Neon branch
+        env:
+          NUXT_POSTGRES_URL: ${{ steps.neon.outputs.db_url }}
+        run: pnpm db:migrate
 
       - name: Sticky PR comment
         uses: actions/github-script@v7

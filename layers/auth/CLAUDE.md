@@ -13,7 +13,7 @@
 | Authenticated handler wrapper | `server/services/auth.ts` (`defineAuthenticatedHandler`) |
 | Authorization (`defineAuthorizedHandler`, `defineSubject`, ability parsing) | `server/services/casl.ts` |
 | Impersonation (start/stop/list, session swap utilities) | `server/services/impersonate.ts`, `server/api/auth/impersonate/*` |
-| Seed user definitions + runner | `server/services/seed.ts`, `server/tasks/seed/user.ts` |
+| Ability presets + seed fixtures (used by demo-login + e2e tests) | `server/services/seed.ts` |
 | OAuth (Google, GitHub) | `server/api/auth/{google,github}{,/callback}.get.ts` |
 | Demo/dev login backdoors | `server/api/auth/{demo-login,dev-login,dev-cleanup,dev-seed,agent}.*.ts` |
 | Frontend session store + ability rules sync | `app/stores/auth.ts`, `app/plugins/casl.ts` |
@@ -115,8 +115,7 @@ layers/auth/
       auth.ts           AuthUser shape + defineAuthenticatedHandler
       casl.ts           defineAuthorizedHandler, defineSubject, ability eval
       impersonate.ts    Session swap helpers + IMPERSONATE_ABILITY constant
-      seed.ts           ABILITY_PRESETS, SEED_USERS, seedUsers/unseedUsers
-    tasks/seed/user.ts  Nitro task `seed:user` (up/down)
+      seed.ts           ABILITY_PRESETS + SEED_USERS fixtures (e2e/dev only)
   shared/
     schemas/impersonate.ts
   test/

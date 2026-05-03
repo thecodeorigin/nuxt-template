@@ -264,8 +264,13 @@ and so per-PR Neon branches stay isolated.
 | Workflow | File | Triggers | What it does |
 | --- | --- | --- | --- |
 | **CI** | `.github/workflows/ci.yml` | Every PR + push to `main` | `pnpm lint`, `pnpm typecheck`, `pnpm test`. Must be green to merge. |
-| **Preview** | `.github/workflows/preview.yml` | PR `opened` / `reopened` / `synchronize` / `closed` | On open/sync: creates `preview/pr-<#>-<branch>` Neon branch (14-day expiry), runs `pnpm db:migrate` against it, `vercel pull --environment=preview`, overrides `NUXT_POSTGRES_URL` + `POSTGRES_URL_NON_POOLING` to the per-PR branch, `vercel build` + `vercel deploy --prebuilt`, posts a sticky PR comment with the URL. On close: deletes the Neon branch. |
-| **Production** | `.github/workflows/production.yml` | Push to `main` | `pnpm db:migrate` against `PROD_POSTGRES_URL`, `vercel pull --environment=production`, `vercel build --prod`, `vercel deploy --prebuilt --prod`. |
+| **Preview** | `.github/workflows/preview.yml` | PR `opened` / `reopened` / `synchronize` / `closed` | On open/sync: creates `preview/pr-<#>-<branch>` Neon branch (14-day expiry), `vercel pull --environment=preview`, overrides `NUXT_POSTGRES_URL` + `POSTGRES_URL_NON_POOLING` to the per-PR branch, `vercel build` + `vercel deploy --prebuilt`, then runs `pnpm db:migrate` against the Neon branch, then posts a sticky PR comment with the URL. On close: deletes the Neon branch. |
+| **Production** | `.github/workflows/production.yml` | Push to `main` | `vercel pull --environment=production`, `vercel build --prod`, `vercel deploy --prebuilt --prod`, then runs `pnpm db:migrate` against `PROD_POSTGRES_URL`. |
+
+> Migrations run **after** the Vercel deploy, not before — so a failed
+> deploy never moves the schema forward. The tradeoff is a brief window
+> where the deployed code is running against the previous schema; safe
+> for additive migrations, follow expand-contract for renames or drops.
 
 ### Environment isolation
 
@@ -329,8 +334,6 @@ If a check fails:
 | `pnpm db:generate` | Generate Drizzle migration from schema diff |
 | `pnpm db:migrate` | Apply pending migrations (uses `NUXT_POSTGRES_URL`) |
 | `pnpm db:preview` | Open Drizzle Studio |
-| `pnpm db:seed` | Run the `seed:user` Nitro task — upsert the `admin@seed.local` / `alice@seed.local` / `bob@seed.local` users. Requires `pnpm dev` to be running in another terminal. |
-| `pnpm db:seed:down` | Same task with `direction=down` — remove the seed users. |
 | `pnpm auth:generate` | Generate auth signing keys |
 
 ## Reference vertical slice: `layers/todo`

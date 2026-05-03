@@ -3,9 +3,16 @@ name: Production
 # Production deployment pipeline driven by GitHub Actions (Vercel only hosts).
 #
 # On push to main:
-#   1. Run drizzle migrations against the production Neon DB.
-#   2. Build with NITRO_PRESET=vercel using the project's production env.
-#   3. Deploy the prebuilt artifact to Vercel as a production deployment.
+#   1. Build with NITRO_PRESET=vercel using the project's production env.
+#   2. Deploy the prebuilt artifact to Vercel as a production deployment.
+#   3. Run drizzle migrations against the production Neon DB *only after*
+#      the deploy succeeds. Keeps schema in lockstep with the deployed
+#      artifact and avoids migrating on a failed deploy.
+#
+# Tradeoff: between step 2 and step 3 the production app is running
+# against the previous schema. Safe for additive migrations (new tables
+# / nullable columns); risky for renames or drops — use expand-contract
+# for those.
 #
 # Required GitHub repository secrets:
 #   VERCEL_TOKEN         — Vercel team token with project deploy access
@@ -48,11 +55,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Apply drizzle migrations to production Neon
-        env:
-          NUXT_POSTGRES_URL: ${{ secrets.PROD_POSTGRES_URL }}
-        run: pnpm db:migrate
-
       - name: Install Vercel CLI
         run: npm i -g vercel@latest
 
@@ -64,3 +66,8 @@ jobs:
 
       - name: Deploy prebuilt artifact to production
         run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz
+
+      - name: Apply drizzle migrations to production Neon
+        env:
+          NUXT_POSTGRES_URL: ${{ secrets.PROD_POSTGRES_URL }}
+        run: pnpm db:migrate
