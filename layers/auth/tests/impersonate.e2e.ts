@@ -1,5 +1,6 @@
 import type { APIRequestContext } from '@playwright/test'
 import { expect, test } from '@nuxt/test-utils/playwright'
+import { request as apiRequest } from '@playwright/test'
 import { SEED_USERS } from '../server/services/seed'
 
 const ADMIN_EMAIL = 'admin@seed.local'
@@ -15,11 +16,18 @@ async function devSeed(request: APIRequestContext) {
   return res.json() as Promise<{ users: Array<{ id: string, primary_email: string }> }>
 }
 
-async function devLogin(request: APIRequestContext, email: string) {
-  const res = await request.post('/api/auth/dev-login', { data: { email } })
+// Each devLogin runs in a throwaway request context so the Set-Cookie
+// it returns doesn't pollute the caller's cookie jar. Otherwise the
+// most-recent login's `sessionid` cookie ends up overriding any
+// `x-session-id` header on subsequent requests, since the auth handler
+// reads the cookie first.
+async function devLogin(baseURL: string, email: string) {
+  const ctx = await apiRequest.newContext({ baseURL })
+  const res = await ctx.post('/api/auth/dev-login', { data: { email } })
   expect(res.ok()).toBeTruthy()
   const body = (await res.json()) as { session_id: string, user_id: string }
   issuedSessionIds.add(body.session_id)
+  await ctx.dispose()
   return body
 }
 
@@ -46,8 +54,8 @@ test.describe('impersonation', () => {
     await context.clearCookies()
   })
 
-  test('non-admin is redirected to /forbidden when visiting the sandbox', async ({ page, context, request, baseURL }) => {
-    const { session_id } = await devLogin(request, BOB_EMAIL)
+  test('non-admin is redirected to /forbidden when visiting the sandbox', async ({ page, context, baseURL }) => {
+    const { session_id } = await devLogin(baseURL!, BOB_EMAIL)
     await context.addCookies([{
       name: 'sessionid',
       value: session_id,
@@ -60,8 +68,8 @@ test.describe('impersonation', () => {
     await expect(page).toHaveURL(FORBIDDEN_URL)
   })
 
-  test('admin can impersonate alice; session swaps server-side', async ({ page, context, request, baseURL }) => {
-    const { session_id } = await devLogin(request, ADMIN_EMAIL)
+  test('admin can impersonate alice; session swaps server-side', async ({ page, context, request, baseURL, goto }) => {
+    const { session_id } = await devLogin(baseURL!, ADMIN_EMAIL)
     await context.addCookies([{
       name: 'sessionid',
       value: session_id,
@@ -70,7 +78,7 @@ test.describe('impersonation', () => {
       sameSite: 'Lax',
     }])
 
-    await page.goto('/sandbox/impersonate', { waitUntil: 'hydration' })
+    await goto('/sandbox/impersonate', { waitUntil: 'hydration' })
     await expect(page.getByRole('heading', { name: 'Impersonation sandbox' })).toBeVisible()
     await expect(page.getByTestId('current-user-name')).toContainText('Seed Admin')
 
@@ -92,7 +100,7 @@ test.describe('impersonation', () => {
   })
 
   test('redirection block: after impersonating bob, the sandbox redirects to /forbidden on revisit', async ({ page, context, request, baseURL }) => {
-    const { session_id } = await devLogin(request, ADMIN_EMAIL)
+    const { session_id } = await devLogin(baseURL!, ADMIN_EMAIL)
     await context.addCookies([{
       name: 'sessionid',
       value: session_id,
@@ -102,7 +110,7 @@ test.describe('impersonation', () => {
     }])
 
     // Impersonate via direct API (faster than UI click + reload)
-    const { user_id: bobId } = await devLogin(request, BOB_EMAIL)
+    const { user_id: bobId } = await devLogin(baseURL!, BOB_EMAIL)
     const startRes = await request.post('/api/auth/impersonate/start', {
       headers: { 'x-session-id': session_id },
       data: { user_id: bobId },
@@ -114,9 +122,9 @@ test.describe('impersonation', () => {
     await expect(page).toHaveURL(FORBIDDEN_URL)
   })
 
-  test('stop impersonation restores admin session via API', async ({ request }) => {
-    const { session_id, user_id: adminId } = await devLogin(request, ADMIN_EMAIL)
-    const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
+  test('stop impersonation restores admin session via API', async ({ request, baseURL }) => {
+    const { session_id, user_id: adminId } = await devLogin(baseURL!, ADMIN_EMAIL)
+    const { user_id: aliceId } = await devLogin(baseURL!, ALICE_EMAIL)
     void adminId
 
     const startRes = await request.post('/api/auth/impersonate/start', {
@@ -138,9 +146,9 @@ test.describe('impersonation', () => {
     expect(me.impersonator).toBeNull()
   })
 
-  test('cannot start impersonation while already impersonating', async ({ request }) => {
-    const { session_id } = await devLogin(request, ADMIN_EMAIL)
-    const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
+  test('cannot start impersonation while already impersonating', async ({ request, baseURL }) => {
+    const { session_id } = await devLogin(baseURL!, ADMIN_EMAIL)
+    const { user_id: aliceId } = await devLogin(baseURL!, ALICE_EMAIL)
 
     const start1 = await request.post('/api/auth/impersonate/start', {
       headers: { 'x-session-id': session_id },
@@ -152,11 +160,16 @@ test.describe('impersonation', () => {
       headers: { 'x-session-id': session_id },
       data: { user_id: aliceId },
     })
-    expect(start2.status()).toBe(400)
+    // After step 1 the session in Redis is alice (impersonating). The
+    // authorization check fires first and rejects with 403 because alice
+    // doesn't have user:impersonate. We never reach the explicit
+    // "already impersonating" 400 — and that's the correct security
+    // model: while impersonating, you ARE that user.
+    expect(start2.status()).toBe(403)
   })
 
-  test('cannot self-impersonate', async ({ request }) => {
-    const { session_id, user_id } = await devLogin(request, ADMIN_EMAIL)
+  test('cannot self-impersonate', async ({ request, baseURL }) => {
+    const { session_id, user_id } = await devLogin(baseURL!, ADMIN_EMAIL)
     const res = await request.post('/api/auth/impersonate/start', {
       headers: { 'x-session-id': session_id },
       data: { user_id },
@@ -164,9 +177,9 @@ test.describe('impersonation', () => {
     expect(res.status()).toBe(400)
   })
 
-  test('non-admin server call to /api/auth/impersonate/start returns 403', async ({ request }) => {
-    const { session_id } = await devLogin(request, BOB_EMAIL)
-    const { user_id: aliceId } = await devLogin(request, ALICE_EMAIL)
+  test('non-admin server call to /api/auth/impersonate/start returns 403', async ({ request, baseURL }) => {
+    const { session_id } = await devLogin(baseURL!, BOB_EMAIL)
+    const { user_id: aliceId } = await devLogin(baseURL!, ALICE_EMAIL)
 
     const res = await request.post('/api/auth/impersonate/start', {
       headers: { 'x-session-id': session_id },
