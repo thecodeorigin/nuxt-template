@@ -5,7 +5,7 @@ import packageJson from './package.json'
 export default defineNuxtConfig({
   modules: [
     '@nuxt/a11y',
-    ...(process.env.NUXT_DEMO_MODE === 'true' ? [] : ['@nuxt/eslint' as const]),
+    '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/hints',
     '@nuxt/icon',

@@ -72,6 +72,7 @@
     "@vueuse/nuxt": "^14.2.1",
     "dotenv": "^17.4.0",
     "drizzle-kit": "^0.31.10",
+    "eslint": "^10",
     "happy-dom": "^20.8.9",
     "magic-regexp": "^0.11.0",
     "nuxt-security": "^2.5.1",

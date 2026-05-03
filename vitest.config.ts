@@ -46,6 +46,7 @@ export default defineConfig({
               domEnvironment: 'happy-dom',
             },
           },
+          hookTimeout: 60000,
         },
       }),
     ],
