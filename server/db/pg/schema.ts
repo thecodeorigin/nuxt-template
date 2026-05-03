@@ -112,6 +112,7 @@ export const activityTable = pgTable('activities', {
     .notNull(),
   action: activityActionEnum('action').notNull(),
   action_ref_id: uuid('action_ref_id'),
+  test: jsonb('test'),
   metadata: jsonb('metadata'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, table => [
