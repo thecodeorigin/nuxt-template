@@ -1,8 +1,8 @@
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
 import { eq } from 'drizzle-orm'
 import z from 'zod'
 import { userTable } from '~~/server/db/pg/schema'
 import { getPgClient } from '~~/server/utils/pg'
+import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
 
 const phoneSchema = z.object({
   phone: z

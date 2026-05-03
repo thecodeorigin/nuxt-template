@@ -1,11 +1,11 @@
 import type { AuthUser } from '#layers/auth/server/services/auth'
+import { describe, expect, it } from 'vitest'
 import {
   backupKey,
   buildImpersonatedSession,
   impersonatorInfoFromSession,
   sessionKey,
 } from '#layers/auth/server/services/impersonate'
-import { describe, expect, it } from 'vitest'
 
 class FakeStorage {
   private map = new Map<string, unknown>()

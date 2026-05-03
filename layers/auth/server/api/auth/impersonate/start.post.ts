@@ -1,3 +1,6 @@
+import { eq } from 'drizzle-orm'
+import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
+import { getPgClient } from '~~/server/utils/pg'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import {
   backupKey,
@@ -7,9 +10,6 @@ import {
   sessionKey,
 } from '#layers/auth/server/services/impersonate'
 import { ImpersonateStartSchema } from '#layers/auth/shared/schemas/impersonate'
-import { eq } from 'drizzle-orm'
-import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 
 export default defineAuthorizedHandler(
   [IMPERSONATE_ABILITY],

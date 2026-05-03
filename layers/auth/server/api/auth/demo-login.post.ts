@@ -1,9 +1,9 @@
-import { ABILITY_PRESETS } from '#layers/auth/server/services/seed'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
 import { getPgClient } from '~~/server/utils/pg'
 import { simplifyNanoId } from '~~/shared/utils/id'
+import { ABILITY_PRESETS } from '#layers/auth/server/services/seed'
 
 interface DemoAgent {
   email: string

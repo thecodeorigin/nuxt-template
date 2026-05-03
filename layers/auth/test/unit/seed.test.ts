@@ -1,5 +1,5 @@
-import { ABILITY_PRESETS, SEED_USERS } from '#layers/auth/server/services/seed'
 import { describe, expect, it } from 'vitest'
+import { ABILITY_PRESETS, SEED_USERS } from '#layers/auth/server/services/seed'
 
 describe('ability presets', () => {
   it('grants user:impersonate to the admin preset', () => {

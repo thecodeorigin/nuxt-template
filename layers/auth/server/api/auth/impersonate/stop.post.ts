@@ -1,8 +1,8 @@
 import type { AuthUser } from '#layers/auth/server/services/auth'
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
-import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
 import { ActivityAction, activityTable } from '~~/server/db/pg/schema'
 import { getPgClient } from '~~/server/utils/pg'
+import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   if (!session.impersonator) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ImpersonationCandidate } from '#layers/auth/app/api/useAuthApi'
 import type { DropdownMenuItem } from '@nuxt/ui'
+import type { ImpersonationCandidate } from '#layers/auth/app/api/useAuthApi'
 import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
 
 defineProps<{

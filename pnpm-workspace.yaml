@@ -4,7 +4,65 @@ trustPolicy: no-downgrade
 
 packages:
   - layers/**
-  - packages/**
 
-patchedDependencies:
-  vue@3.5.32: patches/vue@3.5.32.patch
+catalog:
+  '@antfu/eslint-config': ^8.0.0
+  '@casl/ability': ^6.8.1
+  '@casl/vue': ^2.2.6
+  '@iconify-json/lucide': ^1.2.104
+  '@iconify-json/simple-icons': ^1.2.80
+  '@neondatabase/serverless': ^1.0.2
+  '@nuxt/a11y': 1.0.0-alpha.1
+  '@nuxt/eslint': 1.15.2
+  '@nuxt/fonts': 0.14.0
+  '@nuxt/hints': 1.0.3
+  '@nuxt/icon': 2.2.1
+  '@nuxt/scripts': 0.13.2
+  '@nuxt/test-utils': 4.0.0
+  '@nuxt/ui': ^4.7.0
+  '@nuxtjs/device': 4.0.0
+  '@octokit/types': ^16.0.0
+  '@pinia/nuxt': ^0.11.3
+  '@playwright/test': ^1.59.1
+  '@tailwindcss/vite': ^4.2.2
+  '@tanstack/vue-table': ^8.21.3
+  '@upstash/redis': ^1.37.0
+  '@vitest/coverage-v8': ^4.1.2
+  '@vue/test-utils': ^2.4.6
+  '@vueuse/nuxt': ^14.2.1
+  clsx: ^2.1.1
+  dotenv: ^17.4.0
+  drizzle-kit: ^0.31.10
+  drizzle-orm: ^0.45.2
+  es-toolkit: ^1.45.1
+  eslint: ^10
+  eslint-plugin-import-lite: ^0.6.0
+  eslint-plugin-perfectionist: ^5.9.0
+  eslint-plugin-pnpm: ^1.6.0
+  eslint-plugin-unicorn: ^64.0.0
+  google-auth-library: ^10.6.2
+  h3: ^1.15.10
+  happy-dom: ^20.8.9
+  husky: ^9.1.7
+  ioredis: ^5.10.1
+  lint-staged: ^16.4.0
+  magic-regexp: ^0.11.0
+  mongodb: ^7.1.1
+  nanoid: ^5.1.7
+  nodemailer: ^8.0.4
+  nuxt: ^4.4.2
+  nuxt-security: ^2.5.1
+  pg: ^8.20.0
+  playwright-core: ^1.59.1
+  tailwind-merge: ^3.5.0
+  tailwindcss: ^4.2.2
+  ts-enum-util: ^4.1.0
+  ts-pattern: ^5.9.0
+  tsx: ^4.21.0
+  type-fest: ^5.5.0
+  unstorage: ^1.17.5
+  vitest: ^4.1.2
+  vue: ^3.5.31
+  vue-router: ^5.0.4
+  vue-tsc: ^3.2.7
+  zod: ^4.3.6

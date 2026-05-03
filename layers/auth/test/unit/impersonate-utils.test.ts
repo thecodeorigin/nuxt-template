@@ -1,4 +1,5 @@
 import type { AuthUser } from '#layers/auth/server/services/auth'
+import { describe, expect, it } from 'vitest'
 import {
   backupKey,
   buildImpersonatedSession,
@@ -7,7 +8,6 @@ import {
   sessionKey,
 } from '#layers/auth/server/services/impersonate'
 import { ImpersonateStartSchema } from '#layers/auth/shared/schemas/impersonate'
-import { describe, expect, it } from 'vitest'
 
 function makeAdmin(over: Partial<AuthUser> = {}): AuthUser {
   return {

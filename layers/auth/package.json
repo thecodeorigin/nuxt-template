@@ -2,8 +2,5 @@
   "name": "@layers/auth",
   "type": "module",
   "private": true,
-  "main": "./nuxt.config.ts",
-  "scripts": {
-    "prepare": "nuxt prepare"
-  }
+  "main": "./nuxt.config.ts"
 }

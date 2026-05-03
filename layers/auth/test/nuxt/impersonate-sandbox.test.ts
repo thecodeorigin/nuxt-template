@@ -1,9 +1,9 @@
 // @vitest-environment nuxt
 import type { AuthUser } from '#layers/auth/server/services/auth'
-import ImpersonatePage from '#layers/auth/app/pages/sandbox/impersonate.vue'
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import ImpersonatePage from '#layers/auth/app/pages/sandbox/impersonate.vue'
 
 const ADMIN: AuthUser = {
   id: 'admin-1',

@@ -1,5 +1,5 @@
-import type { NewTodo, Todo, UpdateTodo } from '#layers/todo/shared/schemas/todo'
 import type { InjectionKey, Ref } from 'vue'
+import type { NewTodo, Todo, UpdateTodo } from '#layers/todo/shared/schemas/todo'
 
 export interface TodosContext {
   todos: Ref<Todo[]>

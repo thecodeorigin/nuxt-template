@@ -1,8 +1,8 @@
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { IMPERSONATE_ABILITY } from '#layers/auth/server/services/impersonate'
 import { ne } from 'drizzle-orm'
 import { userTable } from '~~/server/db/pg/schema'
 import { getPgClient } from '~~/server/utils/pg'
+import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { IMPERSONATE_ABILITY } from '#layers/auth/server/services/impersonate'
 
 export default defineAuthorizedHandler(
   [IMPERSONATE_ABILITY],
