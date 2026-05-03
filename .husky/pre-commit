@@ -1,0 +1,7 @@
+# Lint + auto-fix only the staged files.
+pnpm exec lint-staged
+
+# Typecheck the whole project. Override NUXT_DEMO_MODE so nuxt-security /
+# @nuxt/test-utils stay loaded — the demo strip leaves nuxt.config and
+# app/lib/ofetch.ts un-typed, which would block every commit otherwise.
+NUXT_DEMO_MODE= pnpm typecheck
