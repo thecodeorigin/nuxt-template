@@ -66,6 +66,15 @@ jobs:
       - name: Build (production)
         env:
           NITRO_PRESET: vercel
+          # Force demo flags at build time so nuxt-security (which
+          # hard-codes the Upstash rate-limiter) gets stripped from
+          # the modules array in nuxt.config.ts. Without this, the
+          # deployed bundle imports nuxt-security and crashes at
+          # runtime with "[Upstash Redis] The 'url' parameter is
+          # required" because the project env has empty values for
+          # the Upstash REST URL/token in production.
+          NUXT_DEMO_MODE: 'true'
+          NUXT_PUBLIC_DEMO_MODE: 'true'
         run: vercel build --prod --token=$VERCEL_TOKEN
 
       - name: Deploy prebuilt artifact to production
