@@ -98,7 +98,7 @@ jobs:
       - name: Pull Vercel preview project settings + env
         run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
 
-      - name: Override DB env to point at the per-PR Neon branch
+      - name: Override build-time DB env to point at the per-PR Neon branch
         run: |
           {
             echo "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}"
@@ -109,10 +109,19 @@ jobs:
       - name: Build (NITRO_PRESET=vercel) against Neon branch
         run: vercel build --token=$VERCEL_TOKEN
 
+      # Deployment-level env overrides win at runtime over the project's
+      # preview env, so the deployed function actually connects to the
+      # per-PR Neon branch (not the project's shared preview DB). Without
+      # this, the build would bake the per-PR URL as the runtimeConfig
+      # default, but Vercel would override it with the project-level URL
+      # at function invocation time and the app would query the wrong DB.
       - name: Deploy prebuilt artifact to Vercel
         id: deploy
         run: |
-          url=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz)
+          url=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz \
+            --env "NUXT_POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}" \
+            --env "POSTGRES_URL=${{ steps.neon.outputs.db_url_with_pooler }}" \
+            --env "POSTGRES_URL_NON_POOLING=${{ steps.neon.outputs.db_url }}")
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Apply drizzle migrations to the Neon branch
