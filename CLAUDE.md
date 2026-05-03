@@ -301,11 +301,16 @@ deployment** — it's a deliberate production backdoor.
 
 ## Workflow before declaring "done"
 
-Local, in this order:
+The pre-commit hook (`.husky/pre-commit`) already runs `lint-staged`
+(eslint --fix on staged `*.{ts,mts,cts,vue,js,mjs,cjs}`) and
+`pnpm typecheck` (with `NUXT_DEMO_MODE=` so `nuxt-security` /
+`@nuxt/test-utils` stay loaded — the demo strip would otherwise
+leave `nuxt.config.ts` + `app/lib/ofetch.ts` un-typed). Don't bypass
+it with `--no-verify`.
+
+Before pushing, also run:
 
 ```bash
-pnpm lint
-pnpm typecheck
 pnpm test
 pnpm test:e2e   # if UI/server behaviour changed
 ```
