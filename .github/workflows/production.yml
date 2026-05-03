@@ -72,6 +72,10 @@ jobs:
         run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz
 
       - name: Apply drizzle migrations to production Neon
+        env:
+          # Disable drizzle-kit's spinner so CI logs surface real errors
+          # instead of being clobbered by terminal escape sequences.
+          TERM: dumb
         run: |
           set -a
           . .vercel/.env.production.local
@@ -80,6 +84,8 @@ jobs:
           # Neon-Vercel integration's unpooled URL. Migrations run faster
           # and more reliably against the unpooled endpoint.
           export NUXT_POSTGRES_URL="${NUXT_POSTGRES_URL:-${POSTGRES_URL_NON_POOLING:-${DATABASE_URL_UNPOOLED:-$POSTGRES_URL}}}"
+          # Neon enforces SSL; agree with the URL's sslmode=require.
+          export NUXT_POSTGRES_SSL=true
           if [ -z "$NUXT_POSTGRES_URL" ]; then
             echo "::error::No Postgres URL available — neither NUXT_POSTGRES_URL nor any Neon-integration fallback was found in .vercel/.env.production.local"
             grep -oE '^[A-Z_]+=' .vercel/.env.production.local | tr -d = | sort
