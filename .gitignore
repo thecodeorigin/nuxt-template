@@ -31,18 +31,24 @@ coverage/
 playwright-report/
 test-results/
 
-# Claude Code skill sources (cloned via pnpm skills:sync; symlinked into .claude/skills)
-.claude/skill-sources/
+# Claude Code — .claude is a Windows junction to .agents (source of truth).
+# Git follows junctions as regular dirs, so we ignore .claude entirely;
+# all tracked content lives under .agents/ instead.
+.claude
 
-# Claude Code agent-team runtime state (regenerated per session)
-.claude/teams/
-.claude/tasks/
+# Agent-team runtime state (regenerated per session)
+.agents/teams/
+.agents/tasks/
 
-# Claude Code per-developer settings (the project default lives in .claude/settings.json)
-.claude/settings.local.json
+# Per-developer settings (project default lives in .agents/settings.json)
+.agents/settings.local.json
 
 # Agent run artifacts (QA + UX screenshots, reports, lighthouse output)
-.claude/runs/
+.agents/runs/
+
+# Prep skill plan outputs and agent workspace artifacts
+.agents/plans/
+.agents/workspace/
 ux/
 screenshots/
 
