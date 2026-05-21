@@ -129,6 +129,9 @@ catalogs:
     husky:
       specifier: ^9.1.7
       version: 9.1.7
+    jsonc-eslint-parser:
+      specifier: ^3.1.0
+      version: 3.1.0
     lint-staged:
       specifier: ^16.4.0
       version: 16.4.0
@@ -183,6 +186,9 @@ catalogs:
     vue-tsc:
       specifier: ^3.2.7
       version: 3.2.7
+    yaml-eslint-parser:
+      specifier: ^2.0.0
+      version: 2.0.0
     zod:
       specifier: ^4.3.6
       version: 4.3.6
@@ -354,6 +360,9 @@ importers:
       husky:
         specifier: 'catalog:'
         version: 9.1.7
+      jsonc-eslint-parser:
+        specifier: 'catalog:'
+        version: 3.1.0
       lint-staged:
         specifier: 'catalog:'
         version: 16.4.0
@@ -378,6 +387,9 @@ importers:
       vue-tsc:
         specifier: 'catalog:'
         version: 3.2.7(typescript@6.0.2)
+      yaml-eslint-parser:
+        specifier: 'catalog:'
+        version: 2.0.0
 
   layers/auth: {}
 

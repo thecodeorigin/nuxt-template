@@ -79,6 +79,7 @@
     "eslint-plugin-unicorn": "catalog:",
     "happy-dom": "catalog:",
     "husky": "catalog:",
+    "jsonc-eslint-parser": "catalog:",
     "lint-staged": "catalog:",
     "magic-regexp": "catalog:",
     "nuxt-security": "catalog:",
@@ -86,7 +87,8 @@
     "tsx": "catalog:",
     "type-fest": "catalog:",
     "vitest": "catalog:",
-    "vue-tsc": "catalog:"
+    "vue-tsc": "catalog:",
+    "yaml-eslint-parser": "catalog:"
   },
   "lint-staged": {
     "*.{ts,mts,cts,vue,js,mjs,cjs}": [
