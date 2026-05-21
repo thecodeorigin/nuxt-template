@@ -56,12 +56,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # NuxtHub auto-generates wrangler.json from the hub block in
-      # nuxt.config.ts and applies D1 migrations during build.
-      - name: Build (cloudflare-module, production)
+      # NuxtHub generates .output/server/wrangler.json from the hub block in
+      # nuxt.config.ts. Migrations are NOT applied during the build (the D1
+      # binding isn't reachable from the build host), so we apply them
+      # explicitly against the remote database after building, before deploy.
+      - name: Build (cloudflare_module, production)
         env:
           NITRO_PRESET: cloudflare_module
+          CF_D1_DATABASE_ID: ${{ vars.CF_D1_DATABASE_ID }}
+          CF_KV_NAMESPACE_ID: ${{ vars.CF_KV_NAMESPACE_ID }}
+          CF_CACHE_NAMESPACE_ID: ${{ vars.CF_CACHE_NAMESPACE_ID }}
+          CF_R2_BUCKET: ${{ vars.CF_R2_BUCKET }}
         run: pnpm build
 
+      - name: Apply D1 migrations (remote)
+        run: npx wrangler --cwd .output/server d1 migrations apply DB --remote
+
       - name: Deploy to Cloudflare Workers (production)
-        run: npx wrangler deploy
+        run: npx wrangler --cwd .output deploy
