@@ -9,7 +9,7 @@ name: Preview
 #   1. Derive a slug from the branch name and create (idempotent) a per-branch
 #      D1 database, capturing its id.
 #   2. Build with that D1 id + the shared preview KV/CACHE/R2 ids — read by
-#      nuxt.config.ts `$production.hub` via CF_* env vars (Cloudflare has no
+#      nuxt.config.ts `$production.hub` via CLOUDFLARE_* env vars (Cloudflare has no
 #      resource auto-association, so ids are injected at build time).
 #   3. Apply D1 migrations to the fresh per-branch database.
 #   4. Deploy a per-branch Worker (nuxt-template-<slug>) + sticky PR comment.
@@ -18,8 +18,8 @@ name: Preview
 # Required GitHub config:
 #   secret CLOUDFLARE_API_TOKEN   (Workers + D1 + KV + R2 edit)
 #   vars   CLOUDFLARE_ACCOUNT_ID,
-#          CF_PREVIEW_KV_NAMESPACE_ID, CF_PREVIEW_CACHE_NAMESPACE_ID,
-#          CF_PREVIEW_R2_BUCKET
+#          CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID, CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID,
+#          CLOUDFLARE_PREVIEW_R2_BUCKET
 #
 # NOTE: previews share one preview KV/CACHE/R2 set (only D1 is per-branch). For
 # full per-branch isolation, create those per branch here too and tear them down.
@@ -83,10 +83,10 @@ jobs:
       - name: Build (cloudflare_module, preview)
         env:
           NITRO_PRESET: cloudflare_module
-          CF_D1_DATABASE_ID: ${{ steps.d1.outputs.id }}
-          CF_KV_NAMESPACE_ID: ${{ vars.CF_PREVIEW_KV_NAMESPACE_ID }}
-          CF_CACHE_NAMESPACE_ID: ${{ vars.CF_PREVIEW_CACHE_NAMESPACE_ID }}
-          CF_R2_BUCKET: ${{ vars.CF_PREVIEW_R2_BUCKET }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ steps.d1.outputs.id }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID }}
+          CLOUDFLARE_CACHE_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID }}
+          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_PREVIEW_R2_BUCKET }}
         run: pnpm build
 
       # The generated .output/server/wrangler.json now points the DB binding at
