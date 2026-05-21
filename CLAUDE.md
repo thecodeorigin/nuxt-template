@@ -137,8 +137,13 @@ layers/
 test/
   unit/               Cross-cutting unit tests
 .github/workflows/    GitHub Actions — see "Deployment pipeline" below
-.claude/
-  skills/             Symlinks to .agents/skills
+.claude/              Windows junction → .agents/ (not tracked in git).
+                      On Windows: `cmd /c "mklink /J .claude .agents"` (no admin).
+                      On Mac/Linux: `ln -s .agents .claude`
+.agents/
+  agents/             Agent definitions (fullstack-dev, qa-visual, etc.)
+  commands/           Slash commands (/team-feature, /team)
+  skills/             Skill packs (cook, prep, nuxt-ui, nuxt, etc.)
   settings.json       Allowlist for safe Bash/MCP tools, hooks
 scripts/              One-off node scripts (key generation)
 patches/              `pnpm patch` outputs (registered in pnpm-workspace.yaml)
