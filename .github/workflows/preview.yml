@@ -1,17 +1,19 @@
 name: Preview
 
-# Preview pipeline: per-PR ephemeral D1 on Cloudflare Workers (the D1 analogue
-# of the old Neon-branch-per-PR setup — Cloudflare has no DB branching, so we
-# create a fresh D1 database per PR).
+# Preview pipeline: per-branch ephemeral D1 on Cloudflare Workers (the D1
+# analogue of Neon branches — Cloudflare has no DB branching, so we create a
+# fresh D1 per feature branch). `main` uses the fixed production resources
+# (see production.yml); every other branch gets its own dynamic set here.
 #
 # On PR opened / reopened / synchronize:
-#   1. Create (idempotent) a per-PR D1 database and capture its id.
-#   2. Build with that D1 id + the shared preview KV/CACHE/R2 ids — these are
-#      read by nuxt.config.ts `$production.hub` via CF_* env vars (Cloudflare has
-#      no resource auto-association, so ids are injected at build time).
-#   3. Apply D1 migrations to the fresh per-PR database.
-#   4. Deploy a per-PR Worker (nuxt-template-pr-<N>) + sticky PR comment.
-# On PR closed: delete the per-PR Worker and its D1 database.
+#   1. Derive a slug from the branch name and create (idempotent) a per-branch
+#      D1 database, capturing its id.
+#   2. Build with that D1 id + the shared preview KV/CACHE/R2 ids — read by
+#      nuxt.config.ts `$production.hub` via CF_* env vars (Cloudflare has no
+#      resource auto-association, so ids are injected at build time).
+#   3. Apply D1 migrations to the fresh per-branch database.
+#   4. Deploy a per-branch Worker (nuxt-template-<slug>) + sticky PR comment.
+# On PR closed: delete the per-branch Worker and its D1 database.
 #
 # Required GitHub config:
 #   secret CLOUDFLARE_API_TOKEN   (Workers + D1 + KV + R2 edit)
@@ -19,23 +21,20 @@ name: Preview
 #          CF_PREVIEW_KV_NAMESPACE_ID, CF_PREVIEW_CACHE_NAMESPACE_ID,
 #          CF_PREVIEW_R2_BUCKET
 #
-# NOTE: previews share one preview KV/CACHE/R2 set (only D1 is per-PR). For full
-# per-PR isolation, create those per PR here too and tear them down on close.
-# This workflow has not yet run against a real PR — validate the first one.
+# NOTE: previews share one preview KV/CACHE/R2 set (only D1 is per-branch). For
+# full per-branch isolation, create those per branch here too and tear them down.
 
 on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
 
 concurrency:
-  group: preview-${{ github.event.pull_request.number }}
+  group: preview-${{ github.head_ref }}
   cancel-in-progress: true
 
 env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-  DB_NAME: nuxt-template-preview-pr-${{ github.event.pull_request.number }}
-  WORKER_NAME: nuxt-template-pr-${{ github.event.pull_request.number }}
 
 jobs:
   deploy:
@@ -47,6 +46,18 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+
+      # Derive Cloudflare resource names from the branch (lowercased, non
+      # alphanumerics -> '-', capped at 40 chars). BRANCH is passed via env to
+      # avoid shell injection from the ref name.
+      - name: Resolve resource names from branch
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          SLUG=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')
+          echo "SLUG=$SLUG" >> "$GITHUB_ENV"
+          echo "DB_NAME=nuxt-template-preview-$SLUG" >> "$GITHUB_ENV"
+          echo "WORKER_NAME=nuxt-template-$SLUG" >> "$GITHUB_ENV"
 
       - uses: pnpm/action-setup@v4
         with:
@@ -60,9 +71,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Create the per-PR D1 (idempotent: `create` fails if it already exists on
-      # a re-run, so we resolve the id from `d1 info` either way).
-      - name: Create / resolve per-PR D1 database
+      # Create the per-branch D1 (idempotent: `create` fails if it already
+      # exists on a re-run, so we resolve the id from `d1 info` either way).
+      - name: Create / resolve per-branch D1 database
         id: d1
         run: |
           npx --yes wrangler d1 create "$DB_NAME" || echo "D1 exists, reusing"
@@ -79,11 +90,11 @@ jobs:
         run: pnpm build
 
       # The generated .output/server/wrangler.json now points the DB binding at
-      # the per-PR database, so this migrates that fresh database.
-      - name: Apply D1 migrations to the per-PR database
+      # the per-branch database, so this migrates that fresh database.
+      - name: Apply D1 migrations to the per-branch database
         run: npx --yes wrangler --cwd .output/server d1 migrations apply DB --remote
 
-      - name: Deploy per-PR Worker
+      - name: Deploy per-branch Worker
         id: deploy
         run: |
           out=$(npx --yes wrangler --cwd .output deploy --name "$WORKER_NAME" 2>&1)
@@ -116,8 +127,16 @@ jobs:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
-      - name: Delete per-PR Worker
-        run: npx --yes wrangler delete --name "$WORKER_NAME" || true
+      - name: Resolve resource names from branch
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          SLUG=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')
+          echo "DB_NAME=nuxt-template-preview-$SLUG" >> "$GITHUB_ENV"
+          echo "WORKER_NAME=nuxt-template-$SLUG" >> "$GITHUB_ENV"
 
-      - name: Delete per-PR D1 database
+      - name: Delete per-branch Worker
+        run: npx --yes wrangler delete "$WORKER_NAME" --force || true
+
+      - name: Delete per-branch D1 database
         run: npx --yes wrangler d1 delete "$DB_NAME" -y || true
