@@ -102,6 +102,24 @@ jobs:
           url=$(echo "$out" | grep -oE 'https://[a-z0-9.-]+workers\.dev' | head -1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
+      # Each Worker has its own secrets, so the per-branch preview Worker needs
+      # its own runtime config. NUXT_DEMO_MODE keeps the demo login enabled on
+      # previews; NUXT_AUTH_SECRET is a shared preview secret (stable so sessions
+      # survive re-deploys).
+      - name: Provision preview Worker secrets
+        env:
+          PREVIEW_NUXT_AUTH_SECRET: ${{ secrets.PREVIEW_NUXT_AUTH_SECRET }}
+        run: |
+          cat > "$RUNNER_TEMP/preview-secrets.json" <<EOF
+          {
+            "NUXT_AUTH_SECRET": "${PREVIEW_NUXT_AUTH_SECRET}",
+            "NUXT_DEMO_MODE": "true",
+            "NUXT_PUBLIC_DEMO_MODE": "true",
+            "NUXT_PUBLIC_SSL_ENABLED": "true"
+          }
+          EOF
+          npx --yes wrangler secret bulk "$RUNNER_TEMP/preview-secrets.json" --name "$WORKER_NAME"
+
       - name: Sticky PR comment
         uses: actions/github-script@v7
         with:
