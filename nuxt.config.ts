@@ -65,27 +65,28 @@ export default defineNuxtConfig({
     // config from this block at build time (wrangler.jsonc only carries the
     // observability block). Cloudflare has no resource auto-association, so the
     // resource IDs are injected from build-time env vars:
-    //   - prod: GitHub Actions variables (CF_D1_DATABASE_ID, CF_KV_NAMESPACE_ID,
-    //     CF_CACHE_NAMESPACE_ID, CF_R2_BUCKET)
+    //   - prod: GitHub Actions variables (CLOUDFLARE_D1_DATABASE_ID,
+    //     CLOUDFLARE_KV_NAMESPACE_ID, CLOUDFLARE_CACHE_NAMESPACE_ID,
+    //     CLOUDFLARE_R2_BUCKET)
     //   - preview: the preview workflow creates a per-PR D1 and passes its id in
     // kv and cache MUST be separate KV namespaces.
     hub: {
       db: {
         dialect: 'sqlite',
         driver: 'd1',
-        connection: { databaseId: process.env.CF_D1_DATABASE_ID },
+        connection: { databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID },
       },
       kv: {
         driver: 'cloudflare-kv-binding',
-        namespaceId: process.env.CF_KV_NAMESPACE_ID,
+        namespaceId: process.env.CLOUDFLARE_KV_NAMESPACE_ID,
       },
       cache: {
         driver: 'cloudflare-kv-binding',
-        namespaceId: process.env.CF_CACHE_NAMESPACE_ID,
+        namespaceId: process.env.CLOUDFLARE_CACHE_NAMESPACE_ID,
       },
       blob: {
         driver: 'cloudflare-r2',
-        bucketName: process.env.CF_R2_BUCKET || 'nuxt-template-prod',
+        bucketName: process.env.CLOUDFLARE_R2_BUCKET || 'nuxt-template-prod',
         binding: 'BLOB',
       },
     },
