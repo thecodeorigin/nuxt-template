@@ -1,7 +1,7 @@
-import type { AuthUser } from '#layers/auth/server/services/auth'
 import type { H3Event } from 'h3'
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import type { AuthUser } from '#layers/auth/server/services/auth'
 import { createError, getRouterParam } from 'h3'
+import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
 
 export interface SubjectRegistration<T extends Record<string, unknown> = Record<string, unknown>> {
   paramName?: string

@@ -33,9 +33,6 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
-        # Pre-existing OAuth sendRedirect errors fail this — see
-        # nuxt-template tracking. Drop `continue-on-error` once cleaned up.
-        continue-on-error: true
 
       - name: Tests
         run: pnpm test

@@ -7,6 +7,7 @@ defineProps<{
 
 const colorMode = useColorMode()
 const authStore = useAuthStore()
+const toast = useToast()
 
 const user = computed(() => ({
   name: authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'Guest',
@@ -25,13 +26,42 @@ async function logout() {
   }
 }
 
-const items = computed<DropdownMenuItem[][]>(() => ([
-  [{
+async function stopImpersonation() {
+  try {
+    await authStore.stopImpersonation()
+    toast.add({ title: 'Stopped impersonation', color: 'success' })
+    if (import.meta.client)
+      window.location.reload()
+  }
+  catch (err: unknown) {
+    const error = err as { data?: { statusMessage?: string }, statusMessage?: string }
+    toast.add({
+      title: 'Stop impersonation failed',
+      description: error?.data?.statusMessage ?? error?.statusMessage ?? 'Unknown error',
+      color: 'error',
+    })
+  }
+}
+
+const items = computed<DropdownMenuItem[][]>(() => {
+  const groups: DropdownMenuItem[][] = []
+
+  groups.push([{
     type: 'label',
     label: user.value.name,
     avatar: user.value.avatar,
-  }],
-  [{
+  }])
+
+  if (authStore.isImpersonating) {
+    groups.push([{
+      label: `Back to ${authStore.impersonator?.name ?? authStore.impersonator?.primary_email ?? 'admin'}`,
+      icon: 'i-lucide-shield',
+      color: 'warning' as const,
+      onSelect: () => { void stopImpersonation() },
+    }])
+  }
+
+  groups.push([{
     label: 'Appearance',
     icon: 'i-lucide-sun-moon',
     children: [{
@@ -62,8 +92,9 @@ const items = computed<DropdownMenuItem[][]>(() => ([
         colorMode.preference = 'system'
       },
     }],
-  }],
-  [{
+  }])
+
+  groups.push([{
     label: 'Documentation',
     icon: 'i-lucide-book-open',
     to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
@@ -77,8 +108,10 @@ const items = computed<DropdownMenuItem[][]>(() => ([
     label: 'Log out',
     icon: 'i-lucide-log-out',
     onSelect: () => { void logout() },
-  }],
-]))
+  }])
+
+  return groups
+})
 </script>
 
 <template>

@@ -1,17 +1,17 @@
 import type { AuthUser } from '#layers/auth/server/services/auth'
+import { describe, expect, it } from 'vitest'
 import {
   backupKey,
   buildImpersonatedSession,
   impersonatorInfoFromSession,
   sessionKey,
 } from '#layers/auth/server/services/impersonate'
-import { describe, expect, it } from 'vitest'
 
 class FakeStorage {
   private map = new Map<string, unknown>()
-  async setItem(k: string, v: unknown) { this.map.set(k, v) }
-  async getItem<T>(k: string) { return (this.map.get(k) as T | undefined) ?? null }
-  async removeItem(k: string) { this.map.delete(k) }
+  async set(k: string, v: unknown) { this.map.set(k, v) }
+  async get<T>(k: string) { return (this.map.get(k) as T | undefined) ?? null }
+  async del(k: string) { this.map.delete(k) }
   has(k: string) { return this.map.has(k) }
   size() { return this.map.size }
 }
@@ -42,26 +42,26 @@ const TARGET = {
 }
 
 async function start(storage: FakeStorage, sessionId: string, admin: AuthUser, target: typeof TARGET) {
-  await storage.setItem(backupKey(sessionId), admin)
+  await storage.set(backupKey(sessionId), admin)
   const newSession = buildImpersonatedSession(target, impersonatorInfoFromSession(admin))
-  await storage.setItem(sessionKey(sessionId), newSession)
+  await storage.set(sessionKey(sessionId), newSession)
   return newSession
 }
 
 async function stop(storage: FakeStorage, sessionId: string) {
-  const original = await storage.getItem<AuthUser>(backupKey(sessionId))
+  const original = await storage.get<AuthUser>(backupKey(sessionId))
   if (!original)
     throw new Error('Backup missing')
   const restored = { ...original, impersonator: null }
-  await storage.setItem(sessionKey(sessionId), restored)
-  await storage.removeItem(backupKey(sessionId))
+  await storage.set(sessionKey(sessionId), restored)
+  await storage.del(backupKey(sessionId))
   return restored
 }
 
 describe('impersonation session roundtrip', () => {
   it('start: replaces session with target user and backs up admin', async () => {
     const storage = new FakeStorage()
-    await storage.setItem(sessionKey(SESSION_ID), ADMIN)
+    await storage.set(sessionKey(SESSION_ID), ADMIN)
 
     const after = await start(storage, SESSION_ID, ADMIN, TARGET)
 
@@ -69,17 +69,17 @@ describe('impersonation session roundtrip', () => {
     expect(after.abilities).toEqual(['todo:read'])
     expect(after.impersonator?.id).toBe(ADMIN.id)
 
-    const live = await storage.getItem<AuthUser>(sessionKey(SESSION_ID))
+    const live = await storage.get<AuthUser>(sessionKey(SESSION_ID))
     expect(live?.id).toBe(TARGET.id)
 
-    const backup = await storage.getItem<AuthUser>(backupKey(SESSION_ID))
+    const backup = await storage.get<AuthUser>(backupKey(SESSION_ID))
     expect(backup?.id).toBe(ADMIN.id)
     expect(backup?.abilities).toContain('user:impersonate')
   })
 
   it('stop: restores admin and removes backup', async () => {
     const storage = new FakeStorage()
-    await storage.setItem(sessionKey(SESSION_ID), ADMIN)
+    await storage.set(sessionKey(SESSION_ID), ADMIN)
     await start(storage, SESSION_ID, ADMIN, TARGET)
 
     const restored = await stop(storage, SESSION_ID)
@@ -88,7 +88,7 @@ describe('impersonation session roundtrip', () => {
     expect(restored.abilities).toContain('user:impersonate')
     expect(restored.impersonator).toBeNull()
 
-    const live = await storage.getItem<AuthUser>(sessionKey(SESSION_ID))
+    const live = await storage.get<AuthUser>(sessionKey(SESSION_ID))
     expect(live?.id).toBe(ADMIN.id)
     expect(storage.has(backupKey(SESSION_ID))).toBe(false)
   })
@@ -101,7 +101,7 @@ describe('impersonation session roundtrip', () => {
   it('an impersonated session evaluates abilities as the target user', async () => {
     const storage = new FakeStorage()
     await start(storage, SESSION_ID, ADMIN, TARGET)
-    const live = await storage.getItem<AuthUser>(sessionKey(SESSION_ID))
+    const live = await storage.get<AuthUser>(sessionKey(SESSION_ID))
 
     expect(live?.abilities.includes('user:impersonate')).toBe(false)
     expect(live?.abilities.includes('todo:read')).toBe(true)

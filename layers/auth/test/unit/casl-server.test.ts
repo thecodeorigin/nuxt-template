@@ -1,5 +1,6 @@
-import type { AuthUser } from '#layers/auth/server/services/auth'
 import type { H3Event } from 'h3'
+import type { AuthUser } from '#layers/auth/server/services/auth'
+import { beforeEach, describe, expect, it } from 'vitest'
 import {
   _resetSubjects,
   defineSubject,
@@ -10,7 +11,6 @@ import {
   parseAbility,
   runAuthorizedHandler,
 } from '#layers/auth/server/services/casl'
-import { beforeEach, describe, expect, it } from 'vitest'
 
 function makeEvent(params: Record<string, string> = {}): H3Event {
   return { context: { params } } as unknown as H3Event

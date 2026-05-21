@@ -72,7 +72,7 @@ After green, mark the task `completed` via `TaskUpdate` and check `TaskList` for
 **File ownership rule**: each fullstack-dev owns exactly one layer. Never edit another teammate's layer files. Cross-layer needs are surfaced — not solved unilaterally:
 
 - **You need a schema/type from another slice** → import it from `#layers/<other-slice>/shared/schemas/...`. Read-only is fine.
-- **You need to extend cross-cutting infra** (`server/db/pg/schema.ts`, `server/utils/`, `app/lib/`, `shared/utils/`) → message the team lead first. Cross-cutting changes are coordinated, not raced.
+- **You need to extend cross-cutting infra** (`server/db/schema.ts`, `server/utils/`, `app/lib/`, `shared/utils/`) → message the team lead first. Cross-cutting changes are coordinated, not raced.
 - **You discover a bug in another slice** → don't fix it. `SendMessage` to that slice's owner with file:line and a short repro. Stay in your lane.
 - **Two slices need the same new shared helper** → propose it to the lead. The lead decides whether it belongs in `shared/utils/` (pure cross-cutting) or in one slice with the other importing it.
 

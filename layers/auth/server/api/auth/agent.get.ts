@@ -1,6 +1,6 @@
+import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
-import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 export default defineEventHandler(async (event) => {
@@ -9,7 +9,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
 
-  const db = getPgClient()
   const now = new Date()
 
   const email = 'agent@localhost'
@@ -39,11 +38,10 @@ export default defineEventHandler(async (event) => {
     user = updated!
   }
 
-  // Create session in Redis
+  // Create session in KV
   const sessionId = simplifyNanoId()
-  const storage = useStorage('redis')
 
-  await storage.setItem(`session:${sessionId}`, {
+  await kv.set(`session:${sessionId}`, {
     id: user.id,
     primary_email: user.primary_email,
     primary_phone: user.primary_phone,

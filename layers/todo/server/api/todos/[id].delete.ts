@@ -1,4 +1,4 @@
-import type { Todo } from '#layers/todo/shared/schemas/todo'
+import { kv } from '@nuxthub/kv'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
@@ -6,11 +6,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing id' })
   }
 
-  const storage = useStorage<Todo>('todos')
-  if (!(await storage.hasItem(id))) {
+  if (!(await kv.has(`todo:${id}`))) {
     throw createError({ statusCode: 404, statusMessage: 'Todo not found' })
   }
 
-  await storage.removeItem(id)
+  await kv.del(`todo:${id}`)
   return { success: true }
 })

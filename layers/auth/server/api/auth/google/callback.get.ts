@@ -1,7 +1,7 @@
+import { ActivityAction, activityTable, identityTable, userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { and, eq } from 'drizzle-orm'
 import { OAuth2Client } from 'google-auth-library'
-import { ActivityAction, activityTable, identityTable, userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 export default defineEventHandler(async (event) => {
@@ -43,7 +43,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const db = getPgClient()
   const now = new Date()
 
   // 1. Check if user exists by email
@@ -106,9 +105,8 @@ export default defineEventHandler(async (event) => {
 
   // Create session
   const sessionId = simplifyNanoId()
-  const storage = useStorage('redis')
 
-  await storage.setItem(`session:${sessionId}`, {
+  await kv.set(`session:${sessionId}`, {
     id: user.id,
     primary_email: user.primary_email,
     primary_phone: user.primary_phone,

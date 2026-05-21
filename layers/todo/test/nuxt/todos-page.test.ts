@@ -1,7 +1,7 @@
-import TodosPage from '#layers/todo/app/pages/todos.vue'
 // @vitest-environment nuxt
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
 import { describe, expect, it } from 'vitest'
+import TodosPage from '#layers/todo/app/pages/todos.vue'
 
 registerEndpoint('/api/todos', () => [])
 

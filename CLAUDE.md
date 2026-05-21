@@ -21,13 +21,20 @@ parallel work untangled.
 - Vue 3, TypeScript
 - **Nuxt UI v4** for every UI primitive
 - **Pinia** for client state (only when truly global — see auth layer)
-- **Drizzle ORM** + Neon serverless Postgres (`server/db/pg/`)
-- **Upstash Redis** for sessions / caching (`useStorage('redis')`)
+- **NuxtHub** (`@nuxthub/core`) for the full Cloudflare stack: database, KV,
+  blob, cache. Server-side `db`, `schema`, `kv`, `blob` are provided by the
+  `@nuxthub/{db,kv,blob}` packages (auto-imported; also importable explicitly).
+- **Drizzle ORM** + Cloudflare **D1** (SQLite) via NuxtHub. Schema in
+  `server/db/schema.ts`; client is `db` from `@nuxthub/db`.
+- **Cloudflare KV** for sessions / caching / rate-limit counters — `kv` from
+  `@nuxthub/kv` (local dev is emulated).
+- **Cloudflare R2** for blobs — `blob` from `@nuxthub/blob`.
 - **Zod** for validation at every boundary
 - **Vitest** (unit + nuxt projects) and **Playwright** (e2e) for tests
 - **antfu** ESLint config (no Prettier; eslint owns formatting)
 - **pnpm** as the package manager
-- **Deploy**: GitHub Actions builds + ships; Vercel only hosts the artifacts
+- **Deploy**: GitHub Actions builds + ships to **Cloudflare Workers**
+  (`wrangler deploy`). NuxtHub applies D1 migrations during the build.
 
 ## Hard rules
 
@@ -36,10 +43,11 @@ parallel work untangled.
    For UI changes, add or extend a Playwright e2e test that exercises the user
    flow.
 2. **Automation is the source of truth.** Every PR runs `CI` (lint + typecheck
-   + tests) and `Preview` (build + Neon-branch migrate + deploy) on GitHub
-   Actions. **Do not merge a PR with red checks.** Don't disable, mock-over,
-   or `continue-on-error` a failing check to make it pass — fix the root
-   cause. Push every change through a PR; never push to `main` directly.
+   + tests) and `Preview` (build + deploy to a Cloudflare Workers preview, D1
+   migrations applied during build) on GitHub Actions. **Do not merge a PR with
+   red checks.** Don't disable, mock-over, or `continue-on-error` a failing
+   check to make it pass — fix the root cause. Push every change through a PR;
+   never push to `main` directly.
 3. **Nuxt UI only.** Never use raw `<button>`, `<input>`, `<select>`, `<dialog>`,
    `<table>`, `<a>` (for app navigation), or hand-rolled menus when a `U*`
    component exists. Consult the `nuxt-ui` skill for the catalog. The full
@@ -112,11 +120,13 @@ app/                  Cross-cutting Nuxt frontend (project srcDir)
   types/utils.d.ts    Generic TS helpers (ExtractResponse)
   utils/error.ts      whenError, getErrorMessage
 server/               Cross-cutting Nitro backend (project)
-  db/pg/              Drizzle schema + migrations (PostgreSQL)
-  utils/              Cross-cutting helpers only (PG client, cache, base64,
-                      cron/webhook/task auth wrappers, URL builder, Redis
-                      key prefix). No business logic.
-  plugins/            Nitro plugins (redis storage mount etc.)
+  db/                 Drizzle schema (schema.ts, SQLite/D1) + generated
+                      migrations (migrations/sqlite/). NuxtHub owns the
+                      drizzle config + the db/kv/blob bindings.
+  routes/             Nitro routes (e.g. images/[...pathname] → blob.serve)
+  utils/              Cross-cutting helpers only (KV cache wrapper, base64,
+                      cron/webhook/task auth wrappers, URL builder). No
+                      business logic. (db/kv/blob come from @nuxthub/*.)
 shared/utils/         Cross-cutting pure utils (id, number, string, uuid)
 layers/
   auth/               Sessions, OAuth, CASL, impersonation, seed users.
@@ -125,14 +135,15 @@ layers/
   todo/               Reference vertical slice (CRUD via provide/inject).
                       See layers/todo/CLAUDE.md.
 test/
-  unit/               Cross-cutting unit tests (storage-base etc.)
+  unit/               Cross-cutting unit tests
 .github/workflows/    GitHub Actions — see "Deployment pipeline" below
 .claude/
   skills/             Symlinks to .agents/skills
   settings.json       Allowlist for safe Bash/MCP tools, hooks
 scripts/              One-off node scripts (key generation)
 patches/              `pnpm patch` outputs (registered in pnpm-workspace.yaml)
-vercel.json           Project config; `git.deploymentEnabled: false` so only CI deploys
+wrangler.jsonc        Cloudflare Workers config (observability only; NuxtHub
+                      generates the D1/KV/R2 bindings from nuxt.config hub block)
 ```
 
 ## Layers
@@ -168,15 +179,16 @@ When you add a new feature:
 - Validate body with a Zod schema imported from `<layer>/shared/schemas/`.
 - Throw `createError({ statusCode, statusMessage })` on failure; don't return
   bare 500s.
-- Rate-limited endpoints use `useStorage('redis')` (see
+- Rate-limited endpoints use `kv` from `@nuxthub/kv` (see
   `layers/auth/server/api/auth/phone.patch.ts`).
 
 ## Auth & authorization
 
 All auth/authz code lives in `layers/auth/`. The high-level shape:
 
-- **Sessions** live in `useStorage('redis')` keyed by `session:{sessionId}`,
-  where `sessionId` is the `sessionid` cookie (or `x-session-id` header).
+- **Sessions** live in Cloudflare KV (`kv` from `@nuxthub/kv`) keyed by
+  `session:{sessionId}`, where `sessionId` is the `sessionid` cookie (or
+  `x-session-id` header).
 - **`AuthUser`** (`layers/auth/server/services/auth.ts`) carries
   `abilities: string[]` and an optional
   `impersonator: ImpersonatorInfo | null` for the impersonation flow.
@@ -197,7 +209,7 @@ All auth/authz code lives in `layers/auth/`. The high-level shape:
   `useAbility()`. See `layers/auth/test/unit/casl-frontend.test.ts`.
 - **Page meta** flags (`public`, `unauthenticatedOnly`, `can`) are typed in
   `layers/auth/app/types/router.d.ts`. Default = requires auth.
-- **Impersonation**: `POST /api/auth/impersonate/{start,stop}` swap the Redis
+- **Impersonation**: `POST /api/auth/impersonate/{start,stop}` swap the KV
   session in-place (admin's session is backed up at
   `impersonator:session:<sid>`, the live session becomes the target user).
   The admin's identity rides along on `session.impersonator` so the UI knows
@@ -206,31 +218,57 @@ All auth/authz code lives in `layers/auth/`. The high-level shape:
 For the full ownership map, conventions for adding new auth routes, and the
 impersonation invariant, read `layers/auth/CLAUDE.md`.
 
+## NuxtHub import convention
+
+Use the **`@nuxthub/*`** packages, not the legacy `hub:*` virtual modules.
+Per the NuxtHub docs, `@nuxthub/*` is the recommended form (it resolves across
+Nuxt and external bundlers); `hub:*` only works inside Nuxt and is kept for
+backwards compatibility. `db`, `schema`, `kv`, `blob` are also auto-imported
+server-side, but prefer the explicit import for grep-ability:
+
+- DB client: `import { db } from '@nuxthub/db'`
+- Schema (tables, enums, types): `import { userTable, ActivityAction, type User } from '@nuxthub/db/schema'`
+- KV: `import { kv } from '@nuxthub/kv'`
+- Blob: `import { blob, ensureBlob } from '@nuxthub/blob'`
+
+`@nuxthub/db/schema` is generated from `server/db/schema.ts`, so it re-exports
+everything that file exports.
+
 ## Drizzle conventions
 
-- Schema lives in `server/db/pg/schema.ts` at the project root because the
-  tables are referenced by multiple layers (auth seeds users; future layers
-  may add their own tables alongside). Generate migrations with
-  `pnpm db:generate` and commit them. Migrations apply automatically in CI
-  (preview = per-PR Neon branch; production = main Neon DB).
-- For local dev or manual runs: `pnpm db:migrate` (reads `NUXT_POSTGRES_URL`
-  from `.env`).
-- Inspect with `pnpm db:preview` (Drizzle Studio).
-- Export `Inferred*` types from the schema file; consumers import the type, not
-  the row type from `pg`.
+- Schema lives in `server/db/schema.ts` at the project root (SQLite via
+  `drizzle-orm/sqlite-core`) because the tables are referenced by multiple
+  layers (auth seeds users; future layers may add their own tables alongside).
+  Generate migrations with `pnpm db:generate` (= `nuxt db generate`); they land
+  in `server/db/migrations/sqlite/` — commit them. NuxtHub applies migrations
+  automatically: on `pnpm dev`/`pnpm build` locally, and during the Cloudflare
+  build in CI (`applyMigrationsDuringBuild`).
+- For a manual local apply: `pnpm db:migrate` (= `nuxt db migrate`). Local dev
+  uses a file-based SQLite DB under `.data` — no connection string needed.
+- Inspect ad-hoc with `nuxt db sql "SELECT …"`.
+- D1/SQLite caveats vs Postgres: ids are `text` (uuid via
+  `crypto.randomUUID()`), timestamps are `integer({ mode: 'timestamp' })`,
+  booleans are `integer({ mode: 'boolean' })`, JSON/arrays are
+  `text({ mode: 'json' })`, and there are no native enums (use
+  `text({ enum: [...] })`).
+- Export `Inferred*` types from the schema file; consumers import the type from
+  `@nuxthub/db/schema`.
 
 ## Storage & caching
 
-- `useStorage('redis')` is mounted by `server/plugins/redis.ts` against
-  Upstash via the `unstorage/drivers/upstash` driver.
-- The same Upstash instance backs all environments. Keys are namespaced by
-  `getRedisBase()` (`server/utils/storage.ts`):
-  - production → `redis:prod`
-  - preview branch slug → `redis:preview:<slug>`
-  - local dev → `redis:local`
-  - explicit override → `NUXT_REDIS_BASE=...`
-- Don't reach for `unstorage/drivers/memory` outside of fallbacks; production
-  data must hit Upstash.
+- KV is Cloudflare KV via NuxtHub — `import { kv } from '@nuxthub/kv'`
+  (`kv.get/set/has/del/keys/clear`; `set` takes `{ ttl }` in seconds). Used for
+  sessions, the per-user rate-limit counters, and `getCachedOrFetch`
+  (`server/utils/cache.ts`).
+- Blob is Cloudflare R2 — `import { blob } from '@nuxthub/blob'`
+  (`server/routes/images/[...pathname].get.ts` serves via `blob.serve`).
+- Local dev emulates KV/R2/D1 under `.data`; production resolves to the
+  Cloudflare bindings declared in the `$production.hub` block of
+  `nuxt.config.ts`. There is no per-environment key prefixing — each
+  environment gets its own Cloudflare namespace/bucket.
+- The `nuxt-security` rate limiter uses an in-process `lru-cache` driver
+  (per Worker isolate). For cross-isolate limiting, back it with a KV- or
+  Durable-Object-based unstorage driver.
 
 ## Tests
 
@@ -248,62 +286,61 @@ which collects e2e specs from `tests/` and `layers/*/tests/`.
 Inside a layer, layer-internal imports use `#layers/<name>/...` aliases
 (generated by `nuxt prepare`) for both source and test files. `~~/...` and
 `~/...` always resolve to the project root, so use them only when reaching
-for cross-cutting infra (`~~/server/db/pg/schema`, `~~/server/utils/pg`,
+for cross-cutting infra (`@nuxthub/db`, `@nuxthub/db/schema`,
 `~~/shared/utils/id`).
 
 ## Deployment pipeline
 
-GitHub Actions does the work. Vercel only hosts the artifacts.
+GitHub Actions does the work, deploying to **Cloudflare Workers** with
+`wrangler`. There is no Vercel and no Neon — D1, KV, R2, and the Worker all
+live on Cloudflare.
 
-`vercel.json` sets `git.deploymentEnabled: false`, so Vercel never auto-builds
-on push. Don't re-enable it; deploys must go through CI so they're traceable
-and so per-PR Neon branches stay isolated.
+Deploys go through CI so they're traceable. `wrangler.jsonc` carries only the
+observability block; the D1/KV/R2 bindings are generated by NuxtHub from the
+`$production.hub` block in `nuxt.config.ts` at build time.
 
 ### Workflows
 
 | Workflow | File | Triggers | What it does |
 | --- | --- | --- | --- |
 | **CI** | `.github/workflows/ci.yml` | Every PR + push to `main` | `pnpm lint`, `pnpm typecheck`, `pnpm test`. Must be green to merge. |
-| **Preview** | `.github/workflows/preview.yml` | PR `opened` / `reopened` / `synchronize` / `closed` | On open/sync: creates `preview/pr-<#>-<branch>` Neon branch (14-day expiry), `vercel pull --environment=preview`, overrides `NUXT_POSTGRES_URL` + `POSTGRES_URL_NON_POOLING` to the per-PR branch, `vercel build` + `vercel deploy --prebuilt`, then runs `pnpm db:migrate` against the Neon branch, then posts a sticky PR comment with the URL. On close: deletes the Neon branch. |
-| **Production** | `.github/workflows/production.yml` | Push to `main` | `vercel pull --environment=production`, `vercel build --prod`, `vercel deploy --prebuilt --prod`, then runs `pnpm db:migrate` against `PROD_POSTGRES_URL`. |
+| **Preview** | `.github/workflows/preview.yml` | PR `opened` / `reopened` / `synchronize` / `closed` | On open/sync: `pnpm build` with `NITRO_PRESET=cloudflare-module` + `CLOUDFLARE_ENV=preview`, `wrangler deploy --env preview`, then posts a sticky PR comment. D1 migrations apply during the build. No per-PR infra to tear down on close. |
+| **Production** | `.github/workflows/production.yml` | Push to `main` | `pnpm build` with `NITRO_PRESET=cloudflare-module`, then `wrangler deploy`. D1 migrations apply during the build. |
 
-> Migrations run **after** the Vercel deploy, not before — so a failed
-> deploy never moves the schema forward. The tradeoff is a brief window
-> where the deployed code is running against the previous schema; safe
-> for additive migrations, follow expand-contract for renames or drops.
+> Migrations apply **during the build**, before the Worker goes live, so the
+> deployed code always matches the current schema. For renames/drops, still
+> follow expand-contract.
 
 ### Environment isolation
 
-- Production sees production Postgres + `redis:prod` Upstash prefix.
-- Each preview gets an ephemeral Neon branch + its own
-  `redis:preview:<branch-slug>` Upstash prefix. No data bleed between PRs.
-- Local dev defaults to `redis:local`; you can point at a real Postgres via
-  `.env` (don't commit).
+- Production and each preview use **separate Cloudflare bindings** (distinct
+  D1 database, KV namespaces, R2 bucket) selected by `CLOUDFLARE_ENV`. No data
+  bleed between environments.
+- Local dev emulates D1/KV/R2 under `.data` — nothing to provision, nothing to
+  commit.
 
 ### Required GitHub configuration
 
-Already set in repo settings; only add new ones if you introduce a new
-secret-bound integration.
+Replace the old Vercel/Neon secrets with the Cloudflare ones.
 
 | Kind | Name | Provided by |
 | --- | --- | --- |
-| Secret | `NEON_API_KEY` | Neon-GitHub integration |
-| Secret | `VERCEL_TOKEN` | manual (Vercel team token) |
-| Secret | `PROD_POSTGRES_URL` | manual (Neon production conn string) |
-| Variable | `NEON_PROJECT_ID` | Neon-GitHub integration |
-| Variable | `VERCEL_PROJECT_ID` | manual |
-| Variable | `VERCEL_TEAM_ID` | manual |
+| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare token with Workers + D1 + KV + R2 (and `workers_observability` if logging) edit perms |
+| Variable | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id |
+
+Before the first deploy, create the resources (`wrangler d1 create`,
+`wrangler kv namespace create`, `wrangler r2 bucket create`) and paste the
+real ids into the `$production.hub` block of `nuxt.config.ts` (replacing the
+`<…>` placeholders).
 
 `nuxt-security` is loaded uniformly across **development, preview, and
 production** with the same production-grade configuration (CSP, HSTS,
 CSRF, rate limiter, request-size limiter, XSS validator, full headers
-suite). The only env-aware bit is the rate-limiter driver: Upstash when
-`NUXT_UPSTASH_REDIS_REST_URL` + `NUXT_UPSTASH_REDIS_REST_TOKEN` are set,
-`lru-cache` (in-process) otherwise. Don't add a `$development.security`
-or `$test.security` block — the goal is for dev/preview to behave just
-like production.
+suite). The rate-limiter driver is an in-process `lru-cache` (per Worker
+isolate). Don't add a `$development.security` or `$test.security` block —
+the goal is for dev/preview to behave just like production.
 
-`NUXT_DEMO_MODE=true` on Vercel preview/production env ungates
+`NUXT_DEMO_MODE=true` on the Cloudflare preview/production env ungates
 `/api/auth/demo-login` so the deployed app accepts the
 "Sign in as Admin/User Agent" buttons. **Don't set it on a non-demo
 deployment** — it's a deliberate backdoor for the demo project.
@@ -342,9 +379,8 @@ If a check fails:
 | `pnpm test:watch` | Vitest in watch mode |
 | `pnpm test:e2e` | Playwright headless (root + layers) |
 | `pnpm test:e2e:ui` | Playwright UI mode for debugging |
-| `pnpm db:generate` | Generate Drizzle migration from schema diff |
-| `pnpm db:migrate` | Apply pending migrations (uses `NUXT_POSTGRES_URL`) |
-| `pnpm db:preview` | Open Drizzle Studio |
+| `pnpm db:generate` | Generate D1/SQLite migration from schema diff (`nuxt db generate`) |
+| `pnpm db:migrate` | Apply pending migrations to the local D1 DB (`nuxt db migrate`) |
 | `pnpm auth:generate` | Generate auth signing keys |
 
 ## Reference vertical slice: `layers/todo`

@@ -1,6 +1,7 @@
+import { kv } from '@nuxthub/kv'
+
 export async function getCachedOrFetch<T>(key: string, fetcher: () => Promise<T>, ttl = 3600): Promise<T> {
-  const storage = useStorage('redis')
-  const cached = await storage.getItem<T>(key)
+  const cached = await kv.get<T>(key)
 
   if (cached) {
     return cached
@@ -9,7 +10,7 @@ export async function getCachedOrFetch<T>(key: string, fetcher: () => Promise<T>
   const data = await fetcher()
 
   if (data) {
-    await storage.setItem(key, data, { ttl })
+    await kv.set(key, data, { ttl })
   }
 
   return data

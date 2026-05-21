@@ -1,5 +1,5 @@
-import { abilitiesToRules, pageMetaCanCheck, parseAbility } from '#layers/auth/app/composables/casl'
 import { describe, expect, it } from 'vitest'
+import { abilitiesToRules, pageMetaCanCheck, parseAbility } from '#layers/auth/app/composables/casl'
 
 describe('parseAbility (frontend)', () => {
   it('parses "subject:action"', () => {

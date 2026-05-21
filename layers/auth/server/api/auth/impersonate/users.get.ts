@@ -1,13 +1,11 @@
+import { userTable } from '@nuxthub/db/schema'
+import { ne } from 'drizzle-orm'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { IMPERSONATE_ABILITY } from '#layers/auth/server/services/impersonate'
-import { ne } from 'drizzle-orm'
-import { userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 
 export default defineAuthorizedHandler(
   [IMPERSONATE_ABILITY],
   async (_event, { session }) => {
-    const db = getPgClient()
     const rows = await db
       .select({
         id: userTable.id,

@@ -1,8 +1,8 @@
 import type { AuthUser } from '#layers/auth/server/services/auth'
+import { ActivityAction, activityTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
 import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
-import { ActivityAction, activityTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   if (!session.impersonator) {
@@ -14,8 +14,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
-  const storage = useStorage('redis')
-  const original = await storage.getItem<AuthUser>(backupKey(sessionId))
+  const original = await kv.get<AuthUser>(backupKey(sessionId))
   if (!original) {
     throw createError({
       statusCode: 500,
@@ -25,10 +24,9 @@ export default defineAuthenticatedHandler(async (event, session) => {
 
   const restored: AuthUser = { ...original, impersonator: null }
 
-  await storage.setItem(sessionKey(sessionId), restored)
-  await storage.removeItem(backupKey(sessionId))
+  await kv.set(sessionKey(sessionId), restored)
+  await kv.del(backupKey(sessionId))
 
-  const db = getPgClient()
   await db.insert(activityTable).values({
     user_id: original.id,
     action: ActivityAction.IMPERSONATE_STOP,

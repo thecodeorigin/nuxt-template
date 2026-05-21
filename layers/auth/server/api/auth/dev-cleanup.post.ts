@@ -1,8 +1,8 @@
-import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
+import { userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { inArray } from 'drizzle-orm'
 import { z } from 'zod'
-import { userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
+import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
 
 const DevCleanupSchema = z.object({
   emails: z.array(z.email()).default([]),
@@ -18,7 +18,6 @@ export default defineEventHandler(async (event) => {
 
   let deletedUsers = 0
   if (emails.length > 0) {
-    const db = getPgClient()
     const removed = await db
       .delete(userTable)
       .where(inArray(userTable.primary_email, emails))
@@ -28,10 +27,9 @@ export default defineEventHandler(async (event) => {
 
   let deletedSessions = 0
   if (session_ids.length > 0) {
-    const storage = useStorage('redis')
     for (const sid of session_ids) {
-      await storage.removeItem(sessionKey(sid))
-      await storage.removeItem(backupKey(sid))
+      await kv.del(sessionKey(sid))
+      await kv.del(backupKey(sid))
       deletedSessions++
     }
   }

@@ -1,7 +1,5 @@
-import type { drizzle } from 'drizzle-orm/node-postgres'
-import type { getPgClient } from '~~/server/utils/pg'
+import { userTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-import { userTable } from '~~/server/db/pg/schema'
 
 export interface SeedUserDef {
   primary_email: string
@@ -58,8 +56,6 @@ export const SEED_USERS: SeedUserDef[] = [
   },
 ]
 
-type Db = ReturnType<typeof drizzle> | ReturnType<typeof getPgClient>
-
 export interface SeededUser {
   id: string
   primary_email: string
@@ -67,7 +63,6 @@ export interface SeededUser {
 }
 
 export async function seedUsers(
-  db: Db,
   users: SeedUserDef[] = SEED_USERS,
 ): Promise<SeededUser[]> {
   const seeded: SeededUser[] = []
@@ -102,7 +97,6 @@ export async function seedUsers(
 }
 
 export async function unseedUsers(
-  db: Db,
   users: SeedUserDef[] = SEED_USERS,
 ): Promise<void> {
   for (const u of users) {

@@ -1,9 +1,9 @@
-import { ABILITY_PRESETS } from '#layers/auth/server/services/seed'
+import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 import { simplifyNanoId } from '~~/shared/utils/id'
+import { ABILITY_PRESETS } from '#layers/auth/server/services/seed'
 
 interface DemoAgent {
   email: string
@@ -39,7 +39,6 @@ export default defineEventHandler(async (event) => {
   const { agent } = await readValidatedBody(event, DemoLoginSchema.parse)
   const preset = DEMO_AGENTS[agent]
 
-  const db = getPgClient()
   const now = new Date()
 
   const existing = await db.select().from(userTable).where(eq(userTable.primary_email, preset.email)).limit(1)
@@ -72,9 +71,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const sessionId = simplifyNanoId()
-  const storage = useStorage('redis')
 
-  await storage.setItem(`session:${sessionId}`, {
+  await kv.set(`session:${sessionId}`, {
     id: user.id,
     primary_email: user.primary_email,
     primary_phone: user.primary_phone,

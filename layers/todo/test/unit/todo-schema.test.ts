@@ -1,5 +1,5 @@
-import { NewTodoSchema, UpdateTodoSchema } from '#layers/todo/shared/schemas/todo'
 import { describe, expect, it } from 'vitest'
+import { NewTodoSchema, UpdateTodoSchema } from '#layers/todo/shared/schemas/todo'
 
 describe('newTodoSchema', () => {
   it('accepts a valid title', () => {

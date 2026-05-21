@@ -23,7 +23,7 @@ const authStore = useAuthStore()
       <div class="space-y-6 max-w-3xl">
         <p class="text-sm text-muted">
           Admins with the <code>user:impersonate</code> ability can sign in as
-          any other user. The Redis session swaps to the target so every
+          any other user. The KV session swaps to the target so every
           authorization check (server and client) reflects the impersonated
           user.
         </p>
