@@ -1,4 +1,3 @@
-import { getPgClient } from '~~/server/utils/pg'
 import { seedUsers } from '#layers/auth/server/services/seed'
 
 export default defineEventHandler(async (_event) => {
@@ -6,6 +5,6 @@ export default defineEventHandler(async (_event) => {
     throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
 
-  const users = await seedUsers(getPgClient())
+  const users = await seedUsers()
   return { users }
 })

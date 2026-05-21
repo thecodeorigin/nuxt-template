@@ -1,30 +1,30 @@
 name: Production
 
-# Production deployment pipeline driven by GitHub Actions (Vercel only hosts).
+# Production deployment pipeline: Cloudflare Workers via wrangler.
 #
 # On push to main:
-#   1. Build with NITRO_PRESET=vercel using the project's production env.
-#   2. Deploy the prebuilt artifact to Vercel as a production deployment.
-#   3. Run drizzle migrations against the production Neon DB *only after*
-#      the deploy succeeds. Keeps schema in lockstep with the deployed
-#      artifact and avoids migrating on a failed deploy.
+#   1. Build the Nuxt app with NITRO_PRESET=cloudflare-module targeting the
+#      production Cloudflare bindings declared in nuxt.config.ts / wrangler.jsonc.
+#      NuxtHub applies D1 migrations automatically during build
+#      (applyMigrationsDuringBuild: true) — no separate migrate step needed.
+#   2. Deploy the prebuilt output to Cloudflare Workers with wrangler deploy.
 #
-# Tradeoff: between step 2 and step 3 the production app is running
-# against the previous schema. Safe for additive migrations (new tables
-# / nullable columns); risky for renames or drops — use expand-contract
-# for those.
+# Migration ordering: NuxtHub migrates before the Worker is live, so the
+# deployed code always matches the current schema. The tradeoff (brief
+# window running old code against new schema) is eliminated compared to
+# the old Vercel/Neon post-deploy migration pattern.
 #
 # Required GitHub repository secrets:
-#   VERCEL_TOKEN         — Vercel team token with project deploy access
+#   CLOUDFLARE_API_TOKEN  — Cloudflare API token with Workers + D1 + KV + R2
+#                           edit permissions (and workers_observability edit
+#                           if observability logging is enabled)
 #
 # Required GitHub repository variables:
-#   VERCEL_PROJECT_ID    — prj_lpbCXMg9y2A8jgWxfPFUZDUqbiPR
-#   VERCEL_TEAM_ID       — team_QZiKbPEl7KVrSR7zzASaL770
+#   CLOUDFLARE_ACCOUNT_ID — Cloudflare account ID
 #
-# The production Postgres URL is read from .vercel/.env.production.local
-# (populated by `vercel pull --environment=production`) — single source of
-# truth, so migrations always run against the same DB the deployed app
-# connects to.
+# Removed (no longer needed after Vercel/Neon migration):
+#   NEON_API_KEY, VERCEL_TOKEN, PROD_POSTGRES_URL
+#   NEON_PROJECT_ID, VERCEL_PROJECT_ID, VERCEL_TEAM_ID
 
 on:
   push:
@@ -36,12 +36,11 @@ concurrency:
 
 jobs:
   deploy:
-    name: Migrate · build · deploy
+    name: Build · deploy (production)
     runs-on: ubuntu-latest
     env:
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ vars.VERCEL_TEAM_ID }}
-      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -57,38 +56,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Vercel CLI
-        run: npm i -g vercel@latest
-
-      - name: Pull Vercel production project settings + env
-        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-
-      - name: Build (production)
+      # NuxtHub auto-generates wrangler.json from the hub block in
+      # nuxt.config.ts and applies D1 migrations during build.
+      - name: Build (cloudflare-module, production)
         env:
-          NITRO_PRESET: vercel
-          # Force demo flags at build time so nuxt-security (which
-          # hard-codes the Upstash rate-limiter) gets stripped from
-          # the modules array in nuxt.config.ts. Without this, the
-          # deployed bundle imports nuxt-security and crashes at
-          # runtime with "[Upstash Redis] The 'url' parameter is
-          # required" because the project env has empty values for
-          # the Upstash REST URL/token in production.
-          NUXT_DEMO_MODE: 'true'
-          NUXT_PUBLIC_DEMO_MODE: 'true'
-        run: vercel build --prod --token=$VERCEL_TOKEN
+          NITRO_PRESET: cloudflare_module
+        run: pnpm build
 
-      - name: Deploy prebuilt artifact to production
-        run: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz
-
-      - name: Apply drizzle migrations to production Neon
-        run: |
-          set -a
-          . .vercel/.env.production.local
-          set +a
-          # User-managed NUXT_POSTGRES_URL is sensitive (only available
-          # at runtime); fall back to the Neon-Vercel integration's
-          # unpooled URL, which IS exposed via `vercel pull`.
-          # Unpooled is the right choice for migrations.
-          export NUXT_POSTGRES_URL="${NUXT_POSTGRES_URL:-${POSTGRES_URL_NON_POOLING:-${DATABASE_URL_UNPOOLED:-$POSTGRES_URL}}}"
-          export NUXT_POSTGRES_SSL=true
-          pnpm db:migrate
+      - name: Deploy to Cloudflare Workers (production)
+        run: npx wrangler deploy

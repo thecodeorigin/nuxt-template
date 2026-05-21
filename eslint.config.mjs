@@ -68,6 +68,6 @@ export default withNuxt(
     },
   },
   {
-    ignores: ['node_modules', '.nuxt', '.agents', '.agent', '.claude', '.docker', '.vercel', 'dist'],
+    ignores: ['node_modules', '.nuxt', '.agents', '.agent', '.claude', '.data', '.wrangler', '.output', 'dist', 'server/db/migrations'],
   },
 )

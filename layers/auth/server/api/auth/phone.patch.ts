@@ -1,7 +1,7 @@
+import { userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import z from 'zod'
-import { userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
 
 const phoneSchema = z.object({
@@ -15,8 +15,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
   const body = await readValidatedBody(event, phoneSchema.parse)
 
   const rateLimitKey = `ratelimit:phone-update:${session.id}`
-  const storage = useStorage('redis')
-  const attempts = await storage.getItem<number>(rateLimitKey) || 0
+  const attempts = await kv.get<number>(rateLimitKey) || 0
 
   if (attempts >= 5) {
     throw createError({
@@ -25,18 +24,16 @@ export default defineAuthenticatedHandler(async (event, session) => {
     })
   }
 
-  await storage.setItem(rateLimitKey, attempts + 1, { ttl: 600 })
+  await kv.set(rateLimitKey, attempts + 1, { ttl: 600 })
 
   try {
-    const db = getPgClient()
     const now = new Date()
-    // const runtimeConfig = useRuntimeConfig()
 
-    const existedUserByPhoneNumber = await db.query.userTable.findFirst({
-      where(schema, { eq }) {
-        return eq(schema.primary_phone, body.phone)
-      },
-    })
+    const [existedUserByPhoneNumber] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.primary_phone, body.phone))
+      .limit(1)
 
     if (existedUserByPhoneNumber && existedUserByPhoneNumber.id !== session.id) {
       throw createError({ statusCode: 400, statusMessage: 'Phone number already in use' })
@@ -48,9 +45,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
         verified: true,
         updated_at: now,
       })
-      .where(
-        eq(userTable.id, session.id),
-      )
+      .where(eq(userTable.id, session.id))
       .returning()
 
     if (!updatedUser) {
@@ -59,7 +54,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
 
     const sessionId = getCookie(event, 'sessionid') || getHeader(event, 'x-session-id')
     if (sessionId) {
-      await storage.setItem(`session:${sessionId}`, {
+      await kv.set(`session:${sessionId}`, {
         ...session,
         verified: true,
         primary_phone: updatedUser.primary_phone,

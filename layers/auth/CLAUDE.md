@@ -32,11 +32,13 @@ See the root `CLAUDE.md` for the full list. Layer-specific notes follow.
 
 ### Cross-layer references
 
-- This layer reads the database via `~~/server/db/pg/schema` and
-  `~~/server/utils/pg` — both live in the project root because they're shared
-  infrastructure. Don't duplicate them.
-- This layer reads `~~/server/utils/storage` (Redis key-prefixing) for session
-  storage. Same reason — infra, not auth.
+- This layer reads tables and enums from `@nuxthub/db/schema` (generated mirror
+  of `server/db/schema.ts`). Import named exports directly:
+  `import { ActivityAction, activityTable, identityTable, userTable } from '@nuxthub/db/schema'`
+- The `db` Drizzle client is **auto-imported** server-side by NuxtHub — no
+  import needed. If you prefer explicit, use `import { db } from '@nuxthub/db'`.
+- Session KV storage uses `import { kv } from '@nuxthub/kv'` — backed by
+  Cloudflare KV in production and emulated locally.
 - Identifier helpers (`simplifyNanoId`) come from `~~/shared/utils/id`.
 
 ### Imports inside the layer
@@ -48,9 +50,9 @@ See the root `CLAUDE.md` for the full list. Layer-specific notes follow.
   - `#layers/auth/server/services/auth`
   - `#layers/auth/app/composables/casl`
   - `#layers/auth/shared/schemas/impersonate`
-- Use `~~/server/utils/...`, `~~/server/db/pg/schema`, `~~/shared/utils/...`
-  for cross-cutting infra that genuinely lives in the project root. Those
-  resolve correctly because they exist at that path.
+- Use `@nuxthub/db/schema` for table/enum imports, `@nuxthub/kv` for KV,
+  `@nuxthub/blob` for blob. Use `~~/shared/utils/...` for cross-cutting
+  pure helpers (those resolve to the project root directly).
 - Composables (`useAuthStore`, framework helpers), Pinia stores, and
   server utils auto-import across layers, so call sites like
   `useAuthStore()` work anywhere with no `import`. **Components do NOT**

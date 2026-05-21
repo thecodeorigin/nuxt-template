@@ -1,6 +1,6 @@
+import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
-import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import {
   backupKey,
@@ -32,7 +32,6 @@ export default defineAuthorizedHandler(
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
-    const db = getPgClient()
     const [target] = await db
       .select()
       .from(userTable)
@@ -47,12 +46,11 @@ export default defineAuthorizedHandler(
       throw createError({ statusCode: 403, statusMessage: 'Cannot impersonate a suspended user.' })
     }
 
-    const storage = useStorage('redis')
     const impersonator = impersonatorInfoFromSession(session)
     const newSession = buildImpersonatedSession(target, impersonator)
 
-    await storage.setItem(backupKey(sessionId), session)
-    await storage.setItem(sessionKey(sessionId), newSession)
+    await kv.set(backupKey(sessionId), session)
+    await kv.set(sessionKey(sessionId), newSession)
 
     await db.insert(activityTable).values({
       user_id: session.id,

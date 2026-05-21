@@ -16,12 +16,19 @@ const rootAliases = [
   { find: /^@\/(.*)$/, replacement: `${ROOT}/app/$1` },
 ]
 
+// @nuxthub/* packages are virtual at Nuxt runtime; provide stubs for the node unit env
+const hubMockAliases = [
+  { find: '@nuxthub/kv', replacement: `${ROOT}/test/__mocks__/hub-kv.ts` },
+  { find: '@nuxthub/db/schema', replacement: `${ROOT}/test/__mocks__/hub-db-schema.ts` },
+  { find: '@nuxthub/db', replacement: `${ROOT}/test/__mocks__/hub-db.ts` },
+]
+
 export default defineConfig({
   test: {
     projects: [
       {
         resolve: {
-          alias: [...layerAliases, ...rootAliases],
+          alias: [...layerAliases, ...rootAliases, ...hubMockAliases],
         },
         test: {
           name: 'unit',

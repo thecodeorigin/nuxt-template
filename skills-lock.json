@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "73c6af534e1efcdfac6f3ac009ad5afe5aa67e12d90c60ee80f686573967ffe6"
     },
+    "nuxthub": {
+      "source": "onmax/nuxt-skills",
+      "sourceType": "github",
+      "computedHash": "09691e4e19e41f40e01fe8a5efaa9d08cf54b06cc80cf430808a9f056d20b1df"
+    },
     "pinia": {
       "source": "antfu/skills",
       "sourceType": "github",

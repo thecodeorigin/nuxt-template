@@ -1,10 +1,10 @@
 import type { Todo } from '#layers/todo/shared/schemas/todo'
+import { kv } from '@nuxthub/kv'
 import { nanoid } from 'nanoid'
 import { NewTodoSchema } from '#layers/todo/shared/schemas/todo'
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, NewTodoSchema.parse)
-  const storage = useStorage<Todo>('todos')
 
   const todo: Todo = {
     id: nanoid(),
@@ -13,6 +13,6 @@ export default defineEventHandler(async (event) => {
     createdAt: new Date().toISOString(),
   }
 
-  await storage.setItem(todo.id, todo)
+  await kv.set(`todo:${todo.id}`, todo)
   return todo
 })

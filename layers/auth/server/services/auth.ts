@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { kv } from '@nuxthub/kv'
 
 export interface ImpersonatorInfo {
   id: string
@@ -36,14 +37,13 @@ export function defineAuthenticatedHandler<T>(
   handler: (event: H3Event, session: AuthUser) => Promise<T> | T,
 ) {
   return defineEventHandler(async (event) => {
-    const storage = useStorage('redis')
     const sessionId = getCookie(event, 'sessionid') || getHeader(event, 'x-session-id')
 
     if (!sessionId) {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
-    const stored = await storage.getItem<AuthUser>(`session:${sessionId}`)
+    const stored = await kv.get<AuthUser>(`session:${sessionId}`)
     if (!stored) {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }

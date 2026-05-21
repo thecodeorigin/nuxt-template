@@ -1,0 +1,33 @@
+{
+  // NuxtHub auto-generates bindings (D1, KV, R2) from nuxt.config.ts hub block
+  // at build time, so no binding declarations are needed here.
+  //
+  // This file exists solely for the observability block, which wrangler
+  // does not accept via nuxt.config.ts. Requires workers_observability (edit)
+  // permission in your CLOUDFLARE_API_TOKEN.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nuxt-template",
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    }
+  },
+  // Preview environment — separate D1/KV/R2 bindings provisioned via
+  // `npx wrangler d1 create`, `kv namespace create`, `r2 bucket create`.
+  // Replace placeholder IDs with real resource IDs before first deploy.
+  "env": {
+    "preview": {
+      "observability": {
+        "logs": {
+          "enabled": true,
+          "head_sampling_rate": 1,
+          "invocation_logs": true,
+          "persist": true
+        }
+      }
+    }
+  }
+}

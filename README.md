@@ -1,9 +1,9 @@
 # Nuxt Template — agent-driven workspace
 
-A Nuxt 4 + Drizzle + Neon + Upstash starter wired for **GitHub-Actions-driven
-deploys to Vercel** with **per-PR isolated databases** and a **Claude Code
-agent setup** baked in. Open a PR → get a preview URL with its own ephemeral
-Postgres. Merge to `main` → production ships.
+A Nuxt 4 + NuxtHub starter on a **full Cloudflare stack** (D1 SQLite · KV · R2 ·
+Workers) wired for **GitHub-Actions-driven deploys** and a **Claude Code agent
+setup** baked in. Open a PR → get a Cloudflare Workers preview. Merge to `main`
+→ production ships. D1 migrations apply automatically during each build.
 
 If you want the deep version (conventions, layer ownership, hard rules), read
 [`CLAUDE.md`](./CLAUDE.md).
@@ -14,78 +14,68 @@ If you want the deep version (conventions, layer ownership, hard rules), read
 
 | | |
 |---|---|
-| **Stack** | Nuxt 4 layers · Vue 3 · Nuxt UI v4 · Drizzle + Neon Postgres · Upstash Redis · Pinia · Vitest + Playwright · pnpm |
+| **Stack** | Nuxt 4 layers · Vue 3 · Nuxt UI v4 · NuxtHub (D1 SQLite + KV + R2 + cache) · Drizzle · Pinia · Vitest + Playwright · pnpm |
 | **CI** | `pnpm lint` + `pnpm typecheck` + `pnpm test` on every PR |
-| **Preview** | Per-PR Neon branch DB (14-day expiry) + Vercel preview URL + sticky PR comment |
-| **Production** | Push to `main` → build → deploy → migrate the production Neon DB |
+| **Preview** | Cloudflare Workers preview deploy (`CLOUDFLARE_ENV=preview`) + sticky PR comment; D1 migrations applied at build |
+| **Production** | Push to `main` → build (migrate D1) → `wrangler deploy` |
 | **Agents** | `.claude/` ships with skills, agent definitions, and a `/team-feature` workflow that spins up `fullstack-dev` + `qa-visual` + `ux-researcher` teammates |
 
 ---
 
 ## Setup (one-time, per fork)
 
-You need accounts on **GitHub**, **Vercel**, and **Neon**. The whole thing
+You need a **GitHub** account and a **Cloudflare** account. The whole thing
 takes ~10 minutes.
 
-### 1. Vercel — create the project
+### 1. Cloudflare — create the D1 / KV / R2 resources
 
-1. Import this repo into Vercel (any team; you'll need to be an Owner or
-   Admin to add tokens later).
-2. After import, **disable Vercel's git integration**: `Settings → Git →
-   Connected Git Repository → Disconnect`. (`vercel.json` already sets
-   `git.deploymentEnabled: false`, but disconnecting in the UI is cleaner.)
-   Deploys are driven by GitHub Actions only.
-3. Note your project's **Project ID** and **Team ID** — `Settings → General`
-   for project, account dropdown for team.
+```bash
+npx wrangler login
+npx wrangler d1 create nuxt-template-prod            # → database_id
+npx wrangler kv namespace create KV                   # → kv namespace id
+npx wrangler kv namespace create CACHE                # → cache namespace id
+npx wrangler r2 bucket create nuxt-template-prod      # → bucket name
+```
 
-### 2. Neon — install the GitHub + Vercel integrations
+Paste the returned ids into the `$production.hub` block of
+[`nuxt.config.ts`](./nuxt.config.ts), replacing the `<…>` placeholders. For a
+separate preview environment, create a second set and wire them under the
+preview env. NuxtHub generates the wrangler bindings from this block at build
+time; `wrangler.jsonc` only carries the observability config.
 
-1. In Neon, create a new project. Pick the region closest to your Vercel
-   region.
-2. Add the **Neon-Vercel integration** to your Vercel project. This wires
-   `POSTGRES_URL`, `POSTGRES_URL_NON_POOLING`, `DATABASE_URL`, etc. into the
-   Vercel project env automatically.
-3. Add the **Neon-GitHub integration** to your repo. This provisions
-   `NEON_API_KEY` (secret) and `NEON_PROJECT_ID` (variable) in GitHub Actions
-   so the preview workflow can create per-PR branches.
-
-### 3. GitHub — add the remaining secrets and variables
+### 2. GitHub — add the Cloudflare secrets and variables
 
 Go to `Settings → Secrets and variables → Actions`.
 
-**Repository secrets:**
+**Repository secret:**
 
 | Name | How to get it |
 |---|---|
-| `VERCEL_TOKEN` | [vercel.com/account/tokens](https://vercel.com/account/tokens) → Create. Scope to your team. Used by CI to build + deploy. |
-| `NEON_API_KEY` | Provisioned by the Neon-GitHub integration. |
+| `CLOUDFLARE_API_TOKEN` | [Cloudflare dashboard → My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens). Needs Workers Scripts + D1 + Workers KV + R2 edit (and `workers_observability` edit if you keep logging on). |
 
-**Repository variables:**
+**Repository variable:**
 
 | Name | Value |
 |---|---|
-| `VERCEL_PROJECT_ID` | From step 1. |
-| `VERCEL_TEAM_ID` | From step 1. |
-| `NEON_PROJECT_ID` | Provisioned by the Neon-GitHub integration. |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → account id. |
 
-### 4. Vercel — set the auth secrets and other runtime credentials
+### 3. Set the auth secrets (Cloudflare Worker env)
 
-Generate three random 64-char hex secrets and add them to your Vercel
-project's **production** target (and **preview** if you want sessions to
-survive across preview deploys of the same PR):
+Generate three random 64-char hex secrets and add them to your Worker's
+environment variables (`Workers & Pages → your worker → Settings → Variables`),
+for both production and preview:
 
 ```bash
 node -p "require('crypto').randomBytes(32).toString('hex')"
 ```
 
-| Vercel env var | Value |
+| Worker env var | Value |
 |---|---|
 | `NUXT_AUTH_SECRET` | random hex (used to encrypt sessions / CSRF) |
 | `NUXT_TASK_SECRET` | random hex (bearer token for Nitro tasks) |
 | `NUXT_WEBHOOK_SIGNING_SECRET` | random hex (HMAC for inbound webhooks) |
 | `NUXT_DEMO_MODE` | `true` if you want the demo-login backdoor + relaxed CSP |
 | `NUXT_PUBLIC_DEMO_MODE` | `true` to expose the demo block on the login page |
-| `NITRO_PRESET` | `vercel` |
 
 Add OAuth / SMTP / SePay credentials too if you use those features —
 [`.env.example`](./.env.example) lists every env var the app reads.
@@ -95,18 +85,16 @@ Add OAuth / SMTP / SePay credentials too if you use those features —
 > session and breaks anything signed by a previous deploy. One static
 > set per environment is the right tradeoff.
 
-### 5. Open a PR
+### 4. Open a PR
 
 Push a branch, open a PR → the **Preview** workflow runs:
-- Creates a Neon branch off `main` (`preview/pr-<#>-<branch>`, 14-day expiry)
-- Builds and deploys to Vercel (the per-PR branch URL is injected at build)
-- Migrates the Neon branch
-- Posts a sticky PR comment with the preview URL
+- Builds with `NITRO_PRESET=cloudflare-module` and `CLOUDFLARE_ENV=preview`
+  (D1 migrations apply during the build)
+- Deploys to Cloudflare Workers (`wrangler deploy --env preview`)
+- Posts a sticky PR comment
 
-Closing the PR deletes the Neon branch.
-
-Merging to `main` → the **Production** workflow runs build → deploy → migrate
-against the production Neon DB.
+Merging to `main` → the **Production** workflow builds (migrating D1) and runs
+`wrangler deploy`.
 
 ---
 
@@ -116,10 +104,12 @@ against the production Neon DB.
 pnpm install
 cp .env.example .env
 pnpm auth:generate           # writes NUXT_AUTH_SECRET et al. into .env
-docker compose -f docker-compose.services.yml up -d
-pnpm db:migrate
 pnpm dev                     # nuxt dev --port 3002
 ```
+
+NuxtHub emulates D1, KV, and R2 locally under `.data` — no containers or
+connection strings required, and `pnpm dev` applies pending D1 migrations on
+boot. (Optional: run a local SMTP catch-all like Mailpit if you exercise email.)
 
 Visit `http://localhost:3002/auth/login` and click **Sign in as Admin Agent**
 or **Sign in as User Agent** — the demo-login route auto-creates the user
@@ -159,7 +149,6 @@ ability model, the deploy-pipeline tradeoffs — are in
 | `pnpm test:e2e` | Playwright |
 | `pnpm lint` | ESLint over the whole repo |
 | `pnpm typecheck` | `vue-tsc` via `nuxt typecheck` |
-| `pnpm db:generate` | Generate a Drizzle migration from schema diff |
-| `pnpm db:migrate` | Apply pending migrations |
-| `pnpm db:preview` | Drizzle Studio |
+| `pnpm db:generate` | Generate a D1/SQLite migration from schema diff (`nuxt db generate`) |
+| `pnpm db:migrate` | Apply pending migrations to the local D1 DB (`nuxt db migrate`) |
 | `pnpm auth:generate` | Generate the three local auth secrets |

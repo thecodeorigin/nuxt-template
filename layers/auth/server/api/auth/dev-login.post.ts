@@ -1,7 +1,7 @@
+import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { ActivityAction, activityTable, userTable } from '~~/server/db/pg/schema'
-import { getPgClient } from '~~/server/utils/pg'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 const DevLoginSchema = z.object({
@@ -14,7 +14,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const { email } = await readValidatedBody(event, DevLoginSchema.parse)
-  const db = getPgClient()
 
   const [user] = await db.select().from(userTable).where(eq(userTable.primary_email, email)).limit(1)
   if (!user) {
@@ -22,9 +21,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const sessionId = simplifyNanoId()
-  const storage = useStorage('redis')
 
-  await storage.setItem(`session:${sessionId}`, {
+  await kv.set(`session:${sessionId}`, {
     id: user.id,
     primary_email: user.primary_email,
     primary_phone: user.primary_phone,

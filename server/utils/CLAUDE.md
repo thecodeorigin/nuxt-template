@@ -8,10 +8,8 @@
 | File | Purpose |
 |------|---------|
 | `base64.ts` | UTF-8 → base64 encoder |
-| `cache.ts` | `getCachedOrFetch(key, fetcher, ttl)` — Redis cache wrapper |
+| `cache.ts` | `getCachedOrFetch(key, fetcher, ttl)` — NuxtHub KV cache wrapper (`@nuxthub/kv`) |
 | `cron.ts` | `defineAuthenticatedCronHandler` — bearer-token guard for cron routes |
-| `pg.ts` | `getPgClient()` — Drizzle client (node-postgres in dev, neon-http in prod) |
-| `storage.ts` | `getRedisBase()` — Redis key prefix per environment |
 | `task.ts` | `defineAuthenticatedTask` — bearer-token guard for Nitro tasks |
 | `url.ts` | `getBaseUrl()` |
 | `webhook.ts` | `defineWebhookHandler` — signature guard |
@@ -24,6 +22,7 @@
 | Authz (`defineAuthorizedHandler`, `parseAbility`, `defineSubject`) | `layers/auth/server/services/casl.ts` |
 | Impersonation feature | `layers/auth/server/services/impersonate.ts` |
 | Seed user definitions + runner functions | `layers/auth/server/services/seed.ts` |
+| Database client (`db`) + schema, KV (`kv`), blob (`blob`) | NuxtHub virtual packages — `@nuxthub/db`, `@nuxthub/db/schema`, `@nuxthub/kv`, `@nuxthub/blob` (auto-imported server-side). The Drizzle schema lives in `server/db/schema.ts`. |
 
 ## Heuristic
 

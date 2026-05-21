@@ -9,15 +9,19 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/hints',
     '@nuxt/icon',
+    '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/test-utils',
     '@nuxt/ui',
     '@nuxtjs/device',
+    '@nuxthub/core',
     '@pinia/nuxt',
     '@vueuse/nuxt',
     'magic-regexp',
     'nuxt-security',
   ],
+
+  image: { provider: 'none' },
 
   $development: {
     devtools: {
@@ -48,7 +52,36 @@ export default defineNuxtConfig({
 
   $production: {
     nitro: {
-      preset: process.env.NITRO_PRESET || 'node-server',
+      // Cloudflare Workers (modules syntax). CI deploys with `wrangler deploy`.
+      preset: process.env.NITRO_PRESET || 'cloudflare_module',
+    },
+    // Production Cloudflare bindings. NuxtHub generates the wrangler binding
+    // config from this block at build time (wrangler.jsonc only carries the
+    // observability block). Replace the placeholder resource IDs with your own
+    // (`wrangler d1 create`, `wrangler kv namespace create`, `wrangler r2 bucket
+    // create`). kv and cache MUST be separate KV namespaces.
+    hub: {
+      db: {
+        dialect: 'sqlite',
+        driver: 'd1',
+        connection: { databaseId: '<d1-database-id>' },
+      },
+      kv: {
+        driver: 'cloudflare-kv-binding',
+        namespaceId: '<kv-namespace-id>',
+      },
+      cache: {
+        driver: 'cloudflare-kv-binding',
+        namespaceId: '<cache-kv-namespace-id>',
+      },
+      blob: {
+        driver: 'cloudflare-r2',
+        bucketName: 'nuxt-template-prod',
+        binding: 'BLOB',
+      },
+    },
+    image: {
+      provider: 'cloudflare',
     },
   },
 
@@ -72,19 +105,6 @@ export default defineNuxtConfig({
 
     webhookSigningSecret: '',
 
-    postgresUrl: '',
-
-    mongodbUri: '',
-    mongodbCollectionName: '',
-    mongodbDatabaseName: '',
-
-    upstashRedisRestUrl: '',
-    upstashRedisRestToken: '',
-
-    redisHost: '',
-    redisPassword: '',
-    redisPort: 6379,
-
     smtpUser: '',
     smtpPass: '',
     smtpFrom: '',
@@ -101,9 +121,6 @@ export default defineNuxtConfig({
     sepayBankNumber: '',
     sepayBankName: '',
 
-    upstashEmail: '',
-    upstashApiKey: '',
-
     taskSecret: '',
 
     public: {
@@ -114,7 +131,7 @@ export default defineNuxtConfig({
       demoMode: false,
     },
 
-    // Vercel use CRON_SECRET as environment variable for scheduled functions, so we need to use it here as well
+    // Bearer token guarding /api/cron/** (see server/utils/cron.ts).
     cronSecret: process.env.CRON_SECRET || '',
 
     customerSupportEmail: '',
@@ -155,9 +172,8 @@ export default defineNuxtConfig({
 
   // Production-grade security applied uniformly across development,
   // preview and production so the dev experience matches what ships.
-  // Env-specific overrides only kick in for things that genuinely have
-  // to vary (Upstash creds, prod domain) — see runtimeConfig + the
-  // upstash/memory rateLimiter driver fallback below.
+  // The only env-aware bit is the prod domain (corsHandler origin); the
+  // rate limiter uses an in-process lru-cache driver everywhere.
   security: {
     enabled: true,
     strict: true,
@@ -182,23 +198,14 @@ export default defineNuxtConfig({
     csrf: {
       enabled: true,
     },
-    // Upstash in production / preview; memory driver in local dev or any
-    // environment where the Upstash creds aren't wired up. Keeps rate
-    // limiting active everywhere without forcing a Redis on devs.
+    // lru-cache is in-process — scoped to a single Worker isolate on
+    // Cloudflare. Fine for a template / single-region; for cross-isolate
+    // limiting back this with a KV- or Durable-Object-backed unstorage driver.
     rateLimiter: {
       tokensPerInterval: 150,
       interval: 5 * 60 * 1000, // 5 minutes
       headers: false,
-      driver: process.env.NUXT_UPSTASH_REDIS_REST_URL && process.env.NUXT_UPSTASH_REDIS_REST_TOKEN
-        ? {
-            name: 'upstash',
-            options: {
-              base: 'ratelimit',
-              url: process.env.NUXT_UPSTASH_REDIS_REST_URL,
-              token: process.env.NUXT_UPSTASH_REDIS_REST_TOKEN,
-            },
-          }
-        : { name: 'lru-cache' },
+      driver: { name: 'lru-cache' },
       whiteList: ['127.0.0.1', '::1', 'localhost'],
       throwError: true,
     },
@@ -274,5 +281,12 @@ export default defineNuxtConfig({
       credentials: true,
       preflight: { statusCode: 204 },
     },
+  },
+
+  hub: {
+    db: 'sqlite',
+    blob: true,
+    kv: true,
+    cache: true,
   },
 })
