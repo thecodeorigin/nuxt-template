@@ -1,4 +1,4 @@
-import type { UpdateMemberAbilities } from '#layers/auth/shared/schemas/member'
+import type { AddMember, UpdateMemberAbilities } from '#layers/auth/shared/schemas/member'
 import type { SwitchOrganization } from '#layers/auth/shared/schemas/organization'
 import type { ExtractResponse } from '~/types/utils'
 
@@ -19,6 +19,10 @@ export function useOrganizationApi() {
     return $http('/api/organization/members')
   }
 
+  function addMember(input: AddMember) {
+    return $http('/api/organization/members', { method: 'POST', body: input })
+  }
+
   function fetchPermissions() {
     return $http('/api/permissions')
   }
@@ -35,7 +39,7 @@ export function useOrganizationApi() {
     return $http('/api/account', { method: 'DELETE' })
   }
 
-  return { fetchOrganizations, switchOrganization, refreshSession, fetchMembers, fetchPermissions, updateMemberAbilities, removeMember, deleteAccount }
+  return { fetchOrganizations, switchOrganization, refreshSession, fetchMembers, addMember, fetchPermissions, updateMemberAbilities, removeMember, deleteAccount }
 }
 
 export type OrganizationSummary = NonNullable<ExtractResponse<typeof useOrganizationApi, 'fetchOrganizations'>>[number]

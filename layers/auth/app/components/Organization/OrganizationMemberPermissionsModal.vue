@@ -3,21 +3,21 @@ import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
 import { useOrganizationMembers } from '#layers/auth/app/composables/useOrganizationMembers'
 import { satisfiesAbility } from '#layers/auth/shared/ability'
 
-const props = defineProps<{ member: OrgMember }>()
-const emit = defineEmits<{ close: [] }>()
+const props = defineProps<{ member: OrgMember | null }>()
+const open = defineModel<boolean>('open', { default: false })
 
 const authStore = useAuthStore()
 const toast = useToast()
 const { permissions, updateMemberAbilities } = useOrganizationMembers()
 
-// Start with current grants (tenant, non-:self)
-const selected = ref<string[]>(
-  props.member.abilities.filter(a => !a.endsWith(':self')),
-)
+const selected = ref<string[]>([])
+
+watch(() => props.member, (m) => {
+  selected.value = m ? m.abilities.filter(a => !a.endsWith(':self')) : []
+}, { immediate: true })
 
 const saving = ref(false)
 
-// Group tenant permissions (scope === null only — self defaults aren't toggled)
 const grouped = computed(() => {
   const tenantEditable = permissions.value.filter(p => p.scope === null)
   const subjects = [...new Set(tenantEditable.map(p => p.subject))]
@@ -41,11 +41,13 @@ function toggle(key: string) {
 }
 
 async function save() {
+  if (!props.member)
+    return
   saving.value = true
   try {
     await updateMemberAbilities(props.member.id, selected.value)
     toast.add({ title: 'Permissions updated', color: 'success' })
-    emit('close')
+    open.value = false
   }
   catch (err: unknown) {
     const error = err as { data?: { statusMessage?: string } }
@@ -58,7 +60,11 @@ async function save() {
 </script>
 
 <template>
-  <UModal :title="`Permissions — ${member.name ?? member.primary_email}`" @close="emit('close')">
+  <UModal
+    v-model:open="open"
+    :title="member ? `Permissions — ${member.name ?? member.primary_email}` : 'Permissions'"
+    :ui="{ footer: 'justify-end' }"
+  >
     <template #body>
       <div class="space-y-4">
         <div v-for="group in grouped" :key="group.subject">
@@ -79,7 +85,7 @@ async function save() {
                   {{ perm.key }}
                 </p>
               </div>
-              <UToggle
+              <USwitch
                 :model-value="selected.includes(perm.key)"
                 :disabled="!canGrant(perm.key)"
                 @update:model-value="toggle(perm.key)"
@@ -91,10 +97,8 @@ async function save() {
     </template>
 
     <template #footer>
-      <div class="flex justify-end gap-2">
-        <UButton color="neutral" variant="ghost" label="Cancel" @click="emit('close')" />
-        <UButton label="Save" :loading="saving" @click="save" />
-      </div>
+      <UButton color="neutral" variant="ghost" label="Cancel" @click="open = false" />
+      <UButton label="Save" :loading="saving" @click="save" />
     </template>
   </UModal>
 </template>

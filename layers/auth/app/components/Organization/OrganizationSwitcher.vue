@@ -36,6 +36,8 @@ const items = computed<DropdownMenuItem[][]>(() => [[
 
 const activeName = computed(() =>
   orgs.value.find(o => o.id === authStore.activeOrganizationId)?.name ?? 'Organization')
+
+onMounted(() => ensureOrgs())
 </script>
 
 <template>

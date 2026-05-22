@@ -121,7 +121,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
       onSelect: () => { void stopImpersonation() },
     }])
   }
-  else {
+  else if (canImpersonate.value) {
     if (candidates.value.length > 0) {
       groups.push(candidates.value.map(c => ({
         label: c.name ?? c.username ?? c.primary_email,
