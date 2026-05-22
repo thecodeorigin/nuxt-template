@@ -42,7 +42,7 @@ Agent(subagent_type: "general-purpose",
     Original task: <2–3 sentence description of what the user asked for>
 
     Draft plan:
-    <paste plan inline, or: 'See .agents/plans/<name>/plan.md'>
+    <paste plan inline, or: 'See .claude/plans/<name>/plan.md'>
 
     Your job: argue that this plan is overengineered. What is built that
     isn't strictly required? What can be cut? Be concrete — name the specific

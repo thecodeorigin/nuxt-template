@@ -158,7 +158,7 @@ Delight opportunities: <list> (or "none suggested")
 
 ## Coordination rules
 
-- **No source edits.** No `Edit`, no `Write` to code. You may write artifacts to `ux/` (screenshots) and `.agents/runs/ux/` (your raw notes).
+- **No source edits.** No `Edit`, no `Write` to code. You may write artifacts to `ux/` (screenshots) and `.claude/runs/ux/` (your raw notes).
 - **Don't argue with qa-visual.** Different lenses, parallel reports. The lead reconciles.
 - **Don't make assumptions about future features.** Critique what's there. If you spot a missing feature, suggest it in "Top 3" with effort:L — the team decides scope.
 - **Be specific.** "The button is bad" is unactionable. "The primary CTA is the same shade as the secondary — apply `bg-primary` and increase contrast vs `bg-elevated`" is actionable.

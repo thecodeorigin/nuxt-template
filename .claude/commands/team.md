@@ -57,7 +57,7 @@ In **one** message, spawn all wave-1 agents. They do NOT write code.
 
 ```
 You are product-<feature>, the product manager for <feature>.
-Read .agents/workspace/ for any existing context on this project.
+Read .claude/workspace/ for any existing context on this project.
 
 Your task: walk the current state of <feature-or-related-area> as a target user.
 If it's a new feature, assess the spec in the task description.
@@ -67,7 +67,7 @@ Auth context: navigate to /api/auth/agent?redirect=/<route> as alice@seed.local
 
 Rate: does the feature/spec advance the project's goal? What gaps exist?
 Dispatch gaps to qa-lead and risks to security via your report.
-Save report to .agents/workspace/product/<feature>-<id>.report.md.
+Save report to .claude/workspace/product/<feature>-<id>.report.md.
 Mark your task completed when done.
 ```
 
@@ -82,7 +82,7 @@ Auth context: unauthenticated first, then /api/auth/agent?redirect=/<route> as a
 
 Rate M1–M8 dimensions. Dispatch messaging/trust gaps to qa-lead, brand-risk to security.
 Read product's report when available and coordinate.
-Save report to .agents/workspace/marketing/<feature>-<id>.report.md.
+Save report to .claude/workspace/marketing/<feature>-<id>.report.md.
 Mark your task completed when done.
 ```
 
@@ -96,7 +96,7 @@ Assess: authentication surface, authorization surface, input vectors, data expos
 Rate risk: LOW/MEDIUM/HIGH/CRITICAL per finding.
 Dispatch notes to qa-lead for test plan coverage.
 
-Save pre-impl report to .agents/workspace/reviews/<feature>-pre-impl.md.
+Save pre-impl report to .claude/workspace/reviews/<feature>-pre-impl.md.
 Mark task 01-security-pre-<feature> completed. You will be called again for wave 2.
 ```
 
@@ -105,14 +105,14 @@ Mark task 01-security-pre-<feature> completed. You will be called again for wave
 ```
 You are qa-lead-<feature>, the test plan author for <feature>.
 Wait for product, marketing, and security (pre-impl) to complete their wave-1 tasks,
-OR read their reports from .agents/workspace/ if already available.
+OR read their reports from .claude/workspace/ if already available.
 
 Absorb all dispatches (product value gaps, marketing UX gaps, security risks) into the test CSV.
 Annotate each row that addresses a dispatch with the source agent's name in the 'notes' column.
 
 Auth context for tests: alice@seed.local via GET /api/auth/agent?redirect=/<route>
 
-Save CSV to .agents/workspace/test-cases/<feature>-<random-id>.csv.
+Save CSV to .claude/workspace/test-cases/<feature>-<random-id>.csv.
 Mark your task completed when done and send the CSV path to the team lead.
 ```
 
@@ -123,7 +123,7 @@ You are business-<feature>, the business analyst for <feature>.
 Translate the user's request into structured requirements.
 
 Produce: user stories, acceptance criteria table, process flow (Mermaid), gap analysis.
-Save outputs to .agents/workspace/business/<feature>-<id>/.
+Save outputs to .claude/workspace/business/<feature>-<id>/.
 Mark your task completed when done.
 ```
 
@@ -178,13 +178,13 @@ Message the lead when implementation is ready.
 
 ```
 You are qa-<n>, test executor for <feature>.
-Test CSV: .agents/workspace/test-cases/<feature>-<id>.csv (ask team lead if not available)
+Test CSV: .claude/workspace/test-cases/<feature>-<id>.csv (ask team lead if not available)
 
 Dev server: http://localhost:3000 (confirm running first)
 Auth: GET /api/auth/agent?redirect=/<route> for browser sessions
 
 Execute CSV row-by-row. Capture screenshots on failure.
-Save run report to .agents/workspace/qa-runs/<feature-id>/report.md.
+Save run report to .claude/workspace/qa-runs/<feature-id>/report.md.
 Create TaskCreate for every P0 failure assigned to the owning developer.
 Send report to owning developer and team lead.
 ```
@@ -201,21 +201,21 @@ explicit imports, Zod at every boundary, correct auth wrappers, NuxtHub imports,
 no business logic in utils/, D1/SQLite type conventions.
 
 Create TaskCreate blockers for any Critical/High findings.
-Save review to .agents/workspace/reviews/<feature>-principle.md.
+Save review to .claude/workspace/reviews/<feature>-principle.md.
 ```
 
 ### Briefing template — security (wave 2, post-implementation)
 
 ```
 You are security-<feature>, wave-2 (post-implementation code review).
-Pre-impl report: .agents/workspace/reviews/<feature>-pre-impl.md (read first)
+Pre-impl report: .claude/workspace/reviews/<feature>-pre-impl.md (read first)
 
 Review the implemented code in layers/<slice>/**
 Check: OWASP Top 10, auth wrappers, Zod validation, KV key injection,
 secrets in public config, nuxt-security bypass, NUXT_DEMO_MODE, pnpm audit.
 
 Create TaskCreate blockers for Critical/High findings.
-Save review to .agents/workspace/reviews/<feature>-security.md.
+Save review to .claude/workspace/reviews/<feature>-security.md.
 ```
 
 ## Step 7 — Monitor

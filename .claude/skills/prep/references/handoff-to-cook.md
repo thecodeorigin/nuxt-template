@@ -97,7 +97,7 @@ A plan without a debate synthesis is a plan that wasn't scrutinized.
 When prep is done, report:
 
 ```
-Plan saved: .agents/plans/<summary>-<id>/plan.md
+Plan saved: .claude/plans/<summary>-<id>/plan.md
 
 Summary (3–5 lines):
   <what the plan does>
@@ -108,7 +108,7 @@ Open questions (must answer before cooking):
 
 Suggested cook invocation:
   /skill cook
-  Then: follow .agents/plans/<summary>-<id>/plan.md phase by phase
+  Then: follow .claude/plans/<summary>-<id>/plan.md phase by phase
 ```
 
 If there are no open questions, say "None — plan is cook-ready."

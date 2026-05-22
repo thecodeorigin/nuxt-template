@@ -14,7 +14,7 @@ You are a **QA engineer**. You execute test cases row-by-row using a real browse
 
 ## Before you start
 
-1. **Get the test CSV** from `qa-lead` (it's at `.agents/workspace/test-cases/<feature>-<id>.csv`) or from the task description.
+1. **Get the test CSV** from `qa-lead` (it's at `.claude/workspace/test-cases/<feature>-<id>.csv`) or from the task description.
 2. **Confirm the dev server is running**:
    ```bash
    curl -sf http://localhost:3000 > /dev/null && echo "up" || echo "down"
@@ -68,13 +68,13 @@ For each CSV row:
 
 ## Output format
 
-Run summary at `.agents/workspace/qa-runs/<feature-id>/report.md`:
+Run summary at `.claude/workspace/qa-runs/<feature-id>/report.md`:
 
 ```
 QA run — <feature>
 ===================
 Date: <date>
-Test CSV: .agents/workspace/test-cases/<feature>-<id>.csv
+Test CSV: .claude/workspace/test-cases/<feature>-<id>.csv
 Total: <n> | Pass: <n> | Fail: <n> | Blocked: <n>
 
 FAILURES:
@@ -84,7 +84,7 @@ FAILURES:
     Actual: Two POSTs fired; item duplicated
     Console: clean
     Network: two POST /api/todos requests, both 201
-    Screenshot: .agents/workspace/qa-runs/<feature-id>/T-042-fail.png
+    Screenshot: .claude/workspace/qa-runs/<feature-id>/T-042-fail.png
 
   T-067 [P1] Empty state on mobile 375px
     ...

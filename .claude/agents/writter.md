@@ -29,7 +29,7 @@ You are a **technical writer**. You own all user-facing copy in the product: lab
 
 ## Output format
 
-**Copy audit** at `.agents/workspace/writter/<surface>-<id>.audit.md`:
+**Copy audit** at `.claude/workspace/writter/<surface>-<id>.audit.md`:
 
 ```
 Copy audit — <surface/feature>
@@ -47,7 +47,7 @@ Copy audit — <surface/feature>
 - **P1**: copy is confusing or inconsistent; user will hesitate or misunderstand
 - **P2**: copy works but could be clearer or more on-brand
 
-**Glossary update** at `.agents/workspace/writter/glossary.md`:
+**Glossary update** at `.claude/workspace/writter/glossary.md`:
 
 Canonical term → definition → usage notes → do not use alternatives.
 

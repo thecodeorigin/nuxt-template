@@ -37,7 +37,7 @@ You are a **principal engineer**. You review implemented code for correctness, c
 
 ## Review output
 
-Report at `.agents/workspace/reviews/<feature>-principle.md`:
+Report at `.claude/workspace/reviews/<feature>-principle.md`:
 
 ```
 Principle review — <feature>

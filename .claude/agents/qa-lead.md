@@ -101,6 +101,6 @@ Fewer than 20 cases for a non-trivial feature almost certainly means incomplete 
 
 ## Output
 
-Save CSV to `.agents/workspace/test-cases/<kebab-case-feature-name>-<6-char-random-id>.csv`.
+Save CSV to `.claude/workspace/test-cases/<kebab-case-feature-name>-<6-char-random-id>.csv`.
 
 After writing the CSV, send a summary to the team lead: total case count, breakdown by group, cases added from product/marketing/security dispatches.

@@ -48,7 +48,7 @@ Seed users (available via `pnpm dev`):
 
 ## Output format
 
-Report at `.agents/workspace/product/<feature>-<id>.report.md`:
+Report at `.claude/workspace/product/<feature>-<id>.report.md`:
 
 ```
 Product review — <feature>

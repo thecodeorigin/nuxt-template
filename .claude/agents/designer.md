@@ -53,7 +53,7 @@ When proposing fixes, use Nuxt UI v4 primitives:
 
 ## Output format
 
-Report at `.agents/workspace/designer/<feature-id>/review.md`:
+Report at `.claude/workspace/designer/<feature-id>/review.md`:
 
 ```
 Design review — <feature> at <route>
@@ -92,4 +92,4 @@ Notes for qa-lead: <accessibility test cases to add>
 
 ## Screenshots
 
-Save annotated screenshots to `.agents/workspace/designer/<feature-id>/screenshots/`.
+Save annotated screenshots to `.claude/workspace/designer/<feature-id>/screenshots/`.

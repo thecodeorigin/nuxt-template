@@ -21,19 +21,19 @@ When in doubt, go one level deeper. The cost of over-organizing is low; the cost
 - `<summary>`: 2–4 words, kebab-case, describes the feature. Examples: `todo-crud`, `profile-settings`, `auth-impersonation-flow`, `blob-upload-route`
 - `<id>`: 5–8 char random alphanumeric. Examples: `a3f9k`, `7bx2mw`
 
-Full example: `.agents/plans/todo-crud-a3f9k/`
+Full example: `.claude/plans/todo-crud-a3f9k/`
 
 ## Directory layout
 
 ### Low impact (plan.md only)
 ```
-.agents/plans/feature-name-id/
+.claude/plans/feature-name-id/
   plan.md
 ```
 
 ### Medium impact
 ```
-.agents/plans/feature-name-id/
+.claude/plans/feature-name-id/
   plan.md           # index: goal, approach, phase table, file map, criteria
   phase-01-schema.md
   phase-02-server-routes.md
@@ -44,7 +44,7 @@ Full example: `.agents/plans/todo-crud-a3f9k/`
 
 ### High impact
 ```
-.agents/plans/feature-name-id/
+.claude/plans/feature-name-id/
   plan.md
   research/
     debate-synthesis.md     # debate record (required)

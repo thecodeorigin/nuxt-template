@@ -53,7 +53,7 @@ For a full non-technical + technical team:
 ## File layout
 
 ```
-.agents/
+.claude/
   agents/
     README.md               # this file
     fullstack-dev.md        # team-feature implementer
@@ -70,7 +70,6 @@ For a full non-technical + technical team:
     security.md             # security reviewer (2 phases)
     writter.md              # copy and docs reviewer
   commands/
-    team-feature.md         # /team-feature slash command
     team.md                 # /team slash command (full team)
   skills/                   # skill references (SKILL.md + references/)
     nuxt/
@@ -94,7 +93,7 @@ For a full non-technical + technical team:
 
 ## Display mode (Windows)
 
-`teammateMode` is set to `in-process` in `.agents/settings.json` because
+`teammateMode` is set to `in-process` in `.claude/settings.json` because
 split-pane mode requires tmux or iTerm2. All teammates share the lead's
 terminal; cycle between them with `Shift+Down`.
 
@@ -112,7 +111,7 @@ If you're on macOS in iTerm2 or a tmux session and want split panes, set
 ## Troubleshooting
 
 - **Teammates don't appear** → press `Shift+Down` to cycle (in-process mode hides them by default)
-- **Permission prompts loop** → add the offending tool to `.agents/settings.json`; teammates inherit the lead's permissions
+- **Permission prompts loop** → add the offending tool to `.claude/settings.json`; teammates inherit the lead's permissions
 - **Lead starts implementing instead of delegating** → message it: "wait for your teammates to complete their tasks before proceeding"
 - **Stuck task** → `TaskGet` to see state; mark `blocked` and message the lead, or reassign
 - **Orphaned team** → `ls ~/.claude/teams/` and remove the stale directory; also remove `~/.claude/tasks/<team-name>/`

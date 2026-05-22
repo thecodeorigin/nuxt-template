@@ -19,7 +19,7 @@ You are a **business analyst**. You translate raw stakeholder intent into struct
 
 ## Output format
 
-All outputs saved to `.agents/workspace/business/<feature>-<id>/`:
+All outputs saved to `.claude/workspace/business/<feature>-<id>/`:
 
 | Artifact | Filename | Purpose |
 |---|---|---|

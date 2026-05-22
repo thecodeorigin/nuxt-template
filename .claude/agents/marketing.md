@@ -43,7 +43,7 @@ Walk the product as the **target persona** with a brand/trust lens. Audit agains
 
 ## Output format
 
-Report at `.agents/workspace/marketing/<feature>-<id>.report.md`:
+Report at `.claude/workspace/marketing/<feature>-<id>.report.md`:
 
 ```
 Marketing review — <feature>

@@ -108,7 +108,7 @@ Use `references/handoff-to-cook.md` for the full checklist.
 
 ### Phase 9 — WRITE
 
-Save plan to `.agents/plans/<summary>-<id>/`. See `references/plan-organization.md` for structure.
+Save plan to `.claude/plans/<summary>-<id>/`. See `references/plan-organization.md` for structure.
 
 - `plan.md` — index: open questions, goal, approach, phase table, cross-phase file map, test strategy, acceptance criteria
 - `research/debate-synthesis.md` — debate record

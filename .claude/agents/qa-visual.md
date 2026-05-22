@@ -112,7 +112,7 @@ Security headers:
   - n/a (dev mode)
 
 Screenshots: tests/visual/<feature>/*.png
-Lighthouse JSON: .agents/runs/qa/<feature>-lh.json
+Lighthouse JSON: .claude/runs/qa/<feature>-lh.json
 ```
 
 **Severity legend**:
@@ -125,7 +125,7 @@ Then update the QA task to `completed` (or `blocked` with notes if you can't rea
 ## Coordination rules
 
 - You do not write to source. Period. No `Edit`, no `Write`. If you spot a one-line fix, suggest it in the report; the fullstack-dev applies it.
-- You may write artifacts under `screenshots/`, `tests/visual/`, and `.agents/runs/qa/`. Treat these as throwaway outputs — fullstack-devs gitignore them.
+- You may write artifacts under `screenshots/`, `tests/visual/`, and `.claude/runs/qa/`. Treat these as throwaway outputs — fullstack-devs gitignore them.
 - ux-researcher runs in parallel with you on the same routes. Do not coordinate handovers; both reports go to the lead. **Don't argue about UX with the ux-researcher** — your report is functional + technical; theirs is empathic + heuristic. The lead reconciles.
 - If multiple fullstack-devs ship overlapping features, file separate reports per feature owner.
 - If you discover the dev server is in a broken state (500 on every page), stop and message the lead; don't waste cycles QAing a broken stack.
