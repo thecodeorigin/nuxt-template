@@ -3,6 +3,7 @@ import type { Todo } from '#layers/todo/shared/schemas/todo'
 import { useTodoApi } from '#layers/todo/app/api/useTodoApi'
 import TodoForm from '#layers/todo/app/components/Todo/TodoForm.vue'
 import TodoList from '#layers/todo/app/components/Todo/TodoList.vue'
+import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 
 useHead({ title: 'Todos' })
 
@@ -39,11 +40,7 @@ provide(todosKey, {
 <template>
   <UDashboardPanel id="todos">
     <template #header>
-      <UDashboardNavbar title="Todos">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <DashboardNavbar title="Todos" />
     </template>
 
     <template #body>

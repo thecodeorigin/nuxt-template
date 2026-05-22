@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DashboardGettingStarted from '~/components/Dashboard/DashboardGettingStarted.vue'
+import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 import DashboardSessionCard from '~/components/Dashboard/DashboardSessionCard.vue'
 
 useHead({ title: 'Dashboard' })
@@ -8,11 +9,7 @@ useHead({ title: 'Dashboard' })
 <template>
   <UDashboardPanel id="dashboard">
     <template #header>
-      <UDashboardNavbar title="Home">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
+      <DashboardNavbar title="Home" />
     </template>
 
     <template #body>

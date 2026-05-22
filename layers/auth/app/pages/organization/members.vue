@@ -5,7 +5,7 @@ import OrganizationMemberList from '#layers/auth/app/components/Organization/Org
 import { membersKey } from '#layers/auth/app/composables/useOrganizationMembers'
 
 definePageMeta({ can: ['user:read'] })
-useHead({ title: 'Users & Permissions' })
+useHead({ title: 'Members' })
 
 const orgApi = useOrganizationApi()
 const { data: members, error } = useAsyncData('org-members', () => orgApi.fetchMembers(), { default: (): OrgMember[] => [] })
@@ -31,25 +31,13 @@ provide(membersKey, {
 </script>
 
 <template>
-  <UDashboardPanel id="users">
-    <template #header>
-      <UDashboardNavbar title="Users & Permissions">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
-    </template>
-
-    <template #body>
-      <div class="space-y-4 max-w-4xl">
-        <UAlert
-          icon="i-lucide-info"
-          color="neutral"
-          variant="subtle"
-          title="Permission changes apply to this organization and take effect immediately."
-        />
-        <OrganizationMemberList />
-      </div>
-    </template>
-  </UDashboardPanel>
+  <div class="space-y-4">
+    <UAlert
+      icon="i-lucide-info"
+      color="neutral"
+      variant="subtle"
+      title="Permission changes apply to this organization and take effect immediately."
+    />
+    <OrganizationMemberList />
+  </div>
 </template>

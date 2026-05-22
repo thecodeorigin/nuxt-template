@@ -21,13 +21,21 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser.value = currentUserData
   }
 
-  async function updateCurrentUser(data: { name: string }) {
+  async function updateCurrentUser(data: { name?: string, username?: string, bio?: string }) {
     await authApi.updateCurrentUser(data)
     await fetchCurrentUser()
   }
 
   function fetchUserNotificationSettings() {
     return authApi.fetchUserNotificationSettings()
+  }
+
+  function updateUserNotificationSettings(prefs: { email: boolean, product_updates: boolean, weekly_digest: boolean, important_updates: boolean }) {
+    return authApi.updateUserNotificationSettings(prefs)
+  }
+
+  function updatePhoneNumber(phone: string) {
+    return authApi.updatePhoneNumber(phone)
   }
 
   async function startImpersonation(userId: string) {
@@ -68,6 +76,8 @@ export const useAuthStore = defineStore('auth', () => {
     fetchCurrentUser,
     updateCurrentUser,
     fetchUserNotificationSettings,
+    updateUserNotificationSettings,
+    updatePhoneNumber,
     switchOrganization,
     refreshSession,
     startImpersonation,

@@ -71,7 +71,13 @@ export const $http = $fetch.create({
 
     const statusCode = error?.response?.status
 
-    const isRequestFromExternalUrl = !String(error.response.url).startsWith(getBaseUrl())
+    let isRequestFromExternalUrl = false
+    try {
+      isRequestFromExternalUrl = !String(error.response.url).startsWith(getBaseUrl())
+    }
+    catch {
+      // getBaseUrl not available in test / nuxt-security not loaded — assume same-origin
+    }
 
     switch (statusCode) {
       case 401: {

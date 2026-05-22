@@ -14,7 +14,7 @@ export function useAuthApi() {
     return $http<AuthUser>('/api/auth/me')
   }
 
-  function updateCurrentUser(data: { name: string }) {
+  function updateCurrentUser(data: { name?: string, username?: string, bio?: string }) {
     return $http('/api/user', {
       method: 'PATCH',
       body: data,

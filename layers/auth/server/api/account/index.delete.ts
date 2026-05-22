@@ -7,6 +7,9 @@ import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
 import { getSystemOrganizationId } from '#layers/auth/server/services/organization'
 
 export default defineAuthenticatedHandler(async (event, session) => {
+  if (session.impersonator)
+    throw createError({ statusCode: 403, statusMessage: 'Cannot delete an account while impersonating' })
+
   // Block if solely owning a non-empty tenant org (other members would be orphaned).
   const owned = await db
     .select()

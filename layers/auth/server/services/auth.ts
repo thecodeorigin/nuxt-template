@@ -16,6 +16,7 @@ export interface AuthUser {
   username: string
   name: string
   avatar: string | null
+  bio: string | null
   verified: boolean
   provider: string
   abilities: string[] // effective union (system ∪ active org)

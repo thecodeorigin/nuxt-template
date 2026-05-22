@@ -30,6 +30,7 @@ export async function buildSession(user: UserRow, opts: BuildSessionOpts): Promi
     username: user.username ?? '',
     name: user.name ?? '',
     avatar: user.avatar,
+    bio: user.bio ?? null,
     verified: user.verified ?? false,
     provider: opts.provider,
     abilities,

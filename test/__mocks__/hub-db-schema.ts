@@ -5,6 +5,7 @@ export const organizationTable = {} as any
 export const organizationMemberTable = {} as any
 export const permissionTable = {} as any
 export const todoTable = {} as any
+export const notificationTable = {} as any
 export enum ActivityAction {
   SIGN_IN = 'auth:sign_in',
   SIGN_UP = 'auth:sign_up',

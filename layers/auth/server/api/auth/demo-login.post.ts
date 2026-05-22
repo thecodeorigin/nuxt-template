@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { ensureMembership, ensureOrganization } from '#layers/auth/server/services/organization'
 import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/services/seed'
 import { persistSession } from '#layers/auth/server/services/session'
+import { seedDemoNotifications } from '#layers/notifications/server/services/notification'
 
 interface DemoAgent {
   email: string
@@ -64,6 +65,8 @@ export default defineEventHandler(async (event) => {
     const systemOrg = await ensureOrganization(SYSTEM_ORG.slug, SYSTEM_ORG.name, { is_system: true })
     await ensureMembership(user.id, systemOrg.id, SYSTEM_GRANTS.admin)
   }
+
+  await seedDemoNotifications(user.id, demoOrg.id)
 
   await persistSession(event, user, { provider: 'demo', activeOrganizationId: demoOrg.id })
 

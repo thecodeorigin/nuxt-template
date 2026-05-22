@@ -10,4 +10,7 @@ export default defineNuxtConfig({
     // anywhere without an explicit import.
     dirs: ['stores'],
   },
+  routeRules: {
+    '/users': { redirect: '/organization/members' },
+  },
 })

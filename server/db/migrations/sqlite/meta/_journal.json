@@ -29,6 +29,20 @@
       "when": 1779427409718,
       "tag": "0003_narrow_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1779457093776,
+      "tag": "0004_cloudy_nicolaos",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1779458233338,
+      "tag": "0005_sweet_gideon",
+      "breakpoints": true
     }
   ]
 }

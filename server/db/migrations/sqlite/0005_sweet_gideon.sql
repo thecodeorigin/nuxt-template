@@ -1,0 +1,2 @@
+ALTER TABLE `users` ADD `bio` text;--> statement-breakpoint
+ALTER TABLE `users` ADD `notification_prefs` text DEFAULT '{"email":true,"product_updates":true,"weekly_digest":false,"important_updates":true}';

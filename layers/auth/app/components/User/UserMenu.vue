@@ -61,54 +61,77 @@ const items = computed<DropdownMenuItem[][]>(() => {
     }])
   }
 
-  groups.push([{
-    label: 'Appearance',
-    icon: 'i-lucide-sun-moon',
-    children: [{
-      label: 'Light',
-      icon: 'i-lucide-sun',
-      type: 'checkbox',
-      checked: colorMode.value === 'light',
-      onSelect(e: Event) {
-        e.preventDefault()
-        colorMode.preference = 'light'
-      },
-    }, {
-      label: 'Dark',
-      icon: 'i-lucide-moon',
-      type: 'checkbox',
-      checked: colorMode.value === 'dark',
-      onSelect(e: Event) {
-        e.preventDefault()
-        colorMode.preference = 'dark'
-      },
-    }, {
-      label: 'System',
-      icon: 'i-lucide-laptop',
-      type: 'checkbox',
-      checked: colorMode.preference === 'system',
-      onSelect(e: Event) {
-        e.preventDefault()
-        colorMode.preference = 'system'
-      },
-    }],
-  }])
+  groups.push([
+    {
+      label: 'Profile',
+      icon: 'i-lucide-user',
+      to: '/settings',
+    },
+    {
+      label: 'Billing',
+      icon: 'i-lucide-credit-card',
+      onSelect: () => { toast.add({ title: 'Billing is coming soon', color: 'neutral' }) },
+    },
+  ])
 
-  groups.push([{
-    label: 'Documentation',
-    icon: 'i-lucide-book-open',
-    to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-    target: '_blank',
-  }, {
-    label: 'GitHub repository',
-    icon: 'i-simple-icons-github',
-    to: 'https://github.com/thecodeorigin/nuxt-template',
-    target: '_blank',
-  }, {
-    label: 'Log out',
-    icon: 'i-lucide-log-out',
-    onSelect: () => { void logout() },
-  }])
+  groups.push([
+    {
+      label: 'Appearance',
+      icon: 'i-lucide-sun-moon',
+      children: [
+        {
+          label: 'Light',
+          icon: 'i-lucide-sun',
+          type: 'checkbox',
+          checked: colorMode.value === 'light',
+          onSelect(e: Event) {
+            e.preventDefault()
+            colorMode.preference = 'light'
+          },
+        },
+        {
+          label: 'Dark',
+          icon: 'i-lucide-moon',
+          type: 'checkbox',
+          checked: colorMode.value === 'dark',
+          onSelect(e: Event) {
+            e.preventDefault()
+            colorMode.preference = 'dark'
+          },
+        },
+        {
+          label: 'System',
+          icon: 'i-lucide-laptop',
+          type: 'checkbox',
+          checked: colorMode.preference === 'system',
+          onSelect(e: Event) {
+            e.preventDefault()
+            colorMode.preference = 'system'
+          },
+        },
+      ],
+    },
+  ])
+
+  groups.push([
+    {
+      label: 'Documentation',
+      icon: 'i-lucide-book-open',
+      to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
+      target: '_blank',
+    },
+    {
+      label: 'GitHub repository',
+      icon: 'i-simple-icons-github',
+      to: 'https://github.com/thecodeorigin/nuxt-template',
+      target: '_blank',
+    },
+    {
+      label: 'Log out',
+      icon: 'i-lucide-log-out',
+      onSelect: () => { void logout() },
+    },
+  ])
 
   return groups
 })

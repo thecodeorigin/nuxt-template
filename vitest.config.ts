@@ -7,6 +7,7 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const layerAliases = [
   { find: /^#layers\/auth\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/auth/$1$2` },
   { find: /^#layers\/todo\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/todo/$1$2` },
+  { find: /^#layers\/notifications\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/notifications/$1$2` },
 ]
 
 const rootAliases = [

@@ -13,8 +13,13 @@ const loaded = ref(false)
 async function ensureOrgs() {
   if (loaded.value)
     return
-  orgs.value = await orgApi.fetchOrganizations()
-  loaded.value = true
+  try {
+    orgs.value = await orgApi.fetchOrganizations()
+    loaded.value = true
+  }
+  catch {
+    //
+  }
 }
 
 async function select(id: string) {

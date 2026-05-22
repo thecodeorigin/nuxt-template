@@ -81,11 +81,9 @@ async function stopImpersonation() {
   }
 }
 
-const triggerLabel = computed(() => {
-  if (authStore.isImpersonating)
-    return authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'Impersonating'
-  return 'Nuxt Template'
-})
+const triggerLabel = computed(() => authStore.isImpersonating
+  ? (authStore.currentUser?.name ?? authStore.currentUser?.primary_email)
+  : (authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'guest'))
 
 const triggerIcon = computed(() =>
   authStore.isImpersonating ? 'i-lucide-user-cog' : 'i-lucide-cuboid',
@@ -94,32 +92,20 @@ const triggerIcon = computed(() =>
 const items = computed<DropdownMenuItem[][]>(() => {
   const groups: DropdownMenuItem[][] = []
 
-  groups.push([{
-    type: 'label',
-    label: authStore.isImpersonating
-      ? `Impersonating ${authStore.currentUser?.name ?? authStore.currentUser?.primary_email}`
-      : `Signed in as ${authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'guest'}`,
-  }])
-
-  if (canManageUsers.value) {
-    groups.push([{
-      label: 'Users & Permissions',
-      icon: 'i-lucide-users',
-      to: '/users',
-    }])
-  }
-
   if (authStore.isImpersonating) {
-    groups.push([{
-      label: `Real user: ${authStore.impersonator?.name ?? authStore.impersonator?.primary_email}`,
-      icon: 'i-lucide-shield',
-      disabled: true,
-    }, {
-      label: 'Stop impersonating',
-      icon: 'i-lucide-log-out',
-      color: 'warning',
-      onSelect: () => { void stopImpersonation() },
-    }])
+    groups.push([
+      {
+        label: `Real user: ${authStore.impersonator?.name ?? authStore.impersonator?.primary_email}`,
+        icon: 'i-lucide-shield',
+        disabled: true,
+      },
+      {
+        label: 'Stop impersonating',
+        icon: 'i-lucide-log-out',
+        color: 'warning',
+        onSelect: () => { void stopImpersonation() },
+      },
+    ])
   }
   else if (canImpersonate.value) {
     if (candidates.value.length > 0) {
