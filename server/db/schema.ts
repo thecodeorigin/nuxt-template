@@ -64,7 +64,6 @@ export const userTable = sqliteTable('users', {
   // Settings
   verified: integer('verified', { mode: 'boolean' }).default(false),
   email_notifications: integer('email_notifications', { mode: 'boolean' }).default(true),
-  abilities: text('abilities', { mode: 'json' }).$type<string[]>().notNull().default([]),
 
   // Metadata
   custom_data: text('custom_data', { mode: 'json' }).$type<Record<string, unknown>>().default({}),
@@ -132,3 +131,67 @@ export const activityRelations = relations(activityTable, ({ one }) => ({
     references: [userTable.id],
   }),
 }))
+
+// --- Organizations (the only tenancy + authorization boundary) ---
+
+export const organizationTable = sqliteTable('organizations', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  owner_id: text('owner_id').references(() => userTable.id, { onDelete: 'set null' }),
+  is_personal: integer('is_personal', { mode: 'boolean' }).notNull().default(false),
+  is_system: integer('is_system', { mode: 'boolean' }).notNull().default(false),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updated_at: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+}, table => [
+  index('organizations_is_system_idx').on(table.is_system),
+])
+
+export type Organization = InferSelect<typeof organizationTable>
+
+export const organizationMemberTable = sqliteTable('organization_members', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  user_id: text('user_id').references(() => userTable.id, { onDelete: 'cascade' }).notNull(),
+  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  abilities: text('abilities', { mode: 'json' }).$type<string[]>().notNull().default([]),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updated_at: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+}, table => [
+  uniqueIndex('org_members_user_org_unique').on(table.user_id, table.organization_id),
+  index('org_members_org_idx').on(table.organization_id),
+])
+
+export type OrganizationMember = InferSelect<typeof organizationMemberTable>
+
+// --- Permissions (catalog — read-model for the membership editor) ---
+
+export const permissionTable = sqliteTable('permissions', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  key: text('key').notNull().unique(),
+  subject: text('subject').notNull(),
+  action: text('action').notNull(),
+  scope: text('scope'),
+  org_kind: text('org_kind', { enum: ['system', 'tenant'] }).notNull(),
+  description: text('description'),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+}, table => [
+  index('permissions_subject_idx').on(table.subject),
+])
+
+export type Permission = InferSelect<typeof permissionTable>
+
+// --- Todos (org-scoped CRUD resource) ---
+
+export const todoTable = sqliteTable('todos', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  user_id: text('user_id').references(() => userTable.id, { onDelete: 'set null' }),
+  title: text('title').notNull(),
+  completed: integer('completed', { mode: 'boolean' }).notNull().default(false),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updated_at: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+}, table => [
+  index('todos_org_idx').on(table.organization_id),
+])
+
+export type TodoRow = InferSelect<typeof todoTable>

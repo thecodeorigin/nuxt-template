@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 import ImpersonateMenu from '#layers/auth/app/components/Impersonate/ImpersonateMenu.vue'
+import OrganizationSwitcher from '#layers/auth/app/components/Organization/OrganizationSwitcher.vue'
 import UserMenu from '#layers/auth/app/components/User/UserMenu.vue'
 
 const open = ref(false)
@@ -26,6 +27,7 @@ const links = [[{
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >
       <template #header="{ collapsed }">
+        <OrganizationSwitcher :collapsed="collapsed" />
         <ImpersonateMenu :collapsed="collapsed" />
       </template>
 

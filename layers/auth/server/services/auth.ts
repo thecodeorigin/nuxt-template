@@ -18,8 +18,16 @@ export interface AuthUser {
   avatar: string | null
   verified: boolean
   provider: string
-  abilities: string[]
+  abilities: string[] // effective union (system ∪ active org)
+  activeOrganizationId: string | null
   impersonator?: ImpersonatorInfo | null
+}
+
+declare module 'h3' {
+  interface H3EventContext {
+    authUser?: AuthUser
+    activeOrganizationId?: string | null
+  }
 }
 
 /**
@@ -48,7 +56,14 @@ export function defineAuthenticatedHandler<T>(
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
-    const session: AuthUser = { ...stored, abilities: stored.abilities ?? [] }
+    const session: AuthUser = {
+      ...stored,
+      abilities: stored.abilities ?? [],
+      activeOrganizationId: stored.activeOrganizationId ?? null,
+    }
+
+    event.context.authUser = session
+    event.context.activeOrganizationId = session.activeOrganizationId
 
     return handler(event, session)
   })

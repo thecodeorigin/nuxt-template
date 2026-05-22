@@ -42,9 +42,7 @@ test-results/
 .claude/runs/
 
 # Prep skill plan outputs and agent workspace artifacts
-.claude/plans/
 .claude/workspace/
 ux/
-screenshots/
 
 .wrangler

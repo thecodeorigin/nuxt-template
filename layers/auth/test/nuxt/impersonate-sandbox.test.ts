@@ -15,6 +15,7 @@ const ADMIN: AuthUser = {
   verified: true,
   provider: 'google',
   abilities: ['user:impersonate', 'user:read'],
+  activeOrganizationId: null,
   impersonator: null,
 }
 
@@ -28,6 +29,7 @@ const ALICE_AS_IMPERSONATED: AuthUser = {
   verified: true,
   provider: 'impersonation',
   abilities: ['todo:read'],
+  activeOrganizationId: null,
   impersonator: {
     id: ADMIN.id,
     username: ADMIN.username,

@@ -2,7 +2,6 @@ import type { AuthUser } from '#layers/auth/server/services/auth'
 import { describe, expect, it } from 'vitest'
 import {
   backupKey,
-  buildImpersonatedSession,
   IMPERSONATE_ABILITY,
   impersonatorInfoFromSession,
   sessionKey,
@@ -20,22 +19,9 @@ function makeAdmin(over: Partial<AuthUser> = {}): AuthUser {
     verified: true,
     provider: 'google',
     abilities: ['user:impersonate', 'user:read'],
+    activeOrganizationId: null,
     ...over,
   }
-}
-
-function makeTarget(over: Record<string, unknown> = {}) {
-  return {
-    id: '7f3c1c4e-2c4e-4d4d-9d4e-2c4e4d4d9d4e',
-    primary_email: 'alice@seed.local',
-    primary_phone: '+10000000002',
-    username: 'alice',
-    name: 'Alice',
-    avatar: null,
-    verified: true,
-    abilities: ['todo:read', 'todo:write'],
-    ...over,
-  } as Parameters<typeof buildImpersonatedSession>[0]
 }
 
 describe('impersonate ability constant', () => {
@@ -60,42 +46,6 @@ describe('impersonatorInfoFromSession', () => {
     const admin = makeAdmin({ impersonator: null })
     const info = impersonatorInfoFromSession(admin)
     expect('impersonator' in info).toBe(false)
-  })
-})
-
-describe('buildImpersonatedSession', () => {
-  it('returns the target user as the new session, with impersonator attached', () => {
-    const admin = makeAdmin()
-    const target = makeTarget()
-    const session = buildImpersonatedSession(target, impersonatorInfoFromSession(admin))
-
-    expect(session.id).toBe(target.id)
-    expect(session.primary_email).toBe(target.primary_email)
-    expect(session.abilities).toEqual(['todo:read', 'todo:write'])
-    expect(session.impersonator?.id).toBe(admin.id)
-    expect(session.impersonator?.abilities).toContain('user:impersonate')
-  })
-
-  it('sets provider to "impersonation" so it is distinguishable from a real login', () => {
-    const session = buildImpersonatedSession(makeTarget(), impersonatorInfoFromSession(makeAdmin()))
-    expect(session.provider).toBe('impersonation')
-  })
-
-  it('coerces null target abilities to an empty array', () => {
-    const session = buildImpersonatedSession(
-      makeTarget({ abilities: null }),
-      impersonatorInfoFromSession(makeAdmin()),
-    )
-    expect(session.abilities).toEqual([])
-  })
-
-  it('coerces null username/name to empty strings (AuthUser requires strings)', () => {
-    const session = buildImpersonatedSession(
-      makeTarget({ username: null, name: null }),
-      impersonatorInfoFromSession(makeAdmin()),
-    )
-    expect(session.username).toBe('')
-    expect(session.name).toBe('')
   })
 })
 

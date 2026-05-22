@@ -6,7 +6,6 @@ export interface ImpersonationCandidate {
   name: string | null
   primary_email: string
   avatar: string | null
-  abilities: string[]
   is_suspended: boolean | null
 }
 

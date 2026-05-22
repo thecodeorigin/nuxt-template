@@ -1,30 +1,19 @@
 import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
-import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { simplifyNanoId } from '~~/shared/utils/id'
-import { ABILITY_PRESETS } from '#layers/auth/server/services/seed'
+import { ensureMembership, ensureOrganization } from '#layers/auth/server/services/organization'
+import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/services/seed'
+import { persistSession } from '#layers/auth/server/services/session'
 
 interface DemoAgent {
   email: string
   username: string
   name: string
-  abilities: string[]
 }
 
 const DEMO_AGENTS: Record<'admin' | 'user', DemoAgent> = {
-  admin: {
-    email: 'admin@demo.local',
-    username: 'demo_admin',
-    name: 'Admin Agent',
-    abilities: [...ABILITY_PRESETS.admin],
-  },
-  user: {
-    email: 'user@demo.local',
-    username: 'demo_user',
-    name: 'User Agent',
-    abilities: [...ABILITY_PRESETS.member],
-  },
+  admin: { email: 'admin@demo.local', username: 'demo_admin', name: 'Admin Agent' },
+  user: { email: 'user@demo.local', username: 'demo_user', name: 'User Agent' },
 }
 
 const DemoLoginSchema = z.object({
@@ -38,7 +27,6 @@ export default defineEventHandler(async (event) => {
 
   const { agent } = await readValidatedBody(event, DemoLoginSchema.parse)
   const preset = DEMO_AGENTS[agent]
-
   const now = new Date()
 
   const existing = await db.select().from(userTable).where(eq(userTable.primary_email, preset.email)).limit(1)
@@ -49,7 +37,6 @@ export default defineEventHandler(async (event) => {
       primary_email: preset.email,
       username: preset.username,
       name: preset.name,
-      abilities: preset.abilities,
       verified: true,
       last_sign_in_at: now,
     }).returning()
@@ -61,7 +48,6 @@ export default defineEventHandler(async (event) => {
       .set({
         username: preset.username,
         name: preset.name,
-        abilities: preset.abilities,
         verified: true,
         last_sign_in_at: now,
       })
@@ -70,27 +56,16 @@ export default defineEventHandler(async (event) => {
     user = updated!
   }
 
-  const sessionId = simplifyNanoId()
+  // Ensure org memberships exist; grants are preserved for returning users so
+  // edits made through the UI survive a re-login (the demo backdoor is not a reset).
+  const demoOrg = await ensureOrganization(DEMO_ORG.slug, DEMO_ORG.name)
+  await ensureMembership(user.id, demoOrg.id, agent === 'admin' ? DEMO_ORG_GRANTS.admin : DEMO_ORG_GRANTS.member)
+  if (agent === 'admin') {
+    const systemOrg = await ensureOrganization(SYSTEM_ORG.slug, SYSTEM_ORG.name, { is_system: true })
+    await ensureMembership(user.id, systemOrg.id, SYSTEM_GRANTS.admin)
+  }
 
-  await kv.set(`session:${sessionId}`, {
-    id: user.id,
-    primary_email: user.primary_email,
-    primary_phone: user.primary_phone,
-    username: user.username,
-    name: user.name,
-    avatar: user.avatar,
-    verified: user.verified,
-    provider: 'demo',
-    abilities: user.abilities ?? [],
-  })
-
-  setCookie(event, 'sessionid', sessionId, {
-    httpOnly: true,
-    secure: !import.meta.dev,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7,
-    path: '/',
-  })
+  await persistSession(event, user, { provider: 'demo', activeOrganizationId: demoOrg.id })
 
   await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_IN })
 

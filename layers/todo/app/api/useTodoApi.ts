@@ -1,19 +1,19 @@
-import type { NewTodo, Todo, UpdateTodo } from '#layers/todo/shared/schemas/todo'
+import type { NewTodo, UpdateTodo } from '#layers/todo/shared/schemas/todo'
 
 export function useTodoApi() {
   function fetchTodos() {
-    return $http<Todo[]>('/api/todos')
+    return $http('/api/todos')
   }
 
   function createTodo(input: NewTodo) {
-    return $http<Todo>('/api/todos', {
+    return $http('/api/todos', {
       method: 'POST',
       body: input,
     })
   }
 
   function updateTodo(id: string, input: UpdateTodo) {
-    return $http<Todo>('/api/todos/:id', {
+    return $http('/api/todos/:id', {
       method: 'PATCH',
       body: input,
       query: { id },

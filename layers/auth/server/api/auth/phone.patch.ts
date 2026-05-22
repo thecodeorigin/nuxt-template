@@ -3,6 +3,7 @@ import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import z from 'zod'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { persistSession } from '#layers/auth/server/services/session'
 
 const phoneSchema = z.object({
   phone: z
@@ -54,10 +55,11 @@ export default defineAuthenticatedHandler(async (event, session) => {
 
     const sessionId = getCookie(event, 'sessionid') || getHeader(event, 'x-session-id')
     if (sessionId) {
-      await kv.set(`session:${sessionId}`, {
-        ...session,
-        verified: true,
-        primary_phone: updatedUser.primary_phone,
+      await persistSession(event, updatedUser, {
+        provider: session.provider,
+        activeOrganizationId: session.activeOrganizationId,
+        impersonator: session.impersonator,
+        sessionId,
       })
     }
 

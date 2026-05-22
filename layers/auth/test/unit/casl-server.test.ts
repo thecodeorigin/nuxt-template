@@ -7,8 +7,6 @@ import {
   evaluateAbilityString,
   evaluateChecks,
   hasExactAbility,
-  matchesSubjectAction,
-  parseAbility,
   runAuthorizedHandler,
 } from '#layers/auth/server/services/casl'
 
@@ -27,21 +25,12 @@ function makeSession(over: Partial<AuthUser> = {}): AuthUser {
     verified: true,
     provider: 'agent',
     abilities: [],
+    activeOrganizationId: null,
     ...over,
   }
 }
 
 beforeEach(() => _resetSubjects())
-
-describe('parseAbility', () => {
-  it('parses "subject:action"', () => {
-    expect(parseAbility('blog:read')).toEqual({ subject: 'blog', action: 'read', scope: undefined })
-  })
-
-  it('parses "subject:action:scope"', () => {
-    expect(parseAbility('blog:read:self')).toEqual({ subject: 'blog', action: 'read', scope: 'self' })
-  })
-})
 
 describe('hasExactAbility', () => {
   it('matches the literal ability string', () => {
@@ -54,14 +43,6 @@ describe('hasExactAbility', () => {
   })
 })
 
-describe('matchesSubjectAction', () => {
-  it('matches by subject+action ignoring scope (used for page-meta gates)', () => {
-    expect(matchesSubjectAction(['blog:read:self'], 'blog:read')).toBe(true)
-    expect(matchesSubjectAction(['blog:read'], 'blog:read')).toBe(true)
-    expect(matchesSubjectAction(['user:read'], 'blog:read')).toBe(false)
-  })
-})
-
 describe('evaluateAbilityString', () => {
   it('grants when the user has the exact "subject:action"', async () => {
     const session = makeSession({ abilities: ['blog:read'] })
@@ -70,6 +51,26 @@ describe('evaluateAbilityString', () => {
       getParam: () => undefined,
     })
     expect(result).toEqual({ allowed: true })
+  })
+
+  it('grants via the "manage" wildcard for read/write/delete on the same subject', async () => {
+    const session = makeSession({ abilities: ['todo:manage'] })
+    for (const required of ['todo:read', 'todo:write', 'todo:delete']) {
+      const result = await evaluateAbilityString(required, session, {
+        event: makeEvent(),
+        getParam: () => undefined,
+      })
+      expect(result).toEqual({ allowed: true })
+    }
+  })
+
+  it('does not let "manage" satisfy a :self gate without ownership', async () => {
+    const session = makeSession({ abilities: ['todo:manage'] })
+    const result = await evaluateAbilityString('todo:delete:self', session, {
+      event: makeEvent({ id: 't-1' }),
+      getParam: () => 't-1',
+    })
+    expect(result).toEqual({ allowed: false })
   })
 
   it('denies when the user lacks the ability', async () => {

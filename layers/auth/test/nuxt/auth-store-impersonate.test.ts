@@ -12,6 +12,7 @@ const ADMIN: AuthUser = {
   verified: true,
   provider: 'google',
   abilities: ['user:impersonate'],
+  activeOrganizationId: null,
   impersonator: null,
 }
 

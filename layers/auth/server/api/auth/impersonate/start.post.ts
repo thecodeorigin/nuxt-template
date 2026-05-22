@@ -4,11 +4,10 @@ import { eq } from 'drizzle-orm'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import {
   backupKey,
-  buildImpersonatedSession,
   IMPERSONATE_ABILITY,
   impersonatorInfoFromSession,
-  sessionKey,
 } from '#layers/auth/server/services/impersonate'
+import { buildSession, writeSession } from '#layers/auth/server/services/session'
 import { ImpersonateStartSchema } from '#layers/auth/shared/schemas/impersonate'
 
 export default defineAuthorizedHandler(
@@ -47,16 +46,20 @@ export default defineAuthorizedHandler(
     }
 
     const impersonator = impersonatorInfoFromSession(session)
-    const newSession = buildImpersonatedSession(target, impersonator)
+    const newSession = await buildSession(target, { provider: 'impersonation', impersonator })
 
     await kv.set(backupKey(sessionId), session)
-    await kv.set(sessionKey(sessionId), newSession)
+    await writeSession(sessionId, newSession)
 
     await db.insert(activityTable).values({
       user_id: session.id,
       action: ActivityAction.IMPERSONATE_START,
       action_ref_id: target.id,
-      metadata: { target_id: target.id, target_email: target.primary_email },
+      metadata: {
+        target_id: target.id,
+        target_email: target.primary_email,
+        organization_id: newSession.activeOrganizationId,
+      },
     })
 
     return newSession

@@ -2,6 +2,7 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ImpersonationCandidate } from '#layers/auth/app/api/useAuthApi'
 import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
+import { satisfiesAbility } from '#layers/auth/shared/ability'
 
 defineProps<{
   collapsed?: boolean
@@ -15,6 +16,12 @@ const canImpersonate = computed(
   () => (authStore.currentUser?.abilities ?? []).includes('user:impersonate')
     || authStore.isImpersonating,
 )
+
+const canManageUsers = computed(() =>
+  satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:read'),
+)
+
+const showMenu = computed(() => canImpersonate.value || canManageUsers.value)
 
 const candidates = ref<ImpersonationCandidate[]>([])
 const candidatesLoaded = ref(false)
@@ -94,6 +101,14 @@ const items = computed<DropdownMenuItem[][]>(() => {
       : `Signed in as ${authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'guest'}`,
   }])
 
+  if (canManageUsers.value) {
+    groups.push([{
+      label: 'Users & Permissions',
+      icon: 'i-lucide-users',
+      to: '/users',
+    }])
+  }
+
   if (authStore.isImpersonating) {
     groups.push([{
       label: `Real user: ${authStore.impersonator?.name ?? authStore.impersonator?.primary_email}`,
@@ -135,7 +150,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
 
 <template>
   <UDropdownMenu
-    v-if="canImpersonate"
+    v-if="showMenu"
     :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
     :ui="{ content: collapsed ? 'w-56' : 'w-(--reka-dropdown-menu-trigger-width)' }"
