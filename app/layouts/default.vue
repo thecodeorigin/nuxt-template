@@ -27,8 +27,10 @@ const links = [[{
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >
       <template #header="{ collapsed }">
-        <OrganizationSwitcher :collapsed="collapsed" />
-        <ImpersonateMenu :collapsed="collapsed" />
+        <div class="flex flex-col w-full gap-1">
+          <OrganizationSwitcher :collapsed="collapsed" />
+          <ImpersonateMenu :collapsed="collapsed" />
+        </div>
       </template>
 
       <template #default="{ collapsed }">

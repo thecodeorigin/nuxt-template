@@ -4,6 +4,7 @@ import type { CatalogPermission, OrgMember } from '#layers/auth/app/api/useOrgan
 export interface MembersContext {
   members: Ref<OrgMember[]>
   permissions: Ref<CatalogPermission[]>
+  addMember: (email: string) => Promise<void>
   updateMemberAbilities: (userId: string, abilities: string[]) => Promise<void>
   removeMember: (userId: string) => Promise<void>
 }

@@ -15,6 +15,10 @@ whenError(error)
 provide(membersKey, {
   members,
   permissions,
+  async addMember(email) {
+    const newMember = await orgApi.addMember({ email })
+    members.value = [...members.value, newMember]
+  },
   async updateMemberAbilities(userId, abilities) {
     const updated = await orgApi.updateMemberAbilities(userId, { abilities })
     members.value = members.value.map(m => (m.id === userId ? { ...m, abilities: updated.abilities } : m))
@@ -42,7 +46,7 @@ provide(membersKey, {
           icon="i-lucide-info"
           color="neutral"
           variant="subtle"
-          title="Permission changes apply to this organization, and take effect on the member's next sign-in"
+          title="Permission changes apply to this organization and take effect immediately."
         />
         <OrganizationMemberList />
       </div>
