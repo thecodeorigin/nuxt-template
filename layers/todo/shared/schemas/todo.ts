@@ -1,3 +1,4 @@
+import type { TodoRow } from '@nuxthub/db/schema'
 import { z } from 'zod'
 
 export const TodoSchema = z.object({
@@ -23,3 +24,7 @@ export const UpdateTodoSchema = z
 export type Todo = z.infer<typeof TodoSchema>
 export type NewTodo = z.infer<typeof NewTodoSchema>
 export type UpdateTodo = z.infer<typeof UpdateTodoSchema>
+
+export function toTodo(row: TodoRow): Todo {
+  return { id: row.id, title: row.title, completed: row.completed, createdAt: row.created_at.toISOString() }
+}

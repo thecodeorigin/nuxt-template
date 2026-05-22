@@ -2,6 +2,7 @@ import type { H3Event } from 'h3'
 import type { AuthUser } from '#layers/auth/server/services/auth'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { parseAbility, satisfiesAbility } from '#layers/auth/shared/ability'
 
 export interface SubjectRegistration<T extends Record<string, unknown> = Record<string, unknown>> {
   paramName?: string
@@ -26,27 +27,8 @@ export function _resetSubjects() {
   subjectRegistry.clear()
 }
 
-export interface ParsedAbility {
-  subject: string
-  action: string
-  scope: string | undefined
-}
-
-export function parseAbility(ability: string): ParsedAbility {
-  const [subject = '', action = '', scope] = ability.split(':')
-  return { subject, action, scope }
-}
-
 export function hasExactAbility(abilities: string[], ability: string): boolean {
   return abilities.includes(ability)
-}
-
-export function matchesSubjectAction(abilities: string[], required: string): boolean {
-  const { subject: rs, action: ra } = parseAbility(required)
-  return abilities.some((a) => {
-    const { subject, action } = parseAbility(a)
-    return subject === rs && action === ra
-  })
 }
 
 export interface EvaluationResult {
@@ -68,7 +50,7 @@ export async function evaluateAbilityString(
   session: AuthUser,
   ctx: { getParam: (name: string) => string | undefined, event: H3Event },
 ): Promise<EvaluationResult> {
-  if (!hasExactAbility(session.abilities, ability)) {
+  if (!satisfiesAbility(session.abilities, ability)) {
     return { allowed: false }
   }
 

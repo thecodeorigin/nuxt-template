@@ -1,15 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { abilitiesToRules, pageMetaCanCheck, parseAbility } from '#layers/auth/app/composables/casl'
-
-describe('parseAbility (frontend)', () => {
-  it('parses "subject:action"', () => {
-    expect(parseAbility('blog:read')).toEqual({ subject: 'blog', action: 'read', scope: undefined })
-  })
-
-  it('parses "subject:action:scope"', () => {
-    expect(parseAbility('blog:read:self')).toEqual({ subject: 'blog', action: 'read', scope: 'self' })
-  })
-})
+import { abilitiesToRules, pageMetaCanCheck } from '#layers/auth/app/composables/casl'
 
 describe('abilitiesToRules (consumed by @casl/ability)', () => {
   it('converts plain abilities to action+subject rules', () => {
@@ -53,5 +43,10 @@ describe('pageMetaCanCheck — definePageMeta({ can: [...] })', () => {
   it('requires ALL listed abilities (AND semantics)', () => {
     expect(pageMetaCanCheck(['blog:read'], ['blog:read', 'user:read'])).toBe(false)
     expect(pageMetaCanCheck(['blog:read', 'user:read'], ['blog:read', 'user:read'])).toBe(true)
+  })
+
+  it('passes via the "manage" wildcard', () => {
+    expect(pageMetaCanCheck(['user:manage'], ['user:read'])).toBe(true)
+    expect(pageMetaCanCheck(['user:manage'], ['user:impersonate'])).toBe(false)
   })
 })

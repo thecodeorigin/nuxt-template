@@ -1,8 +1,11 @@
 import type { AuthUser } from '#layers/auth/server/services/auth'
-import { ActivityAction, activityTable } from '@nuxthub/db/schema'
+import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
 import { kv } from '@nuxthub/kv'
+import { eq } from 'drizzle-orm'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
-import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
+import { backupKey } from '#layers/auth/server/services/impersonate'
+import { isMember } from '#layers/auth/server/services/organization'
+import { buildSession, writeSession } from '#layers/auth/server/services/session'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   if (!session.impersonator) {
@@ -22,9 +25,19 @@ export default defineAuthenticatedHandler(async (event, session) => {
     })
   }
 
-  const restored: AuthUser = { ...original, impersonator: null }
+  const [admin] = await db.select().from(userTable).where(eq(userTable.id, original.id)).limit(1)
+  if (!admin) {
+    throw createError({ statusCode: 500, statusMessage: 'Original user no longer exists.' })
+  }
 
-  await kv.set(sessionKey(sessionId), restored)
+  // Re-validate the admin's previous active org (membership may have changed).
+  const activeOrganizationId = original.activeOrganizationId
+    && (await isMember(original.id, original.activeOrganizationId))
+    ? original.activeOrganizationId
+    : undefined
+  const restored = await buildSession(admin, { provider: original.provider, activeOrganizationId })
+
+  await writeSession(sessionId, restored)
   await kv.del(backupKey(sessionId))
 
   await db.insert(activityTable).values({

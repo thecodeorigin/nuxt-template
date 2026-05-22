@@ -13,7 +13,6 @@ export default defineAuthorizedHandler(
         name: userTable.name,
         primary_email: userTable.primary_email,
         avatar: userTable.avatar,
-        abilities: userTable.abilities,
         is_suspended: userTable.is_suspended,
       })
       .from(userTable)

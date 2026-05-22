@@ -1,7 +1,7 @@
 import { ActivityAction, activityTable, identityTable, userTable } from '@nuxthub/db/schema'
-import { kv } from '@nuxthub/kv'
 import { and, eq } from 'drizzle-orm'
-import { simplifyNanoId } from '~~/shared/utils/id'
+import { createPersonalOrganization } from '#layers/auth/server/services/organization'
+import { persistSession } from '#layers/auth/server/services/session'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -81,6 +81,7 @@ export default defineEventHandler(async (event) => {
     user = newUser!
 
     await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_UP })
+    await createPersonalOrganization(user)
   }
   else {
     // Update existing user
@@ -123,27 +124,8 @@ export default defineEventHandler(async (event) => {
       .where(eq(identityTable.id, existingIdentity[0]!.id))
   }
 
-  // Create session
-  const sessionId = simplifyNanoId()
-
-  await kv.set(`session:${sessionId}`, {
-    id: user.id,
-    primary_email: user.primary_email,
-    primary_phone: user.primary_phone,
-    username: user.username,
-    name: user.name,
-    avatar: user.avatar,
-    verified: user.verified,
-    provider: 'github',
-  })
-
-  setCookie(event, 'sessionid', sessionId, {
-    httpOnly: true,
-    secure: !import.meta.dev,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-  })
+  // Create session (the single writer resolves the active org + effective abilities)
+  await persistSession(event, user, { provider: 'github' })
 
   await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_IN })
 

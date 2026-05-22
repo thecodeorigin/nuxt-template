@@ -1,7 +1,7 @@
 import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
-import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
-import { simplifyNanoId } from '~~/shared/utils/id'
+import { createPersonalOrganization } from '#layers/auth/server/services/organization'
+import { persistSession } from '#layers/auth/server/services/session'
 
 export default defineEventHandler(async (event) => {
   // Block in production
@@ -38,28 +38,10 @@ export default defineEventHandler(async (event) => {
     user = updated!
   }
 
-  // Create session in KV
-  const sessionId = simplifyNanoId()
-
-  await kv.set(`session:${sessionId}`, {
-    id: user.id,
-    primary_email: user.primary_email,
-    primary_phone: user.primary_phone,
-    username: user.username,
-    name: user.name,
-    avatar: user.avatar,
-    verified: user.verified,
-    provider: 'agent',
-    abilities: ['user:read', 'todo:read', 'todo:write', 'todo:delete:self'],
-  })
-
-  setCookie(event, 'sessionid', sessionId, {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7,
-    path: '/',
-  })
+  // The agent owns a personal org (admin of its own workspace) so its session
+  // carries working abilities.
+  await createPersonalOrganization(user)
+  await persistSession(event, user, { provider: 'agent' })
 
   await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_IN })
 

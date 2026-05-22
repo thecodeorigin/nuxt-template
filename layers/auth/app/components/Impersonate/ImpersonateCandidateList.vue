@@ -72,7 +72,7 @@ await useAsyncData('impersonate-candidates', () => fetchCandidates())
             {{ user.name ?? user.username ?? user.primary_email }}
           </p>
           <p class="text-xs text-muted">
-            {{ user.primary_email }} · {{ user.abilities.length }} abilities
+            {{ user.primary_email }}
           </p>
         </div>
         <UButton

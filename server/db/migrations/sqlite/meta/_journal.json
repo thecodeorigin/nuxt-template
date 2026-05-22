@@ -8,6 +8,27 @@
       "when": 1779371197629,
       "tag": "0000_outgoing_leo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1779426436331,
+      "tag": "0001_goofy_quasar",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1779426582486,
+      "tag": "0002_sad_cable",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1779427409718,
+      "tag": "0003_narrow_swordsman",
+      "breakpoints": true
     }
   ]
 }
