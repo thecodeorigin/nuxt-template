@@ -21,6 +21,10 @@ export const SELF_ABILITY_KEYS = new Set<string>(['todo:delete:self'])
 // Owner of a personal org (admin of their own workspace).
 export const DEFAULT_PERSONAL_ORG_ABILITIES = ['user:manage', 'todo:manage'] as const
 
+// Granted to a user joining an org as a plain member (direct add or accepted
+// invitation): manage their own todos, no org administration.
+export const DEFAULT_MEMBER_ABILITIES = ['todo:read', 'todo:write', 'todo:delete:self'] as const
+
 export interface PermissionDef {
   key: string
   subject: string

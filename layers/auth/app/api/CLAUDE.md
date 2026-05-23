@@ -1,7 +1,13 @@
 # layers/auth/app/api
 
-> Client-side wrappers for `/api/auth/*` endpoints. Pages, stores, and
-> components never call `$http` directly — they go through `useAuthApi()`.
+> Client-side wrappers for this layer's server routes. Pages, stores, and
+> components never call `$http` directly — they go through these composables.
+>
+> - **`useAuthApi()`** — `/api/auth/*` (session, OAuth, phone, impersonation).
+> - **`useOrganizationApi()`** — orgs, members, permissions, and **invitations**
+>   (`createInvitation`, `fetchInvitations`, `revokeInvitation`,
+>   `fetchInvitation`, `acceptInvitation`). Also exposes the response types
+>   `OrgMember`, `CatalogPermission`, `OrgInvitation`, `OrganizationSummary`.
 
 ## Conventions
 

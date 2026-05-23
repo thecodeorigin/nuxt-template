@@ -1,3 +1,4 @@
+import type { CreateInvitation } from '#layers/auth/shared/schemas/invitation'
 import type { AddMember, UpdateMemberAbilities } from '#layers/auth/shared/schemas/member'
 import type { SwitchOrganization, UpdateOrganization } from '#layers/auth/shared/schemas/organization'
 import type { ExtractResponse } from '~/types/utils'
@@ -43,13 +44,34 @@ export function useOrganizationApi() {
     return $http('/api/organization/members/:userId', { method: 'DELETE', query: { userId } })
   }
 
+  function fetchInvitations() {
+    return $http('/api/organization/invitations')
+  }
+
+  function createInvitation(input: CreateInvitation) {
+    return $http('/api/organization/invitations', { method: 'POST', body: input })
+  }
+
+  function revokeInvitation(invId: string) {
+    return $http('/api/organization/invitations/:id', { method: 'DELETE', query: { id: invId } })
+  }
+
+  function fetchInvitation(token: string) {
+    return $http('/api/invitations/:token', { query: { token } })
+  }
+
+  function acceptInvitation(token: string) {
+    return $http('/api/invitations/:token/accept', { method: 'POST', query: { token } })
+  }
+
   function deleteAccount() {
     return $http('/api/account', { method: 'DELETE' })
   }
 
-  return { fetchOrganizations, fetchOrganization, updateOrganization, switchOrganization, refreshSession, fetchMembers, addMember, fetchPermissions, updateMemberAbilities, removeMember, deleteAccount }
+  return { fetchOrganizations, fetchOrganization, updateOrganization, switchOrganization, refreshSession, fetchMembers, addMember, fetchPermissions, updateMemberAbilities, removeMember, fetchInvitations, createInvitation, revokeInvitation, fetchInvitation, acceptInvitation, deleteAccount }
 }
 
 export type OrganizationSummary = NonNullable<ExtractResponse<typeof useOrganizationApi, 'fetchOrganizations'>>[number]
 export type OrgMember = NonNullable<ExtractResponse<typeof useOrganizationApi, 'fetchMembers'>>[number]
 export type CatalogPermission = NonNullable<ExtractResponse<typeof useOrganizationApi, 'fetchPermissions'>>[number]
+export type OrgInvitation = NonNullable<ExtractResponse<typeof useOrganizationApi, 'fetchInvitations'>>[number]

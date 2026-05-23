@@ -1,5 +1,5 @@
 import { db } from '@nuxthub/db'
-import { organizationMemberTable, organizationTable, userTable } from '@nuxthub/db/schema'
+import { organizationInvitationTable, organizationMemberTable, organizationTable, userTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import { DEFAULT_PERSONAL_ORG_ABILITIES, mergeOrgAbilities } from '#layers/auth/shared/permissions'
@@ -131,4 +131,56 @@ export async function createPersonalOrganization(user: UserRow) {
     .values({ user_id: user.id, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
     .onConflictDoNothing()
   return org!
+}
+
+export async function getOrganizationById(orgId: string) {
+  const [org] = await db
+    .select()
+    .from(organizationTable)
+    .where(eq(organizationTable.id, orgId))
+    .limit(1)
+  return org ?? null
+}
+
+// --- Invitations -------------------------------------------------------
+
+export async function getOrgInvitations(orgId: string) {
+  return db
+    .select()
+    .from(organizationInvitationTable)
+    .where(eq(organizationInvitationTable.organization_id, orgId))
+}
+
+export async function createInvitation(orgId: string, email: string, role: 'member' | 'admin', invitedBy: string) {
+  const token = crypto.randomUUID()
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  const [inv] = await db
+    .insert(organizationInvitationTable)
+    .values({ organization_id: orgId, email, role, token, invited_by: invitedBy, expires_at: expiresAt })
+    .returning()
+  return inv!
+}
+
+export async function getInvitationByToken(token: string) {
+  const [inv] = await db
+    .select()
+    .from(organizationInvitationTable)
+    .where(eq(organizationInvitationTable.token, token))
+    .limit(1)
+  return inv ?? null
+}
+
+export async function revokeInvitation(invId: string, orgId: string) {
+  await db
+    .delete(organizationInvitationTable)
+    .where(and(
+      eq(organizationInvitationTable.id, invId),
+      eq(organizationInvitationTable.organization_id, orgId),
+    ))
+}
+
+export async function deleteInvitation(invId: string) {
+  await db
+    .delete(organizationInvitationTable)
+    .where(eq(organizationInvitationTable.id, invId))
 }

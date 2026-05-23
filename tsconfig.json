@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "module": "EsNext"
+  },
   "references": [
     {
       "path": "./.nuxt/tsconfig.app.json"

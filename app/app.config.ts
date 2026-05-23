@@ -1,7 +1,8 @@
 export default defineAppConfig({
   ui: {
+    borderRadius: 0,
     colors: {
-      primary: 'amber',
+      primary: 'blue',
       neutral: 'gray',
     },
     button: {

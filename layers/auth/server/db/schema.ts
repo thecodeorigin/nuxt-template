@@ -117,6 +117,21 @@ export const permissionTable = sqliteTable('permissions', {
 ])
 export type Permission = InferSelect<typeof permissionTable>
 
+export const organizationInvitationTable = sqliteTable('organization_invitations', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  email: text('email').notNull(),
+  role: text('role', { enum: ['member', 'admin'] }).notNull().default('member'),
+  token: text('token').notNull().unique(),
+  invited_by: text('invited_by').references(() => userTable.id, { onDelete: 'set null' }),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  expires_at: integer('expires_at', { mode: 'timestamp' }).notNull(),
+}, table => [
+  index('org_invitations_org_idx').on(table.organization_id),
+  index('org_invitations_token_idx').on(table.token),
+])
+export type OrganizationInvitation = InferSelect<typeof organizationInvitationTable>
+
 export const userRelations = relations(userTable, ({ many }) => ({
   identities: many(identityTable),
   activities: many(activityTable),

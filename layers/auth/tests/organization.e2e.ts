@@ -21,3 +21,25 @@ test('organization general + members tabs render', async ({ page, goto }) => {
   await page.getByRole('link', { name: 'Members' }).click()
   await expect(page).toHaveURL(ORG_MEMBERS_URL)
 })
+
+test('members tab renders the members table', async ({ page, goto }) => {
+  await goto('/organization/members', { waitUntil: 'hydration' })
+  const membersTable = page.getByRole('table').filter({ hasText: 'Abilities' })
+  await expect(membersTable).toBeVisible()
+  await expect(membersTable.getByRole('row').filter({ hasText: '@' }).first()).toBeVisible()
+})
+
+test('admin can create and revoke an invitation', async ({ page, goto }) => {
+  const email = `invitee-${Date.now()}@example.com`
+  await goto('/organization/members', { waitUntil: 'hydration' })
+
+  await page.getByLabel('Email', { exact: true }).fill(email)
+  await page.getByRole('button', { name: 'Generate invite link' }).click()
+
+  await expect(page.getByText('Pending invitations')).toBeVisible()
+  const row = page.getByRole('row').filter({ hasText: email })
+  await expect(row).toBeVisible()
+
+  await row.getByRole('button', { name: 'Revoke' }).click()
+  await expect(page.getByText(email)).toBeHidden()
+})

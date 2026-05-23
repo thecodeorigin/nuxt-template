@@ -43,6 +43,13 @@
       "when": 1779458233338,
       "tag": "0005_sweet_gideon",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1779472084262,
+      "tag": "0006_cooing_vindicator",
+      "breakpoints": true
     }
   ]
 }

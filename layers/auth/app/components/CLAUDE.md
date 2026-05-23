@@ -15,7 +15,16 @@ the namespace by prefix.
 | `Impersonate/ImpersonateMenu.vue` | `ImpersonateMenu` |
 | `Impersonate/ImpersonateCandidateList.vue` | `ImpersonateCandidateList` |
 | `Impersonate/ImpersonateStopButton.vue` | `ImpersonateStopButton` |
+| `Organization/OrganizationMenu.vue` | `OrganizationMenu` (sidebar org switcher) |
+| `Organization/OrganizationMemberList.vue` | `OrganizationMemberList` (members UTable + invite form + pending invitations) |
+| `Organization/OrganizationMemberPermissionsModal.vue` | `OrganizationMemberPermissionsModal` |
+| `Organization/OrganizationAddMemberModal.vue` | `OrganizationAddMemberModal` (direct add) |
 | `User/UserMenu.vue` | `UserMenu` |
+
+The `Organization/*` components consume the page-scoped `membersKey` inject
+(`app/composables/useOrganizationMembers.ts`), so they only render inside a
+page that calls `provide(membersKey, …)` — currently
+`app/pages/organization/members.vue`.
 
 When you add a new auth-domain component, drop it in the matching namespace
 or open a new one. Don't put flat files at `components/`.

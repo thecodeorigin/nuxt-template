@@ -20,8 +20,11 @@
 | Route guards | `app/middleware/{auth,casl}.global.ts` |
 | Login + 403 + impersonation UI | `app/pages/{auth/login,forbidden,sandbox/impersonate}.vue` |
 | Auth/impersonation/user components | `app/components/{Auth,Impersonate,User}/*` |
+| Organization membership (orgs, members, permissions, switching) | `server/services/organization.ts`, `server/api/{organization,organizations,permissions}/*`, `app/components/Organization/*`, `app/pages/organization{,/index,/members}.vue` |
+| Invitations (token links, create/list/revoke, public join + accept) | `server/api/organization/invitations/*`, `server/api/invitations/[token]/*`, `app/pages/join/[token].vue`, `shared/schemas/invitation.ts` |
 | `PageMeta` extensions (`public`, `unauthenticatedOnly`, `can`) | `app/types/router.d.ts` |
-| Auth schemas | `shared/schemas/impersonate.ts` |
+| Schemas (auth, member, organization, user, invitation) | `shared/schemas/*` |
+| Ability catalog + default grants (`DEFAULT_*_ABILITIES`) | `shared/permissions.ts` |
 
 ## Conventions
 
@@ -85,19 +88,58 @@ therefore reads through the impersonated identity automatically — don't add
 "is impersonating" branches in business logic. Use
 `session.impersonator` only for audit/UI ("who's actually piloting").
 
+### Invitations
+
+Members are added two ways from the **Members** tab
+(`app/pages/organization/members.vue` → `OrganizationMemberList`):
+
+- **Direct add** (`POST /api/organization/members`) — adds an *existing* user
+  by email immediately, granting `DEFAULT_MEMBER_ABILITIES`.
+- **Invite by link** (`POST /api/organization/invitations`) — issues a
+  token-based link (7-day expiry, `organization_invitations` table) for people
+  who may not have an account yet.
+
+Invitation routes are **active-org scoped** — the org comes from
+`session.activeOrganizationId`, never a path param (the same pattern as the
+members routes). Create/list/revoke live under
+`server/api/organization/invitations/*` (gated `user:manage` for write,
+`user:read` for list). The recipient flow is two routes under
+`server/api/invitations/[token]/`:
+
+- `index.get.ts` — public (`defineEventHandler`), returns `{ email, role, org }`
+  for the join page so an unauthenticated visitor can preview the invite.
+- `accept.post.ts` — `defineAuthenticatedHandler`. Maps the invitation `role`
+  to abilities (`member` → `DEFAULT_MEMBER_ABILITIES`, `admin` →
+  `DEFAULT_PERSONAL_ORG_ABILITIES`), calls `ensureMembership`, deletes the
+  invitation, then `refreshUserSessions(userId)` so the grant is live in the
+  KV session immediately (rewritten in place, not on next sign-in).
+
+The public landing page is `app/pages/join/[token].vue`
+(`definePageMeta({ public: true })`); after a successful accept it routes to
+`/dashboard`. The client wrappers (`createInvitation`, `fetchInvitations`,
+`revokeInvitation`, `fetchInvitation`, `acceptInvitation`) and the
+`OrgInvitation` type live in `app/api/useOrganizationApi.ts`; the page-scoped
+`invitations` ref + actions are provided via `app/composables/useOrganizationMembers.ts`.
+
 ## Layout
 
 ```
 layers/auth/
-  nuxt.config.ts        Layer entry ($meta.name = 'auth')
+  nuxt.config.ts        Layer entry ($meta.name = 'auth'); /users → /organization/members redirect
   package.json
   app/
-    api/                useAuthApi (verb-noun ofetch wrappers)
+    api/                useAuthApi, useOrganizationApi (verb-noun ofetch wrappers)
     components/
       Auth/             AuthLoginCard
       Impersonate/      ImpersonateMenu, ImpersonateCandidateList,
                         ImpersonateStopButton
+      Organization/     OrganizationMenu (switcher), OrganizationMemberList
+                        (UTable + invite form + pending invitations),
+                        OrganizationMemberPermissionsModal, OrganizationAddMemberModal
       User/             UserMenu (sidebar footer)
+    composables/
+      casl.ts                 Frontend ability parsing (rules + page-meta check)
+      useOrganizationMembers.ts  Page-scoped members + invitations inject
     layouts/auth.vue    Centered card shell for /auth/login
     middleware/
       auth.global.ts    Redirect rules around session presence
@@ -105,23 +147,36 @@ layers/auth/
     pages/
       auth/login.vue
       forbidden.vue
+      join/[token].vue        Public invitation landing → accept
+      organization.vue        Tabbed shell (General / Members)
+      organization/index.vue  General tab (org name, slug, member count)
+      organization/members.vue  Members tab (members + invitations, provides membersKey)
+      settings.vue + settings/{index,notifications,security}.vue
       sandbox/impersonate.vue
     plugins/casl.ts     Syncs ability rules into @casl/vue
-    composables/casl.ts Frontend ability parsing (rules + page-meta check)
     stores/auth.ts      Pinia: useAuthStore (currentUser, impersonator)
     types/router.d.ts   PageMeta + RouteMeta augmentations
   server/
-    api/auth/           File-based auth routes (OAuth, me, logout, phone,
-                        impersonate/*, demo/dev backdoors)
+    api/
+      auth/             OAuth, me, logout, phone, impersonate/*, demo/dev backdoors
+      organization/     Active-org: members/*, invitations/*, index.{get,patch}
+      organizations/    Multi-org: list, switch
+      invitations/[token]/  Public index.get + authenticated accept.post
+      permissions/      Ability catalog
+    db/schema.ts        Auth + org + membership + permission + invitation tables
     services/
       auth.ts           AuthUser shape + defineAuthenticatedHandler
       casl.ts           defineAuthorizedHandler, defineSubject, ability eval
       impersonate.ts    Session swap helpers + IMPERSONATE_ABILITY constant
+      organization.ts   Org/membership/invitation queries + helpers
+      session.ts        buildSession + refreshUserSessions (live KV rewrite)
       seed.ts           ABILITY_PRESETS + SEED_USERS fixtures (e2e/dev only)
   shared/
-    schemas/impersonate.ts
+    permissions.ts      Ability catalog + DEFAULT_{PERSONAL_ORG,MEMBER}_ABILITIES
+    schemas/            impersonate, member, organization, user, invitation
   test/
-    unit/               casl-{server,frontend}, impersonate-*, seed
-    nuxt/               auth-store-impersonate, impersonate-sandbox
-  tests/                impersonate.e2e.ts
+    unit/               casl-{server,frontend}, impersonate-*, seed,
+                        {invitation,organization,user}-schema
+    nuxt/               auth-store-impersonate, impersonate-sandbox, user-menu
+  tests/                impersonate.e2e.ts, organization.e2e.ts
 ```
