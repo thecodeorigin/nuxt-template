@@ -1,14 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-@theme static {
-  --font-sans: 'Public Sans', sans-serif;
-}
-
-iframe {
-  pointer-events: auto;
-}
-
-[data-tour-active="true"] {
-  --ui-primary: var(--ui-success) !important;
+:root {
+  --ui-radius: 0rem;
 }

@@ -86,6 +86,7 @@
     "playwright-core": "catalog:",
     "tsx": "catalog:",
     "type-fest": "catalog:",
+    "typescript": "catalog:",
     "vitest": "catalog:",
     "vue-tsc": "catalog:",
     "yaml-eslint-parser": "catalog:"
