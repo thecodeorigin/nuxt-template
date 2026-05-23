@@ -19,7 +19,8 @@ Primary composable for fetching data in components:
 
 ```vue
 <script setup lang="ts">
-const { data, status, error, refresh, clear } = await useFetch('/api/posts')
+const { data, status, error, refresh, clear } = useFetch('/api/posts', { default: () => [] })
+whenError(error)
 </script>
 
 <template>
@@ -36,7 +37,7 @@ const { data, status, error, refresh, clear } = await useFetch('/api/posts')
 ### With Options
 
 ```ts
-const { data } = await useFetch('/api/posts', {
+const { data } = useFetch('/api/posts', {
   // Query parameters
   query: { page: 1, limit: 10 },
   // Request body (for POST/PUT)
@@ -65,8 +66,9 @@ const { data } = await useFetch('/api/posts', {
 ```vue
 <script setup lang="ts">
 const page = ref(1)
-const { data } = await useFetch('/api/posts', {
+const { data } = useFetch('/api/posts', {
   query: { page }, // Automatically refetches when page changes
+  default: () => [],
 })
 </script>
 ```
@@ -76,7 +78,7 @@ const { data } = await useFetch('/api/posts', {
 ```vue
 <script setup lang="ts">
 const id = ref(1)
-const { data } = await useFetch(() => `/api/posts/${id.value}`)
+const { data } = useFetch(() => `/api/posts/${id.value}`, { default: () => null })
 // Refetches when id changes
 </script>
 ```
@@ -87,9 +89,10 @@ For wrapping any async function:
 
 ```vue
 <script setup lang="ts">
-const { data, error } = await useAsyncData('user', () => {
+const { data, error } = useAsyncData('user', () => {
   return myCustomFetch('/user/profile')
 })
+whenError(error)
 </script>
 ```
 
@@ -97,13 +100,14 @@ const { data, error } = await useAsyncData('user', () => {
 
 ```vue
 <script setup lang="ts">
-const { data } = await useAsyncData('cart', async () => {
+const { data, error } = useAsyncData('cart', async () => {
   const [coupons, offers] = await Promise.all([
     $fetch('/api/coupons'),
     $fetch('/api/offers'),
   ])
   return { coupons, offers }
 })
+whenError(error)
 </script>
 ```
 
@@ -143,12 +147,12 @@ Don't block navigation:
 
 ```vue
 <script setup lang="ts">
-// Using lazy option
-const { data, status } = await useFetch('/api/posts', { lazy: true })
+// Using lazy option — non-blocking by default, await not needed
+const { data, status } = useFetch('/api/posts', { lazy: true, default: () => [] })
 
 // Or use lazy variants
-const { data, status } = await useLazyFetch('/api/posts')
-const { data, status } = await useLazyAsyncData('key', fetchFn)
+const { data, status } = useLazyFetch('/api/posts', { default: () => [] })
+const { data, status } = useLazyAsyncData('key', fetchFn, { default: () => [] })
 </script>
 ```
 
@@ -158,10 +162,11 @@ const { data, status } = await useLazyAsyncData('key', fetchFn)
 <script setup lang="ts">
 const category = ref('tech')
 
-const { data, refresh } = await useFetch('/api/posts', {
+const { data, refresh } = useFetch('/api/posts', {
   query: { category },
   // Auto-refresh when category changes
   watch: [category],
+  default: () => [],
 })
 
 // Manual refresh
@@ -176,7 +181,7 @@ Data is cached by key. Share data across components:
 ```vue
 <script setup lang="ts">
 // In component A
-const { data } = await useFetch('/api/user', { key: 'current-user' })
+const { data } = useFetch('/api/user', { key: 'current-user', default: () => null })
 
 // In component B - uses cached data
 const { data } = useNuxtData('current-user')
@@ -199,7 +204,7 @@ clearNuxtData('current-user')
 ## Interceptors
 
 ```ts
-const { data } = await useFetch('/api/auth', {
+const { data } = useFetch('/api/auth', {
   onRequest({ options }) {
     options.headers.set('Authorization', `Bearer ${token}`)
   },

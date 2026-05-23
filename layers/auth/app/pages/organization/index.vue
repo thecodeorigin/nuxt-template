@@ -6,7 +6,8 @@ const authStore = useAuthStore()
 const orgApi = useOrganizationApi()
 const toast = useToast()
 
-const { data: org, refresh } = await useAsyncData('active-org', () => orgApi.fetchOrganization())
+const { data: org, refresh, error: orgError } = useAsyncData('active-org', () => orgApi.fetchOrganization())
+whenError(orgError)
 const canManage = computed(() => satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:manage'))
 
 const name = ref(org.value?.name ?? '')

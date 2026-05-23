@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CatalogPermission, OrgInvitation, OrgMember } from '#layers/auth/app/api/useOrganizationApi'
+import type { CatalogPermission, OrgInvitation } from '#layers/auth/app/api/useOrganizationApi'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import OrganizationMemberList from '#layers/auth/app/components/Organization/OrganizationMemberList.vue'
 import { membersKey } from '#layers/auth/app/composables/useOrganizationMembers'
@@ -8,29 +8,23 @@ definePageMeta({ can: ['user:read'] })
 useHead({ title: 'Members' })
 
 const orgApi = useOrganizationApi()
-const { data: members, error } = useAsyncData('org-members', () => orgApi.fetchMembers(), { default: (): OrgMember[] => [] })
 const { data: permissions } = useAsyncData('org-permissions', () => orgApi.fetchPermissions(), { default: (): CatalogPermission[] => [] })
 const { data: invitations } = useAsyncData('org-invitations', () => orgApi.fetchInvitations(), { default: (): OrgInvitation[] => [] })
-whenError(error)
 
 provide(membersKey, {
-  members,
   invitations,
   permissions,
   async addMember(email) {
-    const newMember = await orgApi.addMember({ email })
-    members.value = [...members.value, newMember]
+    await orgApi.addMember({ email })
   },
   async updateMemberAbilities(userId, abilities) {
-    const updated = await orgApi.updateMemberAbilities(userId, { abilities })
-    members.value = members.value.map(m => (m.id === userId ? { ...m, abilities: updated.abilities } : m))
+    await orgApi.updateMemberAbilities(userId, { abilities })
   },
   async removeMember(userId) {
     await orgApi.removeMember(userId)
-    members.value = members.value.filter(m => m.id !== userId)
   },
-  async createInvitation(email, role) {
-    const inv = await orgApi.createInvitation({ email, role })
+  async createInvitation(email, roleId) {
+    const inv = await orgApi.createInvitation({ email, role_id: roleId })
     invitations.value = [...invitations.value, inv]
     return inv
   },

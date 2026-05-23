@@ -1,3 +1,4 @@
+import type { ListQuery, Page } from '~~/shared/schemas/pagination'
 import type { AuthUser } from '#layers/auth/server/services/auth'
 
 export interface ImpersonationCandidate {
@@ -44,8 +45,8 @@ export function useAuthApi() {
     })
   }
 
-  function fetchImpersonationCandidates() {
-    return $http<ImpersonationCandidate[]>('/api/auth/impersonate/users')
+  function fetchImpersonationCandidates(query?: Partial<ListQuery>) {
+    return $http<Page<ImpersonationCandidate>>('/api/auth/impersonate/users', { query })
   }
 
   function startImpersonation(userId: string) {
@@ -61,6 +62,12 @@ export function useAuthApi() {
     })
   }
 
+  function uploadAvatar(file: File) {
+    const form = new FormData()
+    form.append('file', file)
+    return $http<{ avatar: string }>('/api/user/avatar', { method: 'POST', body: form })
+  }
+
   function logout() {
     return $http('/api/auth/logout')
   }
@@ -71,6 +78,7 @@ export function useAuthApi() {
     fetchUserNotificationSettings,
     updateUserNotificationSettings,
     updatePhoneNumber,
+    uploadAvatar,
     fetchImpersonationCandidates,
     startImpersonation,
     stopImpersonation,

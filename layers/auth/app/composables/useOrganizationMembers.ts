@@ -1,14 +1,13 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { CatalogPermission, OrgInvitation, OrgMember } from '#layers/auth/app/api/useOrganizationApi'
+import type { CatalogPermission, OrgInvitation } from '#layers/auth/app/api/useOrganizationApi'
 
 export interface MembersContext {
-  members: Ref<OrgMember[]>
   invitations: Ref<OrgInvitation[]>
   permissions: Ref<CatalogPermission[]>
   addMember: (email: string) => Promise<void>
   updateMemberAbilities: (userId: string, abilities: string[]) => Promise<void>
   removeMember: (userId: string) => Promise<void>
-  createInvitation: (email: string, role: 'member' | 'admin') => Promise<OrgInvitation>
+  createInvitation: (email: string, roleId?: string) => Promise<OrgInvitation>
   revokeInvitation: (invId: string) => Promise<void>
 }
 

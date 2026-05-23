@@ -117,11 +117,38 @@ export const permissionTable = sqliteTable('permissions', {
 ])
 export type Permission = InferSelect<typeof permissionTable>
 
+export const roleTable = sqliteTable('roles', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  permissions: text('permissions', { mode: 'json' }).$type<string[]>().notNull().default([]),
+  is_system: integer('is_system', { mode: 'boolean' }).notNull().default(false),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  updated_at: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+}, table => [
+  uniqueIndex('roles_org_name_unique').on(table.organization_id, table.name),
+  index('roles_org_idx').on(table.organization_id),
+])
+export type Role = InferSelect<typeof roleTable>
+
+export const organizationMemberRoleTable = sqliteTable('organization_member_roles', {
+  id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
+  member_id: text('member_id').references(() => organizationMemberTable.id, { onDelete: 'cascade' }).notNull(),
+  role_id: text('role_id').references(() => roleTable.id, { onDelete: 'cascade' }).notNull(),
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+}, table => [
+  uniqueIndex('member_roles_unique').on(table.member_id, table.role_id),
+  index('member_roles_member_idx').on(table.member_id),
+  index('member_roles_role_idx').on(table.role_id),
+])
+export type OrganizationMemberRole = InferSelect<typeof organizationMemberRoleTable>
+
 export const organizationInvitationTable = sqliteTable('organization_invitations', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
   organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
   email: text('email').notNull(),
-  role: text('role', { enum: ['member', 'admin'] }).notNull().default('member'),
+  role_id: text('role_id').references(() => roleTable.id, { onDelete: 'set null' }),
   token: text('token').notNull().unique(),
   invited_by: text('invited_by').references(() => userTable.id, { onDelete: 'set null' }),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),

@@ -82,6 +82,7 @@ export default defineEventHandler(async (event) => {
 
     await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_UP })
     await createPersonalOrganization(user)
+    await (useNitroApp().hooks as { callHook: (event: string, ...args: unknown[]) => Promise<void> }).callHook('auth:user-created', { user, provider: 'github', event })
   }
   else {
     // Update existing user

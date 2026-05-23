@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const CreateInvitationSchema = z.object({
   email: z.string().trim().email('Invalid email address'),
-  role: z.enum(['member', 'admin']).default('member'),
+  role_id: z.string().optional(),
 })
 
 export type CreateInvitation = z.infer<typeof CreateInvitationSchema>

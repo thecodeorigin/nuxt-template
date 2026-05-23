@@ -1,3 +1,7 @@
+export function escapeLike(input: string): string {
+  return input.replace(/[\\%_]/g, c => `\\${c}`)
+}
+
 export function shortenId(id: string, prefixLen: number = 4, suffixLen: number = 4): string {
   if (!id)
     return ''

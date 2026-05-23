@@ -13,7 +13,8 @@ const busyId = ref<string | null>(null)
 async function fetchCandidates() {
   loadError.value = null
   try {
-    candidates.value = await authApi.fetchImpersonationCandidates()
+    const page = await authApi.fetchImpersonationCandidates()
+    candidates.value = page?.items ?? []
   }
   catch (err: unknown) {
     const error = err as { statusCode?: number, statusMessage?: string }
@@ -43,7 +44,7 @@ async function startImpersonation(candidate: ImpersonationCandidate) {
   }
 }
 
-await useAsyncData('impersonate-candidates', () => fetchCandidates())
+useAsyncData('impersonate-candidates', () => fetchCandidates())
 </script>
 
 <template>

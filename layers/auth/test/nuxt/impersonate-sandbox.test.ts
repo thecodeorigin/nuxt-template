@@ -39,17 +39,19 @@ const ALICE_AS_IMPERSONATED: AuthUser = {
   },
 }
 
-const fetchImpersonationCandidates = vi.fn(async () => [
-  {
-    id: 'alice-1',
-    username: 'alice',
-    name: 'Alice',
-    primary_email: 'alice@seed.local',
-    avatar: null,
-    abilities: ['todo:read'],
-    is_suspended: false,
-  },
-])
+const fetchImpersonationCandidates = vi.fn(async () => ({
+  items: [
+    {
+      id: 'alice-1',
+      username: 'alice',
+      name: 'Alice',
+      primary_email: 'alice@seed.local',
+      avatar: null,
+      is_suspended: false,
+    },
+  ],
+  hasMore: false,
+}))
 
 vi.mock('#layers/auth/app/api/useAuthApi', () => ({
   useAuthApi: () => ({

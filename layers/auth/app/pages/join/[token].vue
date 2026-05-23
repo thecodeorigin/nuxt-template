@@ -10,10 +10,11 @@ const orgApi = useOrganizationApi()
 const authStore = useAuthStore()
 const toast = useToast()
 
-const { data: invitation, error } = await useAsyncData(
+const { data: invitation, error } = useAsyncData(
   `invitation-${token}`,
   () => orgApi.fetchInvitation(token),
 )
+whenError(error)
 
 useHead({ title: () => (invitation.value ? `Join ${invitation.value.org.name}` : 'Invitation') })
 
@@ -62,7 +63,9 @@ async function accept() {
 
       <div v-else class="space-y-4">
         <p>
-          You have been invited to join <strong>{{ invitation.org.name }}</strong> as a <strong>{{ invitation.role }}</strong>.
+          You have been invited to join <strong>{{ invitation.org.name }}</strong><template v-if="invitation.roleName">
+            as a <strong>{{ invitation.roleName }}</strong>
+          </template>.
         </p>
         <div v-if="!authStore.currentUser" class="text-sm text-muted">
           Sign in to accept this invitation.

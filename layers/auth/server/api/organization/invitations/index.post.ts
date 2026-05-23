@@ -11,7 +11,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   if (!orgId)
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
 
-  const { email, role } = await readValidatedBody(event, CreateInvitationSchema.parse)
+  const { email, role_id } = await readValidatedBody(event, CreateInvitationSchema.parse)
 
   const [existing] = await db
     .select({ id: userTable.id })
@@ -25,5 +25,5 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   if (pending.some(i => i.email === email))
     throw createError({ statusCode: 409, statusMessage: 'An invitation for this email is already pending' })
 
-  return createInvitation(orgId, email, role, session.id)
+  return createInvitation(orgId, email, role_id ?? null, session.id)
 })

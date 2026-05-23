@@ -198,10 +198,10 @@ For server-side pagination:
 <script setup lang="ts">
 const page = ref(1)
 
-const { data, status } = await useAsyncData(
+const { data, status } = useAsyncData(
   'users',
   () => $fetch('/api/users', { query: { page: page.value } }),
-  { watch: [page] }
+  { watch: [page], default: () => null },
 )
 </script>
 

@@ -34,7 +34,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const route = useRoute()
 
-const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
+const { data: navigation } = useAsyncData('navigation', () => queryCollectionNavigation('docs'), { default: () => [] })
 
 provide('navigation', navigation)
 
@@ -103,13 +103,13 @@ const route = useRoute()
 
 definePageMeta({ layout: 'docs' })
 
-const { data: page } = await useAsyncData(route.path, () => {
+const { data: page } = useAsyncData(route.path, () => {
   return queryCollection('docs').path(route.path).first()
-})
+}, { default: () => null })
 
-const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
+const { data: surround } = useAsyncData(`${route.path}-surround`, () => {
   return queryCollectionItemSurroundings('docs', route.path)
-})
+}, { default: () => null })
 </script>
 
 <template>

@@ -40,6 +40,10 @@ The page (`pages/todos.vue`) owns the data via `useAsyncData`, then
 The store survives every route change; a CRUD list parked there leaks the
 longer the user stays in the app.
 
+**Data-fetching rule**: Never top-level `await useAsyncData` or `await useFetch` in
+`<script setup>`. Always use the non-blocking form with a `default` factory and
+`whenError`. Top-level `await` forces Suspense and blocks navigation.
+
 ```ts
 // pages/todos.vue
 const { data: todos, error } = useAsyncData('todos', () => todoApi.fetchTodos(), {

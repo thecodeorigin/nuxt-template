@@ -1,6 +1,6 @@
-import { parseAbility } from '#layers/auth/shared/ability'
+import { parseAbility, satisfiesAbility } from '#layers/auth/shared/ability'
 
-export const TENANT_SUBJECTS = ['user', 'todo'] as const
+export const TENANT_SUBJECTS = ['user', 'todo', 'billing'] as const
 export const TENANT_ACTIONS = ['read', 'write', 'delete', 'manage'] as const
 
 // Platform powers — grantable ONLY in the system org.
@@ -19,11 +19,11 @@ export const SELF_ABILITY_KEYS = new Set<string>(['todo:delete:self'])
 
 // --- defaults ----------------------------------------------------------
 // Owner of a personal org (admin of their own workspace).
-export const DEFAULT_PERSONAL_ORG_ABILITIES = ['user:manage', 'todo:manage'] as const
+export const DEFAULT_PERSONAL_ORG_ABILITIES = ['user:manage', 'todo:manage', 'billing:manage', 'billing:read'] as const
 
 // Granted to a user joining an org as a plain member (direct add or accepted
 // invitation): manage their own todos, no org administration.
-export const DEFAULT_MEMBER_ABILITIES = ['todo:read', 'todo:write', 'todo:delete:self'] as const
+export const DEFAULT_MEMBER_ABILITIES = ['todo:read', 'todo:write', 'todo:delete:self', 'billing:read'] as const
 
 export interface PermissionDef {
   key: string
@@ -79,3 +79,14 @@ export function mergeOrgAbilities(systemGrants: string[], activeGrants: string[]
 
 /** Editor (tenant) may only submit tenant keys (no :self, no system). */
 export const EDITABLE_TENANT_KEYS = TENANT_ABILITY_KEYS
+
+/**
+ * Returns the ability keys from `requested` that the actor cannot grant.
+ * A key is un-grantable if it is not a tenant key or the actor does not hold it.
+ */
+export function assertGrantable(actorEffective: string[], requested: string[]): string[] {
+  const tenantKeys = keysAllowedFor(false)
+  const illegalKind = requested.filter(k => !tenantKeys.has(k))
+  const notHeld = requested.filter(k => tenantKeys.has(k) && !satisfiesAbility(actorEffective, k))
+  return [...new Set([...illegalKind, ...notHeld])]
+}

@@ -27,6 +27,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
   const main: NavigationMenuItem[] = [
     { label: 'Home', icon: 'i-lucide-house', to: '/dashboard', onSelect: closeMenu },
     { label: 'Todos', icon: 'i-lucide-list-todo', to: '/todos', onSelect: closeMenu },
+    { label: 'Referral', icon: 'i-lucide-gift', to: '/referral', onSelect: closeMenu },
   ]
 
   main.push({
@@ -36,12 +37,12 @@ const links = computed<NavigationMenuItem[][]>(() => {
     type: 'trigger' as const,
     children: [
       { label: 'General', to: '/settings', exact: true, onSelect: closeMenu },
-      ...(satisfiesAbility(abilities.value, 'user:read')
-        ? [{ label: 'Organization', to: '/organization', onSelect: closeMenu }]
-        : []
-      ),
       { label: 'Notifications', to: '/settings/notifications', onSelect: closeMenu },
       { label: 'Security', to: '/settings/security', onSelect: closeMenu },
+      ...(satisfiesAbility(abilities.value, 'billing:read')
+        ? [{ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing', onSelect: closeMenu }]
+        : []
+      ),
     ],
   })
   return [main]

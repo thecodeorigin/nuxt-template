@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { satisfiesAbility } from '#layers/auth/shared/ability'
 import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 
 useHead({ title: 'Settings' })
 
-const links = [[{
+const authStore = useAuthStore()
+const abilities = computed(() => authStore.currentUser?.abilities ?? [])
+
+const links = computed(() => [[{
   label: 'General',
   icon: 'i-lucide-user',
   to: '/settings',
@@ -17,12 +21,15 @@ const links = [[{
   label: 'Security',
   icon: 'i-lucide-shield',
   to: '/settings/security',
-}], [{
+}, ...(satisfiesAbility(abilities.value, 'billing:read')
+  ? [{ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing' }]
+  : []
+)], [{
   label: 'Documentation',
   icon: 'i-lucide-book-open',
   to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
   target: '_blank',
-}]] satisfies NavigationMenuItem[][]
+}]] satisfies NavigationMenuItem[][])
 </script>
 
 <template>

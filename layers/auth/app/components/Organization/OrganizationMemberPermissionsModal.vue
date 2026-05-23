@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
+import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import { useOrganizationMembers } from '#layers/auth/app/composables/useOrganizationMembers'
 import { satisfiesAbility } from '#layers/auth/shared/ability'
+import { whenError } from '~/utils/error'
 
 const props = defineProps<{ member: OrgMember | null }>()
 const open = defineModel<boolean>('open', { default: false })
 
 const authStore = useAuthStore()
 const toast = useToast()
+const orgApi = useOrganizationApi()
 const { permissions, updateMemberAbilities } = useOrganizationMembers()
 
+const { data: orgRoles, error: rolesError } = useAsyncData('org-roles', () => orgApi.fetchRoles(), { default: () => [] })
+whenError(rolesError)
+
 const selected = ref<string[]>([])
+const selectedRoleIds = ref<string[]>([])
 
 watch(() => props.member, (m) => {
-  selected.value = m ? m.abilities.filter(a => !a.endsWith(':self')) : []
+  selected.value = m ? (m.abilities ?? []).filter(a => !a.endsWith(':self')) : []
+  selectedRoleIds.value = []
 }, { immediate: true })
 
 const saving = ref(false)
@@ -26,6 +34,8 @@ const grouped = computed(() => {
     permissions: tenantEditable.filter(p => p.subject === subject),
   }))
 })
+
+const roleOptions = computed(() => orgRoles.value.map(r => ({ label: r.name, value: r.id })))
 
 function canGrant(key: string) {
   return satisfiesAbility(authStore.currentUser?.abilities ?? [], key)
@@ -45,7 +55,10 @@ async function save() {
     return
   saving.value = true
   try {
-    await updateMemberAbilities(props.member.id, selected.value)
+    await Promise.all([
+      updateMemberAbilities(props.member.id, selected.value),
+      orgApi.assignMemberRoles(props.member.id, selectedRoleIds.value),
+    ])
     toast.add({ title: 'Permissions updated', color: 'success' })
     open.value = false
   }
@@ -67,6 +80,19 @@ async function save() {
   >
     <template #body>
       <div class="space-y-4">
+        <div v-if="orgRoles.length > 0">
+          <p class="text-xs font-semibold text-muted mb-2 uppercase tracking-wide">
+            Roles
+          </p>
+          <USelectMenu
+            v-model="selectedRoleIds"
+            :items="roleOptions"
+            value-key="value"
+            label-key="label"
+            multiple
+            placeholder="Select roles…"
+          />
+        </div>
         <div v-for="group in grouped" :key="group.subject">
           <p class="text-xs font-semibold text-muted mb-2 uppercase tracking-wide">
             {{ group.subject }}

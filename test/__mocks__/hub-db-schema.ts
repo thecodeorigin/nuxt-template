@@ -7,6 +7,11 @@ export const permissionTable = {} as any
 export const organizationInvitationTable = {} as any
 export const todoTable = {} as any
 export const notificationTable = {} as any
+export const userReferralTable = {} as any
+export const referralTable = {} as any
+export const organizationCreditTable = {} as any
+export const transactionTable = {} as any
+export const roleTable = {} as any
 export enum ActivityAction {
   SIGN_IN = 'auth:sign_in',
   SIGN_UP = 'auth:sign_up',

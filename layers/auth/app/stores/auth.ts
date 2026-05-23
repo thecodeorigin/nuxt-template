@@ -26,6 +26,11 @@ export const useAuthStore = defineStore('auth', () => {
     await fetchCurrentUser()
   }
 
+  async function updateAvatar(file: File) {
+    await authApi.uploadAvatar(file)
+    await fetchCurrentUser()
+  }
+
   function fetchUserNotificationSettings() {
     return authApi.fetchUserNotificationSettings()
   }
@@ -75,6 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
     activeOrganizationId,
     fetchCurrentUser,
     updateCurrentUser,
+    updateAvatar,
     fetchUserNotificationSettings,
     updateUserNotificationSettings,
     updatePhoneNumber,

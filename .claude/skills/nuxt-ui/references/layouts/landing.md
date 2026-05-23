@@ -146,7 +146,7 @@ const items = computed<NavigationMenuItem[]>(() => [{
 
 ```vue [pages/blog/index.vue]
 <script setup lang="ts">
-const { data: posts } = await useAsyncData('posts', () => queryCollection('posts').all())
+const { data: posts } = useAsyncData('posts', () => queryCollection('posts').all(), { default: () => [] })
 </script>
 
 <template>
@@ -167,7 +167,7 @@ const { data: posts } = await useAsyncData('posts', () => queryCollection('posts
 
 ```vue [pages/changelog.vue]
 <script setup lang="ts">
-const { data: versions } = await useAsyncData('versions', () => queryCollection('changelog').all())
+const { data: versions } = useAsyncData('versions', () => queryCollection('changelog').all(), { default: () => [] })
 </script>
 
 <template>

@@ -1,4 +1,7 @@
-import { createError, getRouterParam } from 'h3'
+import { db } from '@nuxthub/db'
+import { roleTable } from '@nuxthub/db/schema'
+import { eq } from 'drizzle-orm'
+import { createError, getRouterParam, setCookie } from 'h3'
 import { getInvitationByToken, getOrganizationById } from '#layers/auth/server/services/organization'
 
 export default defineEventHandler(async (event) => {
@@ -14,5 +17,21 @@ export default defineEventHandler(async (event) => {
   if (!org)
     throw createError({ statusCode: 404, statusMessage: 'Organization not found' })
 
-  return { id: inv.id, email: inv.email, role: inv.role, org: { id: org.id, name: org.name } }
+  let roleName: string | null = null
+  if (inv.role_id) {
+    const [role] = await db.select({ name: roleTable.name }).from(roleTable).where(eq(roleTable.id, inv.role_id)).limit(1)
+    roleName = role?.name ?? null
+  }
+
+  if (inv.invited_by) {
+    setCookie(event, 'ref_invite', inv.invited_by, {
+      httpOnly: true,
+      secure: !import.meta.dev,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    })
+  }
+
+  return { id: inv.id, email: inv.email, roleName, org: { id: org.id, name: org.name } }
 })

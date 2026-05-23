@@ -1,31 +1,44 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
 import type { ExpandedState } from '@tanstack/vue-table'
-import type { OrgInvitation, OrgMember } from '#layers/auth/app/api/useOrganizationApi'
+import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
 import { h, resolveComponent } from 'vue'
-import OrganizationAddMemberModal from '#layers/auth/app/components/Organization/OrganizationAddMemberModal.vue'
+import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import OrganizationMemberPermissionsModal from '#layers/auth/app/components/Organization/OrganizationMemberPermissionsModal.vue'
 import { useOrganizationMembers } from '#layers/auth/app/composables/useOrganizationMembers'
 import { satisfiesAbility } from '#layers/auth/shared/ability'
+import { whenError } from '~/utils/error'
 
 const authStore = useAuthStore()
 const toast = useToast()
-const { members, invitations, removeMember, createInvitation, revokeInvitation } = useOrganizationMembers()
+const orgApi = useOrganizationApi()
+const { invitations, removeMember, createInvitation, revokeInvitation } = useOrganizationMembers()
 
 const canManageUsers = computed(() =>
   satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:manage'),
 )
 
+const scrollEl = ref<HTMLElement | null>(null)
+const { items: members, q, hasMore, loading, loadMore, reset } = useInfiniteList(
+  opts => orgApi.fetchMembers(opts).then(p => p),
+  { immediate: true },
+)
+
+useInfiniteScroll(scrollEl, loadMore, { distance: 120, canLoadMore: () => hasMore.value })
+
 // --- Invite by link ---
 const inviteEmail = ref('')
-const inviteRole = ref<'member' | 'admin'>('member')
+const inviteRoleId = ref('')
 const inviting = ref(false)
 const generatedLink = ref('')
 
-const roleOptions = [
-  { label: 'Member', value: 'member' },
-  { label: 'Admin', value: 'admin' },
-]
+const { data: orgRoles, error: rolesError } = useAsyncData('org-roles', () => orgApi.fetchRoles(), { default: () => [] })
+whenError(rolesError)
+
+const roleOptions = computed(() => [
+  { label: 'Default', value: '' },
+  ...orgRoles.value.map(r => ({ label: r.name, value: r.id })),
+])
 
 function joinLink(token: string) {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
@@ -38,10 +51,10 @@ async function generateInvitation() {
   inviting.value = true
   generatedLink.value = ''
   try {
-    const inv = await createInvitation(inviteEmail.value.trim(), inviteRole.value)
+    const inv = await createInvitation(inviteEmail.value.trim(), inviteRoleId.value || undefined)
     generatedLink.value = joinLink(inv.token)
     inviteEmail.value = ''
-    inviteRole.value = 'member'
+    inviteRoleId.value = ''
   }
   catch (err: unknown) {
     const error = err as { data?: { statusMessage?: string } }
@@ -67,13 +80,10 @@ async function handleRevokeInvitation(id: string) {
   }
 }
 
+type OrgInvitation = typeof invitations extends Ref<infer U> ? (U extends Array<infer V> ? V : never) : never
+
 const invitationColumns: TableColumn<OrgInvitation>[] = [
   { accessorKey: 'email', header: 'Email' },
-  {
-    accessorKey: 'role',
-    header: 'Role',
-    cell: ({ row }) => row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1),
-  },
   {
     id: 'link',
     header: 'Invitation link',
@@ -103,7 +113,6 @@ const invitationColumns: TableColumn<OrgInvitation>[] = [
 // --- Members ---
 const editingMember = ref<OrgMember | null>(null)
 const showEditModal = ref(false)
-const showAddModal = ref(false)
 const removing = ref<string | null>(null)
 const expanded = ref<ExpandedState>({})
 
@@ -121,7 +130,7 @@ const memberColumns: TableColumn<OrgMember>[] = [
     header: 'Abilities',
     cell: ({ row }) => {
       const UBadge = resolveComponent('UBadge')
-      return h('div', { class: 'flex flex-wrap gap-1' }, row.original.abilities
+      return h('div', { class: 'flex flex-wrap gap-1' }, (row.original.abilities ?? [])
         .filter((a: string) => !a.endsWith(':self'))
         .map((a: string) => h(UBadge, { label: a, color: 'neutral', variant: 'subtle' })))
     },
@@ -165,6 +174,8 @@ async function handleRemove(member: OrgMember) {
   try {
     await removeMember(member.id)
     toast.add({ title: `${member.name ?? member.primary_email} removed`, color: 'success' })
+    reset()
+    await loadMore()
   }
   catch (err: unknown) {
     const error = err as { data?: { statusMessage?: string } }
@@ -174,6 +185,13 @@ async function handleRemove(member: OrgMember) {
     removing.value = null
   }
 }
+
+watch(showEditModal, async (open) => {
+  if (!open) {
+    reset()
+    await loadMore()
+  }
+})
 </script>
 
 <template>
@@ -195,7 +213,7 @@ async function handleRemove(member: OrgMember) {
             />
           </UFormField>
           <UFormField label="Role">
-            <USelect v-model="inviteRole" :items="roleOptions" value-key="value" label-key="label" />
+            <USelect v-model="inviteRoleId" :items="roleOptions" value-key="value" label-key="label" class="min-w-40" />
           </UFormField>
           <UButton
             label="Generate invite link"
@@ -203,13 +221,6 @@ async function handleRemove(member: OrgMember) {
             :loading="inviting"
             :disabled="!inviteEmail.trim()"
             @click="generateInvitation"
-          />
-          <UButton
-            label="Add existing"
-            icon="i-lucide-user-plus"
-            color="neutral"
-            variant="subtle"
-            @click="showAddModal = true"
           />
         </div>
 
@@ -232,39 +243,53 @@ async function handleRemove(member: OrgMember) {
 
     <!-- Members -->
     <div class="space-y-3">
-      <p class="font-semibold">
-        Members
-      </p>
+      <div class="flex items-center gap-3">
+        <p class="font-semibold flex-1">
+          Members
+        </p>
+        <UInput
+          v-model="q"
+          icon="i-lucide-search"
+          placeholder="Search members…"
+          size="sm"
+          class="w-56"
+        />
+      </div>
       <UCard :ui="{ body: 'sm:p-0' }">
-        <UTable
-          v-model:expanded="expanded"
-          :columns="memberColumns"
-          :data="members"
-        >
-          <template #empty>
-            <div class="text-center text-muted py-8">
-              No members in this organization.
-            </div>
-          </template>
-
-          <template #expanded="{ row }">
-            <div class="p-4 space-y-1">
-              <p class="text-xs font-semibold text-muted mb-2">
-                All permissions
-              </p>
-              <div class="flex flex-wrap gap-1.5">
-                <UBadge
-                  v-for="ability in row.original.abilities"
-                  :key="ability"
-                  :label="ability"
-                  color="primary"
-                  variant="subtle"
-                  size="sm"
-                />
+        <div ref="scrollEl">
+          <UTable
+            v-model:expanded="expanded"
+            :columns="memberColumns"
+            :data="members"
+          >
+            <template #empty>
+              <div class="text-center text-muted py-8">
+                No members in this organization.
               </div>
-            </div>
-          </template>
-        </UTable>
+            </template>
+
+            <template #expanded="{ row }">
+              <div class="p-4 space-y-1">
+                <p class="text-xs font-semibold text-muted mb-2">
+                  All permissions
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  <UBadge
+                    v-for="ability in row.original.abilities"
+                    :key="ability"
+                    :label="ability"
+                    color="primary"
+                    variant="subtle"
+                    size="sm"
+                  />
+                </div>
+              </div>
+            </template>
+          </UTable>
+          <div v-if="loading" class="py-3 text-center text-muted text-sm">
+            Loading…
+          </div>
+        </div>
       </UCard>
     </div>
   </div>
@@ -274,6 +299,4 @@ async function handleRemove(member: OrgMember) {
     :member="editingMember"
     @update:open="(v) => { if (!v) editingMember = null }"
   />
-
-  <OrganizationAddMemberModal v-model:open="showAddModal" />
 </template>

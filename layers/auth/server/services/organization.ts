@@ -1,8 +1,10 @@
+import type { ListQuery, Page } from '~~/shared/schemas/pagination'
 import { db } from '@nuxthub/db'
-import { organizationInvitationTable, organizationMemberTable, organizationTable, userTable } from '@nuxthub/db/schema'
-import { and, eq } from 'drizzle-orm'
+import { organizationInvitationTable, organizationMemberRoleTable, organizationMemberTable, organizationTable, roleTable, userTable } from '@nuxthub/db/schema'
+import { and, asc, eq, ne, or, sql } from 'drizzle-orm'
 import { simplifyNanoId } from '~~/shared/utils/id'
-import { DEFAULT_PERSONAL_ORG_ABILITIES, mergeOrgAbilities } from '#layers/auth/shared/permissions'
+import { escapeLike } from '~~/shared/utils/string'
+import { DEFAULT_MEMBER_ABILITIES, DEFAULT_PERSONAL_ORG_ABILITIES, mergeOrgAbilities } from '#layers/auth/shared/permissions'
 
 type UserRow = typeof userTable.$inferSelect
 
@@ -24,13 +26,27 @@ async function membershipAbilities(userId: string, orgId: string): Promise<strin
   return m?.abilities ?? []
 }
 
+export async function roleAbilities(userId: string, orgId: string): Promise<string[]> {
+  const rows = await db.select({ permissions: roleTable.permissions })
+    .from(organizationMemberTable)
+    .innerJoin(organizationMemberRoleTable, eq(organizationMemberRoleTable.member_id, organizationMemberTable.id))
+    .innerJoin(roleTable, eq(roleTable.id, organizationMemberRoleTable.role_id))
+    .where(and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)))
+  return rows.flatMap(r => r.permissions ?? [])
+}
+
+export async function effectiveOrgGrants(userId: string, orgId: string): Promise<string[]> {
+  const [custom, roles] = await Promise.all([membershipAbilities(userId, orgId), roleAbilities(userId, orgId)])
+  return [...new Set([...custom, ...roles])]
+}
+
 /** Effective = system grants ∪ active-org grants, each filtered to its org kind. */
 export async function loadEffectiveAbilities(userId: string, activeOrgId: string | null): Promise<string[]> {
   const systemOrgId = await getSystemOrganizationId()
-  const systemGrants = systemOrgId ? await membershipAbilities(userId, systemOrgId) : []
+  const systemGrants = systemOrgId ? await effectiveOrgGrants(userId, systemOrgId) : []
   if (!activeOrgId)
     return mergeOrgAbilities(systemGrants, [], false)
-  const activeGrants = await membershipAbilities(userId, activeOrgId)
+  const activeGrants = await effectiveOrgGrants(userId, activeOrgId)
   const activeIsSystem = activeOrgId === systemOrgId
   return mergeOrgAbilities(systemGrants, activeGrants, activeIsSystem)
 }
@@ -51,6 +67,7 @@ export async function ensureOrganization(slug: string, name: string, flags: { is
   if (existing)
     return existing
   const [org] = await db.insert(organizationTable).values({ slug, name, is_system: !!flags.is_system }).returning()
+  await ensureSystemRoles(org!.id)
   return org!
 }
 
@@ -94,11 +111,35 @@ export async function getOrgMembers(orgId: string) {
 }
 
 export async function countOrgManagers(orgId: string): Promise<number> {
-  const rows = await db
-    .select({ abilities: organizationMemberTable.abilities })
+  const members = await db.select({ user_id: organizationMemberTable.user_id })
     .from(organizationMemberTable)
     .where(eq(organizationMemberTable.organization_id, orgId))
-  return rows.filter(r => (r.abilities ?? []).includes('user:manage')).length
+  let count = 0
+  for (const m of members) {
+    if ((await effectiveOrgGrants(m.user_id, orgId)).includes('user:manage'))
+      count++
+  }
+  return count
+}
+
+export async function ensureSystemRoles(orgId: string) {
+  await db.insert(roleTable).values([
+    { organization_id: orgId, name: 'Admin', description: 'Full workspace control', permissions: [...DEFAULT_PERSONAL_ORG_ABILITIES], is_system: true },
+    { organization_id: orgId, name: 'Member', description: 'Standard member', permissions: [...DEFAULT_MEMBER_ABILITIES], is_system: true },
+  ]).onConflictDoNothing()
+  return db.select().from(roleTable).where(eq(roleTable.organization_id, orgId))
+}
+
+export async function assignRole(memberId: string, roleId: string) {
+  await db.insert(organizationMemberRoleTable).values({ member_id: memberId, role_id: roleId }).onConflictDoNothing()
+}
+
+export async function membersWithRole(roleId: string): Promise<string[]> {
+  const rows = await db.select({ user_id: organizationMemberTable.user_id })
+    .from(organizationMemberRoleTable)
+    .innerJoin(organizationMemberTable, eq(organizationMemberTable.id, organizationMemberRoleTable.member_id))
+    .where(eq(organizationMemberRoleTable.role_id, roleId))
+  return rows.map(r => r.user_id)
 }
 
 export async function uniqueSlug(base: string): Promise<string> {
@@ -130,6 +171,40 @@ export async function createPersonalOrganization(user: UserRow) {
   await db.insert(organizationMemberTable)
     .values({ user_id: user.id, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
     .onConflictDoNothing()
+  const roles = await ensureSystemRoles(org!.id)
+  const adminRole = roles.find(r => r.name === 'Admin')
+  if (adminRole) {
+    const [member] = await db.select({ id: organizationMemberTable.id })
+      .from(organizationMemberTable)
+      .where(and(eq(organizationMemberTable.user_id, user.id), eq(organizationMemberTable.organization_id, org!.id)))
+      .limit(1)
+    if (member)
+      await assignRole(member.id, adminRole.id)
+  }
+  return org!
+}
+
+export async function createTenantOrganization(userId: string, name: string) {
+  const slug = await uniqueSlug(name)
+  const [org] = await db.insert(organizationTable).values({
+    name,
+    slug,
+    owner_id: userId,
+    is_personal: false,
+  }).returning()
+  await db.insert(organizationMemberTable)
+    .values({ user_id: userId, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
+    .onConflictDoNothing()
+  const roles = await ensureSystemRoles(org!.id)
+  const adminRole = roles.find(r => r.name === 'Admin')
+  if (adminRole) {
+    const [member] = await db.select({ id: organizationMemberTable.id })
+      .from(organizationMemberTable)
+      .where(and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, org!.id)))
+      .limit(1)
+    if (member)
+      await assignRole(member.id, adminRole.id)
+  }
   return org!
 }
 
@@ -151,12 +226,12 @@ export async function getOrgInvitations(orgId: string) {
     .where(eq(organizationInvitationTable.organization_id, orgId))
 }
 
-export async function createInvitation(orgId: string, email: string, role: 'member' | 'admin', invitedBy: string) {
+export async function createInvitation(orgId: string, email: string, roleId: string | null, invitedBy: string) {
   const token = crypto.randomUUID()
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   const [inv] = await db
     .insert(organizationInvitationTable)
-    .values({ organization_id: orgId, email, role, token, invited_by: invitedBy, expires_at: expiresAt })
+    .values({ organization_id: orgId, email, role_id: roleId, token, invited_by: invitedBy, expires_at: expiresAt })
     .returning()
   return inv!
 }
@@ -183,4 +258,72 @@ export async function deleteInvitation(invId: string) {
   await db
     .delete(organizationInvitationTable)
     .where(eq(organizationInvitationTable.id, invId))
+}
+
+function nameEmailFilter(q: string) {
+  if (!q)
+    return undefined
+  const p = `%${escapeLike(q)}%`
+  return or(
+    sql`${userTable.name} LIKE ${p} ESCAPE '\\'`,
+    sql`${userTable.username} LIKE ${p} ESCAPE '\\'`,
+    sql`${userTable.primary_email} LIKE ${p} ESCAPE '\\'`,
+  )
+}
+
+export async function getUserOrganizationsPage(userId: string, { q, limit, offset }: ListQuery): Promise<Page<{ id: string, name: string, slug: string, is_personal: boolean | null }>> {
+  const term = q ? `%${escapeLike(q)}%` : undefined
+  const where = and(
+    eq(organizationMemberTable.user_id, userId),
+    eq(organizationTable.is_system, false),
+    term
+      ? or(sql`${organizationTable.name} LIKE ${term} ESCAPE '\\'`, sql`${organizationTable.slug} LIKE ${term} ESCAPE '\\'`)
+      : undefined,
+  )
+  const rows = await db.select({ id: organizationTable.id, name: organizationTable.name, slug: organizationTable.slug, is_personal: organizationTable.is_personal })
+    .from(organizationMemberTable)
+    .innerJoin(organizationTable, eq(organizationTable.id, organizationMemberTable.organization_id))
+    .where(where)
+    .orderBy(asc(organizationTable.name))
+    .limit(limit + 1)
+    .offset(offset)
+  return { items: rows.slice(0, limit), hasMore: rows.length > limit }
+}
+
+export async function getOrgMembersPage(orgId: string, { q, limit, offset }: ListQuery): Promise<Page<{ id: string, name: string | null, username: string | null, primary_email: string, avatar: string | null, abilities: string[] | null, is_suspended: boolean | null }>> {
+  const where = and(eq(organizationMemberTable.organization_id, orgId), nameEmailFilter(q))
+  const rows = await db.select({
+    id: userTable.id,
+    name: userTable.name,
+    username: userTable.username,
+    primary_email: userTable.primary_email,
+    avatar: userTable.avatar,
+    abilities: organizationMemberTable.abilities,
+    is_suspended: userTable.is_suspended,
+  })
+    .from(organizationMemberTable)
+    .innerJoin(userTable, eq(userTable.id, organizationMemberTable.user_id))
+    .where(where)
+    .orderBy(asc(userTable.name))
+    .limit(limit + 1)
+    .offset(offset)
+  return { items: rows.slice(0, limit), hasMore: rows.length > limit }
+}
+
+export async function getImpersonationCandidatesPage(selfId: string, { q, limit, offset }: ListQuery): Promise<Page<{ id: string, username: string | null, name: string | null, primary_email: string, avatar: string | null, is_suspended: boolean | null }>> {
+  const where = and(ne(userTable.id, selfId), nameEmailFilter(q))
+  const rows = await db.select({
+    id: userTable.id,
+    username: userTable.username,
+    name: userTable.name,
+    primary_email: userTable.primary_email,
+    avatar: userTable.avatar,
+    is_suspended: userTable.is_suspended,
+  })
+    .from(userTable)
+    .where(where)
+    .orderBy(asc(userTable.name))
+    .limit(limit + 1)
+    .offset(offset)
+  return { items: rows.slice(0, limit), hasMore: rows.length > limit }
 }

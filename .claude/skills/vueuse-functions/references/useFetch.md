@@ -27,13 +27,13 @@ const { isFetching, error, data } = useFetch(url)
 
 ### Asynchronous Usage
 
-`useFetch` can also be awaited just like a normal fetch. Note that whenever a component is asynchronous, whatever component that uses
-it must wrap the component in a `<Suspense>` tag. You can read more about the suspense api in the [Official Vue 3 Docs](https://vuejs.org/guide/built-ins/suspense.html)
+Note: in `<script setup>`, do **not** top-level `await useFetch` — use the non-blocking form directly. Top-level `await` forces Suspense and blocks navigation. If you must block, wrap the consuming component in an explicit `<Suspense>` tag. See the [Official Vue 3 Docs](https://vuejs.org/guide/built-ins/suspense.html).
 
 ```ts
 import { useFetch } from '@vueuse/core'
 // ---cut---
-const { isFetching, error, data } = await useFetch(url)
+// Non-blocking — preferred form
+const { isFetching, error, data } = useFetch(url)
 ```
 
 ### Refetching on URL change

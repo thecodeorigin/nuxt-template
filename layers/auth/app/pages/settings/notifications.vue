@@ -1,25 +1,33 @@
 <script setup lang="ts">
+import type { NotificationPrefs } from '#layers/auth/shared/schemas/user'
+
 const authStore = useAuthStore()
 const toast = useToast()
 
-const { data: state } = await useAsyncData('user-notification-prefs', () => authStore.fetchUserNotificationSettings(), {
-  default: () => ({ email: true, product_updates: true, weekly_digest: false, important_updates: true }),
-})
+const DEFAULTS: NotificationPrefs = { email: true, product_updates: true, weekly_digest: false, important_updates: true }
+const state = reactive<NotificationPrefs>({ ...DEFAULTS })
+
+const { data, error } = useAsyncData('user-notification-prefs', () => authStore.fetchUserNotificationSettings(), { default: () => DEFAULTS })
+whenError(error)
+watch(data, (v) => {
+  if (v)
+    Object.assign(state, v)
+}, { immediate: true })
 
 const sections = [{
   title: 'Notifications',
   description: 'Manage your notification settings.',
   fields: [
-    { name: 'email', label: 'Email', description: 'Receive product emails.' },
-    { name: 'product_updates', label: 'Product updates', description: 'Receive messages about product updates.' },
-    { name: 'weekly_digest', label: 'Weekly digest', description: 'Receive a weekly summary.' },
-    { name: 'important_updates', label: 'Important updates', description: 'Receive security and billing updates.' },
+    { name: 'email' as const, label: 'Email', description: 'Receive product emails.' },
+    { name: 'product_updates' as const, label: 'Product updates', description: 'Receive messages about product updates.' },
+    { name: 'weekly_digest' as const, label: 'Weekly digest', description: 'Receive a weekly summary.' },
+    { name: 'important_updates' as const, label: 'Important updates', description: 'Receive security and billing updates.' },
   ],
-}] as const
+}]
 
-async function onChange() {
+async function persist() {
   try {
-    await authStore.updateUserNotificationSettings({ ...state.value })
+    await authStore.updateUserNotificationSettings({ ...state })
     toast.add({ title: 'Preferences saved', color: 'success' })
   }
   catch {
@@ -40,7 +48,7 @@ async function onChange() {
         :description="field.description"
         class="flex items-center justify-between not-last:pb-4 gap-2"
       >
-        <USwitch :model-value="state[field.name]" @update:model-value="(v: boolean) => { state[field.name] = v; onChange() }" />
+        <USwitch v-model="state[field.name]" @update:model-value="persist" />
       </UFormField>
     </UPageCard>
   </div>

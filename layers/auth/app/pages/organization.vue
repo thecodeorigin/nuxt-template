@@ -14,6 +14,10 @@ const links = [[{
   label: 'Members',
   icon: 'i-lucide-users',
   to: '/organization/members',
+}, {
+  label: 'Roles',
+  icon: 'i-lucide-shield',
+  to: '/organization/roles',
 }]] satisfies NavigationMenuItem[][]
 </script>
 

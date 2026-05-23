@@ -30,15 +30,9 @@ setTimeout(() => {
 }, 500)
 ```
 
-In this case, you can wait the storage prepared, the returned value is also a `Promise`,
-so you can wait it resolved in your template or script.
-
-```ts
-// Use top-level await if your environment supports it
-const accessToken = await useStorageAsync('access.token', '', SomeAsyncStorage)
-
-console.log(accessToken.value) // "the real value stored in storage"
-```
+In this case, you can wait the storage prepared, the returned value is also a `Promise`.
+**Do not use top-level `await` in `<script setup>`** — it forces Suspense and blocks navigation.
+Instead, use the `onReady` callback option or `Promise.allSettled` outside setup context (e.g. in a plugin or `router.onReady`).
 
 If you must wait multiple storages, put them into a `Promise.allSettled()`
 

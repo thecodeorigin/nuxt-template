@@ -43,6 +43,7 @@ export default defineEventHandler(async (event) => {
     }).returning()
     user = created!
     await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_UP })
+    await (useNitroApp().hooks as { callHook: (event: string, ...args: unknown[]) => Promise<void> }).callHook('auth:user-created', { user, provider: 'demo', event })
   }
   else {
     const [updated] = await db.update(userTable)

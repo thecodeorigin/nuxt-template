@@ -157,9 +157,10 @@ export default defineNuxtConfig({
       // self-validate (webhook signature, OAuth state) or operate as the
       // session-establishment surface where same-origin assumptions
       // don't apply yet.
-      '/api/payments/sepay/webhook': { cors: false, csurf: false },
+      '/api/payments/sepay/webhook': { cors: false, csurf: false, security: { rateLimiter: false } },
       '/api/auth/**': { cors: false, csurf: false },
       '/api/cron/**': { cors: false, csurf: false },
+      '/__nuxt_hints/**': { cors: false, csurf: false },
     },
     serverAssets: [
       {

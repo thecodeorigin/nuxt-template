@@ -48,8 +48,8 @@ const appConfig = useAppConfig()
 const nuxtApp = useNuxtApp()
 
 // Data fetching
-const { data } = await useFetch('/api/data')
-const { data: asyncData } = await useAsyncData('key', () => fetchData())
+const { data } = useFetch('/api/data', { default: () => null })
+const { data: asyncData } = useAsyncData('key', () => fetchData())
 
 // State
 const state = useState('key', () => 'initial')

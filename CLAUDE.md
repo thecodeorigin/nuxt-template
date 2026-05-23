@@ -88,7 +88,8 @@ parallel work untangled.
     Composables (`app/composables/`, layer composables) and utils
     (`app/utils/`, `server/utils/`) keep Nuxt's default auto-import
     behaviour, plus `~/lib` is explicitly added to `imports.dirs`.
-13. **Naming conventions.**
+13. **Never top-level `await useAsyncData`/`useFetch` in `<script setup>`.** Use the non-blocking form: `const { data, error } = useAsyncData(key, fn, { default: () => defaultVal })` + `whenError(error)`. If you need blocking behavior, use `<Suspense>` explicitly or `useLazyFetch`/`useLazyAsyncData`. Top-level `await` of these composables forces Suspense, blocks navigation, and is an anti-pattern in this project.
+14. **Naming conventions.**
     - **Components**: PascalCase Vue files in namespaced folders. Each filename
       starts with the folder name so the import name is unambiguous and
       `grep`-friendly: `layers/todo/app/components/Todo/TodoList.vue` →
