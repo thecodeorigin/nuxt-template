@@ -156,13 +156,16 @@ export default defineNuxtConfig({
       tasks: true,
     },
     routeRules: {
-      // Webhook + auth routes are exempt from CORS / CSRF — they either
-      // self-validate (webhook signature, OAuth state) or operate as the
-      // session-establishment surface where same-origin assumptions
-      // don't apply yet.
-      '/api/payments/sepay/webhook': { cors: false, csurf: false, security: { rateLimiter: false } },
-      '/api/auth/**': { cors: false, csurf: false },
-      '/api/cron/**': { cors: false, csurf: false },
+      // All JSON API routes are CSRF-exempt: session auth uses SameSite=Lax
+      // cookies (which already prevent cross-origin cookie submission) and
+      // token auth via x-session-id headers is inherently CSRF-safe. CSRF
+      // double-submit tokens are redundant for this REST API pattern.
+      '/api/**': { csurf: false },
+      // Webhook routes are also exempt from CORS (self-validate via signature).
+      '/api/payments/sepay/webhook': { cors: false, security: { rateLimiter: false } },
+      // Auth + cron routes have no cross-origin surface.
+      '/api/auth/**': { cors: false },
+      '/api/cron/**': { cors: false },
       '/__nuxt_hints/**': { cors: false, csurf: false },
     },
     serverAssets: [

@@ -6,7 +6,7 @@ import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { countOrgManagers } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
 import { satisfiesAbility } from '#layers/auth/shared/ability'
-import { keysAllowedFor } from '#layers/auth/shared/permissions'
+import { keysAllowedFor, SELF_ABILITY_KEYS } from '#layers/auth/shared/permissions'
 import { UpdateMemberAbilitiesSchema } from '#layers/auth/shared/schemas/member'
 
 export default defineAuthorizedHandler(['user:manage'], async (event, { session }) => {
@@ -45,9 +45,10 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   if (targetM.abilities.includes('user:manage') && !abilities.includes('user:manage') && (await countOrgManagers(orgId)) <= 1)
     throw createError({ statusCode: 409, statusMessage: 'Cannot remove the last organization admin' })
 
-  // Preserve :self defaults (e.g. todo:delete:self) that the editor doesn't manage.
-  const preserved = targetM.abilities.filter(a => a.endsWith(':self'))
-  const next = [...new Set([...abilities, ...preserved])]
+  // Always carry the full SELF_ABILITY_KEYS catalog — these are permanent defaults
+  // for members and are not surfaced in the abilities editor. Preserving only what
+  // the target currently holds would silently strip them after a demotion.
+  const next = [...new Set([...abilities, ...SELF_ABILITY_KEYS])]
 
   const [updated] = await db
     .update(organizationMemberTable)

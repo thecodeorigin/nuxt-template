@@ -1,5 +1,5 @@
 import { db } from '@nuxthub/db'
-import { organizationTable, userTable } from '@nuxthub/db/schema'
+import { organizationInvitationTable, organizationTable, userTable } from '@nuxthub/db/schema'
 import { kv } from '@nuxthub/kv'
 import { and, eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
@@ -39,6 +39,12 @@ export default defineEventHandler(async (event) => {
         .returning()
       deletedOrgs = removedOrgs.length
     }
+
+    // Also remove any pending invitations for these emails — invitations are
+    // stored by email string (no FK to user), so they survive user deletion.
+    await db
+      .delete(organizationInvitationTable)
+      .where(inArray(organizationInvitationTable.email, emails))
 
     const removed = await db
       .delete(userTable)

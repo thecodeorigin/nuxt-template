@@ -43,6 +43,9 @@ export async function seedDemoNotifications(userId: string, organizationId: stri
       is_read: i >= 3,
       dedupe_key: `demo-${i}`,
       created_at: new Date(now - i * 3_600_000),
-    }).onConflictDoNothing()
+    }).onConflictDoUpdate({
+      target: [notificationTable.user_id, notificationTable.organization_id, notificationTable.dedupe_key],
+      set: { is_read: i >= 3 },
+    })
   }
 }

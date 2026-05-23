@@ -8,7 +8,18 @@ export const ADMIN_EMAIL = 'admin@seed.local'
 export const ALICE_EMAIL = 'alice@seed.local'
 export const BOB_EMAIL = 'bob@seed.local'
 
+export const SEED_EMAILS = {
+  admin: ADMIN_EMAIL,
+  alice: ALICE_EMAIL,
+  bob: BOB_EMAIL,
+} as const
+
 export const FORBIDDEN_URL = /\/forbidden$/
+
+let _emailCounter = 0
+export function uniqueEmail(prefix = 'e2e'): string {
+  return `${prefix}-${Date.now()}-${++_emailCounter}@e2e.local`
+}
 
 const issuedSessionIds = new Set<string>()
 

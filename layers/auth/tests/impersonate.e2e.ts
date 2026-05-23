@@ -1,5 +1,5 @@
 import { expect, test } from '@nuxt/test-utils/playwright'
-import { ALICE_EMAIL, BOB_EMAIL, demoLoginSessionId, devCleanup, devLogin, devSeed, FORBIDDEN_URL, setCookieSession } from './helpers/auth'
+import { ALICE_EMAIL, BOB_EMAIL, demoLoginSessionId, devCleanup, devLogin, devProvision, devSeed, FORBIDDEN_URL, setCookieSession, uniqueEmail } from './helpers/auth'
 
 const SEED_EMAILS = ['admin@seed.local', ALICE_EMAIL, BOB_EMAIL]
 const DEMO_ADMIN_EMAIL = 'admin@demo.local'
@@ -129,5 +129,65 @@ test.describe('impersonation', () => {
       data: { user_id: aliceId },
     })
     expect(res.status()).toBe(403)
+  })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// Phase 6: cross-cutting — live propagation + org scoping
+// ────────────────────────────────────────────────────────────────────────────
+
+test.describe('cross-cutting', () => {
+  const ccEmails: string[] = []
+
+  test.afterAll(async ({ request }) => {
+    await devCleanup(request, ccEmails)
+  })
+
+  test('promote then demote a member — access is revoked live without re-login', async ({ request, baseURL }) => {
+    const { session_id: adminSid } = await demoLoginSessionId(baseURL!, 'admin')
+    const { session_id: userSid, user_id: userId } = await demoLoginSessionId(baseURL!, 'user')
+
+    // Promote: add user:manage
+    await request.patch(`/api/organization/members/${userId}/abilities`, {
+      headers: { 'x-session-id': adminSid },
+      data: { abilities: ['user:read', 'todo:read', 'todo:write', 'user:manage'] },
+    })
+    let me = await (await request.get('/api/auth/me', { headers: { 'x-session-id': userSid } })).json()
+    expect(me.abilities).toContain('user:manage')
+
+    // Demote: remove user:manage — :self abilities auto-preserved by the handler
+    await request.patch(`/api/organization/members/${userId}/abilities`, {
+      headers: { 'x-session-id': adminSid },
+      data: { abilities: ['user:read', 'todo:read', 'todo:write'] },
+    })
+    me = await (await request.get('/api/auth/me', { headers: { 'x-session-id': userSid } })).json()
+    expect(me.abilities).not.toContain('user:manage')
+    expect(me.abilities).toContain('todo:read')
+  })
+
+  test('todos are scoped to the active organization', async ({ request, baseURL }) => {
+    const emailA = uniqueEmail('orgscope')
+    const userA = await devProvision(baseURL!, emailA, 'OrgScopeA')
+    ccEmails.push(emailA)
+
+    const emailB = uniqueEmail('orgscope')
+    const userB = await devProvision(baseURL!, emailB, 'OrgScopeB')
+    ccEmails.push(emailB)
+
+    // User A creates a todo in their personal org
+    const createRes = await request.post('/api/todos', {
+      headers: { 'x-session-id': userA.session_id },
+      data: { title: 'Org-scoped todo' },
+    })
+    expect(createRes.ok()).toBe(true)
+    const todo = await createRes.json()
+
+    // User B lists todos from their separate personal org — user A's todo is not visible
+    const listRes = await request.get('/api/todos', {
+      headers: { 'x-session-id': userB.session_id },
+    })
+    expect(listRes.ok()).toBe(true)
+    const todos = await listRes.json()
+    expect(todos.some((t: { id: string }) => t.id === todo.id)).toBe(false)
   })
 })

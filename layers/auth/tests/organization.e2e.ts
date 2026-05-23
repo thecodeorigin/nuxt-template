@@ -1,10 +1,14 @@
 import { expect, test } from '@nuxt/test-utils/playwright'
-import { demoLogin } from './helpers/auth'
+import { ALICE_EMAIL, demoLoginSessionId, devCleanup, devProvision, devSeed, setCookieSession, uniqueEmail } from './helpers/auth'
 
 const ORG_MEMBERS_URL = /\/organization\/members$/
 
-test.beforeEach(async ({ context, request, baseURL }) => {
-  await demoLogin(request, context, baseURL!, 'admin')
+test.beforeEach(async ({ context, baseURL }) => {
+  // Use a fresh throwaway context so the test's `request` fixture stays cookie-free
+  // (demoLogin via the `request` fixture would store Set-Cookie in its jar, overriding
+  // x-session-id headers in API tests that share the same fixture).
+  const { session_id } = await demoLoginSessionId(baseURL!, 'admin')
+  await setCookieSession(context, baseURL!, session_id)
 })
 
 test('/users redirects to /organization/members', async ({ page, goto }) => {
@@ -46,4 +50,110 @@ test('admin can create and revoke an invitation', async ({ page, goto }) => {
 
   await row.getByRole('button', { name: 'Revoke' }).click()
   await expect(page.getByText(email)).toBeHidden()
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// Phase 4: isolated-owner UI + API negatives
+// ────────────────────────────────────────────────────────────────────────────
+
+test.describe('org lifecycle — isolated owner (UI)', () => {
+  test('owner renames the active organization', async ({ page, request, context, baseURL, goto }) => {
+    const email = uniqueEmail('rename')
+    const { session_id } = await devProvision(baseURL!, email, 'Renamer')
+    // Override the outer beforeEach admin cookie with the provisioned owner's session
+    await setCookieSession(context, baseURL!, session_id)
+    await goto('/organization', { waitUntil: 'hydration' })
+    await page.waitForLoadState('networkidle')
+    const input = page.getByRole('textbox').first()
+    await expect(input).toBeEditable()
+    await input.fill('Renamed Org')
+    await page.getByRole('button', { name: 'Save changes' }).click()
+    await expect(page.getByText('Organization updated', { exact: true })).toBeVisible()
+    await devCleanup(request, [email])
+  })
+})
+
+test.describe('org API — guards and negatives', () => {
+  const seededEmails: string[] = []
+
+  // Clear the admin cookie set by the outer beforeEach so that x-session-id headers win
+  test.beforeEach(async ({ context }) => {
+    await context.clearCookies()
+  })
+
+  test.afterAll(async ({ request }) => {
+    await devCleanup(request, seededEmails)
+  })
+
+  test('rename requires user:manage — member gets 403', async ({ request, baseURL }) => {
+    const { session_id: userSid } = await demoLoginSessionId(baseURL!, 'user')
+    const res = await request.patch('/api/organization', {
+      headers: { 'x-session-id': userSid },
+      data: { name: 'Nope' },
+    })
+    expect(res.status()).toBe(403)
+  })
+
+  test('direct-add member: 404 for unknown email', async ({ request, baseURL }) => {
+    const { session_id: adminSid } = await demoLoginSessionId(baseURL!, 'admin')
+    const res = await request.post('/api/organization/members', {
+      headers: { 'x-session-id': adminSid },
+      data: { email: 'nobody@nowhere.invalid' },
+    })
+    expect(res.status()).toBe(404)
+  })
+
+  test('direct-add member: 409 when user is already a member', async ({ request, baseURL }) => {
+    const { session_id: adminSid } = await demoLoginSessionId(baseURL!, 'admin')
+    const { primary_email: demoUserEmail } = await demoLoginSessionId(baseURL!, 'user')
+    const res = await request.post('/api/organization/members', {
+      headers: { 'x-session-id': adminSid },
+      data: { email: demoUserEmail },
+    })
+    expect(res.status()).toBe(409)
+  })
+
+  test('cannot remove self from org — returns 403', async ({ request, baseURL }) => {
+    const { session_id: adminSid, user_id: adminId } = await demoLoginSessionId(baseURL!, 'admin')
+    const res = await request.delete(`/api/organization/members/${adminId}`, {
+      headers: { 'x-session-id': adminSid },
+    })
+    expect(res.status()).toBe(403)
+  })
+
+  test('B3: direct-add grants route-local ability set (missing billing:read vs shared/permissions)', async ({ request, baseURL }) => {
+    await devSeed(request)
+    seededEmails.push(ALICE_EMAIL)
+    const { session_id: adminSid } = await demoLoginSessionId(baseURL!, 'admin')
+    const res = await request.post('/api/organization/members', {
+      headers: { 'x-session-id': adminSid },
+      data: { email: ALICE_EMAIL },
+    })
+    expect(res.ok()).toBe(true)
+    const member = await res.json()
+    // B3: members/index.post.ts uses a route-local constant that omits billing:read
+    // compared to DEFAULT_MEMBER_ABILITIES in shared/permissions.ts.
+    expect(member.abilities).toContain('todo:read')
+    expect(member.abilities).toContain('todo:write')
+    expect(member.abilities).not.toContain('billing:read')
+  })
+
+  test('ability change is live immediately without re-login', async ({ request, baseURL }) => {
+    const { session_id: adminSid } = await demoLoginSessionId(baseURL!, 'admin')
+    const { session_id: userSid, user_id: userId } = await demoLoginSessionId(baseURL!, 'user')
+
+    await request.patch(`/api/organization/members/${userId}/abilities`, {
+      headers: { 'x-session-id': adminSid },
+      data: { abilities: ['todo:read'] },
+    })
+    const demoted = await (await request.get('/api/auth/me', { headers: { 'x-session-id': userSid } })).json()
+    expect(demoted.abilities).toContain('todo:read')
+    expect(demoted.abilities).not.toContain('todo:write')
+
+    // Restore — :self abilities are auto-preserved by the handler
+    await request.patch(`/api/organization/members/${userId}/abilities`, {
+      headers: { 'x-session-id': adminSid },
+      data: { abilities: ['user:read', 'todo:read', 'todo:write'] },
+    })
+  })
 })

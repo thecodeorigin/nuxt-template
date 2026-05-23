@@ -38,6 +38,7 @@ export default defineConfig({
           include: [
             'test/unit/*.{test,spec}.ts',
             'layers/*/test/unit/*.{test,spec}.ts',
+            'packages/*/test/unit/*.{test,spec}.ts',
           ],
           environment: 'node',
         },

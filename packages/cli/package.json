@@ -1,0 +1,13 @@
+{
+  "name": "@packages/cli",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "bin": {
+    "harness": "./src/index.ts"
+  },
+  "dependencies": {
+    "citty": "catalog:",
+    "dotenv": "catalog:"
+  }
+}

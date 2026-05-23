@@ -87,6 +87,9 @@ catalogs:
     '@vueuse/nuxt':
       specifier: ^14.2.1
       version: 14.2.1
+    citty:
+      specifier: ^0.1.6
+      version: 0.1.6
     clsx:
       specifier: ^2.1.1
       version: 2.1.1
@@ -399,9 +402,22 @@ importers:
 
   layers/auth: {}
 
+  layers/billing: {}
+
   layers/notifications: {}
 
+  layers/referral: {}
+
   layers/todo: {}
+
+  packages/cli:
+    dependencies:
+      citty:
+        specifier: 'catalog:'
+        version: 0.1.6
+      dotenv:
+        specifier: 'catalog:'
+        version: 17.4.0
 
 packages:
 
