@@ -1,6 +1,7 @@
-import { userTable } from '@nuxthub/db/schema'
+import { db } from '@nuxthub/db'
+import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { kv } from '@nuxthub/kv'
-import { inArray } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 import { backupKey, sessionKey } from '#layers/auth/server/services/impersonate'
 
@@ -17,7 +18,28 @@ export default defineEventHandler(async (event) => {
   const { emails, session_ids } = await readValidatedBody(event, DevCleanupSchema.parse)
 
   let deletedUsers = 0
+  let deletedOrgs = 0
+
   if (emails.length > 0) {
+    const users = await db.query.userTable.findMany({
+      where: inArray(userTable.primary_email, emails),
+      columns: { id: true },
+    })
+
+    if (users.length > 0) {
+      const userIds = users.map(u => u.id)
+      // organizationTable.owner_id uses onDelete: 'set null', so personal orgs
+      // must be removed explicitly before the user is deleted — they won't cascade.
+      const removedOrgs = await db
+        .delete(organizationTable)
+        .where(and(
+          inArray(organizationTable.owner_id, userIds),
+          eq(organizationTable.is_personal, true),
+        ))
+        .returning()
+      deletedOrgs = removedOrgs.length
+    }
+
     const removed = await db
       .delete(userTable)
       .where(inArray(userTable.primary_email, emails))
@@ -34,5 +56,5 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  return { deleted_users: deletedUsers, deleted_sessions: deletedSessions }
+  return { deleted_users: deletedUsers, deleted_orgs: deletedOrgs, deleted_sessions: deletedSessions }
 })

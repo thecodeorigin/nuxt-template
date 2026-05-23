@@ -30,9 +30,9 @@ export default defineEventHandler(async (event) => {
   const preset = DEMO_AGENTS[agent]
   const now = new Date()
 
-  const existing = await db.select().from(userTable).where(eq(userTable.primary_email, preset.email)).limit(1)
+  const existing = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, preset.email) })
 
-  let user = existing[0]
+  let user = existing
   if (!user) {
     const [created] = await db.insert(userTable).values({
       primary_email: preset.email,
@@ -69,9 +69,9 @@ export default defineEventHandler(async (event) => {
 
   await seedDemoNotifications(user.id, demoOrg.id)
 
-  await persistSession(event, user, { provider: 'demo', activeOrganizationId: demoOrg.id })
+  const { sessionId } = await persistSession(event, user, { provider: 'demo', activeOrganizationId: demoOrg.id })
 
   await db.insert(activityTable).values({ user_id: user.id, action: ActivityAction.SIGN_IN })
 
-  return { agent, user_id: user.id, primary_email: user.primary_email }
+  return { agent, user_id: user.id, primary_email: user.primary_email, session_id: sessionId }
 })

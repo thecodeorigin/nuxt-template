@@ -30,6 +30,7 @@ coverage/
 # Playwright
 playwright-report/
 test-results/
+.auth/
 
 # Agent-team runtime state (regenerated per session)
 .claude/teams/

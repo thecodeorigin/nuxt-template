@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   const { email } = await readValidatedBody(event, DevLoginSchema.parse)
 
-  const [user] = await db.select().from(userTable).where(eq(userTable.primary_email, email)).limit(1)
+  const user = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, email) })
   if (!user) {
     throw createError({ statusCode: 404, statusMessage: 'User not found' })
   }

@@ -28,19 +28,22 @@ export default defineAuthenticatedHandler(async (event, session) => {
   if (!org)
     throw createError({ statusCode: 404, statusMessage: 'Organization not found' })
 
+  if (inv.email !== session.primary_email)
+    throw createError({ statusCode: 403, statusMessage: 'Invitation was issued to a different email address' })
+
   if (await isMember(session.id, inv.organization_id))
     throw createError({ statusCode: 409, statusMessage: 'You are already a member of this organization' })
 
   await ensureMembership(session.id, inv.organization_id, DEFAULT_MEMBER_ABILITIES)
 
-  const [member] = await db.select({ id: organizationMemberTable.id })
-    .from(organizationMemberTable)
-    .where(and(eq(organizationMemberTable.user_id, session.id), eq(organizationMemberTable.organization_id, inv.organization_id)))
-    .limit(1)
+  const member = await db.query.organizationMemberTable.findFirst({
+    where: and(eq(organizationMemberTable.user_id, session.id), eq(organizationMemberTable.organization_id, inv.organization_id)),
+    columns: { id: true },
+  })
 
   if (member) {
     if (inv.role_id) {
-      const [role] = await db.select({ id: roleTable.id }).from(roleTable).where(eq(roleTable.id, inv.role_id)).limit(1)
+      const role = await db.query.roleTable.findFirst({ where: eq(roleTable.id, inv.role_id), columns: { id: true } })
       if (role)
         await assignRole(member.id, role.id)
     }

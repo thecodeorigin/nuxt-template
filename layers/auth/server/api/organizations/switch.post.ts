@@ -18,7 +18,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
   if (!sessionId)
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
 
-  const [user] = await db.select().from(userTable).where(eq(userTable.id, session.id)).limit(1)
+  const user = await db.query.userTable.findFirst({ where: eq(userTable.id, session.id) })
   if (!user)
     throw createError({ statusCode: 404, statusMessage: 'User not found' })
 

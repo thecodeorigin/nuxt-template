@@ -14,9 +14,9 @@ export default defineEventHandler(async (event) => {
   const email = 'agent@localhost'
 
   // Upsert fake user
-  const existing = await db.select().from(userTable).where(eq(userTable.primary_email, email)).limit(1)
+  const existing = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, email) })
 
-  let user = existing[0]
+  let user = existing
 
   if (!user) {
     const [newUser] = await db.insert(userTable).values({

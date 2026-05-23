@@ -10,10 +10,10 @@ export default defineAuthenticatedHandler(async (event, session) => {
   const orgId = session.activeOrganizationId
   if (!orgId)
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
-  const [tx] = await db.select({ id: transactionTable.id, status: transactionTable.status })
-    .from(transactionTable)
-    .where(and(eq(transactionTable.id, id), eq(transactionTable.organization_id, orgId)))
-    .limit(1)
+  const tx = await db.query.transactionTable.findFirst({
+    where: and(eq(transactionTable.id, id), eq(transactionTable.organization_id, orgId)),
+    columns: { id: true, status: true },
+  })
   if (!tx)
     throw createError({ statusCode: 404, statusMessage: 'Not found' })
   return tx

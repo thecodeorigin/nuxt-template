@@ -9,20 +9,18 @@ import { DEFAULT_MEMBER_ABILITIES, DEFAULT_PERSONAL_ORG_ABILITIES, mergeOrgAbili
 type UserRow = typeof userTable.$inferSelect
 
 export async function getSystemOrganizationId(): Promise<string | null> {
-  const [org] = await db
-    .select({ id: organizationTable.id })
-    .from(organizationTable)
-    .where(eq(organizationTable.is_system, true))
-    .limit(1)
+  const org = await db.query.organizationTable.findFirst({
+    where: eq(organizationTable.is_system, true),
+    columns: { id: true },
+  })
   return org?.id ?? null
 }
 
 async function membershipAbilities(userId: string, orgId: string): Promise<string[]> {
-  const [m] = await db
-    .select({ abilities: organizationMemberTable.abilities })
-    .from(organizationMemberTable)
-    .where(and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)))
-    .limit(1)
+  const m = await db.query.organizationMemberTable.findFirst({
+    where: and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)),
+    columns: { abilities: true },
+  })
   return m?.abilities ?? []
 }
 
@@ -63,7 +61,7 @@ export async function defaultActiveOrganizationId(userId: string): Promise<strin
 
 /** Get-or-create an org by slug (used by the seeder and the demo-login backdoor). */
 export async function ensureOrganization(slug: string, name: string, flags: { is_system?: boolean } = {}) {
-  const [existing] = await db.select().from(organizationTable).where(eq(organizationTable.slug, slug)).limit(1)
+  const existing = await db.query.organizationTable.findFirst({ where: eq(organizationTable.slug, slug) })
   if (existing)
     return existing
   const [org] = await db.insert(organizationTable).values({ slug, name, is_system: !!flags.is_system }).returning()
@@ -79,11 +77,10 @@ export async function ensureMembership(userId: string, orgId: string, abilities:
 }
 
 export async function isMember(userId: string, orgId: string): Promise<boolean> {
-  const [m] = await db
-    .select({ id: organizationMemberTable.id })
-    .from(organizationMemberTable)
-    .where(and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)))
-    .limit(1)
+  const m = await db.query.organizationMemberTable.findFirst({
+    where: and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)),
+    columns: { id: true },
+  })
   return !!m
 }
 
@@ -111,9 +108,10 @@ export async function getOrgMembers(orgId: string) {
 }
 
 export async function countOrgManagers(orgId: string): Promise<number> {
-  const members = await db.select({ user_id: organizationMemberTable.user_id })
-    .from(organizationMemberTable)
-    .where(eq(organizationMemberTable.organization_id, orgId))
+  const members = await db.query.organizationMemberTable.findMany({
+    where: eq(organizationMemberTable.organization_id, orgId),
+    columns: { user_id: true },
+  })
   let count = 0
   for (const m of members) {
     if ((await effectiveOrgGrants(m.user_id, orgId)).includes('user:manage'))
@@ -127,7 +125,7 @@ export async function ensureSystemRoles(orgId: string) {
     { organization_id: orgId, name: 'Admin', description: 'Full workspace control', permissions: [...DEFAULT_PERSONAL_ORG_ABILITIES], is_system: true },
     { organization_id: orgId, name: 'Member', description: 'Standard member', permissions: [...DEFAULT_MEMBER_ABILITIES], is_system: true },
   ]).onConflictDoNothing()
-  return db.select().from(roleTable).where(eq(roleTable.organization_id, orgId))
+  return db.query.roleTable.findMany({ where: eq(roleTable.organization_id, orgId) })
 }
 
 export async function assignRole(memberId: string, roleId: string) {
@@ -146,7 +144,7 @@ export async function uniqueSlug(base: string): Promise<string> {
   const root = base.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'org'
   for (let i = 0; i < 5; i++) {
     const candidate = i === 0 ? root : `${root}-${simplifyNanoId().slice(0, 6)}`
-    const [hit] = await db.select({ id: organizationTable.id }).from(organizationTable).where(eq(organizationTable.slug, candidate)).limit(1)
+    const hit = await db.query.organizationTable.findFirst({ where: eq(organizationTable.slug, candidate), columns: { id: true } })
     if (!hit)
       return candidate
   }
@@ -155,11 +153,9 @@ export async function uniqueSlug(base: string): Promise<string> {
 
 /** Idempotent personal org: org (is_personal) + owner membership (admin grants). */
 export async function createPersonalOrganization(user: UserRow) {
-  const [existing] = await db
-    .select()
-    .from(organizationTable)
-    .where(and(eq(organizationTable.owner_id, user.id), eq(organizationTable.is_personal, true)))
-    .limit(1)
+  const existing = await db.query.organizationTable.findFirst({
+    where: and(eq(organizationTable.owner_id, user.id), eq(organizationTable.is_personal, true)),
+  })
   if (existing)
     return existing
   const [org] = await db.insert(organizationTable).values({
@@ -174,10 +170,10 @@ export async function createPersonalOrganization(user: UserRow) {
   const roles = await ensureSystemRoles(org!.id)
   const adminRole = roles.find(r => r.name === 'Admin')
   if (adminRole) {
-    const [member] = await db.select({ id: organizationMemberTable.id })
-      .from(organizationMemberTable)
-      .where(and(eq(organizationMemberTable.user_id, user.id), eq(organizationMemberTable.organization_id, org!.id)))
-      .limit(1)
+    const member = await db.query.organizationMemberTable.findFirst({
+      where: and(eq(organizationMemberTable.user_id, user.id), eq(organizationMemberTable.organization_id, org!.id)),
+      columns: { id: true },
+    })
     if (member)
       await assignRole(member.id, adminRole.id)
   }
@@ -198,10 +194,10 @@ export async function createTenantOrganization(userId: string, name: string) {
   const roles = await ensureSystemRoles(org!.id)
   const adminRole = roles.find(r => r.name === 'Admin')
   if (adminRole) {
-    const [member] = await db.select({ id: organizationMemberTable.id })
-      .from(organizationMemberTable)
-      .where(and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, org!.id)))
-      .limit(1)
+    const member = await db.query.organizationMemberTable.findFirst({
+      where: and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, org!.id)),
+      columns: { id: true },
+    })
     if (member)
       await assignRole(member.id, adminRole.id)
   }
@@ -209,21 +205,14 @@ export async function createTenantOrganization(userId: string, name: string) {
 }
 
 export async function getOrganizationById(orgId: string) {
-  const [org] = await db
-    .select()
-    .from(organizationTable)
-    .where(eq(organizationTable.id, orgId))
-    .limit(1)
+  const org = await db.query.organizationTable.findFirst({ where: eq(organizationTable.id, orgId) })
   return org ?? null
 }
 
 // --- Invitations -------------------------------------------------------
 
 export async function getOrgInvitations(orgId: string) {
-  return db
-    .select()
-    .from(organizationInvitationTable)
-    .where(eq(organizationInvitationTable.organization_id, orgId))
+  return db.query.organizationInvitationTable.findMany({ where: eq(organizationInvitationTable.organization_id, orgId) })
 }
 
 export async function createInvitation(orgId: string, email: string, roleId: string | null, invitedBy: string) {
@@ -237,11 +226,7 @@ export async function createInvitation(orgId: string, email: string, roleId: str
 }
 
 export async function getInvitationByToken(token: string) {
-  const [inv] = await db
-    .select()
-    .from(organizationInvitationTable)
-    .where(eq(organizationInvitationTable.token, token))
-    .limit(1)
+  const inv = await db.query.organizationInvitationTable.findFirst({ where: eq(organizationInvitationTable.token, token) })
   return inv ?? null
 }
 
@@ -312,18 +297,12 @@ export async function getOrgMembersPage(orgId: string, { q, limit, offset }: Lis
 
 export async function getImpersonationCandidatesPage(selfId: string, { q, limit, offset }: ListQuery): Promise<Page<{ id: string, username: string | null, name: string | null, primary_email: string, avatar: string | null, is_suspended: boolean | null }>> {
   const where = and(ne(userTable.id, selfId), nameEmailFilter(q))
-  const rows = await db.select({
-    id: userTable.id,
-    username: userTable.username,
-    name: userTable.name,
-    primary_email: userTable.primary_email,
-    avatar: userTable.avatar,
-    is_suspended: userTable.is_suspended,
+  const rows = await db.query.userTable.findMany({
+    where,
+    orderBy: asc(userTable.name),
+    limit: limit + 1,
+    offset,
+    columns: { id: true, username: true, name: true, primary_email: true, avatar: true, is_suspended: true },
   })
-    .from(userTable)
-    .where(where)
-    .orderBy(asc(userTable.name))
-    .limit(limit + 1)
-    .offset(offset)
   return { items: rows.slice(0, limit), hasMore: rows.length > limit }
 }

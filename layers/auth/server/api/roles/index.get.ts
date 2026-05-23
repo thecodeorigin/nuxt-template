@@ -8,13 +8,8 @@ export default defineAuthorizedHandler(['user:read'], async (_event, { session }
   const orgId = session.activeOrganizationId
   if (!orgId)
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
-  return db.select({
-    id: roleTable.id,
-    name: roleTable.name,
-    description: roleTable.description,
-    permissions: roleTable.permissions,
-    is_system: roleTable.is_system,
+  return db.query.roleTable.findMany({
+    where: eq(roleTable.organization_id, orgId),
+    columns: { id: true, name: true, description: true, permissions: true, is_system: true },
   })
-    .from(roleTable)
-    .where(eq(roleTable.organization_id, orgId))
 })

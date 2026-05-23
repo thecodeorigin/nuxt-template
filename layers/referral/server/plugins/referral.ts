@@ -23,10 +23,9 @@ export default defineNitroPlugin((nitro) => {
   nitro.hooks.hook('billing:topup-succeeded', async ({ userId, isFirstTopup }) => {
     if (!isFirstTopup || !userId)
       return
-    const [ref] = await db.select()
-      .from(referralTable)
-      .where(and(eq(referralTable.referee_id, userId), eq(referralTable.reward_paid, false)))
-      .limit(1)
+    const ref = await db.query.referralTable.findFirst({
+      where: and(eq(referralTable.referee_id, userId), eq(referralTable.reward_paid, false)),
+    })
     if (!ref)
       return
     const sink = await personalOrgId(ref.referrer_id)

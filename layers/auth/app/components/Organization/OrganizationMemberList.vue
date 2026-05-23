@@ -35,10 +35,7 @@ const generatedLink = ref('')
 const { data: orgRoles, error: rolesError } = useAsyncData('org-roles', () => orgApi.fetchRoles(), { default: () => [] })
 whenError(rolesError)
 
-const roleOptions = computed(() => [
-  { label: 'Default', value: '' },
-  ...orgRoles.value.map(r => ({ label: r.name, value: r.id })),
-])
+const roleOptions = computed(() => orgRoles.value.map(r => ({ label: r.name, value: r.id })))
 
 function joinLink(token: string) {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
@@ -213,7 +210,7 @@ watch(showEditModal, async (open) => {
             />
           </UFormField>
           <UFormField label="Role">
-            <USelect v-model="inviteRoleId" :items="roleOptions" value-key="value" label-key="label" class="min-w-40" />
+            <USelect v-model="inviteRoleId" :items="roleOptions" value-key="value" label-key="label" placeholder="Default" class="min-w-40" />
           </UFormField>
           <UButton
             label="Generate invite link"

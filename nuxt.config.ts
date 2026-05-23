@@ -53,6 +53,9 @@ export default defineNuxtConfig({
       server: {
         allowedHosts: true,
       },
+      optimizeDeps: {
+        include: ['@casl/ability', '@casl/vue', 'ts-pattern'],
+      },
     },
   },
 

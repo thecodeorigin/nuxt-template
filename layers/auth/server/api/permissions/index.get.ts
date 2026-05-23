@@ -5,5 +5,5 @@ import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 
 export default defineAuthorizedHandler(
   ['user:read'],
-  async () => db.select().from(permissionTable).where(eq(permissionTable.org_kind, 'tenant')),
+  async () => db.query.permissionTable.findMany({ where: eq(permissionTable.org_kind, 'tenant') }),
 )

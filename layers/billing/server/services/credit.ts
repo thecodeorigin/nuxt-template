@@ -3,11 +3,11 @@ import { organizationCreditTable } from '@nuxthub/db/schema'
 import { eq, sql } from 'drizzle-orm'
 
 export async function getBalance(orgId: string): Promise<number> {
-  const [row] = await db.select({ b: organizationCreditTable.balance })
-    .from(organizationCreditTable)
-    .where(eq(organizationCreditTable.organization_id, orgId))
-    .limit(1)
-  return row?.b ?? 0
+  const row = await db.query.organizationCreditTable.findFirst({
+    where: eq(organizationCreditTable.organization_id, orgId),
+    columns: { balance: true },
+  })
+  return row?.balance ?? 0
 }
 
 export async function grantCredit(orgId: string, amount: number): Promise<void> {

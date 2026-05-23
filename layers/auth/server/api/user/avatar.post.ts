@@ -24,7 +24,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
   const pathname = `avatars/${session.id}/${crypto.randomUUID()}.${sniff.ext}`
   await blob.put(pathname, file.data, { contentType: sniff.type })
 
-  const [current] = await db.select({ avatar: userTable.avatar }).from(userTable).where(eq(userTable.id, session.id)).limit(1)
+  const current = await db.query.userTable.findFirst({ where: eq(userTable.id, session.id), columns: { avatar: true } })
   const [updated] = await db.update(userTable).set({ avatar: `/images/${pathname}` }).where(eq(userTable.id, session.id)).returning()
 
   const prev = current?.avatar

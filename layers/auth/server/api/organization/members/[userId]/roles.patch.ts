@@ -17,7 +17,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   const body = await readValidatedBody(event, AssignRolesSchema.parse)
 
   const roles = body.role_ids.length > 0
-    ? await db.select().from(roleTable).where(eq(roleTable.organization_id, orgId))
+    ? await db.query.roleTable.findMany({ where: eq(roleTable.organization_id, orgId) })
     : []
   const validIds = new Set(roles.map(r => r.id))
   const invalid = body.role_ids.filter(id => !validIds.has(id))
@@ -31,10 +31,10 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
       throw createError({ statusCode: 403, statusMessage: `Cannot grant role "${role.name}": ${bad.join(', ')}` })
   }
 
-  const [member] = await db.select({ id: organizationMemberTable.id })
-    .from(organizationMemberTable)
-    .where(and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)))
-    .limit(1)
+  const member = await db.query.organizationMemberTable.findFirst({
+    where: and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, orgId)),
+    columns: { id: true },
+  })
   if (!member)
     throw createError({ statusCode: 404, statusMessage: 'Member not found' })
 

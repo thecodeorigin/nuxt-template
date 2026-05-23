@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
   const redirectUrl = 'https://github.com/login/oauth/authorize'
   const params = new URLSearchParams({
-    client_id: runtimeConfig.githubClientId as string,
+    client_id: runtimeConfig.githubClientId,
     redirect_uri: `${getBaseUrl()}/api/auth/github/callback`,
     scope: 'user:email',
     state,

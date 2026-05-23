@@ -63,7 +63,7 @@ export async function refreshUserSessions(userId: string): Promise<number> {
   const keys = await kv.keys('session:')
   if (keys.length === 0)
     return 0
-  const [user] = await db.select().from(userTable).where(eq(userTable.id, userId)).limit(1)
+  const user = await db.query.userTable.findFirst({ where: eq(userTable.id, userId) })
   if (!user)
     return 0
   let updated = 0

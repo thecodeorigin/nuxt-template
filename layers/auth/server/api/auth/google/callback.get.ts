@@ -46,8 +46,7 @@ export default defineEventHandler(async (event) => {
   const now = new Date()
 
   // 1. Check if user exists by email
-  const existingUsers = await db.select().from(userTable).where(eq(userTable.primary_email, payload.email!)).limit(1)
-  let user = existingUsers[0]
+  let user = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, payload.email!) })
 
   if (!user) {
     // Create new user
@@ -80,15 +79,14 @@ export default defineEventHandler(async (event) => {
 
   // 2. Handle Identity
   const providerUserId = payload.sub
-  const existingIdentity = await db.select()
-    .from(identityTable)
-    .where(and(
+  const existingIdentity = await db.query.identityTable.findFirst({
+    where: and(
       eq(identityTable.provider, 'google'),
       eq(identityTable.provider_user_id, providerUserId),
-    ))
-    .limit(1)
+    ),
+  })
 
-  if (existingIdentity.length === 0) {
+  if (!existingIdentity) {
     await db.insert(identityTable).values({
       user_id: user.id,
       provider: 'google',

@@ -25,7 +25,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
     })
   }
 
-  const [admin] = await db.select().from(userTable).where(eq(userTable.id, original.id)).limit(1)
+  const admin = await db.query.userTable.findFirst({ where: eq(userTable.id, original.id) })
   if (!admin) {
     throw createError({ statusCode: 500, statusMessage: 'Original user no longer exists.' })
   }

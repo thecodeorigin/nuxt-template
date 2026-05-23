@@ -14,7 +14,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   if (!orgId)
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
   const { id } = await getValidatedRouterParams(event, z.object({ id: z.string() }).parse)
-  const [role] = await db.select().from(roleTable).where(and(eq(roleTable.id, id), eq(roleTable.organization_id, orgId))).limit(1)
+  const role = await db.query.roleTable.findFirst({ where: and(eq(roleTable.id, id), eq(roleTable.organization_id, orgId)) })
   if (!role)
     throw createError({ statusCode: 404, statusMessage: 'Role not found' })
   const body = await readValidatedBody(event, UpdateRoleSchema.parse)

@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   if (!orderCode)
     return { ok: true, skipped: 'no-order-code' }
 
-  const [tx] = await db.select().from(transactionTable).where(eq(transactionTable.gateway_ref, orderCode)).limit(1)
+  const tx = await db.query.transactionTable.findFirst({ where: eq(transactionTable.gateway_ref, orderCode) })
   if (!tx)
     return { ok: true, skipped: 'unknown-order' }
   if (tx.status === 'success')
@@ -48,13 +48,14 @@ export default defineEventHandler(async (event) => {
       }),
   ])
 
-  const priorSuccess = await db.select({ id: transactionTable.id })
-    .from(transactionTable)
-    .where(and(
+  const priorSuccess = await db.query.transactionTable.findMany({
+    where: and(
       eq(transactionTable.organization_id, tx.organization_id),
       eq(transactionTable.type, 'top_up'),
       eq(transactionTable.status, 'success'),
-    ))
+    ),
+    columns: { id: true },
+  })
   const isFirstTopup = priorSuccess.length <= 1
 
   const payload = {

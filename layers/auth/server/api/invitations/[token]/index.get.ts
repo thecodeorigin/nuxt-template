@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
 
   let roleName: string | null = null
   if (inv.role_id) {
-    const [role] = await db.select({ name: roleTable.name }).from(roleTable).where(eq(roleTable.id, inv.role_id)).limit(1)
+    const role = await db.query.roleTable.findFirst({ where: eq(roleTable.id, inv.role_id), columns: { name: true } })
     roleName = role?.name ?? null
   }
 
