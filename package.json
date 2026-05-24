@@ -12,6 +12,7 @@
     "lint:staged": "lint-staged",
     "typecheck": "nuxt typecheck",
     "harness": "tsx packages/cli/src/index.ts",
+    "cli": "tsx packages/cli/src/index.ts",
     "typecheck:cli": "tsc -p packages/cli/tsconfig.json",
     "auth:generate": "tsx packages/cli/src/index.ts dev setup",
     "db:generate": "nuxt db generate",

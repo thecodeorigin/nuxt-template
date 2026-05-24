@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "private": true,
   "bin": {
-    "harness": "./src/index.ts"
+    "harness": "./src/index.ts",
+    "cli": "./src/index.ts"
   },
   "dependencies": {
     "citty": "catalog:",
