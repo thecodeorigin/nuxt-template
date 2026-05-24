@@ -45,6 +45,16 @@ const links = computed<NavigationMenuItem[][]>(() => {
       ),
     ],
   })
+
+  if (satisfiesAbility(abilities.value, 'system:manage')) {
+    main.push({
+      label: 'System Settings',
+      icon: 'i-lucide-shield-check',
+      to: '/system/notifications',
+      onSelect: closeMenu,
+    })
+  }
+
   return [main]
 })
 

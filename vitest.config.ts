@@ -10,6 +10,7 @@ const layerAliases = [
   { find: /^#layers\/notifications\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/notifications/$1$2` },
   { find: /^#layers\/billing\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/billing/$1$2` },
   { find: /^#layers\/referral\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/referral/$1$2` },
+  { find: /^#layers\/system\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/system/$1$2` },
 ]
 
 const rootAliases = [

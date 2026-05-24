@@ -3,35 +3,25 @@ import packageJson from './package.json'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/a11y',
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxt/hints',
-    '@nuxt/icon',
-    '@nuxt/image',
-    '@nuxt/scripts',
-    '@nuxt/test-utils',
-    '@nuxt/ui',
-    '@nuxtjs/device',
-    '@nuxthub/core',
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
-    'magic-regexp',
-    'nuxt-security',
-  ],
-
-  image: { provider: 'none' },
-
-  app: {
-    head: {
-      htmlAttrs: { lang: 'en' },
-    },
-  },
-
   $development: {
     devtools: {
       enabled: true,
+    },
+    // nuxt-mail in dev points at maildev, a local catch-all SMTP server:
+    // run `pnpm mail:dev`, then read caught mail at http://localhost:1080.
+    // Same nuxt-mail code path as production — no app-side dev branching.
+    // Message names mirror $production so `$mail.send({ config: 'contact' |
+    // 'support' })` resolves identically in both environments.
+    mail: {
+      message: [
+        { name: 'default', from: process.env.NUXT_SMTP_FROM || 'Nuxt Template <noreply@localhost>', bcc: 'contact@thecodeorigin.com' },
+        { name: 'contact', to: 'contact@thecodeorigin.com' },
+        { name: 'support', to: 'support@thecodeorigin.com' },
+      ],
+      smtp: {
+        host: 'localhost',
+        port: 1025,
+      },
     },
     nitro: {
       openAPI: {
@@ -64,6 +54,9 @@ export default defineNuxtConfig({
       // Cloudflare Workers (modules syntax). CI deploys with `wrangler deploy`.
       preset: process.env.NITRO_PRESET || 'cloudflare_module',
     },
+    image: {
+      provider: 'cloudflare',
+    },
     // Production Cloudflare bindings. NuxtHub generates the wrangler binding
     // config from this block at build time (wrangler.jsonc only carries the
     // observability block). Cloudflare has no resource auto-association, so the
@@ -93,9 +86,51 @@ export default defineNuxtConfig({
         binding: 'BLOB',
       },
     },
-    image: {
-      provider: 'cloudflare',
+    mail: {
+      message: [
+        { name: 'default', from: process.env.NUXT_SMTP_FROM || 'noreply@thecodeorigin.com', bcc: 'contact@thecodeorigin.com' },
+        { name: 'contact', to: 'contact@thecodeorigin.com' },
+        { name: 'support', to: 'support@thecodeorigin.com' },
+      ],
+      smtp: {
+        host: process.env.NUXT_SMTP_HOST,
+        port: Number(process.env.NUXT_SMTP_PORT),
+        auth: {
+          user: process.env.NUXT_SMTP_USER,
+          pass: process.env.NUXT_SMTP_PASS,
+        },
+      },
     },
+  },
+
+  a11y: {
+    logIssues: false,
+  },
+
+  app: {
+    head: {
+      htmlAttrs: { lang: 'en' },
+    },
+  },
+
+  components: false,
+
+  compatibilityDate: '2025-02-11',
+
+  css: ['~/assets/css/main.css'],
+
+  eslint: {
+    config: {
+      standalone: false,
+      stylistic: false,
+    },
+  },
+
+  hub: {
+    db: 'sqlite',
+    blob: true,
+    kv: true,
+    cache: true,
   },
 
   imports: {
@@ -105,24 +140,55 @@ export default defineNuxtConfig({
     dirs: ['~/lib'],
   },
 
-  // Disable user component auto-import so call sites have explicit imports —
-  // makes the source path obvious for both AI agents and humans. Nuxt UI's
-  // <U*> components are registered via @nuxt/ui's addComponentsDir call
-  // (from the module) and stay auto-imported.
-  components: false,
+  modules: [
+    '@nuxt/a11y',
+    '@nuxt/eslint',
+    '@nuxt/fonts',
+    '@nuxt/hints',
+    '@nuxt/icon',
+    '@nuxt/image',
+    '@nuxt/scripts',
+    '@nuxt/test-utils',
+    '@nuxt/ui',
+    '@nuxtjs/device',
+    '@nuxthub/core',
+    '@pinia/nuxt',
+    '@vueuse/nuxt',
+    'magic-regexp',
+    'nuxt-security',
+    'nuxt-mail',
+  ],
 
-  css: ['~/assets/css/main.css'],
+  nitro: {
+    experimental: {
+      tasks: true,
+    },
+    routeRules: {
+      // All JSON API routes are CSRF-exempt: session auth uses SameSite=Lax
+      // cookies (which already prevent cross-origin cookie submission) and
+      // token auth via x-session-id headers is inherently CSRF-safe. CSRF
+      // double-submit tokens are redundant for this REST API pattern.
+      '/api/**': { csurf: false },
+      // Webhook routes are also exempt from CORS (self-validate via signature).
+      '/api/payments/sepay/webhook': { cors: false, security: { rateLimiter: false } },
+      '/api/system/dispatch/send': { security: { xssValidator: false } },
+      // Auth + cron routes have no cross-origin surface.
+      '/api/auth/**': { cors: false },
+      '/api/cron/**': { cors: false },
+      '/__nuxt_hints/**': { cors: false, csurf: false },
+    },
+    serverAssets: [
+      {
+        baseName: 'template',
+        dir: './server/assets/template',
+      },
+    ],
+  },
 
   runtimeConfig: {
     authSecret: '',
 
     webhookSigningSecret: '',
-
-    smtpUser: '',
-    smtpPass: '',
-    smtpFrom: '',
-    smtpPort: 1025,
-    smtpHost: '',
 
     googleClientId: '',
     googleClientSecret: '',
@@ -148,43 +214,6 @@ export default defineNuxtConfig({
     cronSecret: process.env.CRON_SECRET || '',
 
     customerSupportEmail: '',
-  },
-
-  compatibilityDate: '2025-02-11',
-  nitro: {
-    experimental: {
-      tasks: true,
-    },
-    routeRules: {
-      // All JSON API routes are CSRF-exempt: session auth uses SameSite=Lax
-      // cookies (which already prevent cross-origin cookie submission) and
-      // token auth via x-session-id headers is inherently CSRF-safe. CSRF
-      // double-submit tokens are redundant for this REST API pattern.
-      '/api/**': { csurf: false },
-      // Webhook routes are also exempt from CORS (self-validate via signature).
-      '/api/payments/sepay/webhook': { cors: false, security: { rateLimiter: false } },
-      // Auth + cron routes have no cross-origin surface.
-      '/api/auth/**': { cors: false },
-      '/api/cron/**': { cors: false },
-      '/__nuxt_hints/**': { cors: false, csurf: false },
-    },
-    serverAssets: [
-      {
-        baseName: 'template',
-        dir: './server/assets/template',
-      },
-    ],
-  },
-
-  a11y: {
-    logIssues: false,
-  },
-
-  eslint: {
-    config: {
-      standalone: false,
-      stylistic: false,
-    },
   },
 
   // Production-grade security applied uniformly across development,
@@ -298,12 +327,5 @@ export default defineNuxtConfig({
       credentials: true,
       preflight: { statusCode: 204 },
     },
-  },
-
-  hub: {
-    db: 'sqlite',
-    blob: true,
-    kv: true,
-    cache: true,
   },
 })

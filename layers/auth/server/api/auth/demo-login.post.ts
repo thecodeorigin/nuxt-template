@@ -1,4 +1,4 @@
-import { ActivityAction, activityTable, userTable } from '@nuxthub/db/schema'
+import { ActivityAction, activityTable, organizationMemberTable, userTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { ensureMembership, ensureOrganization } from '#layers/auth/server/services/organization'
@@ -64,7 +64,12 @@ export default defineEventHandler(async (event) => {
   await ensureMembership(user.id, demoOrg.id, agent === 'admin' ? DEMO_ORG_GRANTS.admin : DEMO_ORG_GRANTS.member)
   if (agent === 'admin') {
     const systemOrg = await ensureOrganization(SYSTEM_ORG.slug, SYSTEM_ORG.name, { is_system: true })
-    await ensureMembership(user.id, systemOrg.id, SYSTEM_GRANTS.admin)
+    await db.insert(organizationMemberTable)
+      .values({ user_id: user.id, organization_id: systemOrg.id, abilities: [...SYSTEM_GRANTS.admin] })
+      .onConflictDoUpdate({
+        target: [organizationMemberTable.user_id, organizationMemberTable.organization_id],
+        set: { abilities: [...SYSTEM_GRANTS.admin] },
+      })
   }
 
   await seedDemoNotifications(user.id, demoOrg.id)

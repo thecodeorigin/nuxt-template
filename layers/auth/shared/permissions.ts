@@ -6,6 +6,7 @@ export const TENANT_ACTIONS = ['read', 'write', 'delete', 'manage'] as const
 // Platform powers — grantable ONLY in the system org.
 export const SYSTEM_ABILITY_KEYS = new Set<string>([
   'user:impersonate',
+  'system:manage',
 ])
 
 // Resource powers — grantable in tenant orgs (subjects × actions).

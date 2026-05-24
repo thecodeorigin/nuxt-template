@@ -94,9 +94,6 @@ async function signInAsDemoAgent(agent: 'admin' | 'user') {
     </div>
 
     <div v-else class="space-y-3 text-center">
-      <p class="text-sm text-muted">
-        OAuth providers haven't been wired up in this build.
-      </p>
       <UButton
         to="/api/auth/google"
         external

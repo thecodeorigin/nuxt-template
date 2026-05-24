@@ -18,7 +18,7 @@ export const DEMO_ORG = { slug: 'demo', name: 'Demo Organization' } as const
 
 // System org membership (platform powers, grantable only in the system org).
 export const SYSTEM_GRANTS = {
-  admin: ['user:impersonate'],
+  admin: ['user:impersonate', 'system:manage'],
 } as const
 
 // Demo (tenant) org memberships.

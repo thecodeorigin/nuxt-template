@@ -50,9 +50,7 @@ function timeAgo(isoDate: string) {
                   {{ timeAgo(n.createdAt) }}
                 </time>
               </p>
-              <p class="text-dimmed truncate">
-                {{ n.body }}
-              </p>
+              <div v-sanitize="n.body" class="text-dimmed truncate" />
             </div>
           </div>
         </UButton>

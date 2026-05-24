@@ -30,12 +30,30 @@ catalog:
   '@playwright/test': ^1.59.1
   '@tailwindcss/vite': ^4.2.2
   '@tanstack/vue-table': ^8.21.3
+  '@tiptap/core': ^3.22.4
+  '@tiptap/extension-bubble-menu': ^3.22.4
+  '@tiptap/extension-code': ^3.22.4
+  '@tiptap/extension-drag-handle': ^3.22.4
+  '@tiptap/extension-drag-handle-vue-3': ^3.22.4
+  '@tiptap/extension-floating-menu': ^3.22.4
+  '@tiptap/extension-horizontal-rule': ^3.22.4
+  '@tiptap/extension-image': ^3.22.4
+  '@tiptap/extension-mention': ^3.22.4
+  '@tiptap/extension-node-range': ^3.22.4
+  '@tiptap/extension-placeholder': ^3.22.4
+  '@tiptap/markdown': ^3.22.4
+  '@tiptap/pm': ^3.22.4
+  '@tiptap/starter-kit': ^3.22.4
+  '@tiptap/suggestion': ^3.22.4
+  '@tiptap/vue-3': ^3.22.4
   '@types/node': ^25.9.1
+  '@types/nodemailer': ^8.0.0
   '@vitest/coverage-v8': ^4.1.2
   '@vue/test-utils': ^2.4.6
   '@vueuse/nuxt': ^14.2.1
   citty: ^0.1.6
   clsx: ^2.1.1
+  dompurify: ^3.4.5
   dotenv: ^17.4.0
   drizzle-kit: ^0.31.10
   drizzle-orm: ^0.45.2
@@ -52,9 +70,11 @@ catalog:
   jsonc-eslint-parser: ^3.1.0
   lint-staged: ^16.4.0
   magic-regexp: ^0.11.0
+  maildev: ^2.2.1
   nanoid: ^5.1.7
   nodemailer: ^8.0.4
   nuxt: ^4.4.2
+  nuxt-mail: ^8.0.4
   nuxt-security: ^2.5.1
   playwright-core: ^1.59.1
   tailwind-merge: ^3.5.0
