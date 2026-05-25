@@ -5,10 +5,14 @@ import OrganizationMenu from '#layers/auth/app/components/Organization/Organizat
 import UserMenu from '#layers/auth/app/components/User/UserMenu.vue'
 import { satisfiesAbility } from '#layers/auth/shared/ability'
 import NotificationsSlideover from '#layers/notifications/app/components/Notifications/NotificationsSlideover.vue'
+import SupportFeedbackModal from '#layers/support/app/components/Support/SupportFeedbackModal.vue'
+import SupportTicketModal from '#layers/support/app/components/Support/SupportTicketModal.vue'
 
 const open = ref(false)
 const colorMode = useColorMode()
 const authStore = useAuthStore()
+const feedbackModalOpen = ref(false)
+const supportModalOpen = ref(false)
 
 onMounted(() => {
   useCookieConsent().prompt()
@@ -30,6 +34,8 @@ const links = computed<NavigationMenuItem[][]>(() => {
     { label: 'Referral', icon: 'i-lucide-gift', to: '/referral', onSelect: closeMenu },
   ]
 
+  const sub: NavigationMenuItem[] = []
+
   main.push({
     label: 'Settings',
     icon: 'i-lucide-settings',
@@ -47,15 +53,47 @@ const links = computed<NavigationMenuItem[][]>(() => {
   })
 
   if (satisfiesAbility(abilities.value, 'system:manage')) {
-    main.push({
-      label: 'System Settings',
+    const sysChildren: NavigationMenuItem[] = [
+      { label: 'Notifications', to: '/system/notifications', onSelect: closeMenu },
+    ]
+    if (satisfiesAbility(abilities.value, 'support:manage')) {
+      sysChildren.push({ label: 'Tickets', icon: 'i-lucide-ticket', to: '/system/tickets', onSelect: closeMenu })
+    }
+    sub.push({
+      label: 'System Administration',
       icon: 'i-lucide-shield-check',
-      to: '/system/notifications',
-      onSelect: closeMenu,
+      defaultOpen: true,
+      type: 'trigger' as const,
+      children: sysChildren,
     })
+  } else {
+    sub.push(
+      {
+        label: 'My Requests',
+        icon: 'i-lucide-inbox',
+        to: '/support',
+        onSelect: closeMenu,
+      },
+      {
+        label: 'Feedback',
+        icon: 'i-lucide-message-circle',
+        onSelect() {
+          feedbackModalOpen.value = true
+          closeMenu()
+        },
+      },
+      {
+        label: 'Help & Support',
+        icon: 'i-lucide-info',
+        onSelect() {
+          supportModalOpen.value = true
+          closeMenu()
+        },
+      },
+    )
   }
 
-  return [main]
+  return [main, sub]
 })
 
 const groups = computed(() => [{
@@ -103,6 +141,15 @@ const groups = computed(() => [{
           tooltip
           popover
         />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="links[1]"
+          orientation="vertical"
+          tooltip
+          popover
+          class="mt-auto"
+        />
       </template>
 
       <template #footer="{ collapsed }">
@@ -116,6 +163,8 @@ const groups = computed(() => [{
 
     <ClientOnly>
       <NotificationsSlideover />
+      <SupportFeedbackModal v-model:open="feedbackModalOpen" />
+      <SupportTicketModal v-model:open="supportModalOpen" />
     </ClientOnly>
   </UDashboardGroup>
 </template>

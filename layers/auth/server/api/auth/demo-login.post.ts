@@ -5,6 +5,7 @@ import { ensureMembership, ensureOrganization } from '#layers/auth/server/servic
 import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/services/seed'
 import { persistSession } from '#layers/auth/server/services/session'
 import { seedDemoNotifications } from '#layers/notifications/server/services/notification'
+import { seedDemoTickets } from '#layers/support/server/services/ticket'
 
 interface DemoAgent {
   email: string
@@ -73,6 +74,8 @@ export default defineEventHandler(async (event) => {
   }
 
   await seedDemoNotifications(user.id, demoOrg.id)
+  if (agent === 'user')
+    await seedDemoTickets(user.id, demoOrg.id)
 
   const { sessionId } = await persistSession(event, user, { provider: 'demo', activeOrganizationId: demoOrg.id })
 

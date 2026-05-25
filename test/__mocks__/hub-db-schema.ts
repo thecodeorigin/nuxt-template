@@ -13,6 +13,8 @@ export const organizationCreditTable = {} as any
 export const transactionTable = {} as any
 export const roleTable = {} as any
 export const organizationMemberRoleTable = {} as any
+export const supportTicketTable = {} as any
+export const supportTicketMessageTable = {} as any
 export enum ActivityAction {
   SIGN_IN = 'auth:sign_in',
   SIGN_UP = 'auth:sign_up',

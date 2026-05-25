@@ -7,6 +7,7 @@ export const TENANT_ACTIONS = ['read', 'write', 'delete', 'manage'] as const
 export const SYSTEM_ABILITY_KEYS = new Set<string>([
   'user:impersonate',
   'system:manage',
+  'support:manage',
 ])
 
 // Resource powers — grantable in tenant orgs (subjects × actions).

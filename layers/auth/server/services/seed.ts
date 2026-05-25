@@ -18,7 +18,7 @@ export const DEMO_ORG = { slug: 'demo', name: 'Demo Organization' } as const
 
 // System org membership (platform powers, grantable only in the system org).
 export const SYSTEM_GRANTS = {
-  admin: ['user:impersonate', 'system:manage'],
+  admin: ['user:impersonate', 'system:manage', 'support:manage'],
 } as const
 
 // Demo (tenant) org memberships.
@@ -55,6 +55,7 @@ export async function seedUsers(
         })
         .where(eq(userTable.id, existing.id))
         .returning()
+      await createPersonalOrganization(updated!)
       seeded.push({ id: updated!.id, primary_email: updated!.primary_email })
     }
     else {
@@ -65,6 +66,7 @@ export async function seedUsers(
         primary_phone: u.primary_phone ?? null,
         verified: true,
       }).returning()
+      await createPersonalOrganization(created!)
       seeded.push({ id: created!.id, primary_email: created!.primary_email })
     }
   }

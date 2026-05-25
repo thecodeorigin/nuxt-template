@@ -36,7 +36,6 @@ const toolbarItems: EditorToolbarItem[][] = [
     { kind: 'mark', mark: 'bold', icon: 'i-lucide-bold', tooltip: { text: 'Bold' } },
     { kind: 'mark', mark: 'italic', icon: 'i-lucide-italic', tooltip: { text: 'Italic' } },
     { kind: 'mark', mark: 'strike', icon: 'i-lucide-strikethrough', tooltip: { text: 'Strikethrough' } },
-    { kind: 'mark', mark: 'code', icon: 'i-lucide-code', tooltip: { text: 'Inline code' } },
   ],
   [
     { kind: 'heading', level: 2, icon: 'i-lucide-heading-2', tooltip: { text: 'Heading' } },
@@ -165,7 +164,7 @@ async function runSend() {
           v-model="body"
           content-type="html"
           placeholder="Write your message…"
-          class="w-full min-h-48 rounded-md border border-default"
+          class="w-full min-h-48 rounded-md border border-default [&_.ProseMirror]:px-4"
         >
           <UEditorToolbar :editor="editor" :items="toolbarItems" class="mb-2 border-b border-muted p-2" />
         </UEditor>

@@ -27,8 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function updateAvatar(file: File) {
-    await authApi.uploadAvatar(file)
-    await fetchCurrentUser()
+    const { avatar } = await authApi.uploadAvatar(file)
+    if (currentUser.value)
+      currentUser.value = { ...currentUser.value, avatar }
   }
 
   function fetchUserNotificationSettings() {

@@ -5,8 +5,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --port 3002",
-    "mail:dev": "maildev --smtp 1025 --web 1080",
+    "dev": "tsx packages/cli/src/index.ts dev up",
     "preview": "nuxt preview",
     "prepare": "nuxt prepare && husky",
     "lint": "eslint .",
@@ -81,6 +80,7 @@
     "@nuxt/hints": "catalog:",
     "@nuxt/icon": "catalog:",
     "@nuxt/image": "catalog:",
+    "@nuxt/kit": "catalog:",
     "@nuxt/scripts": "catalog:",
     "@nuxt/test-utils": "catalog:",
     "@nuxtjs/device": "catalog:",

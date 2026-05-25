@@ -47,6 +47,7 @@ pnpm cli doctor --json     # machine-readable; exit 1 if any check is 'fail'
 Local development bootstrap and agent backdoor helpers.
 
 ```bash
+pnpm cli dev up                                     # run nuxt dev + maildev together (see below)
 pnpm cli dev setup                                  # create .env + generate auth secrets (idempotent)
 pnpm cli dev seed                                   # POST /api/auth/dev-seed
 pnpm cli dev provision --email you@example.com      # POST /api/auth/dev-provision
@@ -54,9 +55,19 @@ pnpm cli dev login    --email you@example.com       # POST /api/auth/dev-login
 pnpm cli dev cleanup  --emails you@example.com      # POST /api/auth/dev-cleanup
 ```
 
+`up` runs `nuxt dev` and `maildev` as one foreground process. Both streams are
+forwarded to the terminal with a colored `[nuxt]` / `[mail]` prefix; pressing
+Ctrl-C (or either child dying) tears down the whole tree — no orphaned ports.
+Also exposed as the root script `pnpm dev:all`.
+
+```bash
+pnpm cli dev up                                     # nuxt :3002, maildev smtp :1025 / web :1080
+pnpm cli dev up --port 3000 --smtp 2025 --web 8080  # override any port
+```
+
 `setup` is idempotent: a second run updates the three auth secrets in-place
-rather than duplicating lines. All other subcommands require the dev server
-(`pnpm dev`) to be running; a clear error is shown if it is not.
+rather than duplicating lines. The remaining subcommands require the dev server
+(`pnpm dev` or `pnpm dev:all`) to be running; a clear error is shown if it is not.
 
 Override the dev server URL:
 

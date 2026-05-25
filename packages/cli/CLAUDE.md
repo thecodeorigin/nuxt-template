@@ -10,7 +10,8 @@ src/
   index.ts          Root command (citty) — wires all subcommands
   commands/
     doctor.ts       Read-only env diagnostics (tools / CF / GH / OAuth)
-    dev.ts          Local bootstrap: setup | seed | provision | login | cleanup
+    dev.ts          Local bootstrap: up | setup | seed | provision | login | cleanup
+                    (up = run nuxt dev + maildev together, stream + tree-kill)
     deploy.ts       CF resource provisioning + GitHub config + Worker secrets
     db.ts           DB ops: generate | migrate | sql | reset (wraps nuxt db)
     verify.ts       Local CI gate: lint → typecheck → test

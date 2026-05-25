@@ -8,12 +8,16 @@
 
 | Concern | Where |
 |--------|------|
-| System Settings shell + nav | `app/pages/system.vue` |
+| System Administration shell + nav | `app/pages/system.vue` |
 | Email dispatch tool (the "Notifications" page) | `app/pages/system/notifications.vue`, `app/components/System/SystemEmailDispatch.vue` |
 | Dispatch client wrappers | `app/api/useSystemApi.ts` |
 | Dispatch validation | `shared/schemas/dispatch.ts` |
 | Recipient resolution + email composition | `server/services/dispatch.ts` |
 | Dispatch routes (options/preview/send) | `server/api/system/dispatch/*` |
+| Support ticket inbox (page + nav) | `app/pages/system/tickets.vue`, `app/pages/system.vue` |
+| Agent ticket API (gated support:manage) | `server/api/system/tickets/*` |
+| Agent ticket client wrapper | `app/api/useSystemTicketApi.ts` |
+| Inbox UI (reuses support layer's SupportConversation) | `app/components/System/SystemTicketInbox.vue` |
 
 ## Conventions
 

@@ -45,6 +45,9 @@ catalogs:
     '@nuxt/image':
       specifier: ^2.0.0
       version: 2.0.0
+    '@nuxt/kit':
+      specifier: ^4.4.2
+      version: 4.4.2
     '@nuxt/scripts':
       specifier: 0.13.2
       version: 0.13.2
@@ -420,6 +423,9 @@ importers:
       '@nuxt/image':
         specifier: 'catalog:'
         version: 2.0.0(@upstash/redis@1.37.0)(db0@0.3.4(@libsql/client@0.17.3)(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260521.1)(@libsql/client-wasm@0.17.3)(@libsql/client@0.17.3)(@neondatabase/serverless@1.0.2)(@types/pg@8.20.0)(@upstash/redis@1.37.0)(pg@8.20.0)))(ioredis@5.10.1)(magicast@0.5.2)(srvx@0.11.15)
+      '@nuxt/kit':
+        specifier: 'catalog:'
+        version: 4.4.2(magicast@0.5.2)
       '@nuxt/scripts':
         specifier: 'catalog:'
         version: 0.13.2(@unhead/vue@2.1.13(vue@3.5.32(typescript@6.0.2)))(@upstash/redis@1.37.0)(db0@0.3.4(@libsql/client@0.17.3)(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260521.1)(@libsql/client-wasm@0.17.3)(@libsql/client@0.17.3)(@neondatabase/serverless@1.0.2)(@types/pg@8.20.0)(@upstash/redis@1.37.0)(pg@8.20.0)))(ioredis@5.10.1)(magicast@0.5.2)(typescript@6.0.2)(vue@3.5.32(typescript@6.0.2))

@@ -71,6 +71,13 @@
       "when": 1779523115991,
       "tag": "0009_condemned_sandman",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1779638205569,
+      "tag": "0010_abnormal_barracuda",
+      "breakpoints": true
     }
   ]
 }

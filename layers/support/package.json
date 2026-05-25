@@ -1,0 +1,6 @@
+{
+  "name": "@layers/support",
+  "type": "module",
+  "private": true,
+  "main": "./nuxt.config.ts"
+}

@@ -13,11 +13,6 @@ export default defineNuxtConfig({
     // Message names mirror $production so `$mail.send({ config: 'contact' |
     // 'support' })` resolves identically in both environments.
     mail: {
-      message: [
-        { name: 'default', from: process.env.NUXT_SMTP_FROM || 'Nuxt Template <noreply@localhost>', bcc: 'contact@thecodeorigin.com' },
-        { name: 'contact', to: 'contact@thecodeorigin.com' },
-        { name: 'support', to: 'support@thecodeorigin.com' },
-      ],
       smtp: {
         host: 'localhost',
         port: 1025,
@@ -35,6 +30,13 @@ export default defineNuxtConfig({
       routeRules: {
         '/_nitro/**': { cors: false, csurf: false },
       },
+    },
+    // IPX (the default @nuxt/image provider) reads from the public/ directory
+    // and cannot serve blob-stored images from the /images/[...pathname] Nitro
+    // route. Bypass image transformation in dev so UAvatar src passes through
+    // directly to the blob-serving route.
+    image: {
+      provider: 'none',
     },
     vite: {
       plugins: [
@@ -87,11 +89,6 @@ export default defineNuxtConfig({
       },
     },
     mail: {
-      message: [
-        { name: 'default', from: process.env.NUXT_SMTP_FROM || 'noreply@thecodeorigin.com', bcc: 'contact@thecodeorigin.com' },
-        { name: 'contact', to: 'contact@thecodeorigin.com' },
-        { name: 'support', to: 'support@thecodeorigin.com' },
-      ],
       smtp: {
         host: process.env.NUXT_SMTP_HOST,
         port: Number(process.env.NUXT_SMTP_PORT),
@@ -140,6 +137,14 @@ export default defineNuxtConfig({
     dirs: ['~/lib'],
   },
 
+  mail: {
+    message: [
+      { name: 'default', from: process.env.NUXT_SMTP_FROM || 'Nuxt Template <noreply@localhost>', bcc: 'contact@thecodeorigin.com' },
+      { name: 'contact', to: 'contact@thecodeorigin.com' },
+      { name: 'support', to: 'support@thecodeorigin.com' },
+    ],
+  },
+
   modules: [
     '@nuxt/a11y',
     '@nuxt/eslint',
@@ -172,6 +177,14 @@ export default defineNuxtConfig({
       // Webhook routes are also exempt from CORS (self-validate via signature).
       '/api/payments/sepay/webhook': { cors: false, security: { rateLimiter: false } },
       '/api/system/dispatch/send': { security: { xssValidator: false } },
+      // Support messages are plain text rendered escaped (never as HTML); error
+      // reports legitimately contain angle brackets, so xssValidator would 400 them.
+      // Both the base path (/api/support/tickets) and sub-paths (/…/messages) need
+      // the exemption — /** only matches when there is an additional path segment.
+      '/api/support/tickets': { security: { xssValidator: false } },
+      '/api/support/tickets/**': { security: { xssValidator: false } },
+      '/api/system/tickets': { security: { xssValidator: false } },
+      '/api/system/tickets/**': { security: { xssValidator: false } },
       // Auth + cron routes have no cross-origin surface.
       '/api/auth/**': { cors: false },
       '/api/cron/**': { cors: false },
