@@ -105,7 +105,7 @@ const columns: TableColumn<ReferralEntry>[] = [
           </div>
         </div>
 
-        <UCard :ui="{ body: 'p-0' }">
+        <UCard :ui="{ body: 'sm:p-0', footer: 'p-0' }">
           <template #header>
             <div class="flex items-center justify-between">
               <p class="font-semibold">
@@ -130,9 +130,10 @@ const columns: TableColumn<ReferralEntry>[] = [
           </UTable>
 
           <template #footer>
-            <div v-if="filteredReferrals.length > pageSize" class="flex justify-center py-3 border-t border-default">
-              <UPagination v-model:page="page" :total="filteredReferrals.length" :items-per-page="pageSize" />
-            </div>
+            <UPagination
+              v-if="filteredReferrals.length > pageSize"
+              v-model:page="page" :total="filteredReferrals.length" :items-per-page="pageSize"
+            />
           </template>
         </UCard>
       </div>

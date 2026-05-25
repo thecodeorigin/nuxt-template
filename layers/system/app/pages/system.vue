@@ -20,7 +20,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
 </script>
 
 <template>
-  <UDashboardPanel id="system" :ui="{ body: 'lg:py-12' }">
+  <UDashboardPanel id="system">
     <template #header>
       <DashboardNavbar title="System Administration" />
       <UDashboardToolbar>
@@ -28,7 +28,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
       </UDashboardToolbar>
     </template>
     <template #body>
-      <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-3xl mx-auto">
+      <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full">
         <NuxtPage />
       </div>
     </template>

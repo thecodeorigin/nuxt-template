@@ -57,7 +57,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
       { label: 'Notifications', to: '/system/notifications', onSelect: closeMenu },
     ]
     if (satisfiesAbility(abilities.value, 'support:manage')) {
-      sysChildren.push({ label: 'Tickets', icon: 'i-lucide-ticket', to: '/system/tickets', onSelect: closeMenu })
+      sysChildren.push({ label: 'Tickets', to: '/system/tickets', onSelect: closeMenu })
     }
     sub.push({
       label: 'System Administration',
