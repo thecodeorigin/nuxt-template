@@ -7,6 +7,10 @@
   // permission in your CLOUDFLARE_API_TOKEN.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "nuxt-template",
+  "compatibility_date": "2025-02-11",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "observability": {
     "logs": {
       "enabled": true,
