@@ -4,7 +4,7 @@ import { UpdateUserSchema } from '#layers/auth/shared/schemas/user'
 const authStore = useAuthStore()
 const toast = useToast()
 
-const state = reactive({
+const state = ref({
   name: authStore.currentUser?.name ?? '',
   username: authStore.currentUser?.username ?? '',
   bio: authStore.currentUser?.bio ?? '',
@@ -16,7 +16,7 @@ const uploadingAvatar = ref(false)
 async function onSubmit() {
   saving.value = true
   try {
-    await authStore.updateCurrentUser({ name: state.name, username: state.username, bio: state.bio })
+    await authStore.updateCurrentUser({ name: state.value.name, username: state.value.username, bio: state.value.bio })
     toast.add({ title: 'Profile updated', color: 'success' })
   }
   catch (err: unknown) {

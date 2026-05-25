@@ -5,15 +5,14 @@ const authStore = useAuthStore()
 const toast = useToast()
 
 const DEFAULTS: NotificationPrefs = { email: true, product_updates: true, weekly_digest: false, important_updates: true }
-const state = reactive<NotificationPrefs>({ ...DEFAULTS })
+const state = ref<NotificationPrefs>({ ...DEFAULTS })
 const confirmDisableOpen = ref(false)
 
 const { data, error } = useAsyncData('user-notification-prefs', () => authStore.fetchUserNotificationSettings(), { default: () => DEFAULTS })
+
+syncRef(data, state)
+
 whenError(error)
-watch(data, (v) => {
-  if (v)
-    Object.assign(state, v)
-}, { immediate: true })
 
 const subFields = [
   { name: 'product_updates' as const, label: 'Product updates', description: 'Receive messages about product updates.' },
@@ -23,7 +22,7 @@ const subFields = [
 
 async function persist() {
   try {
-    await authStore.updateUserNotificationSettings({ ...state })
+    await authStore.updateUserNotificationSettings({ ...state.value })
     toast.add({ title: 'Preferences saved', color: 'success' })
   }
   catch {
@@ -44,7 +43,7 @@ function confirmDisable() {
   persist()
 }
 function cancelDisable() {
-  state.email = true
+  state.value.email = true
   confirmDisableOpen.value = false
 }
 </script>

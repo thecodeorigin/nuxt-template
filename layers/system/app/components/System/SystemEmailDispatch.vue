@@ -17,7 +17,7 @@ const { data: options } = useAsyncData(
 const orgItems = computed(() => (options.value?.organizations ?? []).map(o => ({ label: o.label, value: o.id })))
 const roleItems = computed(() => (options.value?.roles ?? []).map(r => ({ label: r.label, value: r.id })))
 
-const filter = reactive<DispatchFilter>({
+const filter = ref<DispatchFilter>({
   allUsers: false,
   organizationIds: [],
   roleIds: [],
@@ -25,7 +25,7 @@ const filter = reactive<DispatchFilter>({
 })
 const emailsText = ref('')
 watch(emailsText, (v) => {
-  filter.emails = v.split(EMAIL_SPLIT_RE).map(s => s.trim().toLowerCase()).filter(Boolean)
+  filter.value.emails = v.split(EMAIL_SPLIT_RE).map(s => s.trim().toLowerCase()).filter(Boolean)
 })
 
 const subject = ref('')
@@ -57,7 +57,7 @@ const sending = ref(false)
 const confirmOpen = ref(false)
 
 const hasCriteria = computed(() =>
-  filter.allUsers || filter.organizationIds.length > 0 || filter.roleIds.length > 0 || filter.emails.length > 0,
+  filter.value.allUsers || filter.value.organizationIds.length > 0 || filter.value.roleIds.length > 0 || filter.value.emails.length > 0,
 )
 const canSend = computed(() => hasCriteria.value && subject.value.trim().length > 0 && htmlHasText(body.value))
 
@@ -72,7 +72,7 @@ async function runPreview() {
   previewing.value = true
   result.value = null
   try {
-    preview.value = await api.previewDispatch({ ...filter })
+    preview.value = await api.previewDispatch({ ...filter.value })
   }
   catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
@@ -91,7 +91,7 @@ function openConfirm() {
 async function runSend() {
   sending.value = true
   try {
-    result.value = await api.sendDispatch({ filter: { ...filter }, subject: subject.value.trim(), body: body.value })
+    result.value = await api.sendDispatch({ filter: { ...filter.value }, subject: subject.value.trim(), body: body.value })
     confirmOpen.value = false
     preview.value = null
     toast.add({ title: `Sent ${result.value.sent} email(s)`, color: 'success' })

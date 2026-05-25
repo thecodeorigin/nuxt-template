@@ -3,14 +3,14 @@ import { NewTodoSchema } from '#layers/todo/shared/schemas/todo'
 
 const { createTodo } = useTodos()
 const toast = useToast()
-const state = reactive({ title: '' })
+const state = ref({ title: '' })
 const isSubmitting = ref(false)
 
 async function onSubmit() {
   isSubmitting.value = true
   try {
-    await createTodo({ title: state.title })
-    state.title = ''
+    await createTodo({ title: state.value.title })
+    state.value.title = ''
   }
   catch {
     toast.add({ title: 'Failed to create todo', color: 'error' })
