@@ -196,6 +196,11 @@ export default defineNuxtConfig({
         dir: './server/assets/template',
       },
     ],
+    imports: {
+      dirsScanOptions: {
+        fileFilter: file => !file.endsWith('.md'),
+      },
+    },
   },
 
   runtimeConfig: {
