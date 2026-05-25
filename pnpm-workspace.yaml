@@ -73,9 +73,8 @@ catalog:
   magic-regexp: ^0.11.0
   maildev: ^2.2.1
   nanoid: ^5.1.7
-  nodemailer: ^8.0.4
   nuxt: ^4.4.2
-  nuxt-mail: ^8.0.4
+  nuxt-resend: ^0.0.2
   nuxt-security: ^2.5.1
   playwright-core: ^1.59.1
   tailwind-merge: ^3.5.0

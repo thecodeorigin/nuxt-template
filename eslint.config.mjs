@@ -57,6 +57,7 @@ export default withNuxt(
   {
     rules: {
       'ts/no-explicit-any': 'off',
+      'style/eol-last': 'off',
       'ts/prefer-literal-enum-member': 'off',
       'ts/no-dynamic-delete': 'off',
       'ts/unified-signatures': 'off',

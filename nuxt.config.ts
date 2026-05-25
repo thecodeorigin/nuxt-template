@@ -7,17 +7,6 @@ export default defineNuxtConfig({
     devtools: {
       enabled: true,
     },
-    // nuxt-mail in dev points at maildev, a local catch-all SMTP server:
-    // run `pnpm mail:dev`, then read caught mail at http://localhost:1080.
-    // Same nuxt-mail code path as production — no app-side dev branching.
-    // Message names mirror $production so `$mail.send({ config: 'contact' |
-    // 'support' })` resolves identically in both environments.
-    mail: {
-      smtp: {
-        host: 'localhost',
-        port: 1025,
-      },
-    },
     nitro: {
       openAPI: {
         meta: {
@@ -88,16 +77,6 @@ export default defineNuxtConfig({
         binding: 'BLOB',
       },
     },
-    mail: {
-      smtp: {
-        host: process.env.NUXT_SMTP_HOST,
-        port: Number(process.env.NUXT_SMTP_PORT),
-        auth: {
-          user: process.env.NUXT_SMTP_USER,
-          pass: process.env.NUXT_SMTP_PASS,
-        },
-      },
-    },
   },
 
   a11y: {
@@ -137,14 +116,6 @@ export default defineNuxtConfig({
     dirs: ['~/lib'],
   },
 
-  mail: {
-    message: [
-      { name: 'default', from: process.env.NUXT_SMTP_FROM || 'Nuxt Template <noreply@localhost>', bcc: 'contact@thecodeorigin.com' },
-      { name: 'contact', to: 'contact@thecodeorigin.com' },
-      { name: 'support', to: 'support@thecodeorigin.com' },
-    ],
-  },
-
   modules: [
     '@nuxt/a11y',
     '@nuxt/eslint',
@@ -161,7 +132,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'magic-regexp',
     'nuxt-security',
-    'nuxt-mail',
+    'nuxt-resend',
   ],
 
   nitro: {
@@ -203,6 +174,10 @@ export default defineNuxtConfig({
     },
   },
 
+  resend: {
+    apiKey: process.env.NUXT_SMTP_PASS,
+  },
+
   runtimeConfig: {
     authSecret: '',
 
@@ -213,6 +188,12 @@ export default defineNuxtConfig({
 
     githubClientId: '',
     githubClientSecret: '',
+
+    smtpHost: 'localhost',
+    smtpPort: 1025,
+    smtpUser: '',
+    smtpPass: '',
+    smtpFrom: 'Nuxt Template <noreply@localhost>',
 
     sepayTransactionPrefix: '',
     sepayBankNumber: '',

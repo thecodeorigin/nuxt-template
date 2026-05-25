@@ -1,5 +1,3 @@
-import { sendMail } from '~~/server/utils/mail'
-
 export interface EmailableUser {
   id: string
   primary_email: string
@@ -23,6 +21,26 @@ export async function sendUserEmail(
 ): Promise<UserEmailResult> {
   if (!isEmailEnabled(user.notification_prefs))
     return { sent: false, reason: 'opted_out' }
-  await sendMail({ to: user.primary_email, subject: message.subject, html: message.html, text: message.text })
+
+  const runtimeConfig = useRuntimeConfig()
+
+  const { emails } = useResend()
+
+  if (import.meta.dev) {
+    console.log('--- MOCK EMAIL SENT ---')
+    console.log(`To: ${user.primary_email}`)
+    console.log(`Subject: ${message.subject}`)
+    console.log(`Body: \n${message.html}`)
+    console.log('-----------------------')
+  } else {
+    await emails.send({
+      from: runtimeConfig.smtpFrom,
+      to: user.primary_email,
+      subject: message.subject,
+      html: message.html,
+      text: message.text,
+    })
+  }
+
   return { sent: true }
 }
