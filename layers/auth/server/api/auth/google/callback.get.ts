@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
       code,
       client_id: runtimeConfig.googleClientId,
       client_secret: runtimeConfig.googleClientSecret,
-      redirect_uri: `${getBaseUrl()}/api/auth/google/callback`,
+      redirect_uri: `${getBaseUrl(event)}/api/auth/google/callback`,
       grant_type: 'authorization_code',
     }).toString(),
     headers: {

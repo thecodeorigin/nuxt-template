@@ -2,9 +2,19 @@
   // NuxtHub auto-generates bindings (D1, KV, R2) from nuxt.config.ts hub block
   // at build time, so no binding declarations are needed here.
   //
-  // This file exists solely for the observability block, which wrangler
-  // does not accept via nuxt.config.ts. Requires workers_observability (edit)
-  // permission in your CLOUDFLARE_API_TOKEN.
+  // Runtime configuration split:
+  // - "vars" (this file)   — non-sensitive, code-reviewable, redeployed on every push.
+  //                          Becomes the source of truth; dashboard edits to these
+  //                          keys are wiped by `wrangler deploy`.
+  // - Worker secrets       — sensitive (NUXT_AUTH_SECRET, OAuth client secrets,
+  //                          SMTP creds, etc.). Set via `wrangler secret put` once;
+  //                          preserved across deploys. List with `wrangler secret list`.
+  //
+  // The values declared in "vars" below are the **production** values. Preview
+  // deploys (.github/workflows/preview.yml) inherit them and then override the
+  // per-branch ones (NUXT_PUBLIC_BASE_DOMAIN, NUXT_DEMO_MODE, etc.) via
+  // `wrangler secret bulk` post-deploy — see that workflow for the preview
+  // inventory.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "nuxt-template",
   "compatibility_date": "2025-02-11",
@@ -19,19 +29,11 @@
       "persist": true
     }
   },
-  // Preview environment — separate D1/KV/R2 bindings provisioned via
-  // `npx wrangler d1 create`, `kv namespace create`, `r2 bucket create`.
-  // Replace placeholder IDs with real resource IDs before first deploy.
-  "env": {
-    "preview": {
-      "observability": {
-        "logs": {
-          "enabled": true,
-          "head_sampling_rate": 1,
-          "invocation_logs": true,
-          "persist": true
-        }
-      }
-    }
+  // OAuth redirect URLs are derived from the live request
+  // (server/utils/url.ts getBaseUrl(event)), so NUXT_PUBLIC_BASE_DOMAIN is
+  // only used by non-request contexts (e.g. cron-generated email links).
+  "vars": {
+    "NUXT_PUBLIC_BASE_DOMAIN": "template.thecodeorigin.com",
+    "NUXT_PUBLIC_SSL_ENABLED": "true"
   }
 }

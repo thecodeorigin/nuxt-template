@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   const redirectUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
   const params = new URLSearchParams({
     client_id: runtimeConfig.googleClientId,
-    redirect_uri: `${getBaseUrl()}/api/auth/google/callback`,
+    redirect_uri: `${getBaseUrl(event)}/api/auth/google/callback`,
     response_type: 'code',
     scope: 'email profile openid',
     state,
