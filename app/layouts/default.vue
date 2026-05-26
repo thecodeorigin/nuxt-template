@@ -30,10 +30,14 @@ const abilities = computed(() => authStore.currentUser?.abilities ?? [])
 const links = computed<NavigationMenuItem[][]>(() => {
   const main: NavigationMenuItem[] = [
     { label: 'Home', icon: 'i-lucide-house', to: '/dashboard', onSelect: closeMenu },
-    { label: 'Todos', icon: 'i-lucide-list-todo', to: '/todos', onSelect: closeMenu },
+    { label: 'Projects', icon: 'i-lucide-folder-kanban', to: '/projects', onSelect: closeMenu },
     { label: 'Referral', icon: 'i-lucide-gift', to: '/referral', onSelect: closeMenu },
     { label: 'My Requests', icon: 'i-lucide-inbox', to: '/support', onSelect: closeMenu },
   ]
+
+  if (satisfiesAbility(abilities.value, 'product:manage') || satisfiesAbility(abilities.value, 'product:write')) {
+    main.splice(2, 0, { label: 'Products', icon: 'i-lucide-package', to: '/products', onSelect: closeMenu })
+  }
 
   const sub: NavigationMenuItem[] = []
 
@@ -44,12 +48,15 @@ const links = computed<NavigationMenuItem[][]>(() => {
     type: 'trigger' as const,
     children: [
       { label: 'General', to: '/settings', exact: true, onSelect: closeMenu },
-      { label: 'Notifications', to: '/settings/notifications', onSelect: closeMenu },
-      { label: 'Security', to: '/settings/security', onSelect: closeMenu },
       ...(satisfiesAbility(abilities.value, 'billing:read')
-        ? [{ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing', onSelect: closeMenu }]
+        ? [
+            { label: 'Billing', to: '/settings/billing', onSelect: closeMenu },
+            { label: 'Invoice', to: '/organization/invoice', onSelect: closeMenu },
+          ]
         : []
       ),
+      { label: 'Notifications', to: '/settings/notifications', onSelect: closeMenu },
+      { label: 'Security', to: '/settings/security', onSelect: closeMenu },
     ],
   })
 

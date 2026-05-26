@@ -5,9 +5,8 @@ import { createError, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { isMember } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
+import { DEFAULT_MEMBER_ABILITIES } from '#layers/auth/shared/permissions'
 import { AddMemberSchema } from '#layers/auth/shared/schemas/member'
-
-const DEFAULT_MEMBER_ABILITIES = ['todo:read', 'todo:write', 'todo:delete:self']
 
 export default defineAuthorizedHandler(['user:manage'], async (event, { session }) => {
   const orgId = session.activeOrganizationId
@@ -29,7 +28,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
 
   await db
     .insert(organizationMemberTable)
-    .values({ user_id: user.id, organization_id: orgId, abilities: DEFAULT_MEMBER_ABILITIES })
+    .values({ user_id: user.id, organization_id: orgId, abilities: [...DEFAULT_MEMBER_ABILITIES] })
 
   await refreshUserSessions(user.id)
 
@@ -39,7 +38,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
     username: user.username,
     primary_email: user.primary_email,
     avatar: user.avatar,
-    abilities: DEFAULT_MEMBER_ABILITIES,
+    abilities: [...DEFAULT_MEMBER_ABILITIES],
     is_suspended: user.is_suspended,
   }
 })

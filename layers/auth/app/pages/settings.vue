@@ -8,28 +8,35 @@ useHead({ title: 'Settings' })
 const authStore = useAuthStore()
 const abilities = computed(() => authStore.currentUser?.abilities ?? [])
 
-const links = computed(() => [[{
-  label: 'General',
-  icon: 'i-lucide-user',
-  to: '/settings',
-  exact: true,
-}, {
-  label: 'Notifications',
-  icon: 'i-lucide-bell',
-  to: '/settings/notifications',
-}, {
-  label: 'Security',
-  icon: 'i-lucide-shield',
-  to: '/settings/security',
-}, ...(satisfiesAbility(abilities.value, 'billing:read')
-  ? [{ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing' }]
-  : []
-)], [{
-  label: 'Documentation',
-  icon: 'i-lucide-book-open',
-  to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-  target: '_blank',
-}]] satisfies NavigationMenuItem[][])
+const links = computed(() => [[
+  {
+    label: 'General',
+    icon: 'i-lucide-user',
+    to: '/settings',
+    exact: true,
+  },
+  ...(satisfiesAbility(abilities.value, 'billing:read')
+    ? [{ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing' }]
+    : []
+  ),
+  {
+    label: 'Notifications',
+    icon: 'i-lucide-bell',
+    to: '/settings/notifications',
+  },
+  {
+    label: 'Security',
+    icon: 'i-lucide-shield',
+    to: '/settings/security',
+  },
+], [
+  {
+    label: 'Documentation',
+    icon: 'i-lucide-book-open',
+    to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
+    target: '_blank',
+  },
+]] satisfies NavigationMenuItem[][])
 </script>
 
 <template>

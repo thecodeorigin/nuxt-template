@@ -1,24 +1,36 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { satisfiesAbility } from '#layers/auth/shared/ability'
 import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 
 definePageMeta({ can: ['user:read'] })
 useHead({ title: 'Organization' })
 
-const links = [[{
-  label: 'General',
-  icon: 'i-lucide-building',
-  to: '/organization',
-  exact: true,
-}, {
-  label: 'Members',
-  icon: 'i-lucide-users',
-  to: '/organization/members',
-}, {
-  label: 'Roles',
-  icon: 'i-lucide-shield',
-  to: '/organization/roles',
-}]] satisfies NavigationMenuItem[][]
+const authStore = useAuthStore()
+const abilities = computed(() => authStore.currentUser?.abilities ?? [])
+
+const links = computed(() => [[
+  {
+    label: 'General',
+    icon: 'i-lucide-building',
+    to: '/organization',
+    exact: true,
+  },
+  {
+    label: 'Members',
+    icon: 'i-lucide-users',
+    to: '/organization/members',
+  },
+  {
+    label: 'Roles',
+    icon: 'i-lucide-shield',
+    to: '/organization/roles',
+  },
+  ...(satisfiesAbility(abilities.value, 'billing:read')
+    ? [{ label: 'Invoice', icon: 'i-lucide-file-text', to: '/organization/invoice' }]
+    : []
+  ),
+]] satisfies NavigationMenuItem[][])
 </script>
 
 <template>

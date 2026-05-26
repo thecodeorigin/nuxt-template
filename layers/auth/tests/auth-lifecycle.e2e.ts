@@ -48,7 +48,7 @@ test.describe('session lifecycle (API)', () => {
     const me = await (await request.get('/api/auth/me', { headers: { 'x-session-id': session_id } })).json()
     expect(me.primary_email).toBe(email)
     expect(me.activeOrganizationId).toBe(personal_org_id)
-    expect(me.abilities).toEqual(expect.arrayContaining(['user:manage', 'todo:manage', 'billing:manage', 'billing:read']))
+    expect(me.abilities).toEqual(expect.arrayContaining(['user:manage', 'project:manage', 'billing:manage', 'billing:read']))
   })
 
   test('request to a protected API without a valid session returns 401', async ({ request }) => {
@@ -71,10 +71,10 @@ test.describe('session lifecycle (API)', () => {
     expect(me.abilities).toContain('user:impersonate')
   })
 
-  test('demo user (member) has todo:read but not user:manage', async ({ request, baseURL }) => {
+  test('demo user (member) has project:read but not user:manage', async ({ request, baseURL }) => {
     const { session_id } = await demoLoginSessionId(baseURL!, 'user')
     const me = await (await request.get('/api/auth/me', { headers: { 'x-session-id': session_id } })).json()
-    expect(me.abilities).toContain('todo:read')
+    expect(me.abilities).toContain('project:read')
     expect(me.abilities).not.toContain('user:manage')
   })
 })

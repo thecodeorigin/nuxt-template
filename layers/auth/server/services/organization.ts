@@ -215,12 +215,12 @@ export async function getOrgInvitations(orgId: string) {
   return db.query.organizationInvitationTable.findMany({ where: eq(organizationInvitationTable.organization_id, orgId) })
 }
 
-export async function createInvitation(orgId: string, email: string, roleId: string | null, invitedBy: string) {
+export async function createInvitation(orgId: string, email: string, roleId: string | null, invitedBy: string, projectIds: string[] = []) {
   const token = crypto.randomUUID()
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   const [inv] = await db
     .insert(organizationInvitationTable)
-    .values({ organization_id: orgId, email, role_id: roleId, token, invited_by: invitedBy, expires_at: expiresAt })
+    .values({ organization_id: orgId, email, role_id: roleId, token, invited_by: invitedBy, expires_at: expiresAt, project_ids: projectIds })
     .returning()
   return inv!
 }

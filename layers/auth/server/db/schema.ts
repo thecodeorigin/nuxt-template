@@ -172,6 +172,7 @@ export const organizationInvitationTable = sqliteTable('organization_invitations
   role_id: text('role_id').references(() => roleTable.id, { onDelete: 'set null' }),
   token: text('token').notNull().unique(),
   invited_by: text('invited_by').references(() => userTable.id, { onDelete: 'set null' }),
+  project_ids: text('project_ids', { mode: 'json' }).$type<string[]>().default([]),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   expires_at: integer('expires_at', { mode: 'timestamp' }).notNull(),
 }, table => [

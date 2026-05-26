@@ -33,10 +33,10 @@ describe('ability key placement', () => {
   })
 
   it('mergeOrgAbilities unions system + active grants without duplicates', () => {
-    const merged = mergeOrgAbilities(['user:impersonate'], ['user:manage', 'todo:manage'], false)
+    const merged = mergeOrgAbilities(['user:impersonate'], ['user:manage', 'project:manage'], false)
     expect(merged).toContain('user:impersonate')
     expect(merged).toContain('user:manage')
-    expect(merged).toContain('todo:manage')
+    expect(merged).toContain('project:manage')
     expect(new Set(merged).size).toBe(merged.length)
   })
 })
@@ -47,7 +47,7 @@ describe('permission catalog', () => {
     const byKey = Object.fromEntries(catalog.map(p => [p.key, p]))
     expect(byKey['user:impersonate']!.org_kind).toBe('system')
     expect(byKey['user:manage']!.org_kind).toBe('tenant')
-    expect(byKey['todo:delete:self']!.scope).toBe('self')
+    expect(byKey['product:manage']!.org_kind).toBe('system')
   })
 })
 

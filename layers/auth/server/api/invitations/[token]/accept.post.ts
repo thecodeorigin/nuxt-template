@@ -1,5 +1,5 @@
 import { db } from '@nuxthub/db'
-import { organizationMemberTable, roleTable } from '@nuxthub/db/schema'
+import { organizationMemberTable, projectMemberTable, roleTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
@@ -53,6 +53,16 @@ export default defineAuthenticatedHandler(async (event, session) => {
       if (memberRole)
         await assignRole(member.id, memberRole.id)
     }
+  }
+
+  if (inv.project_ids && inv.project_ids.length > 0) {
+    await Promise.all(
+      inv.project_ids.map(projectId =>
+        db.insert(projectMemberTable)
+          .values({ project_id: projectId, user_id: session.id, role: 'member' })
+          .onConflictDoNothing(),
+      ),
+    )
   }
 
   await deleteInvitation(inv.id)

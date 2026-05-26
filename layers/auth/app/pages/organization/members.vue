@@ -23,8 +23,8 @@ provide(membersKey, {
   async removeMember(userId) {
     await orgApi.removeMember(userId)
   },
-  async createInvitation(email, roleId) {
-    const inv = await orgApi.createInvitation({ email, role_id: roleId })
+  async createInvitation(email, roleId, projectIds) {
+    const inv = await orgApi.createInvitation({ email, role_id: roleId, project_ids: projectIds?.length ? projectIds : undefined })
     invitations.value = [...invitations.value, inv]
     return inv
   },

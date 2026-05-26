@@ -1,6 +1,6 @@
 import { parseAbility, satisfiesAbility } from '#layers/auth/shared/ability'
 
-export const TENANT_SUBJECTS = ['user', 'todo', 'billing'] as const
+export const TENANT_SUBJECTS = ['user', 'project', 'billing'] as const
 export const TENANT_ACTIONS = ['read', 'write', 'delete', 'manage'] as const
 
 // Platform powers — grantable ONLY in the system org.
@@ -8,6 +8,9 @@ export const SYSTEM_ABILITY_KEYS = new Set<string>([
   'user:impersonate',
   'system:manage',
   'support:manage',
+  'product:write',
+  'product:delete',
+  'product:manage',
 ])
 
 // Resource powers — grantable in tenant orgs (subjects × actions).
@@ -17,15 +20,14 @@ export const TENANT_ABILITY_KEYS = new Set<string>(
 
 // Self-scoped defaults (own resources within an org). Seeded for visibility,
 // not toggled in the editor.
-export const SELF_ABILITY_KEYS = new Set<string>(['todo:delete:self'])
+export const SELF_ABILITY_KEYS = new Set<string>([])
 
 // --- defaults ----------------------------------------------------------
 // Owner of a personal org (admin of their own workspace).
-export const DEFAULT_PERSONAL_ORG_ABILITIES = ['user:manage', 'todo:manage', 'billing:manage', 'billing:read'] as const
+export const DEFAULT_PERSONAL_ORG_ABILITIES = ['user:manage', 'project:manage', 'billing:manage', 'billing:read'] as const
 
-// Granted to a user joining an org as a plain member (direct add or accepted
-// invitation): manage their own todos, no org administration.
-export const DEFAULT_MEMBER_ABILITIES = ['todo:read', 'todo:write', 'todo:delete:self', 'billing:read'] as const
+// Granted to a user joining an org as a plain member (direct add or accepted invitation).
+export const DEFAULT_MEMBER_ABILITIES = ['project:read', 'project:write', 'billing:read'] as const
 
 export interface PermissionDef {
   key: string

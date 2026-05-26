@@ -23,9 +23,9 @@ export const SYSTEM_GRANTS = {
 
 // Demo (tenant) org memberships.
 export const DEMO_ORG_GRANTS = {
-  admin: ['user:manage', 'todo:manage'],
-  member: ['user:read', 'todo:read', 'todo:write', 'todo:delete:self'],
-  guest: ['todo:read'],
+  admin: ['user:manage', 'project:manage', 'billing:manage', 'billing:read'],
+  member: ['user:read', 'project:read', 'project:write', 'billing:read'],
+  guest: ['project:read'],
 } as const
 
 export const SEED_USERS: SeedUserDef[] = [

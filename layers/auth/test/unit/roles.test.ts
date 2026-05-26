@@ -3,16 +3,16 @@ import { assertGrantable } from '#layers/auth/shared/permissions'
 
 describe('assertGrantable', () => {
   it('allows tenant abilities the actor holds', () => {
-    expect(assertGrantable(['todo:read', 'todo:write'], ['todo:read'])).toEqual([])
+    expect(assertGrantable(['project:read', 'project:write'], ['project:read'])).toEqual([])
   })
 
   it('returns empty array when requested list is empty', () => {
-    expect(assertGrantable(['todo:read'], [])).toEqual([])
+    expect(assertGrantable(['project:read'], [])).toEqual([])
   })
 
   it('rejects abilities the actor does not hold', () => {
-    const bad = assertGrantable(['todo:read'], ['todo:write'])
-    expect(bad).toContain('todo:write')
+    const bad = assertGrantable(['project:read'], ['project:write'])
+    expect(bad).toContain('project:write')
   })
 
   it('rejects system-only abilities like user:impersonate even if actor holds them', () => {
@@ -21,16 +21,16 @@ describe('assertGrantable', () => {
   })
 
   it('rejects completely unknown ability keys', () => {
-    const bad = assertGrantable(['todo:read'], ['nonexistent:action'])
+    const bad = assertGrantable(['project:read'], ['nonexistent:action'])
     expect(bad).toContain('nonexistent:action')
   })
 
   it('allows multiple tenant abilities all held by actor', () => {
-    expect(assertGrantable(['todo:read', 'todo:write', 'todo:delete'], ['todo:read', 'todo:write'])).toEqual([])
+    expect(assertGrantable(['project:read', 'project:write', 'project:delete'], ['project:read', 'project:write'])).toEqual([])
   })
 
   it('deduplicates returned bad keys', () => {
-    const bad = assertGrantable([], ['todo:write', 'todo:write'])
-    expect(bad.filter(k => k === 'todo:write').length).toBe(1)
+    const bad = assertGrantable([], ['project:write', 'project:write'])
+    expect(bad.filter(k => k === 'project:write').length).toBe(1)
   })
 })

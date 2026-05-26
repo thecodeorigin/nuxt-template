@@ -14,12 +14,6 @@ const canImpersonate = computed(
       </p>
     </template>
     <ul class="space-y-2 text-sm">
-      <li class="flex items-center gap-2">
-        <UIcon name="i-lucide-list-todo" class="size-4 text-muted" />
-        <NuxtLink to="/todos" class="hover:text-primary">
-          Manage todos
-        </NuxtLink>
-      </li>
       <li v-if="canImpersonate" class="flex items-center gap-2">
         <UIcon name="i-lucide-user-cog" class="size-4 text-muted" />
         <span class="text-muted">Use the dropdown at the top of the sidebar to impersonate any user.</span>

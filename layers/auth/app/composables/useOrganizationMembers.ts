@@ -7,7 +7,7 @@ export interface MembersContext {
   addMember: (email: string) => Promise<void>
   updateMemberAbilities: (userId: string, abilities: string[]) => Promise<void>
   removeMember: (userId: string) => Promise<void>
-  createInvitation: (email: string, roleId?: string) => Promise<OrgInvitation>
+  createInvitation: (email: string, roleId?: string, projectIds?: string[]) => Promise<OrgInvitation>
   revokeInvitation: (invId: string) => Promise<void>
 }
 

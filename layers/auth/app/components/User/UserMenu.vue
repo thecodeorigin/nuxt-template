@@ -67,11 +67,6 @@ const items = computed<DropdownMenuItem[][]>(() => {
       icon: 'i-lucide-user',
       to: '/settings',
     },
-    {
-      label: 'Billing',
-      icon: 'i-lucide-credit-card',
-      onSelect: () => { toast.add({ title: 'Billing is coming soon', color: 'neutral' }) },
-    },
   ])
 
   groups.push([

@@ -7,7 +7,7 @@ describe('org grant sets', () => {
   })
 
   it('demo-org admin gets full tenant control, others are scoped down', () => {
-    expect(DEMO_ORG_GRANTS.admin).toEqual(expect.arrayContaining(['user:manage', 'todo:manage']))
+    expect(DEMO_ORG_GRANTS.admin).toEqual(expect.arrayContaining(['user:manage', 'project:manage']))
     expect(DEMO_ORG_GRANTS.member).not.toContain('user:manage')
     expect(DEMO_ORG_GRANTS.guest).not.toContain('user:manage')
   })

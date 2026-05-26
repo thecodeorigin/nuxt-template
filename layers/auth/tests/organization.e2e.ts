@@ -131,11 +131,9 @@ test.describe('org API — guards and negatives', () => {
     })
     expect(res.ok()).toBe(true)
     const member = await res.json()
-    // B3: members/index.post.ts uses a route-local constant that omits billing:read
-    // compared to DEFAULT_MEMBER_ABILITIES in shared/permissions.ts.
-    expect(member.abilities).toContain('todo:read')
-    expect(member.abilities).toContain('todo:write')
-    expect(member.abilities).not.toContain('billing:read')
+    expect(member.abilities).toContain('project:read')
+    expect(member.abilities).toContain('project:write')
+    expect(member.abilities).toContain('billing:read')
   })
 
   test('ability change is live immediately without re-login', async ({ request, baseURL }) => {
@@ -144,16 +142,16 @@ test.describe('org API — guards and negatives', () => {
 
     await request.patch(`/api/organization/members/${userId}/abilities`, {
       headers: { 'x-session-id': adminSid },
-      data: { abilities: ['todo:read'] },
+      data: { abilities: ['project:read'] },
     })
     const demoted = await (await request.get('/api/auth/me', { headers: { 'x-session-id': userSid } })).json()
-    expect(demoted.abilities).toContain('todo:read')
-    expect(demoted.abilities).not.toContain('todo:write')
+    expect(demoted.abilities).toContain('project:read')
+    expect(demoted.abilities).not.toContain('project:write')
 
-    // Restore — :self abilities are auto-preserved by the handler
+    // Restore
     await request.patch(`/api/organization/members/${userId}/abilities`, {
       headers: { 'x-session-id': adminSid },
-      data: { abilities: ['user:read', 'todo:read', 'todo:write'] },
+      data: { abilities: ['user:read', 'project:read', 'project:write'] },
     })
   })
 })

@@ -80,9 +80,9 @@ parallel work untangled.
     into the project root unless it is genuinely cross-cutting (the dashboard
     shell, the loading indicator, the `cn` helper, etc.).
 12. **No auto-imports for user components.** `nuxt.config.ts` sets
-    `components: false` so `<TodoForm>`, `<UserMenu>`, etc. are NOT
+    `components: false` so `<ProductForm>`, `<UserMenu>`, etc. are NOT
     auto-registered. Import them explicitly in `<script setup>`:
-    `import TodoForm from '#layers/todo/app/components/Todo/TodoForm.vue'`.
+    `import ProductForm from '#layers/product/app/components/Product/ProductForm.vue'`.
     Nuxt UI's `<U*>` and the framework's `<NuxtPage>`/`<NuxtLink>` are
     still auto-imported (they're registered by their respective modules).
     Composables (`app/composables/`, layer composables) and utils
@@ -92,17 +92,16 @@ parallel work untangled.
 14. **Naming conventions.**
     - **Components**: PascalCase Vue files in namespaced folders. Each filename
       starts with the folder name so the import name is unambiguous and
-      `grep`-friendly: `layers/todo/app/components/Todo/TodoList.vue` →
-      `import TodoList from '...'`,
+      `grep`-friendly: `layers/product/app/components/Product/ProductList.vue` →
+      `import ProductList from '...'`,
       `layers/auth/app/components/Auth/AuthLoginCard.vue` →
       `import AuthLoginCard from '...'`. Existing namespaces: `Auth/`,
-      `Dashboard/`, `Impersonate/`, `Todo/`, `User/`. Add a new namespace for
-      a new feature; don't drop flat files into `components/`.
+      `Dashboard/`, `Impersonate/`, `Product/`, `Project/`, `User/`. Add a
+      new namespace for a new feature; don't drop flat files into `components/`.
     - **Functions / store actions**: verb + noun, no abbreviations.
-      `fetchTodos`, `fetchTodo`, `createTodo`, `updateTodo`,
-      `updateTodoStatus`, `deleteTodo`, `startImpersonation`,
-      `stopImpersonation`. Pinia stores expose actions named this way (no
-      `fetchAll` / `create` / `update` / `remove`).
+      `fetchProducts`, `fetchProduct`, `createProduct`, `updateProduct`,
+      `deleteProduct`, `startImpersonation`, `stopImpersonation`. Pinia stores
+      expose actions named this way (no `fetchAll` / `create` / `update` / `remove`).
 
 ## Project layout
 
@@ -133,8 +132,8 @@ layers/
   auth/               Sessions, OAuth, CASL, impersonation, seed users.
                       Self-contained app/ + server/ + shared/ + tests.
                       See layers/auth/CLAUDE.md.
-  todo/               Reference vertical slice (CRUD via provide/inject).
-                      See layers/todo/CLAUDE.md.
+  product/            Staff-managed product catalog (system abilities).
+  project/            User-managed projects with membership + product links.
 test/
   unit/               Cross-cutting unit tests
 .github/workflows/    GitHub Actions — see "Deployment pipeline" below
@@ -160,7 +159,8 @@ import. Explicit cross-layer imports use `#layers/<name>/...`.
 | Layer | Owns | Top-level guide |
 |-------|------|-----------------|
 | `auth` | Sessions, OAuth, CASL authorization, impersonation, seed users | `layers/auth/CLAUDE.md` |
-| `todo` | Reference CRUD slice (page-scoped state via `provide`/`inject`) | `layers/todo/CLAUDE.md` |
+| `product` | Staff-managed product catalog; system abilities (`product:write`, `product:delete`, `product:manage`) | `layers/product/CLAUDE.md` |
+| `project` | User-managed projects; tenant abilities (`project:*`); project-product links; project membership | `layers/project/CLAUDE.md` |
 
 When you add a new feature:
 1. Create `layers/<name>/` mirroring the existing two.
@@ -386,11 +386,11 @@ If a check fails:
 | `pnpm db:migrate` | Apply pending migrations to the local D1 DB (`nuxt db migrate`) |
 | `pnpm auth:generate` | Generate auth signing keys |
 
-## Reference vertical slice: `layers/todo`
+## Reference vertical slice: `layers/product`
 
-The todo layer is the canonical CRUD example. When adding a new feature,
-**copy that layer's structure** — namespaced components, verb-noun functions
-in `app/api/use<Name>Api.ts`, schemas in `<layer>/shared/schemas/`,
-page-level state via `provide`/`inject`, three test files. Promote to a Pinia
-store **only** if the data is genuinely global (the auth layer is the
-template for that case). Do not invent a new layout.
+The product layer is the canonical CRUD example for staff-managed resources.
+When adding a new feature, **copy its structure** — namespaced components,
+verb-noun functions in `app/api/use<Name>Api.ts`, schemas in
+`<layer>/shared/schemas/`, page-level state via `provide`/`inject`, three test
+files. Promote to a Pinia store **only** if the data is genuinely global (the
+auth layer is the template for that case). Do not invent a new layout.

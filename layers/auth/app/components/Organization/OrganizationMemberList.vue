@@ -2,12 +2,14 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
+import type { Project } from '#layers/project/server/db/schema'
 import { joinURL } from 'ufo'
 import { h, resolveComponent } from 'vue'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import OrganizationMemberPermissionsModal from '#layers/auth/app/components/Organization/OrganizationMemberPermissionsModal.vue'
 import { useOrganizationMembers } from '#layers/auth/app/composables/useOrganizationMembers'
 import { satisfiesAbility } from '#layers/auth/shared/ability'
+import { useProjectApi } from '#layers/project/app/api/useProjectApi'
 import { whenError } from '~/utils/error'
 
 const authStore = useAuthStore()
@@ -30,13 +32,19 @@ useInfiniteScroll(scrollEl, loadMore, { distance: 120, canLoadMore: () => hasMor
 // --- Invite by link ---
 const inviteEmail = ref('')
 const inviteRoleId = ref('')
+const inviteProjectIds = ref<string[]>([])
 const inviting = ref(false)
 const generatedLink = ref('')
 
 const { data: orgRoles, error: rolesError } = useAsyncData('org-roles', () => orgApi.fetchRoles(), { default: () => [] })
 whenError(rolesError)
 
+const projectApi = useProjectApi()
+const { data: availableProjects, error: projectsError } = useAsyncData<Project[]>('org-invite-projects', () => projectApi.fetchProjects(), { default: (): Project[] => [] })
+whenError(projectsError)
+
 const roleOptions = computed(() => orgRoles.value.map(r => ({ label: r.name, value: r.id })))
+const projectOptions = computed(() => availableProjects.value.map(p => ({ label: p.name, value: p.id })))
 
 const requestURL = useRequestURL()
 function joinLink(token: string) {
@@ -49,10 +57,11 @@ async function generateInvitation() {
   inviting.value = true
   generatedLink.value = ''
   try {
-    const inv = await createInvitation(inviteEmail.value.trim(), inviteRoleId.value || undefined)
+    const inv = await createInvitation(inviteEmail.value.trim(), inviteRoleId.value || undefined, inviteProjectIds.value.length ? inviteProjectIds.value : undefined)
     generatedLink.value = joinLink(inv.token)
     inviteEmail.value = ''
     inviteRoleId.value = ''
+    inviteProjectIds.value = []
   }
   catch (err: unknown) {
     const error = err as { data?: { statusMessage?: string } }
@@ -213,6 +222,9 @@ watch(showEditModal, async (open) => {
           </UFormField>
           <UFormField label="Role">
             <USelect v-model="inviteRoleId" :items="roleOptions" value-key="value" label-key="label" placeholder="Default" class="min-w-40" />
+          </UFormField>
+          <UFormField v-if="projectOptions.length > 0" label="Projects">
+            <USelectMenu v-model="inviteProjectIds" :items="projectOptions" value-key="value" label-key="label" multiple placeholder="None" class="min-w-48" />
           </UFormField>
           <UButton
             label="Generate invite link"
