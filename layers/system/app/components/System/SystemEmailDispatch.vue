@@ -24,8 +24,9 @@ const filter = ref<DispatchFilter>({
   emails: [],
 })
 const emailsText = ref('')
-watch(emailsText, (v) => {
-  filter.value.emails = v.split(EMAIL_SPLIT_RE).map(s => s.trim().toLowerCase()).filter(Boolean)
+syncRef(emailsText, toRef(filter.value, 'emails'), {
+  direction: 'ltr',
+  transform: { ltr: v => v.split(EMAIL_SPLIT_RE).map(s => s.trim().toLowerCase()).filter(Boolean) },
 })
 
 const subject = ref('')

@@ -8,9 +8,12 @@ const DEFAULTS: NotificationPrefs = { email: true, product_updates: true, weekly
 const state = ref<NotificationPrefs>({ ...DEFAULTS })
 const confirmDisableOpen = ref(false)
 
-const { data, error } = useAsyncData('user-notification-prefs', () => authStore.fetchUserNotificationSettings(), { default: () => DEFAULTS })
+const { data, error } = useAsyncData('user-notification-prefs', () => authStore.fetchUserNotificationSettings(), { default: () => ({ ...DEFAULTS }) })
 
-syncRef(data, state)
+watch(data, (v) => {
+  if (v)
+    state.value = { ...v }
+}, { immediate: true })
 
 whenError(error)
 
@@ -31,7 +34,6 @@ async function persist() {
 }
 
 function onEmailToggle(value: boolean) {
-  // v-model has already mutated state.email. Hold an OFF behind a confirm.
   if (!value) {
     confirmDisableOpen.value = true
     return

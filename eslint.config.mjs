@@ -56,6 +56,7 @@ export default withNuxt(
   },
   {
     rules: {
+      'e18e/prefer-static-regex': 'off',
       'ts/no-explicit-any': 'off',
       'style/eol-last': 'off',
       'ts/prefer-literal-enum-member': 'off',

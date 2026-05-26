@@ -11,8 +11,9 @@ whenError(orgError)
 const canManage = computed(() => satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:manage'))
 
 const name = ref(org.value?.name ?? '')
-watch(org, (v) => {
-  name.value = v?.name ?? ''
+syncRef(org, name, {
+  direction: 'ltr',
+  transform: { ltr: v => v?.name ?? '' },
 })
 const saving = ref(false)
 

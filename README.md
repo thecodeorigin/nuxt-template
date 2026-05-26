@@ -1,119 +1,168 @@
 # Nuxt Template — agent-driven workspace
 
-A Nuxt 4 + NuxtHub starter on a **full Cloudflare stack** (D1 SQLite · KV · R2 ·
-Workers) wired for **GitHub-Actions-driven deploys** and a **Claude Code agent
-setup** baked in. Open a PR → get a Cloudflare Workers preview. Merge to `main`
-→ production ships. D1 migrations apply automatically during each build.
+A Nuxt 4 + NuxtHub starter on a **full Cloudflare stack** (D1 SQLite · KV · R2
+· Workers) with **GitHub Actions deploys** and a **Claude Code agent setup**
+baked in. PR → Cloudflare Workers preview. Merge to `main` → production ships.
+D1 migrations apply during each build.
 
-If you want the deep version (conventions, layer ownership, hard rules), read
-[`CLAUDE.md`](./CLAUDE.md).
+Everything below is driven by the **`packages/cli` harness** — a non-interactive
+CLI exposed as `pnpm cli` that handles env, secrets, local dev, and one-shot
+Cloudflare/GitHub provisioning. No manual `wrangler` ceremony required.
 
----
-
-## What you get
-
-| | |
-|---|---|
-| **Stack** | Nuxt 4 layers · Vue 3 · Nuxt UI v4 · NuxtHub (D1 SQLite + KV + R2 + cache) · Drizzle · Pinia · Vitest + Playwright · pnpm |
-| **CI** | `pnpm lint` + `pnpm typecheck` + `pnpm test` on every PR |
-| **Preview** | Cloudflare Workers preview deploy (`CLOUDFLARE_ENV=preview`) + sticky PR comment; D1 migrations applied at build |
-| **Production** | Push to `main` → build (migrate D1) → `wrangler deploy` |
-| **Agents** | `.claude/` ships with skills, agent definitions, and a `/team-feature` workflow that spins up `fullstack-dev` + `qa-visual` + `ux-researcher` teammates |
+> Deep version (conventions, layer ownership, hard rules):
+> [`CLAUDE.md`](./CLAUDE.md). CLI reference: [`packages/cli/README.md`](./packages/cli/README.md).
 
 ---
 
-## Setup (one-time, per fork)
-
-You need a **GitHub** account and a **Cloudflare** account. The whole thing
-takes ~10 minutes.
-
-### 1. Cloudflare — create the D1 / KV / R2 resources
+## Quickstart (local, ~2 minutes)
 
 ```bash
-npx wrangler login
-npx wrangler d1 create nuxt-template-prod            # → database_id
-npx wrangler kv namespace create KV                   # → kv namespace id
-npx wrangler kv namespace create CACHE                # → cache namespace id
-npx wrangler r2 bucket create nuxt-template-prod      # → bucket name
+pnpm install
+pnpm cli dev setup       # creates .env from .env.example + generates auth secrets
+pnpm cli dev up          # nuxt :3002 + maildev (smtp :1025, web :1080)
 ```
 
-Paste the returned ids into the `$production.hub` block of
-[`nuxt.config.ts`](./nuxt.config.ts), replacing the `<…>` placeholders. For a
-separate preview environment, create a second set and wire them under the
-preview env. NuxtHub generates the wrangler bindings from this block at build
-time; `wrangler.jsonc` only carries the observability config.
+Open <http://localhost:3002/auth/login> and click **Sign in as Admin Agent**
+or **Sign in as User Agent** — the demo-login route auto-creates the user
+with the right ability preset. No seeding step required for the demo flow.
 
-### 2. GitHub — add the Cloudflare secrets and variables
+`pnpm cli dev setup` is **idempotent**: rerun it any time; it updates the
+three auth secrets in place rather than appending duplicates.
 
-Go to `Settings → Secrets and variables → Actions`.
+NuxtHub emulates D1, KV, and R2 locally under `.data/` — no containers, no
+connection strings. `pnpm dev` (alias for `pnpm cli dev up`) applies pending
+D1 migrations on boot.
 
-**Repository secret:**
+---
 
-| Name | How to get it |
-|---|---|
-| `CLOUDFLARE_API_TOKEN` | [Cloudflare dashboard → My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens). Needs Workers Scripts + D1 + Workers KV + R2 edit (and `workers_observability` edit if you keep logging on). |
+## Environment variables
 
-**Repository variable:**
+`pnpm cli dev setup` writes the three required auth secrets. The rest live in
+[`.env.example`](./.env.example) — copy what you need into `.env` and fill in
+the values.
 
-| Name | Value |
-|---|---|
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → account id. |
+| Var | Set by | Purpose |
+|---|---|---|
+| `NUXT_AUTH_SECRET` | `cli dev setup` | Session / CSRF encryption |
+| `NUXT_TASK_SECRET` | `cli dev setup` | Bearer token for Nitro tasks |
+| `NUXT_WEBHOOK_SIGNING_SECRET` | `cli dev setup` | HMAC for inbound webhooks |
+| `NUXT_PUBLIC_BASE_DOMAIN` | manual | Defaults to `localhost:3002` |
+| `NUXT_DEMO_MODE` | manual | `true` enables the demo-login backdoor + relaxed CSP |
+| `NUXT_PUBLIC_DEMO_MODE` | manual | `true` exposes the demo block on the login page |
+| `NUXT_SMTP_*` | manual | Local dev defaults to MailDev (`localhost:1025`) |
+| `NUXT_GOOGLE_CLIENT_ID` / `NUXT_GOOGLE_CLIENT_SECRET` | manual | Google OAuth (optional) |
+| `NUXT_GITHUB_CLIENT_ID` / `NUXT_GITHUB_CLIENT_SECRET` | manual | GitHub OAuth (optional) |
+| `NUXT_SEPAY_*` | manual | SePay bank-transfer payments (optional) |
+| `CLOUDFLARE_API_TOKEN` | manual | Required for `cli deploy setup` |
+| `CLOUDFLARE_ACCOUNT_ID` | manual | Required for `cli deploy setup` |
 
-### 3. Set the auth secrets (Cloudflare Worker env)
-
-Generate three random 64-char hex secrets and add them to your Worker's
-environment variables (`Workers & Pages → your worker → Settings → Variables`),
-for both production and preview:
+Check what you have at any time:
 
 ```bash
-node -p "require('crypto').randomBytes(32).toString('hex')"
+pnpm cli doctor          # human-readable table of every env/tool check
+pnpm cli doctor --json   # machine-readable; exit 1 if any check fails
 ```
 
-| Worker env var | Value |
-|---|---|
-| `NUXT_AUTH_SECRET` | random hex (used to encrypt sessions / CSRF) |
-| `NUXT_TASK_SECRET` | random hex (bearer token for Nitro tasks) |
-| `NUXT_WEBHOOK_SIGNING_SECRET` | random hex (HMAC for inbound webhooks) |
-| `NUXT_DEMO_MODE` | `true` if you want the demo-login backdoor + relaxed CSP |
-| `NUXT_PUBLIC_DEMO_MODE` | `true` to expose the demo block on the login page |
+---
 
-Add OAuth / SMTP / SePay credentials too if you use those features —
-[`.env.example`](./.env.example) lists every env var the app reads.
+## Local dev workflow
 
-> **Why not auto-generate?** The workflow could mint these on every PR,
-> but rotating session secrets per deploy invalidates every existing
-> session and breaks anything signed by a previous deploy. One static
-> set per environment is the right tradeoff.
+```bash
+pnpm cli dev up                                # nuxt + maildev together (Ctrl-C kills both)
+pnpm cli dev up --port 3000 --smtp 2025 --web 8080   # override ports
+
+pnpm cli dev seed                              # POST /api/auth/dev-seed (creates demo users)
+pnpm cli dev provision --email you@example.com # create a user + session
+pnpm cli dev login --email you@example.com     # issue a session for an existing user
+pnpm cli dev cleanup --emails you@example.com  # delete users + sessions
+```
+
+The `seed`/`provision`/`login`/`cleanup` commands require the dev server to
+be running — they POST to backdoor routes that are only mounted when
+`NUXT_DEMO_MODE=true` (set automatically by `cli dev setup`).
+
+### Database
+
+```bash
+pnpm cli db generate                                   # migration from schema diff
+pnpm cli db migrate                                    # apply to local .data/
+pnpm cli db migrate --remote                           # apply to remote D1
+pnpm cli db sql "SELECT count(*) FROM users"
+pnpm cli db reset                                      # wipe .data, re-migrate
+```
+
+### Verify before pushing
+
+```bash
+pnpm cli verify          # lint → typecheck → test; mirrors CI exactly
+pnpm cli verify --json   # per-step pass/fail
+```
+
+---
+
+## Deploy (one-time setup, ~5 minutes)
+
+You need a **GitHub** account and a **Cloudflare** account.
+
+### 1. Cloudflare API token + account id
+
+Create a token at
+<https://dash.cloudflare.com/profile/api-tokens> with **Workers Scripts +
+D1 + Workers KV + R2 edit** (and `workers_observability` edit if you keep
+logging on). Grab the account id from **Workers & Pages → account id**.
+
+Add both to your shell (or `.env`):
+
+```bash
+export CLOUDFLARE_API_TOKEN=...
+export CLOUDFLARE_ACCOUNT_ID=...
+```
+
+### 2. GitHub CLI authenticated
+
+```bash
+gh auth login        # only needed once
+```
+
+### 3. One-shot provisioning
+
+```bash
+pnpm cli deploy setup --env all --dry-run    # preview the plan, mutate nothing
+pnpm cli deploy setup --env all              # do it
+```
+
+That single command:
+
+1. Verifies your Cloudflare token and GitHub auth.
+2. Resolves-or-creates the D1 database, KV namespaces, and R2 bucket (prod +
+   preview).
+3. Writes the resulting IDs to GitHub Actions **variables** (consumed at build).
+4. Sets `CLOUDFLARE_API_TOKEN` and `PREVIEW_NUXT_AUTH_SECRET` as GitHub
+   **secrets**.
+5. Bulk-pushes every `NUXT_*` / `CRON_SECRET` from your `.env` to the
+   production Worker as runtime secrets.
+
+> Want to manage Worker secrets via the Cloudflare dashboard instead? Pass
+> `--skip-worker-secrets`.
 
 ### 4. Open a PR
 
 Push a branch, open a PR → the **Preview** workflow runs:
+
 - Builds with `NITRO_PRESET=cloudflare-module` and `CLOUDFLARE_ENV=preview`
-  (D1 migrations apply during the build)
-- Deploys to Cloudflare Workers (`wrangler deploy --env preview`)
-- Posts a sticky PR comment
+  (D1 migrations apply during the build).
+- Deploys to Cloudflare Workers (`wrangler deploy --env preview`).
+- Posts a sticky PR comment with the preview URL.
 
 Merging to `main` → the **Production** workflow builds (migrating D1) and runs
 `wrangler deploy`.
 
----
-
-## Local development (optional)
+### Observe deploys
 
 ```bash
-pnpm install
-cp .env.example .env
-pnpm auth:generate           # writes NUXT_AUTH_SECRET et al. into .env
-pnpm dev                     # nuxt dev --port 3002
+pnpm cli deploy status   # latest CI runs + Worker deployments
+pnpm cli deploy logs     # tail the production Worker (streams until Ctrl-C)
 ```
-
-NuxtHub emulates D1, KV, and R2 locally under `.data` — no containers or
-connection strings required, and `pnpm dev` applies pending D1 migrations on
-boot. (Optional: run a local SMTP catch-all like Mailpit if you exercise email.)
-
-Visit `http://localhost:3002/auth/login` and click **Sign in as Admin Agent**
-or **Sign in as User Agent** — the demo-login route auto-creates the user
-with the appropriate ability preset, no separate seeding required.
 
 ---
 
@@ -122,17 +171,16 @@ with the appropriate ability preset, no separate seeding required.
 For non-trivial features, run:
 
 ```
-/team-feature <feature description>
+/team <feature description>
 ```
 
 That spawns parallel `fullstack-dev` + `qa-visual` + `ux-researcher`
 teammates per the `.claude/agents/` setup. See
-[`.claude/agents/README.md`](./.claude/agents/README.md) for the
-coordination rules and the layer-ownership invariant that keeps parallel
-work untangled.
+[`.claude/agents/README.md`](./.claude/agents/README.md) for the coordination
+rules and the layer-ownership invariant that keeps parallel work untangled.
 
 For solo work, the project-wide skills (`nuxt-ui`, `vue`, `pinia`, etc.)
-live under `.claude/skills/` and load automatically when relevant.
+under `.claude/skills/` load automatically when relevant.
 
 Full conventions — TDD rules, component naming, layer structure, the auth
 ability model, the deploy-pipeline tradeoffs — are in
@@ -140,15 +188,32 @@ ability model, the deploy-pipeline tradeoffs — are in
 
 ---
 
-## Useful scripts
+## Command reference (cheat sheet)
+
+| Command | What it does |
+|---|---|
+| `pnpm cli doctor` | Diagnose tools / Cloudflare / GitHub / OAuth / auth secrets |
+| `pnpm cli dev setup` | Create `.env` + generate three auth secrets (idempotent) |
+| `pnpm cli dev up` | Run `nuxt dev` + `maildev` together (Ctrl-C kills both) |
+| `pnpm cli dev seed` | Seed local DB via `/api/auth/dev-seed` |
+| `pnpm cli dev provision --email …` | Create a user + session |
+| `pnpm cli dev login --email …` | Issue a session for an existing user |
+| `pnpm cli dev cleanup --emails …` | Delete users + sessions |
+| `pnpm cli db generate` | Generate a D1/SQLite migration from schema diff |
+| `pnpm cli db migrate [--remote]` | Apply migrations locally (or to remote D1) |
+| `pnpm cli db sql "…"` | Ad-hoc SQL against the local D1 |
+| `pnpm cli db reset` | Wipe `.data/` and re-migrate |
+| `pnpm cli verify` | Local CI gate (lint → typecheck → test) |
+| `pnpm cli deploy setup --env all` | Provision CF resources + sync GH config + push Worker secrets |
+| `pnpm cli deploy status` | Latest CI runs + Worker deployments |
+| `pnpm cli deploy logs` | Tail the production Worker |
+
+Stack-level scripts:
 
 | Script | What it does |
 |---|---|
-| `pnpm dev` | Start the dev server on port 3002 |
+| `pnpm dev` | Alias for `pnpm cli dev up` |
 | `pnpm test` | Vitest (unit + nuxt projects) |
 | `pnpm test:e2e` | Playwright |
 | `pnpm lint` | ESLint over the whole repo |
 | `pnpm typecheck` | `vue-tsc` via `nuxt typecheck` |
-| `pnpm db:generate` | Generate a D1/SQLite migration from schema diff (`nuxt db generate`) |
-| `pnpm db:migrate` | Apply pending migrations to the local D1 DB (`nuxt db migrate`) |
-| `pnpm auth:generate` | Generate the three local auth secrets |

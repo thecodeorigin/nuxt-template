@@ -1,4 +1,4 @@
-import type { ChildProcess } from 'node:child_process'
+import type { ChildProcess, SpawnOptions } from 'node:child_process'
 import { spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
@@ -14,15 +14,24 @@ export interface RunOptions {
 
 const isWindows = process.platform === 'win32'
 
-function resolveBin(cmd: string): string {
-  if (!isWindows || cmd === 'node')
-    return cmd
-  return `${cmd}.cmd`
+function quoteCmdArg(arg: string): string {
+  if (arg === '')
+    return '""'
+  if (!/[\s"&|<>^()%!]/.test(arg))
+    return arg
+  return `"${arg.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\+)$/, '$1$1')}"`
+}
+
+function spawnCompat(cmd: string, args: string[], opts: SpawnOptions): ChildProcess {
+  if (!isWindows || cmd === 'node' || cmd === process.execPath)
+    return spawn(cmd, args, opts)
+  const line = [cmd, ...args].map(quoteCmdArg).join(' ')
+  return spawn('cmd.exe', ['/d', '/s', '/c', line], { ...opts, windowsVerbatimArguments: true })
 }
 
 export const run: Runner = (cmd, args, opts = {}) => {
   return new Promise((resolve) => {
-    const child = spawn(resolveBin(cmd), args, {
+    const child = spawnCompat(cmd, args, {
       cwd: opts.cwd,
       env: { ...process.env, ...opts.env },
       shell: false,
