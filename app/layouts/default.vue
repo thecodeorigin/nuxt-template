@@ -32,6 +32,7 @@ const links = computed<NavigationMenuItem[][]>(() => {
     { label: 'Home', icon: 'i-lucide-house', to: '/dashboard', onSelect: closeMenu },
     { label: 'Todos', icon: 'i-lucide-list-todo', to: '/todos', onSelect: closeMenu },
     { label: 'Referral', icon: 'i-lucide-gift', to: '/referral', onSelect: closeMenu },
+    { label: 'My Requests', icon: 'i-lucide-inbox', to: '/support', onSelect: closeMenu },
   ]
 
   const sub: NavigationMenuItem[] = []
@@ -68,12 +69,6 @@ const links = computed<NavigationMenuItem[][]>(() => {
     })
   } else {
     sub.push(
-      {
-        label: 'My Requests',
-        icon: 'i-lucide-inbox',
-        to: '/support',
-        onSelect: closeMenu,
-      },
       {
         label: 'Feedback',
         icon: 'i-lucide-message-circle',
