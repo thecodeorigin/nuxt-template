@@ -1,5 +1,9 @@
 import type { H3Event } from 'h3'
+import { db } from '@nuxthub/db'
+import { userTable } from '@nuxthub/db/schema'
 import { kv } from '@nuxthub/kv'
+import { eq } from 'drizzle-orm'
+import { buildSession, SESSION_GENERATION, writeSession } from '#layers/auth/server/services/session'
 
 export interface ImpersonatorInfo {
   id: string
@@ -22,6 +26,8 @@ export interface AuthUser {
   abilities: string[] // effective union (system ∪ active org)
   activeOrganizationId: string | null
   impersonator?: ImpersonatorInfo | null
+  /** Incremented when ability defaults change; stale sessions are refreshed lazily. */
+  generation?: number
 }
 
 declare module 'h3' {
@@ -57,10 +63,24 @@ export function defineAuthenticatedHandler<T>(
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
-    const session: AuthUser = {
-      ...stored,
-      abilities: stored.abilities ?? [],
-      activeOrganizationId: stored.activeOrganizationId ?? null,
+    let session: AuthUser
+    if ((stored.generation ?? 0) < SESSION_GENERATION) {
+      const user = await db.query.userTable.findFirst({ where: eq(userTable.id, stored.id) })
+      if (!user)
+        throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+      session = await buildSession(user, {
+        provider: stored.provider,
+        activeOrganizationId: stored.activeOrganizationId,
+        impersonator: stored.impersonator,
+      })
+      await writeSession(sessionId, session)
+    }
+    else {
+      session = {
+        ...stored,
+        abilities: stored.abilities ?? [],
+        activeOrganizationId: stored.activeOrganizationId ?? null,
+      }
     }
 
     event.context.authUser = session
