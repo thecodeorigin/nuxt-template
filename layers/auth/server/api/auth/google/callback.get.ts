@@ -1,8 +1,17 @@
+import type { GoogleUser } from '@nuxthub/db/schema'
 import { ActivityAction, activityTable, identityTable, userTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
-import { OAuth2Client } from 'google-auth-library'
 import { createPersonalOrganization } from '#layers/auth/server/services/organization'
 import { persistSession } from '#layers/auth/server/services/session'
+
+interface GoogleTokenResponse {
+  access_token: string
+  expires_in: number
+  id_token: string
+  refresh_token?: string
+  scope: string
+  token_type: string
+}
 
 export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig()
@@ -21,40 +30,62 @@ export default defineEventHandler(async (event) => {
   // Clear state cookie
   deleteCookie(event, 'google_oauth_state')
 
-  const client = new OAuth2Client(
-    runtimeConfig.googleClientId as string,
-    runtimeConfig.googleClientSecret as string,
-    `${getBaseUrl()}/api/auth/google/callback`,
-  )
-
-  const { tokens } = await client.getToken(code)
-  client.setCredentials(tokens)
-
-  const ticket = await client.verifyIdToken({
-    idToken: tokens.id_token!,
-    audience: runtimeConfig.googleClientId as string,
+  // Exchange authorization code for tokens. Using $fetch instead of
+  // google-auth-library because the SDK pulls in gaxios/gtoken whose
+  // util.inherits() calls fail on Cloudflare Workers even with nodejs_compat.
+  const tokens = await $fetch<GoogleTokenResponse>('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    body: new URLSearchParams({
+      code,
+      client_id: runtimeConfig.googleClientId,
+      client_secret: runtimeConfig.googleClientSecret,
+      redirect_uri: `${getBaseUrl()}/api/auth/google/callback`,
+      grant_type: 'authorization_code',
+    }).toString(),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
   })
-  const payload = ticket.getPayload()
 
-  if (!payload) {
+  if (!tokens.id_token) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Invalid token',
+      statusMessage: 'Missing id_token in token response',
+    })
+  }
+
+  // Verify the id_token via Google's tokeninfo endpoint. Google validates
+  // signature + expiry + issuer for us and returns the decoded payload.
+  const payload = await $fetch<GoogleUser>('https://oauth2.googleapis.com/tokeninfo', {
+    query: { id_token: tokens.id_token },
+  })
+
+  if (payload.aud !== runtimeConfig.googleClientId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid token audience',
+    })
+  }
+
+  if (!payload.email || !payload.sub) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid token payload',
     })
   }
 
   const now = new Date()
 
   // 1. Check if user exists by email
-  let user = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, payload.email!) })
+  let user = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, payload.email) })
 
   if (!user) {
     // Create new user
     const [newUser] = await db.insert(userTable).values({
-      primary_email: payload.email!,
+      primary_email: payload.email,
       name: payload.name,
       avatar: payload.picture,
-      username: payload.email!.split('@')[0],
+      username: payload.email.split('@')[0],
       last_sign_in_at: now,
     }).returning()
     user = newUser!
@@ -100,7 +131,7 @@ export default defineEventHandler(async (event) => {
         provider_data: payload,
         updated_at: now,
       })
-      .where(eq(identityTable.id, existingIdentity[0]!.id))
+      .where(eq(identityTable.id, existingIdentity.id))
   }
 
   // Create session (the single writer resolves the active org + effective abilities)

@@ -120,7 +120,7 @@ export default defineEventHandler(async (event) => {
         provider_data: userProfile,
         updated_at: now,
       })
-      .where(eq(identityTable.id, existingIdentity[0]!.id))
+      .where(eq(identityTable.id, existingIdentity.id))
   }
 
   // Create session (the single writer resolves the active org + effective abilities)

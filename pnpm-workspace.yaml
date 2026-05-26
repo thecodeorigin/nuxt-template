@@ -64,7 +64,6 @@ catalog:
   eslint-plugin-perfectionist: ^5.9.0
   eslint-plugin-pnpm: ^1.6.0
   eslint-plugin-unicorn: ^64.0.0
-  google-auth-library: ^10.6.2
   h3: ^1.15.10
   happy-dom: ^20.8.9
   husky: ^9.1.7

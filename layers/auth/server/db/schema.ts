@@ -1,10 +1,31 @@
 import type { Endpoints } from '@octokit/types'
-import type { TokenPayload } from 'google-auth-library'
 import type { InferSelect } from '~~/server/db/types'
 import { relations } from 'drizzle-orm'
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
-export type GoogleUser = TokenPayload
+// Mirrors Google's ID token payload (oauth2.googleapis.com/tokeninfo response).
+// Inlined to avoid depending on google-auth-library, which fails on Cloudflare
+// Workers due to gaxios's util.inherits() usage.
+export interface GoogleUser {
+  iss: string
+  azp?: string
+  aud: string
+  sub: string
+  hd?: string
+  email: string
+  email_verified: boolean | string
+  at_hash?: string
+  iat: number
+  exp: number
+  nonce?: string
+  jti?: string
+  name?: string
+  picture?: string
+  given_name?: string
+  family_name?: string
+  locale?: string
+}
+
 export type GitHubUser = Endpoints['GET /user']['response']['data']
 
 export enum AuthProvider {
