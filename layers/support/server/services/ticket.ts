@@ -8,6 +8,7 @@ import {
 import { kv } from '@nuxthub/kv'
 import { and, asc, desc, eq, inArray, like, lt, or, sql } from 'drizzle-orm'
 import { createError } from 'h3'
+import { joinURL, withQuery } from 'ufo'
 import { getBaseUrl } from '~~/server/utils/url'
 import { sendUserEmail } from '#layers/auth/server/services/user-email'
 import { createNotification } from '#layers/notifications/server/services/notification'
@@ -24,7 +25,7 @@ const MSG_RATE_WINDOW = 60 * 60
 function reminderEmail(opts: { agentName: string, subject: string, ticketId: string }) {
   const agent = escapeEmailHtml(opts.agentName)
   const subj = escapeEmailHtml(opts.subject)
-  const url = `${getBaseUrl()}/support?ticket=${encodeURIComponent(opts.ticketId)}`
+  const url = withQuery(joinURL(getBaseUrl(), 'support'), { ticket: opts.ticketId })
   return {
     subject: `You have a new message from ${opts.agentName}`,
     html: `<!doctype html><html><body style="font-family:sans-serif;line-height:1.5;color:#111111">`

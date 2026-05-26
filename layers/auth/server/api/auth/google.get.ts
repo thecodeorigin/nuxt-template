@@ -1,3 +1,4 @@
+import { withQuery } from 'ufo'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 export default defineEventHandler(async (event) => {
@@ -12,8 +13,7 @@ export default defineEventHandler(async (event) => {
     path: '/api/auth',
   })
 
-  const redirectUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
-  const params = new URLSearchParams({
+  return sendRedirect(event, withQuery('https://accounts.google.com/o/oauth2/v2/auth', {
     client_id: runtimeConfig.googleClientId,
     redirect_uri: `${getBaseUrl(event)}/api/auth/google/callback`,
     response_type: 'code',
@@ -21,7 +21,5 @@ export default defineEventHandler(async (event) => {
     state,
     access_type: 'offline',
     prompt: 'consent',
-  })
-
-  return sendRedirect(event, `${redirectUrl}?${params.toString()}`)
+  }))
 })

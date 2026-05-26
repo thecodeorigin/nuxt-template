@@ -1,3 +1,4 @@
+import { withQuery } from 'ufo'
 import { safeEqual } from '#layers/billing/shared/utils/crypto'
 
 export { safeEqual }
@@ -5,7 +6,7 @@ export { safeEqual }
 export function buildSepayQrUrl(amount: number, orderCode: string): string {
   const c = useRuntimeConfig()
   const prefix = c.sepayTransactionPrefix || 'SP'
-  const params = new URLSearchParams({
+  return withQuery('https://qr.sepay.vn/img', {
     acc: c.sepayBankNumber,
     bank: c.sepayBankName,
     amount: String(amount),
@@ -13,7 +14,6 @@ export function buildSepayQrUrl(amount: number, orderCode: string): string {
     template: 'compact',
     download: 'false',
   })
-  return `https://qr.sepay.vn/img?${params.toString()}`
 }
 
 export function bankInfo() {

@@ -234,6 +234,9 @@ catalogs:
     typescript:
       specifier: 6.0.2
       version: 6.0.2
+    ufo:
+      specifier: ^1.6.3
+      version: 1.6.3
     unstorage:
       specifier: ^1.17.5
       version: 1.17.5
@@ -362,6 +365,9 @@ importers:
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
+      ufo:
+        specifier: 'catalog:'
+        version: 1.6.3
       unstorage:
         specifier: 'catalog:'
         version: 1.17.5(@upstash/redis@1.37.0)(db0@0.3.4(@libsql/client@0.17.3)(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260521.1)(@libsql/client-wasm@0.17.3)(@libsql/client@0.17.3)(@neondatabase/serverless@1.0.2)(@types/pg@8.20.0)(@upstash/redis@1.37.0)(pg@8.20.0)))(ioredis@5.10.1)

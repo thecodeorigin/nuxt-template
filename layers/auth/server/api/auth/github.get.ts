@@ -1,3 +1,4 @@
+import { withQuery } from 'ufo'
 import { simplifyNanoId } from '~~/shared/utils/id'
 
 export default defineEventHandler(async (event) => {
@@ -12,13 +13,10 @@ export default defineEventHandler(async (event) => {
     path: '/api/auth',
   })
 
-  const redirectUrl = 'https://github.com/login/oauth/authorize'
-  const params = new URLSearchParams({
+  return sendRedirect(event, withQuery('https://github.com/login/oauth/authorize', {
     client_id: runtimeConfig.githubClientId,
     redirect_uri: `${getBaseUrl(event)}/api/auth/github/callback`,
     scope: 'user:email',
     state,
-  })
-
-  return sendRedirect(event, `${redirectUrl}?${params.toString()}`)
+  }))
 })

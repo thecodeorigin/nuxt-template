@@ -2,6 +2,7 @@
 import type { TableColumn } from '@nuxt/ui'
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
+import { joinURL } from 'ufo'
 import { h, resolveComponent } from 'vue'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import OrganizationMemberPermissionsModal from '#layers/auth/app/components/Organization/OrganizationMemberPermissionsModal.vue'
@@ -37,9 +38,9 @@ whenError(rolesError)
 
 const roleOptions = computed(() => orgRoles.value.map(r => ({ label: r.name, value: r.id })))
 
+const requestURL = useRequestURL()
 function joinLink(token: string) {
-  const origin = typeof window !== 'undefined' ? window.location.origin : ''
-  return `${origin}/join/${token}`
+  return joinURL(requestURL.origin, 'join', token)
 }
 
 async function generateInvitation() {
@@ -62,8 +63,9 @@ async function generateInvitation() {
   }
 }
 
+const { copy: copyToClipboard } = useClipboard()
 async function copyLink(link: string) {
-  await navigator.clipboard.writeText(link)
+  await copyToClipboard(link)
   toast.add({ title: 'Invitation link copied', color: 'success' })
 }
 

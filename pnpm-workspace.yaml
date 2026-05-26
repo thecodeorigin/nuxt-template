@@ -83,6 +83,7 @@ catalog:
   tsx: ^4.21.0
   type-fest: ^5.5.0
   typescript: 6.0.2
+  ufo: ^1.6.3
   unstorage: ^1.17.5
   vitest: ^4.1.2
   vue: ^3.5.31
