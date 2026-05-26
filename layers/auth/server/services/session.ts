@@ -17,7 +17,7 @@ const TTL = 60 * 60 * 24 * 7
  * Any KV session with a lower generation is rebuilt from DB on the user's next request —
  * no forced re-login required.
  */
-export const SESSION_GENERATION = 1
+export const SESSION_GENERATION = 2
 
 export interface BuildSessionOpts {
   provider: string

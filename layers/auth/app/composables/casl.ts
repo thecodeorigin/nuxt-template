@@ -23,5 +23,5 @@ export function abilitiesToRules(
 export function pageMetaCanCheck(abilities: string[], required: string[]): boolean {
   if (required.length === 0)
     return true
-  return required.every(req => canSubjectAction(abilities, req))
+  return required.some(req => canSubjectAction(abilities, req))
 }

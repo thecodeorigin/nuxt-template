@@ -1,8 +1,17 @@
 import type { Project, ProjectMember, ProjectProduct } from '#layers/project/server/db/schema'
 import type { AddProjectMember, AddProjectProduct, CreateProject, UpdateProject } from '#layers/project/shared/schemas/project'
 
+export interface ProjectMemberDetail {
+  user_id: string
+  role: 'owner' | 'member' | 'viewer'
+  added_at: Date | null
+  name: string | null
+  username: string | null
+  avatar: string | null
+}
+
 export interface ProjectDetail extends Project {
-  members: ProjectMember[]
+  members: ProjectMemberDetail[]
   products: ProjectProduct[]
 }
 

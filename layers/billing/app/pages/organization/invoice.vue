@@ -24,13 +24,24 @@ const { data: invoices, error: invoicesError } = useAsyncData<Invoice[]>(
 whenError(invoicesError)
 
 const settingsForm = reactive({
-  company_name: computed(() => settings.value?.company_name ?? ''),
-  tax_id: computed(() => settings.value?.tax_id ?? ''),
-  address: computed(() => settings.value?.address ?? ''),
-  city: computed(() => settings.value?.city ?? ''),
-  country: computed(() => settings.value?.country ?? 'US'),
-  currency: computed(() => settings.value?.currency ?? 'USD'),
+  company_name: '',
+  tax_id: '',
+  address: '',
+  city: '',
+  country: 'US',
+  currency: 'USD',
 })
+
+watch(settings, (s) => {
+  if (!s)
+    return
+  settingsForm.company_name = s.company_name ?? ''
+  settingsForm.tax_id = s.tax_id ?? ''
+  settingsForm.address = s.address ?? ''
+  settingsForm.city = s.city ?? ''
+  settingsForm.country = s.country ?? 'US'
+  settingsForm.currency = s.currency ?? 'USD'
+}, { immediate: true })
 
 const savingSettings = ref(false)
 

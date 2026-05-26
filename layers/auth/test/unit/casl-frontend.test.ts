@@ -40,9 +40,10 @@ describe('pageMetaCanCheck — definePageMeta({ can: [...] })', () => {
     expect(pageMetaCanCheck(['user:read'], ['blog:read'])).toBe(false)
   })
 
-  it('requires ALL listed abilities (AND semantics)', () => {
-    expect(pageMetaCanCheck(['blog:read'], ['blog:read', 'user:read'])).toBe(false)
-    expect(pageMetaCanCheck(['blog:read', 'user:read'], ['blog:read', 'user:read'])).toBe(true)
+  it('passes when the user has ANY of the listed abilities (OR semantics)', () => {
+    expect(pageMetaCanCheck(['blog:read'], ['blog:read', 'user:read'])).toBe(true)
+    expect(pageMetaCanCheck(['user:read'], ['blog:read', 'user:read'])).toBe(true)
+    expect(pageMetaCanCheck(['other:read'], ['blog:read', 'user:read'])).toBe(false)
   })
 
   it('passes via the "manage" wildcard', () => {
