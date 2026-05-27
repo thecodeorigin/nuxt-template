@@ -393,12 +393,15 @@ importers:
       '@layers/auth':
         specifier: workspace:*
         version: link:layers/auth
+      '@layers/product':
+        specifier: workspace:*
+        version: link:layers/product
+      '@layers/project':
+        specifier: workspace:*
+        version: link:layers/project
       '@layers/system':
         specifier: workspace:*
         version: link:layers/system
-      '@layers/todo':
-        specifier: workspace:*
-        version: link:layers/todo
       '@nuxt/a11y':
         specifier: 'catalog:'
         version: 1.0.0-alpha.1(magicast@0.5.2)(vite@7.3.1(@types/node@25.9.1)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -529,13 +532,15 @@ importers:
 
   layers/notifications: {}
 
+  layers/product: {}
+
+  layers/project: {}
+
   layers/referral: {}
 
   layers/support: {}
 
   layers/system: {}
-
-  layers/todo: {}
 
   packages/cli:
     dependencies:
