@@ -8,7 +8,7 @@ const layerAliases = [
   { find: /^#layers\/auth\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/auth/$1$2` },
   { find: /^#layers\/product\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/product/$1$2` },
   { find: /^#layers\/project\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/project/$1$2` },
-  { find: /^#layers\/notifications\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/notifications/$1$2` },
+  { find: /^#layers\/notification\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/notification/$1$2` },
   { find: /^#layers\/billing\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/billing/$1$2` },
   { find: /^#layers\/referral\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/referral/$1$2` },
   { find: /^#layers\/system\/(.+?)(\.ts|\.vue)?$/, replacement: `${ROOT}/layers/system/$1$2` },

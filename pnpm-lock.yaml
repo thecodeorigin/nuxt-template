@@ -530,7 +530,7 @@ importers:
 
   layers/billing: {}
 
-  layers/notifications: {}
+  layers/notification: {}
 
   layers/product: {}
 
