@@ -1,7 +1,7 @@
 // @vitest-environment nuxt
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
 import { describe, expect, it } from 'vitest'
-import NotificationsBell from '#layers/notifications/app/components/Notifications/NotificationsBell.vue'
+import NotificationsBell from '#layers/notification/app/components/Notifications/NotificationsBell.vue'
 
 registerEndpoint('/api/notifications/unread-count', () => ({ count: 3 }))
 

@@ -1,5 +1,5 @@
-import type { Notification } from '#layers/notifications/shared/schemas/notification'
-import { useNotificationApi } from '#layers/notifications/app/api/useNotificationApi'
+import type { Notification } from '#layers/notification/shared/schemas/notification'
+import { useNotificationApi } from '#layers/notification/app/api/useNotificationApi'
 
 const PAGE = 20
 

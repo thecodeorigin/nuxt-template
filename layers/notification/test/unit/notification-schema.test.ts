@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { NotificationQuerySchema, toNotification } from '#layers/notifications/shared/schemas/notification'
+import { NotificationQuerySchema, toNotification } from '#layers/notification/shared/schemas/notification'
 
 describe('notificationQuerySchema', () => {
   it('defaults offset/limit', () => {

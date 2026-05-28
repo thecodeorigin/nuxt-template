@@ -9,28 +9,16 @@ useHead({ title: 'Organization' })
 const authStore = useAuthStore()
 const abilities = computed(() => authStore.currentUser?.abilities ?? [])
 
-const links = computed(() => [[
-  {
-    label: 'General',
-    icon: 'i-lucide-building',
-    to: '/organization',
-    exact: true,
-  },
-  {
-    label: 'Members',
-    icon: 'i-lucide-users',
-    to: '/organization/members',
-  },
-  {
-    label: 'Roles',
-    icon: 'i-lucide-shield',
-    to: '/organization/roles',
-  },
-  ...(satisfiesAbility(abilities.value, 'billing:read')
-    ? [{ label: 'Invoice', icon: 'i-lucide-file-text', to: '/organization/invoice' }]
-    : []
-  ),
-]] satisfies NavigationMenuItem[][])
+const links = computed(() => {
+  const items: NavigationMenuItem[] = [
+    { label: 'General', icon: 'i-lucide-building', to: '/organization', exact: true },
+    { label: 'Members', icon: 'i-lucide-users', to: '/organization/members' },
+    { label: 'Roles', icon: 'i-lucide-shield', to: '/organization/roles' },
+  ]
+  if (satisfiesAbility(abilities.value, 'billing:read'))
+    items.push({ label: 'Invoice', icon: 'i-lucide-file-text', to: '/organization/invoice' })
+  return [items]
+})
 </script>
 
 <template>

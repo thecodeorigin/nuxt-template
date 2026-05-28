@@ -1,4 +1,4 @@
-import type { NotificationQuery } from '#layers/notifications/shared/schemas/notification'
+import type { NotificationQuery } from '#layers/notification/shared/schemas/notification'
 
 export function useNotificationApi() {
   function fetchNotifications(query: NotificationQuery) {

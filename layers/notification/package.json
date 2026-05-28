@@ -1,5 +1,5 @@
 {
-  "name": "@layers/notifications",
+  "name": "@layers/notification",
   "type": "module",
   "private": true,
   "main": "./nuxt.config.ts"

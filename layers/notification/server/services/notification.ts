@@ -1,6 +1,6 @@
 import { db } from '@nuxthub/db'
 import { notificationTable } from '@nuxthub/db/schema'
-import { toNotification } from '#layers/notifications/shared/schemas/notification'
+import { toNotification } from '#layers/notification/shared/schemas/notification'
 
 export async function createNotification(input: {
   userId: string

@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest'
-import { vSanitize } from '#layers/notifications/app/utils/sanitize'
+import { vSanitize } from '#layers/notification/app/utils/sanitize'
 
 function applyMounted(html: string): string {
   const el = document.createElement('div')

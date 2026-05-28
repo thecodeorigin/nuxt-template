@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     nitro: {
       openAPI: {
         meta: {
-          title: 'NuxtTemplate API',
+          title: 'Nuxt Template API',
           version: packageJson.version,
         },
       },

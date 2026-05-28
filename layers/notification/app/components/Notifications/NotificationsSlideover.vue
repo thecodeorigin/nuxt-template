@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNotificationStore } from '#layers/notifications/app/stores/notifications'
+import { useNotificationStore } from '#layers/notification/app/stores/notifications'
 
 const store = useNotificationStore()
 const open = computed({ get: () => store.isOpen, set: v => (store.isOpen = v) })

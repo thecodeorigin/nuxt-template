@@ -39,12 +39,19 @@ const generatedLink = ref('')
 const { data: orgRoles, error: rolesError } = useAsyncData('org-roles', () => orgApi.fetchRoles(), { default: () => [] })
 whenError(rolesError)
 
-const projectApi = useProjectApi()
-const { data: availableProjects, error: projectsError } = useAsyncData<Project[]>('org-invite-projects', () => projectApi.fetchProjects(), { default: (): Project[] => [] })
-whenError(projectsError)
-
 const roleOptions = computed(() => orgRoles.value.map(r => ({ label: r.name, value: r.id })))
-const projectOptions = computed(() => availableProjects.value.map(p => ({ label: p.name, value: p.id })))
+const projectOptions = ref<{ label: string, value: string }[]>([])
+
+const projectApi = useProjectApi()
+const { data: projects, error: projectsError } = useAsyncData<Project[]>(
+  'org-invite-projects',
+  () => projectApi.fetchProjects(),
+  { default: (): Project[] => [] },
+)
+whenError(projectsError)
+watch(projects, (p) => {
+  projectOptions.value = p.map(proj => ({ label: proj.name, value: proj.id }))
+}, { immediate: true })
 
 const requestURL = useRequestURL()
 function joinLink(token: string) {

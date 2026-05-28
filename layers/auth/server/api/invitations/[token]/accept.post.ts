@@ -1,5 +1,5 @@
 import { db } from '@nuxthub/db'
-import { organizationMemberTable, projectMemberTable, roleTable } from '@nuxthub/db/schema'
+import { organizationMemberTable, roleTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
@@ -14,6 +14,13 @@ import {
 } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
 import { DEFAULT_MEMBER_ABILITIES } from '#layers/auth/shared/permissions'
+import { projectMemberTable } from '#layers/project/server/db/schema'
+
+async function insertProjectMembers(userId: string, projectIds: string[]): Promise<void> {
+  await Promise.all(projectIds.map(projectId =>
+    db.insert(projectMemberTable).values({ project_id: projectId, user_id: userId, role: 'member' }).onConflictDoNothing(),
+  ))
+}
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const token = getRouterParam(event, 'token')
@@ -55,14 +62,8 @@ export default defineAuthenticatedHandler(async (event, session) => {
     }
   }
 
-  if (inv.project_ids && inv.project_ids.length > 0) {
-    await Promise.all(
-      inv.project_ids.map(projectId =>
-        db.insert(projectMemberTable)
-          .values({ project_id: projectId, user_id: session.id, role: 'member' })
-          .onConflictDoNothing(),
-      ),
-    )
+  if (inv.project_ids?.length) {
+    await insertProjectMembers(session.id, inv.project_ids)
   }
 
   await deleteInvitation(inv.id)

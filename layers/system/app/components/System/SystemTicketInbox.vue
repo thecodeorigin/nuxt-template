@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TicketDetail, TicketStatus, TicketSummary } from '#layers/support/shared/schemas/ticket'
 import SupportConversation from '#layers/support/app/components/Support/SupportConversation.vue'
+
 import { useSystemTicketApi } from '#layers/system/app/api/useSystemTicketApi'
 
 const api = useSystemTicketApi()

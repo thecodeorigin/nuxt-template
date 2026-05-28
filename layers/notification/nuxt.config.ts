@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  $meta: { name: 'notifications' },
+  $meta: { name: 'notification' },
   imports: {
     dirs: ['stores'],
   },

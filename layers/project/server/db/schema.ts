@@ -1,7 +1,6 @@
 import type { InferSelect } from '~~/server/db/types'
 import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { organizationTable, userTable } from '#layers/auth/server/db/schema'
-import { productTable } from '#layers/product/server/db/schema'
 
 export const projectTable = sqliteTable('projects', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
@@ -20,7 +19,7 @@ export type Project = InferSelect<typeof projectTable>
 
 export const projectProductTable = sqliteTable('project_products', {
   project_id: text('project_id').references(() => projectTable.id, { onDelete: 'cascade' }).notNull(),
-  product_id: text('product_id').references(() => productTable.id, { onDelete: 'cascade' }).notNull(),
+  product_id: text('product_id').notNull(),
   quantity: integer('quantity').notNull().default(1),
   added_at: integer('added_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 }, table => [

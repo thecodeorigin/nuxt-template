@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import NotificationsBell from '#layers/notifications/app/components/Notifications/NotificationsBell.vue'
-
 defineProps<{ title?: string }>()
+
+const registry = useLayerRegistry()
+const sortedNavbarItems = computed(() =>
+  [...registry.navbarItems.value].sort((a, b) => a.priority - b.priority),
+)
 </script>
 
 <template>
@@ -12,7 +15,11 @@ defineProps<{ title?: string }>()
     <template #right>
       <slot name="right" />
       <ClientOnly>
-        <NotificationsBell />
+        <component
+          :is="item.component"
+          v-for="item in sortedNavbarItems"
+          :key="item.id"
+        />
       </ClientOnly>
     </template>
   </UDashboardNavbar>

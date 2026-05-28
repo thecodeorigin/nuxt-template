@@ -50,6 +50,7 @@ catalog:
   '@types/node': ^25.9.1
   '@types/nodemailer': ^8.0.0
   '@vitest/coverage-v8': ^4.1.2
+  '@vue/compiler-sfc': ^3.5.31
   '@vue/test-utils': ^2.4.6
   '@vueuse/nuxt': ^14.2.1
   citty: ^0.1.6
@@ -70,11 +71,14 @@ catalog:
   jsonc-eslint-parser: ^3.1.0
   lint-staged: ^16.4.0
   magic-regexp: ^0.11.0
+  magic-string: ^0.30.21
   maildev: ^2.2.1
   nanoid: ^5.1.7
   nuxt: ^4.4.2
   nuxt-resend: ^0.0.2
   nuxt-security: ^2.5.1
+  oxc-parser: ^0.121.0
+  oxc-walker: ^0.7.0
   playwright-core: ^1.59.1
   tailwind-merge: ^3.5.0
   tailwindcss: ^4.2.2

@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import type { TicketCategory } from '#layers/support/server/db/schema'
 import { useSupportApi } from '#layers/support/app/api/useSupportApi'
+import { useSupportTicketOpen } from '#layers/support/app/composables/useSupportModal'
 import { TICKET_CATEGORIES } from '#layers/support/server/db/schema'
 
-const open = defineModel<boolean>('open', { default: false })
+const props = withDefaults(defineProps<{ open?: boolean }>(), { open: false })
+const emit = defineEmits<{ 'update:open': [boolean] }>()
+
+const internalOpen = useSupportTicketOpen()
+const open = computed({
+  get: () => props.open || internalOpen.value,
+  set: (val) => {
+    internalOpen.value = val
+    emit('update:open', val)
+  },
+})
 
 const api = useSupportApi()
 const toast = useToast()

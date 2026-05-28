@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { useSupportApi } from '#layers/support/app/api/useSupportApi'
+import { useFeedbackModalOpen } from '#layers/support/app/composables/useSupportModal'
 
-const open = defineModel<boolean>('open', { default: false })
+const props = withDefaults(defineProps<{ open?: boolean }>(), { open: false })
+const emit = defineEmits<{ 'update:open': [boolean] }>()
+
+const internalOpen = useFeedbackModalOpen()
+const open = computed({
+  get: () => props.open || internalOpen.value,
+  set: (val) => {
+    internalOpen.value = val
+    emit('update:open', val)
+  },
+})
 
 const api = useSupportApi()
 const toast = useToast()

@@ -3,7 +3,7 @@ import { notificationTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
-import { toNotification } from '#layers/notifications/shared/schemas/notification'
+import { toNotification } from '#layers/notification/shared/schemas/notification'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const orgId = event.context.activeOrganizationId

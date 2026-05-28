@@ -11,7 +11,7 @@ import { createError } from 'h3'
 import { joinURL, withQuery } from 'ufo'
 import { getBaseUrl } from '~~/server/utils/url'
 import { sendUserEmail } from '#layers/auth/server/services/user-email'
-import { createNotification } from '#layers/notifications/server/services/notification'
+import { createNotification } from '#layers/notification/server/services/notification'
 import { escapeEmailHtml, isTicketStale } from '#layers/support/server/services/ticket-helpers'
 import { toTicketMessage, toTicketSummary } from '#layers/support/shared/schemas/ticket'
 
@@ -215,16 +215,13 @@ export async function addAgentMessage(agentId: string, ticketId: string, body: s
     .where(eq(supportTicketTable.id, ticketId))
 
   const agentName = (await agentDisplayName(agentId)) ?? 'Support team'
-  try {
-    await createNotification({
-      userId: row.user_id,
-      organizationId: row.organization_id,
-      senderName: agentName,
-      body: `replied to your request: ${row.subject}`,
-      dedupeKey: `support-reply:${ticketId}:${now.getTime()}`,
-    })
-  }
-  catch { /* non-critical */ }
+  await createNotification({
+    userId: row.user_id,
+    organizationId: row.organization_id,
+    senderName: agentName,
+    body: `replied to your request: ${row.subject}`,
+    dedupeKey: `support-reply:${ticketId}:${now.getTime()}`,
+  })
 
   return getAgentTicket(ticketId)
 }
