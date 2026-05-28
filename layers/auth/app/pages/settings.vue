@@ -12,12 +12,11 @@ const links = computed(() => {
   const main: NavigationMenuItem[] = [
     { label: 'General', icon: 'i-lucide-user', to: '/settings', exact: true },
   ]
-  if (satisfiesAbility(abilities.value, 'billing:read'))
+  main.push({ label: 'Notifications', icon: 'i-lucide-bell', to: '/settings/notifications' })
+  if (satisfiesAbility(abilities.value, 'billing:read')) {
     main.push({ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing' })
-  main.push(
-    { label: 'Notifications', icon: 'i-lucide-bell', to: '/settings/notifications' },
-    { label: 'Security', icon: 'i-lucide-shield', to: '/settings/security' },
-  )
+  }
+  main.push({ label: 'Security', icon: 'i-lucide-shield', to: '/settings/security' })
   return [main, [
     { label: 'Documentation', icon: 'i-lucide-book-open', to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt', target: '_blank' },
   ]]
