@@ -12,6 +12,25 @@ session. Run `/team-feature <description>` to spawn parallel `fullstack-dev`
 for roles, coordination rules, and the layer-ownership invariant that keeps
 parallel work untangled.
 
+## Template adoption (first-time users)
+
+This codebase is a **generic template**. If you see references to "Nuxt
+Template" still in the repo, the user has not yet adapted it to their
+actual product. Two slash commands handle the full adoption flow,
+designed for non-technical users ("vibe coders") who treat the codebase
+as a black box:
+
+- **`/onboard`** — pure business interview (name, tagline, brand color,
+  product/billing model, sign-in providers) that rewrites brand strings,
+  `app.config.ts` colors, `.env`, and user-facing labels. Re-runnable
+  for rebrands.
+- **`/go-live`** — walks the user through Cloudflare + GitHub
+  credentials in plain English, then runs the existing `pnpm cli deploy
+  setup` to provision D1/KV/R2/cache and wire up GitHub Actions deploys.
+
+If the user is starting fresh and the brand is still "Nuxt Template",
+suggest `/onboard` before any feature work.
+
 ## Stack
 
 - **Nuxt 4** with **layers** for feature isolation (`layers/auth/`,
@@ -159,8 +178,15 @@ import. Explicit cross-layer imports use `#layers/<name>/...`.
 | Layer | Owns | Top-level guide |
 |-------|------|-----------------|
 | `auth` | Sessions, OAuth, CASL authorization, impersonation, seed users | `layers/auth/CLAUDE.md` |
-| `product` | Staff-managed product catalog; system abilities (`product:write`, `product:delete`, `product:manage`) | `layers/product/CLAUDE.md` |
-| `project` | User-managed projects; tenant abilities (`project:*`); project-product links; project membership | `layers/project/CLAUDE.md` |
+| `product` | **Abstract**: the smallest indivisible billable unit (plan, addon, credit pack, item — whatever the adapted business calls it). System-managed catalog; staff abilities (`product:*`) | `layers/product/CLAUDE.md` |
+| `project` | **Abstract**: a user's container that bundles one or more products together with members + roles (workspace, subscription, account, tenant). Tenant abilities (`project:*`) | `layers/project/CLAUDE.md` |
+
+`product` and `project` are **abstract patterns**, not concrete domain
+nouns. The file/type/function/table names always stay `product` and
+`project` (per the layer ownership invariant), but the **user-facing
+labels** are adapted to whatever the actual business calls them. The
+`/onboard` command performs this mapping based on the user's answers.
+Read both layer CLAUDE.md files before extending either.
 
 When you add a new feature:
 1. Create `layers/<name>/` mirroring the existing two.
