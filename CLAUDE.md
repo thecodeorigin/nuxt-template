@@ -171,6 +171,39 @@ When you add a new feature:
    global store).
 4. Don't add it to `extends` in the root `nuxt.config.ts` — auto-discovery
    picks it up.
+5. If the layer needs sidebar links, a navbar slot, or overlays, add a
+   `layers/<name>/app/plugins/99.contribute.<name>.client.ts` (see below).
+
+## Dynamic layout / layer registry
+
+`app/layouts/default.vue` never hard-codes layer-specific navigation.
+Instead, each layer **contributes** its UI slots at plugin time through
+`useLayerRegistry()` from `app/composables/useLayerRegistry.ts`.
+
+```ts
+// layers/<name>/app/plugins/99.contribute.<name>.client.ts
+export default defineNuxtPlugin(() => {
+  const { contribute } = useLayerRegistry()
+  contribute({
+    navItems: [
+      { id: 'my-page', label: 'My Page', icon: 'i-lucide-star',
+        to: '/my-page', section: 'main', priority: 15 },
+    ],
+  })
+})
+```
+
+Three contribution slots:
+
+| Slot | Purpose |
+|------|---------|
+| `navItems` | Sidebar links. `section` places them in `main`, `settings`, or `sub`; `priority` (ascending) controls order within the section. |
+| `navbarItems` | Icon components rendered in the dashboard navbar (e.g. notifications bell). Sorted by `priority`. |
+| `overlays` | Vue components mounted once at layout level (modals, slidevers). No priority. |
+
+The `99.` plugin prefix ensures contributions run after stores and auth are
+ready. Full field reference and the current priority table are in
+`app/layouts/CLAUDE.md`.
 
 ## API route conventions
 
