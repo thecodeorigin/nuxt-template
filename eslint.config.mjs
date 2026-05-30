@@ -13,9 +13,33 @@ export default withNuxt(
     vue: true,
   }),
   {
-    files: ['docs/content/**/*.md'],
+    files: ['**/*.md'],
     rules: {
       'markdown/no-multiple-h1': 'off',
+    },
+  },
+  {
+    // Virtual files ESLint creates for each fenced code block inside markdown.
+    // Snippets are documentation, not real modules — relax rules that require
+    // a proper module context (imports, declared vars, consistent returns, etc.)
+    files: ['**/*.md/**'],
+    rules: {
+      'no-undef': 'off',
+      'no-unused-expressions': 'off',
+      'import/no-unresolved': 'off',
+      'ts/no-unused-vars': 'off',
+      'ts/no-require-imports': 'off',
+      'unused-imports/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'off',
+      'antfu/no-top-level-await': 'off',
+      'vue/attribute-hyphenation': 'off',
+    },
+  },
+  {
+    // <Can I="..."> is @casl/vue's DSL — uppercase I is intentional.
+    files: ['**/*.vue'],
+    rules: {
+      'vue/attribute-hyphenation': ['warn', 'always', { ignore: ['I'] }],
     },
   },
   {

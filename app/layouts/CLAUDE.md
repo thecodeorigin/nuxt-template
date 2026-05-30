@@ -21,9 +21,9 @@ The `99.` prefix guarantees it runs after all stores and auth are ready.
 export default defineNuxtPlugin(() => {
   const { contribute } = useLayerRegistry()
   contribute({
-    navItems: [...],      // sidebar links
-    navbarItems: [...],   // navbar icon slots
-    overlays: [...],      // full-screen overlays / slideovers
+    navItems: [/* sidebar links */],
+    navbarItems: [/* navbar icon slots */],
+    overlays: [/* full-screen overlays / slideovers */],
   })
 })
 ```

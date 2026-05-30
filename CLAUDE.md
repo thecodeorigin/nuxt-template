@@ -212,8 +212,14 @@ export default defineNuxtPlugin(() => {
   const { contribute } = useLayerRegistry()
   contribute({
     navItems: [
-      { id: 'my-page', label: 'My Page', icon: 'i-lucide-star',
-        to: '/my-page', section: 'main', priority: 15 },
+      {
+        id: 'my-page',
+        label: 'My Page',
+        icon: 'i-lucide-star',
+        to: '/my-page',
+        section: 'main',
+        priority: 15,
+      },
     ],
   })
 })
