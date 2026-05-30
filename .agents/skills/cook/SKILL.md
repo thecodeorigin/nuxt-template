@@ -42,6 +42,11 @@ Write down (in your internal monologue or task description):
 
 One focused change per cycle. Not "implement the whole route" — "add the Zod schema".
 
+**If this step writes to the DB**, the file you're editing is a task at
+`<layer>/server/tasks/{seed,create,update,refactor}/<noun>.ts` and/or
+its service in `<layer>/server/services/`. Don't reach for `nuxt db
+sql` or an ad-hoc `tsx` script — load the `data` skill instead.
+
 ### 3. EDIT — one focused change
 
 - Prefer `Edit` over `Write` for existing files (sends only the diff)
@@ -93,6 +98,8 @@ Before calling a phase done: run `pnpm test && pnpm test:e2e`.
 
 | Situation | Skill |
 |---|---|
+| Need to write to the DB (create row, update row, refactor data) | `data` — never type `nuxt db sql "INSERT ..."`, write a task |
+| Adding a route / sidebar item / admin action | Check the permission catalog + grants per `data` skill's `permission-aware-data.md` before declaring the step done |
 | Chrome DevTools MCP not connecting | `chrome-devtools-mcp:troubleshooting` |
 | LCP / performance issue | `chrome-devtools-mcp:debug-optimize-lcp` |
 | Accessibility issue | `chrome-devtools-mcp:a11y-debugging` |

@@ -3,8 +3,9 @@ import { transactionTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { deleteCookie, getCookie } from 'h3'
 import { grantCredit } from '#layers/billing/server/services/credit'
+import { REFERRAL_REWARD } from '#layers/referral/server/constants/defaults'
 import { referralTable } from '#layers/referral/server/db/schema'
-import { attributeReferral, ensureReferralCode, personalOrgId, REFERRAL_REWARD } from '#layers/referral/server/services/referral'
+import { attributeReferral, ensureReferralCode, personalOrgId } from '#layers/referral/server/services/referral'
 
 const REAL_PROVIDERS = new Set(['google', 'github'])
 

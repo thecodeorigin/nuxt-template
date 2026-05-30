@@ -1,11 +1,9 @@
 import { ActivityAction, activityTable, organizationMemberTable, userTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
+import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/constants/defaults'
 import { ensureMembership, ensureOrganization } from '#layers/auth/server/services/organization'
-import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/services/seed'
 import { persistSession } from '#layers/auth/server/services/session'
-import { seedDemoNotifications } from '#layers/notification/server/services/notification'
-import { seedDemoTickets } from '#layers/support/server/services/ticket'
 
 interface DemoAgent {
   email: string
@@ -73,9 +71,9 @@ export default defineEventHandler(async (event) => {
       })
   }
 
-  await seedDemoNotifications(user.id, demoOrg.id)
+  await runTask('seed:demo-notifications', { payload: { user_id: user.id, organization_id: demoOrg.id } })
   if (agent === 'user') {
-    await seedDemoTickets(user.id, demoOrg.id)
+    await runTask('seed:demo-tickets', { payload: { user_id: user.id, organization_id: demoOrg.id } })
   }
 
   const { sessionId } = await persistSession(event, user, { provider: 'demo', activeOrganizationId: demoOrg.id })

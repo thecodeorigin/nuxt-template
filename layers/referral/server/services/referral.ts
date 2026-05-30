@@ -3,10 +3,10 @@ import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
 import { sumBy } from 'es-toolkit'
 import { simplifyNanoId } from '~~/shared/utils/id'
+import { REFERRAL_REWARD } from '#layers/referral/server/constants/defaults'
 import { referralTable, userReferralTable } from '#layers/referral/server/db/schema'
 
 export const REF_CODE_RE = /^[a-z0-9]{8}$/i
-export const REFERRAL_REWARD = 20000
 
 export async function ensureReferralCode(userId: string): Promise<string> {
   const existing = await db.query.userReferralTable.findFirst({ where: eq(userReferralTable.user_id, userId) })

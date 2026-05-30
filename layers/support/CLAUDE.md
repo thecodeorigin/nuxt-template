@@ -29,7 +29,7 @@ Same hard rules as root. Layer-specific notes:
 - **Messages are plain text**, rendered with Vue interpolation (escaped). Never
   render a message body as HTML. `xssValidator` is disabled on the ticket route
   subtrees in `nuxt.config.ts` (legit error reports contain `<`/`>`).
-- **Email goes through `sendUserEmail`** (`#layers/auth/server/services/user-email`);
+- **Email goes through `sendUserEmail`** (`#layers/auth/server/services/email`);
   the reminder composer escapes every interpolated value.
 - **Cross-layer.** `#layers/auth/...` for auth services, `@nuxthub/db` +
   `@nuxthub/db/schema` for data, `#layers/notifications/server/services/notification`

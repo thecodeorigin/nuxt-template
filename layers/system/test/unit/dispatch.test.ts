@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isEmailEnabled } from '#layers/auth/server/services/user-email'
+import { isEmailEnabled } from '#layers/auth/server/services/email'
 import { composeEmailHtml } from '#layers/system/server/services/dispatch'
 import { DispatchFilterSchema, DispatchSendSchema, htmlHasText } from '#layers/system/shared/schemas/dispatch'
 

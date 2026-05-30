@@ -66,6 +66,17 @@ Pick an approach. Use `references/solution-design.md`.
 - Document the rejected alternatives and why
 - Choose the simplest option that satisfies the requirement
 - Apply security checklist: authn, authz, validation, secrets, user-isolation queries
+- **Data writes**: if the plan creates / updates / refactors any DB
+  rows outside a user-driven server route, design it as one or more
+  Nitro tasks at `<layer>/server/tasks/{seed,create,update,refactor}/<noun>.ts`.
+  Never plan a one-off `tsx scripts/...` or a raw `nuxt db sql
+  "INSERT ..."`. Load the `data` skill for the full convention.
+- **Permission impact**: list every ability key the plan touches.
+  Identify catalog updates (`layers/auth/shared/permissions.ts`),
+  grant-set updates (`SYSTEM_GRANTS`, `DEMO_ORG_GRANTS`,
+  `DEFAULT_*_ABILITIES`), and whether a live-env backfill (`update:`
+  task) is needed. See `data` skill's
+  `references/permission-aware-data.md`.
 
 ### Phase 5 — DRAFT
 
@@ -103,6 +114,13 @@ Before writing the plan file, verify:
 - All dependencies are named explicitly
 - Open questions are at the top (not buried)
 - Acceptance criteria are concrete and checkable
+- Every DB write step names a task file (`tasks/<verb>/<noun>.ts`) and
+  the service it wraps; no plan step shells out to `nuxt db sql` for
+  writes
+- Every permission-touching step names the catalog file
+  (`layers/auth/shared/permissions.ts`) and the grant set
+  (`SYSTEM_GRANTS` / `DEMO_ORG_GRANTS` / `DEFAULT_*_ABILITIES`) it
+  updates
 
 Use `references/handoff-to-cook.md` for the full checklist.
 

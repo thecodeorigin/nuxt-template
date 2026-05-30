@@ -9,8 +9,8 @@ import { kv } from '@nuxthub/kv'
 import { and, asc, desc, eq, inArray, like, lt, or, sql } from 'drizzle-orm'
 import { createError } from 'h3'
 import { joinURL, withQuery } from 'ufo'
+import { sendUserEmail } from '~~/layers/auth/server/services/email'
 import { getBaseUrl } from '~~/server/utils/url'
-import { sendUserEmail } from '#layers/auth/server/services/user-email'
 import { createNotification } from '#layers/notification/server/services/notification'
 import { escapeEmailHtml, isTicketStale } from '#layers/support/server/services/ticket-helpers'
 import { toTicketMessage, toTicketSummary } from '#layers/support/shared/schemas/ticket'
@@ -298,50 +298,4 @@ export async function sendTicketReminders(now = new Date()): Promise<{ scanned: 
     catch { skipped++ }
   }
   return { scanned: candidates.length, reminded, skipped }
-}
-
-// ---- demo seed (idempotent; called from demo-login) --------------------
-
-export async function seedDemoTickets(userId: string, organizationId: string) {
-  const now = Date.now()
-  const fixtures = [
-    { i: 0, kind: 'feedback' as const, category: null, subject: 'Love the new dashboard', status: 'open' as const, agentReplyAgoMs: null },
-    { i: 1, kind: 'support' as const, category: 'billing' as const, subject: 'Invoice looks wrong', status: 'active' as const, agentReplyAgoMs: 2 * 60 * 60 * 1000 },
-    { i: 2, kind: 'support' as const, category: 'technical' as const, subject: 'Export keeps failing', status: 'active' as const, agentReplyAgoMs: 2 * DAY_MS },
-  ]
-  for (const f of fixtures) {
-    const id = `demo-ticket-${userId}-${f.i}`
-    const created = new Date(now - (f.i + 1) * 60 * 60 * 1000)
-    const agentReplyAt = f.agentReplyAgoMs == null ? null : new Date(now - f.agentReplyAgoMs)
-    await db.insert(supportTicketTable).values({
-      id,
-      user_id: userId,
-      organization_id: organizationId,
-      kind: f.kind,
-      category: f.category,
-      subject: f.subject,
-      status: f.status,
-      last_message_at: agentReplyAt ?? created,
-      last_message_role: agentReplyAt ? 'agent' : 'user',
-      created_at: created,
-    }).onConflictDoNothing()
-    await db.insert(supportTicketMessageTable).values({
-      id: `${id}-m0`,
-      ticket_id: id,
-      author_id: userId,
-      author_role: 'user',
-      body: `(demo) ${f.subject} — details here.`,
-      created_at: created,
-    }).onConflictDoNothing()
-    if (agentReplyAt) {
-      await db.insert(supportTicketMessageTable).values({
-        id: `${id}-m1`,
-        ticket_id: id,
-        author_id: null,
-        author_role: 'agent',
-        body: '(demo) Thanks for reaching out — could you share more detail?',
-        created_at: agentReplyAt,
-      }).onConflictDoNothing()
-    }
-  }
 }

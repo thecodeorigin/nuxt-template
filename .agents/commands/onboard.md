@@ -404,22 +404,14 @@ should see edits like:
 - Page title `'Projects'` → `'Workspaces'`
 - Form label `'Project name'` → `'Workspace name'`
 
-### 9e. Stash future provider state
+### 9e. Deferrals — no separate state file
 
-If the user picked "set up later" for any provider, append a tiny
-todo file at `.claude/onboarding-pending.md`:
-
-```markdown
-# Onboarding — pending follow-ups
-
-- [ ] Google OAuth — set up later (see /onboard step 5)
-- [ ] GitHub OAuth — set up later
-- [ ] Resend domain — add at https://resend.com/domains
-- [ ] SePay credentials — set up later
-```
-
-Only include lines for items they actually deferred. If nothing was
-deferred, don't create the file.
+When the user picks "set up later" for a provider, the corresponding
+`.env` line is left empty (see 9c). That **is** the deferral record —
+`/go-live` reads `.env` directly and flags any still-empty
+production-required value (Google/GitHub client id+secret, Resend
+key, SePay fields if charging). Don't write a sidecar todo file;
+the env is the source of truth.
 
 ### 9f. Install dependencies + offer to start the dev server
 

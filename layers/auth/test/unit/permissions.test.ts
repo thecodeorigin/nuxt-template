@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DEMO_ORG_GRANTS, SYSTEM_GRANTS } from '#layers/auth/server/services/seed'
+import { DEMO_ORG_GRANTS, SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
 import {
   ALL_ABILITY_KEYS,
   buildPermissionCatalog,

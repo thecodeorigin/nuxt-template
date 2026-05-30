@@ -27,8 +27,12 @@ Step 1 before continuing.
    must be non-empty (production hard rule). If both empty: block, tell
    the user to run `/onboard` again and set up at least one sign-in
    provider.
-3. **Pending file?** Read `.claude/onboarding-pending.md` if it exists,
-   so you can remind the user mid-flow about anything they deferred.
+3. **Deferred provider setup?** Scan `.env` for empty values among the
+   production-required keys (`NUXT_GOOGLE_CLIENT_ID`/`_SECRET`,
+   `NUXT_GITHUB_CLIENT_ID`/`_SECRET`, `NUXT_SMTP_PASS`, and
+   `NUXT_SEPAY_*` if the user charges money). Each empty key is a
+   deferral from `/onboard` — note them so you can remind the user
+   mid-flow.
 4. **GitHub remote?** Run `git remote -v` to see if there's an `origin`
    pointing at GitHub. Note the result; you'll fix in Step 3 if missing.
 
@@ -305,12 +309,16 @@ Wait for confirmation. If they hit issues, point them at
 > If anything looks wrong, run `pnpm cli doctor` — it checks every
 > piece of your setup and tells you which one to fix.
 
-If `.claude/onboarding-pending.md` had any items, repeat them here:
+If the preflight (Step 0, item 3) found any deferred `.env` keys still
+empty after this run, repeat them here:
 
 > Still pending from `/onboard`:
-> - [whatever was deferred]
+> - [each still-empty .env key, in plain English: "Google sign-in
+>   credentials", "Resend API key for outgoing email", etc.]
 
-Delete `.claude/onboarding-pending.md` if all items are now resolved.
+No sidecar file to delete — `.env` is the deferral state. The user
+fills the keys themselves (or re-runs the relevant `/onboard` step)
+when they're ready.
 
 Mark your task complete. Do not commit on the user's behalf.
 

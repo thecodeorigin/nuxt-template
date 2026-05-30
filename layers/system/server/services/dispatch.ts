@@ -8,7 +8,7 @@ import {
   userTable,
 } from '@nuxthub/db/schema'
 import { asc, eq, inArray } from 'drizzle-orm'
-import { isEmailEnabled } from '#layers/auth/server/services/user-email'
+import { isEmailEnabled } from '~~/layers/auth/server/services/email'
 
 export interface DispatchOption { id: string, label: string }
 export interface DispatchOptions { organizations: DispatchOption[], roles: DispatchOption[] }

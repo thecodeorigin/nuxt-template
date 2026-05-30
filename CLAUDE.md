@@ -121,6 +121,62 @@ suggest `/onboard` before any feature work.
       `fetchProducts`, `fetchProduct`, `createProduct`, `updateProduct`,
       `deleteProduct`, `startImpersonation`, `stopImpersonation`. Pinia stores
       expose actions named this way (no `fetchAll` / `create` / `update` / `remove`).
+15. **Every DB write goes through a Nitro task** at
+    `<layer>/server/tasks/{seed,create,update,refactor}/<noun>.ts`. No
+    raw `nuxt db sql "INSERT|UPDATE|DELETE …"`, no uncommitted
+    `tsx scripts/fix.ts`, no ad-hoc Drizzle invocations from outside a
+    task or service. Re-run safety (idempotency) is required —
+    `onConflictDoUpdate`, `onConflictDoNothing`, or read-then-write.
+    Server routes that accept Zod-validated user input are the only
+    other sanctioned write path. Sub-rules:
+    - **General data primitives** (`createUser`, `updateOrganizationRole`,
+      `grantAbility`) live in `<layer>/server/services/<noun>.ts` and
+      are called by tasks AND other code (dev endpoints, plugins,
+      other tasks).
+    - **Seed orchestration** (which emails get the admin tier, which
+      fixtures land in the demo inbox) lives **inline in the seed
+      task**. No separate `services/seed*.ts` files — they collect
+      ceremony for no reuse benefit since seed tasks have one caller.
+    - **Default values / fixtures** (`SYSTEM_GRANTS`, `DEMO_USERS`,
+      `DEMO_NOTIFICATIONS`, `REFERRAL_REWARD`) live in
+      `<layer>/server/constants/<category>.ts`. Never mixed into a
+      service file; never in `shared/` unless the client also
+      consumes them.
+
+    **Load the `data` skill** for the full convention; see
+    `layers/auth/server/tasks/` for the canonical examples
+    (`seed:permissions`, `seed:users`, `create:admin`,
+    `update:grant-ability`).
+16. **Permission awareness on every feature.** Any change that adds or
+    modifies a route, sidebar item, admin action, or gated component
+    triggers a permission review across three files:
+    - `layers/auth/shared/permissions.ts` — catalog (`SYSTEM_ABILITY_KEYS`,
+      `TENANT_ABILITY_KEYS`, `DEFAULT_PERSONAL_ORG_ABILITIES`,
+      `DEFAULT_MEMBER_ABILITIES`)
+    - `layers/auth/server/services/seed.ts` — `SYSTEM_GRANTS`
+      (production system admin) and `DEMO_ORG_GRANTS` (demo tenant
+      tiers)
+    - Live users in deployed envs — need a permission-lifecycle task
+      to backfill the new ability so it reaches existing rows.
+      Sessions auto-refresh; no re-login needed.
+
+    These three must stay synchronised. A new key with no grant = no
+    one has the permission; a new grant referencing an undeclared key
+    = silently dropped.
+
+    **The lifecycle tasks** (all in `layers/auth/server/tasks/`):
+
+    | Need | Task |
+    |---|---|
+    | New admin power | edit `SYSTEM_GRANTS.admin` → `seed:permissions` → `update:admin` |
+    | New paid-feature ability for a role's members | `update:grant-ability` with `target.kind="role"` |
+    | Grant an ability to specific customers | `update:grant-ability` with `target.kind="members"` |
+    | Create a customer account | `create:user` / `create:users` (idempotent) |
+    | Patch a user (suspend, verify, rename) | `update:user` |
+    | Create / modify a named role | `create:role` / `update:role` (`update:role` auto-refreshes sessions of every member with the role) |
+
+    See `.agents/skills/data/references/permission-aware-data.md` for
+    the full checklist and end-to-end recipes.
 
 ## Project layout
 

@@ -1,7 +1,7 @@
 import { kv } from '@nuxthub/kv'
 import { readValidatedBody } from 'h3'
+import { sendUserEmail } from '~~/layers/auth/server/services/email'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { sendUserEmail } from '#layers/auth/server/services/user-email'
 import { composeEmailHtml, resolveDispatchRecipients } from '#layers/system/server/services/dispatch'
 import { DispatchSendSchema } from '#layers/system/shared/schemas/dispatch'
 
