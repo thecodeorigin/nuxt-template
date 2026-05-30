@@ -48,15 +48,16 @@ For every design, verify:
 - **Authz**: which routes require specific abilities? Do they use `defineAuthorizedHandler`? Are user-scoped queries filtered by `session.userId`?
 - **Validation**: all user input goes through Zod. `readValidatedBody`, `getValidatedQuery`, `getValidatedRouterParams` at every server boundary.
 - **Secrets**: nothing in `runtimeConfig.public.*` that shouldn't be in the browser. KV keys use server-controlled IDs, not user input.
-- **User isolation**: `db.select().from(table).where(eq(table.userId, session.userId))` — missing `.where` = data exposure bug.
+- **User isolation**: `db.query.table.findMany({ where: eq(table.userId, session.userId) })` — missing `where` = data exposure bug.
 - **Rate limiting**: sensitive endpoints (login, phone, OTP) need rate limiting via `nuxt-security` or KV-backed counter.
 
 ## Performance checklist
 
 For any database-touching design:
 
-- **N+1 risk**: loops that call `db.select()` per item. Use Drizzle relations + batch queries instead.
-- **Unbounded lists**: any `db.select().from(table)` without `.limit()` on user-facing routes. Add `.limit()` + optional cursor.
+- **Query API**: default to the relational API (`db.query.<table>.findFirst` / `findMany`) for reads. Drop to `db.select().from(...)` only for aggregates, set operations, or joins not expressible via `with:`. The plan should state which form each read uses and why if it picks `db.select`. See `.agents/skills/cook/references/database-workflow.md` ("Reads: prefer `db.query.<table>`...") for the full rule.
+- **N+1 risk**: loops that issue one query per item. Define `relations()` in `schema.ts` and pull related rows via `db.query.x.findMany({ with: { ... } })` in a single round-trip; or batch with `db.batch([...])`.
+- **Unbounded lists**: any `findMany` / `db.select` on user-facing routes without a `limit`. Add `limit` + optional cursor.
 - **Missing index**: high-cardinality columns used in `.where()` should be indexed. Check `server/db/schema.ts` for `index()` definitions.
 - **Cloudflare D1 context**: D1 is a globally distributed read-replica SQLite. Writes go to primary (single region), reads are local. Avoid write-heavy patterns in hot paths. D1 supports HTTP batch calls — use Drizzle's batch API for multi-row inserts.
 

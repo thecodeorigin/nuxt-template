@@ -98,16 +98,55 @@ import { todoTable, type Todo } from '@nuxthub/db/schema'
 
 `@nuxthub/db/schema` is generated from `server/db/schema.ts` and re-exports everything it exports.
 
+### Reads: prefer `db.query.<table>` over `db.select().from(<table>)`
+
+**Project convention**: use the Drizzle **relational query API**
+(`db.query.<tableName>.findFirst` / `findMany`) for all reads. Drop to
+the SQL-like builder (`db.select().from(...)`) only when the relational
+API genuinely can't express what you need (custom aggregates, set
+operations, complex CTEs).
+
+Why this is the default here:
+
+- It returns plain typed objects, not row arrays you have to destructure.
+- `findFirst` returns `T | undefined` directly — no `.get()`, no
+  `[row] = await ...` dance, no manual array unwrap.
+- `columns: { ... }` is the cheap way to project only the fields you
+  need (smaller D1 payloads on the read path).
+- `with: { ... }` pulls related rows in a single round-trip once you've
+  defined the relations in `schema.ts` — far better than N+1 hand-joins.
+- The codebase already leans on it heavily (`grep "db.query."` if in
+  doubt). New code should match.
+
 ### Common patterns
 
 ```ts
 import { eq, and, desc } from 'drizzle-orm'
 
-// List (user-scoped, always add WHERE to prevent data leaks)
-const todos = await db.select().from(todoTable)
-  .where(eq(todoTable.userId, session.userId))
-  .orderBy(desc(todoTable.createdAt))
-  .limit(50)
+// Single item — returns Todo | undefined
+const todo = await db.query.todoTable.findFirst({
+  where: and(eq(todoTable.id, id), eq(todoTable.userId, session.userId)),
+})
+
+// Single item, only the fields you need
+const todo = await db.query.todoTable.findFirst({
+  where: eq(todoTable.id, id),
+  columns: { id: true, title: true, status: true },
+})
+
+// List (user-scoped — always include the userId predicate, missing it = data leak)
+const todos = await db.query.todoTable.findMany({
+  where: eq(todoTable.userId, session.userId),
+  orderBy: desc(todoTable.createdAt),
+  limit: 50,
+})
+
+// List + related rows in one round-trip (requires `relations()` in schema.ts)
+const todos = await db.query.todoTable.findMany({
+  where: eq(todoTable.userId, session.userId),
+  with: { tags: true, author: { columns: { id: true, name: true } } },
+  limit: 50,
+})
 
 // Create
 const [todo] = await db.insert(todoTable).values({
@@ -124,14 +163,26 @@ const [updated] = await db.update(todoTable)
 // Delete
 await db.delete(todoTable)
   .where(and(eq(todoTable.id, id), eq(todoTable.userId, session.userId)))
-
-// Single item
-const todo = await db.select().from(todoTable)
-  .where(and(eq(todoTable.id, id), eq(todoTable.userId, session.userId)))
-  .get()  // returns undefined if not found
 ```
 
-**Always add a user-scoped WHERE clause** for user-owned data. Missing `.where(eq(todoTable.userId, session.userId))` = data exposure bug.
+**Always add a user-scoped predicate** for user-owned data. Missing
+`where: eq(todoTable.userId, session.userId)` = data exposure bug.
+
+### When to use `db.select().from(...)` instead
+
+It's still the right tool for these cases — but they're the exception,
+not the default:
+
+- Aggregates: `db.select({ n: count() }).from(todoTable).where(...)`.
+- Set operations: `UNION`, `INTERSECT`, `EXCEPT`.
+- Custom joins where defining a `relations()` entry would be overkill
+  (one-off admin queries, reporting routes).
+- Anything where you need raw `sql\`...\`` columns mixed with table
+  columns.
+
+If you reach for `db.select()` and a relational equivalent exists, use
+the relational form. If a reviewer asks "why `db.select` here?", the
+answer should be one of the bullets above.
 
 ### Batch operations
 

@@ -321,6 +321,17 @@ everything that file exports.
   `text({ enum: [...] })`).
 - Export `Inferred*` types from the schema file; consumers import the type from
   `@nuxthub/db/schema`.
+- **Reads use `db.query.<table>.findFirst` / `findMany`** (the Drizzle
+  relational query API), not `db.select().from(<table>)`. The relational
+  form returns plain typed objects (no array unwrap, `findFirst` returns
+  `T | undefined`), projects fields with `columns: { ... }`, and joins
+  related tables with `with: { ... }` in one round-trip when
+  `relations()` is defined. Drop to `db.select().from(...)` **only** for
+  aggregates (`count`, `sum`), set operations (`UNION`/`INTERSECT`), or
+  joins that can't be expressed via `with:`. If you use `db.select`, be
+  ready to justify it. See
+  `.agents/skills/cook/references/database-workflow.md` ("Reads: prefer
+  `db.query.<table>`...") for the full rule and examples.
 
 ## Storage & caching
 

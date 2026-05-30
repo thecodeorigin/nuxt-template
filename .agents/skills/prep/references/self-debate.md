@@ -66,7 +66,7 @@ The objection is valid. Modify the plan. Document what changed.
 ```markdown
 ### YAGNI: Remove pagination from initial implementation
 **Decision**: Accept
-**Change**: Removed pagination from Phase 3. Plain `db.select().from(table).limit(50)` for now.
+**Change**: Removed pagination from Phase 3. Plain `db.query.todoTable.findMany({ limit: 50 })` for now.
 **Why**: Spec says "list all todos" — pagination is YAGNI unless load testing shows > 100 items.
 ```
 
