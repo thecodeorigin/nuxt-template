@@ -87,25 +87,40 @@ Ask via `AskUserQuestion`:
    "Other". Default option: "Use `support@<domain>`" (auto-derived if a
    domain was given earlier).
 
-## Step 4 — Phase 2: Product interview (3–4 questions)
+## Step 4 — Phase 2: Product interview (2–3 questions)
 
-Ask via `AskUserQuestion`, batched:
+Ask via `AskUserQuestion`, batched. **Frame question 1 as the pricing
+model** — that single answer covers both the user-facing "what is the
+thing" and the billing intent, so don't ask a separate "do you charge
+money?" question afterwards.
 
-1. **What's the main thing someone does with your product?** Free text
-   via "Other". Offer a few generic preview options:
-   - "Subscribes to access features"
-   - "Buys items from a catalog"
-   - "Tops up credits and spends them on usage"
-   - "Joins a workspace with their team and collaborates"
+1. **What's the pricing model of your product?** Free text via "Other"
+   for anything that doesn't fit.
+   - **Free forever** — no payment, ever (hobby, community, open
+     source, marketing site)
+   - **Freemium / free trial** — free tier today, paid plans or credit
+     top-ups later (most SaaS starts here)
+   - **Subscriptions** — users pay monthly or yearly for recurring
+     access
+   - **Pay-as-you-go credits** — users top up a balance and spend it
+     on usage (per API call, per generation, per export, etc.)
+   - **One-time catalog purchases** — users buy individual items
+     outright (no recurring billing)
 
-   This answer determines the **adapted name for "product"** (the layer
-   stays named `product`; only labels change):
-   - "subscribes" → **Plans**
-   - "buys items" → **Items**
-   - "tops up credits" → **Credit Packs**
-   - "joins a workspace" → **Plans** (workspaces are projects, plans are
-     products)
-   - anything else → use your judgment, fall back to **Plans**
+   This single answer determines two things:
+
+   **(a) The adapted name for "product"** (the layer stays named
+   `product`; only user-facing labels change):
+   - Free forever / Freemium / Subscriptions → **Plans**
+   - Pay-as-you-go credits → **Credit Packs**
+   - One-time catalog purchases → **Items**
+   - "Other" → use your judgment from the free-text answer, fall back
+     to **Plans**
+
+   **(b) The billing intent** stored for later (used by `/go-live`
+   reminders and by the product seed data):
+   - Free forever → `charges = false`
+   - Freemium / Subscriptions / Credits / One-time → `charges = true`
 
 2. **Do users have personal accounts, or do they create workspaces /
    teams that hold their stuff?**
@@ -118,19 +133,15 @@ Ask via `AskUserQuestion`, batched:
    - workspaces → **Workspaces** (or **Teams**, **Organizations** —
      pick whichever fits the language used in question 1)
 
-3. **Do you charge money?**
-   - **Not yet — free to use**
-   - **Yes**
-
-4. If charging = yes, ask **How do customers pay?** (multiSelect):
-   - **Monthly subscription**
-   - **Annual subscription**
-   - **One-time purchase**
-   - **Pay-as-you-go credits**
+3. Only if Q1 was **Subscriptions** or **Freemium**, ask
+   **What billing intervals do you want to offer?** (multiSelect):
+   - **Monthly**
+   - **Annual**
    - **Add-ons on top of a base plan**
 
-   This drives which `product.type` and `billing_interval` values your
-   seed data should use when you adapt the product list.
+   Skip this question entirely for the other pricing models — it's
+   already implied (credits = top-up amounts, one-time = single
+   charge, free = no billing).
 
 ## Step 5 — Phase 3: Sign-in providers (Google / GitHub)
 
@@ -232,7 +243,9 @@ domain in Resend before you go live or your emails won't send."
 
 ## Step 7 — Phase 5: Bank transfer payments (SePay)
 
-Only ask this if Step 4 question 3 (charge money?) was "Yes".
+Only ask this if the Step 4 pricing model implied `charges = true`
+(Freemium, Subscriptions, Credits, or One-time). Skip entirely for
+**Free forever**.
 
 > SePay lets Vietnamese customers pay you by bank transfer. If your
 > customers are outside Vietnam, you can skip this — we'll wire up a
@@ -339,9 +352,19 @@ Apply:
 
 ### 9c. `.env` for local dev
 
-Create or update `.env` (NOT `.env.example`). If `.env` exists, merge —
-don't overwrite values you weren't asked about (auth secrets generated
-by `pnpm cli dev setup` must survive). Set:
+**First, bootstrap `.env` via the CLI** — this copies `.env.example` →
+`.env` (if missing) and generates the three auth secrets
+(`NUXT_AUTH_SECRET`, `NUXT_TASK_SECRET`, `NUXT_WEBHOOK_SIGNING_SECRET`)
+in one shot. Idempotent — safe to run on a project that already has a
+`.env`:
+
+```bash
+pnpm cli dev setup
+```
+
+**Then merge** the values the user gave you into `.env`. Do not
+overwrite values you weren't asked about (the auth secrets just
+generated must survive). Set:
 
 - `NUXT_PUBLIC_BASE_DOMAIN=localhost:3002`
 - `NUXT_PUBLIC_SSL_ENABLED=false`
@@ -398,6 +421,38 @@ todo file at `.claude/onboarding-pending.md`:
 Only include lines for items they actually deferred. If nothing was
 deferred, don't create the file.
 
+### 9f. Install dependencies + offer to start the dev server
+
+Run `pnpm install` to make sure the lockfile is honoured (cheap if
+everything is already installed):
+
+```bash
+pnpm install
+```
+
+Then ask via `AskUserQuestion`:
+
+**Want me to start your project right now so you can see it in a
+browser?**
+- **Yes — start it** (Recommended) — boots the Nuxt dev server and the
+  bundled mail catcher. Opens at <http://localhost:3002>.
+- **Not yet** — I'll show you the command and let you start it when
+  you're ready.
+
+If **Yes**, run the dev server in the background and tell the user
+where to open it:
+
+```bash
+pnpm dev
+```
+
+(`pnpm dev` is the `pnpm cli dev up` alias — it streams Nuxt + maildev
+together; the mail UI is at <http://localhost:1080>.)
+
+If **Not yet**, just print:
+
+> When you're ready, run `pnpm dev` and open <http://localhost:3002>.
+
 ## Step 10 — Wrap-up
 
 Print a short, friendly summary:
@@ -409,12 +464,29 @@ Print a short, friendly summary:
 > - Brand color: **<primary>**, background tone: **<neutral>**
 > - **<productLabel>** (was "Products"), **<projectLabel>** (was "Projects")
 > - Saved <N> credentials to your local config
+> - Installed dependencies and generated your auth secrets
 >
 > Pending: <list, if any>
 >
-> **Next**: run `pnpm dev` and open http://localhost:3002 to see your
-> product. When you're ready to put it on the internet, type `/go-live`
-> and I'll walk you through it.
+> ### Building features from here
+>
+> The fastest workflow in this template is **`/prep` then `/cook`**:
+>
+> 1. **`/prep <what you want to build>`** — research + planning pass.
+>    Use a quality model (Opus or Sonnet) so the plan is solid. It
+>    investigates the codebase, debates approaches with itself, and
+>    writes an execution-ready plan to `.claude/plans/<slug>/`.
+> 2. **`/cook`** — disciplined REPL implementation pass that executes
+>    the plan step-by-step. A fast medium model (Haiku or Sonnet) is
+>    fine here; the plan does the thinking, `/cook` just types.
+>
+> Examples:
+> - `/prep add a billing page that lists invoices`
+> - `/prep let users invite teammates by email`
+> - then `/cook` once you've skimmed the plan.
+>
+> When you're ready to put your product on the internet, type
+> `/go-live` and I'll walk you through it.
 
 Mark your task complete. Do not commit on the user's behalf.
 
