@@ -16,6 +16,13 @@ const { items: orgs, q, hasMore, loading, loadMore, reset } = useInfiniteList(
 
 useInfiniteScroll(scrollEl, loadMore, { distance: 80, canLoadMore: () => hasMore.value })
 
+const { data: activeOrg, error: activeOrgError } = useAsyncData(
+  'organization-menu-active',
+  () => authStore.activeOrganizationId ? orgApi.fetchOrganization() : Promise.resolve(null),
+  { default: () => null, watch: [() => authStore.activeOrganizationId] },
+)
+whenError(activeOrgError)
+
 const open = ref(false)
 const createModalOpen = ref(false)
 const creating = ref(false)
@@ -66,7 +73,7 @@ async function submitCreate() {
 }
 
 const activeName = computed(() =>
-  orgs.value.find(o => o.id === authStore.activeOrganizationId)?.name ?? authStore.currentUser?.name ?? 'Organization')
+  orgs.value.find(o => o.id === authStore.activeOrganizationId)?.name ?? activeOrg.value?.name ?? 'Organization')
 </script>
 
 <template>
