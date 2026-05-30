@@ -1,5 +1,13 @@
 # Nuxt Template — agent-driven workspace
 
+[![CI](https://github.com/thecodeorigin/nuxt-template/actions/workflows/ci.yml/badge.svg)](https://github.com/thecodeorigin/nuxt-template/actions/workflows/ci.yml)
+[![Production](https://github.com/thecodeorigin/nuxt-template/actions/workflows/production.yml/badge.svg)](https://github.com/thecodeorigin/nuxt-template/actions/workflows/production.yml)
+[![Preview](https://github.com/thecodeorigin/nuxt-template/actions/workflows/preview.yml/badge.svg)](https://github.com/thecodeorigin/nuxt-template/actions/workflows/preview.yml)
+![Nuxt 4](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxt.js&logoColor=white)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F6821F?logo=cloudflare&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?logo=pnpm&logoColor=white)
+
 A Nuxt 4 + NuxtHub starter on a **full Cloudflare stack** (D1 SQLite · KV · R2
 · Workers) with **GitHub Actions deploys** and a **Claude Code agent setup**
 baked in. PR → Cloudflare Workers preview. Merge to `main` → production ships.
