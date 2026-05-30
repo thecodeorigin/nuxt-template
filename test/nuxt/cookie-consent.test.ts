@@ -1,11 +1,20 @@
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
 
 const toastAdd = vi.fn()
-vi.stubGlobal('useToast', () => ({ add: toastAdd }))
+const cookieValue = { current: null as string | null }
+
+mockNuxtImport('useToast', () => () => ({ add: toastAdd }))
+mockNuxtImport('useCookie', () => () => ({
+  get value() {
+    return cookieValue.current
+  },
+}))
 
 describe('useCookieConsent.prompt', () => {
   it('adds the toast once when no consent cookie is set', async () => {
-    vi.stubGlobal('useCookie', () => ({ value: null }))
+    toastAdd.mockClear()
+    cookieValue.current = null
     const { useCookieConsent } = await import('~/composables/useCookieConsent')
     useCookieConsent().prompt()
     expect(toastAdd).toHaveBeenCalledOnce()
@@ -14,7 +23,7 @@ describe('useCookieConsent.prompt', () => {
 
   it('does nothing when consent already set', async () => {
     toastAdd.mockClear()
-    vi.stubGlobal('useCookie', () => ({ value: 'accepted' }))
+    cookieValue.current = 'accepted'
     const { useCookieConsent } = await import('~/composables/useCookieConsent')
     useCookieConsent().prompt()
     expect(toastAdd).not.toHaveBeenCalled()

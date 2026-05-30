@@ -22,6 +22,7 @@ function makeSession(over: Partial<AuthUser> = {}): AuthUser {
     username: 'user1',
     name: 'User One',
     avatar: null,
+    bio: null,
     verified: true,
     provider: 'agent',
     abilities: [],

@@ -16,6 +16,7 @@ function makeAdmin(over: Partial<AuthUser> = {}): AuthUser {
     username: 'admin',
     name: 'Seed Admin',
     avatar: null,
+    bio: null,
     verified: true,
     provider: 'google',
     abilities: ['user:impersonate', 'user:read'],

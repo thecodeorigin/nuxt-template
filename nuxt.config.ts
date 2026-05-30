@@ -139,6 +139,15 @@ export default defineNuxtConfig({
     experimental: {
       tasks: true,
     },
+    typescript: {
+      tsConfig: {
+        include: [
+          '../test/unit/**/*',
+          '../layers/*/test/unit/**/*',
+          '../packages/*/test/unit/**/*',
+        ],
+      },
+    },
     routeRules: {
       // All JSON API routes are CSRF-exempt: session auth uses SameSite=Lax
       // cookies (which already prevent cross-origin cookie submission) and
