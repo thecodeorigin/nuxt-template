@@ -51,7 +51,7 @@ jobs:
           FAILED=0
           cf_check() {
             local label="$1" path="$2" http
-            http=$(curl -sf -o /dev/null -w "%{http_code}" \
+            http=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
               "https://api.cloudflare.com/client/v4${path}")
             if [ "$http" = "200" ]; then
