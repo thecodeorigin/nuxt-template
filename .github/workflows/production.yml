@@ -44,11 +44,18 @@ jobs:
     environment:
       name: Production
       url: https://template.thecodeorigin.com
+    # contents: write lets semantic-release create the git tag + GitHub Release.
+    permissions:
+      contents: write
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      # fetch-depth: 0 gives semantic-release the full history + tags it needs
+      # to compute the next version from conventional commits.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -80,3 +87,14 @@ jobs:
 
       - name: Deploy to Cloudflare Workers (production)
         run: npx wrangler --cwd .output deploy
+
+      # Auto-version from conventional commits, cut a GitHub Release, and attach
+      # the just-deployed .output as a downloadable, wrangler-deployable tarball
+      # (see .releaserc.json). No release is created when there are no releasable
+      # commits (feat / fix / perf / BREAKING CHANGE) since the last tag.
+      - name: Release (semantic-release)
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: '@semantic-release/exec'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

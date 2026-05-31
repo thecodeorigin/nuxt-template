@@ -1,0 +1,29 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "tar -czf nuxt-template-${nextRelease.version}-cloudflare.tar.gz -C .output ."
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "nuxt-template-*-cloudflare.tar.gz",
+            "label": "Cloudflare Workers build (prebuilt .output) — extract, then `wrangler --cwd <dir> deploy`"
+          }
+        ],
+        "successComment": false,
+        "failComment": false,
+        "failTitle": false,
+        "releasedLabels": false
+      }
+    ]
+  ]
+}
