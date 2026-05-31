@@ -38,6 +38,12 @@ jobs:
   deploy:
     name: Build · deploy (production)
     runs-on: ubuntu-latest
+    # Referencing an environment makes GitHub record a Deployment (in_progress →
+    # success/failure) on every run, visible at the repo's /deployments tab and
+    # under the "production" environment. `url` links the record to the live site.
+    environment:
+      name: production
+      url: https://template.thecodeorigin.com
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
