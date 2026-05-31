@@ -39,6 +39,8 @@ env:
 jobs:
   deploy:
     name: Build · deploy (preview)
+    environment:
+      name: Preview
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     permissions:
