@@ -37,8 +37,40 @@ env:
   CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
 
 jobs:
+  preflight:
+    name: Preflight · Cloudflare connectivity
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Cloudflare credentials and resources
+        env:
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID }}
+          CLOUDFLARE_CACHE_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID }}
+          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_PREVIEW_R2_BUCKET }}
+        run: |
+          FAILED=0
+          cf_check() {
+            local label="$1" path="$2" http
+            http=$(curl -sf -o /dev/null -w "%{http_code}" \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4${path}")
+            if [ "$http" = "200" ]; then
+              echo "✅  $label"
+            else
+              echo "❌  $label (HTTP $http)"
+              FAILED=1
+            fi
+          }
+          cf_check "Token valid"        "/user/tokens/verify"
+          cf_check "Account"            "/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          cf_check "KV namespace"       "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_KV_NAMESPACE_ID}"
+          cf_check "Cache KV namespace" "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_CACHE_NAMESPACE_ID}"
+          cf_check "R2 bucket"          "/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${CLOUDFLARE_R2_BUCKET}"
+          exit $FAILED
+
   deploy:
     name: Build · deploy (preview)
+    needs: preflight
     environment:
       name: Preview
     if: github.event.action != 'closed'
