@@ -225,3 +225,5 @@ Stack-level scripts:
 | `pnpm test:e2e` | Playwright |
 | `pnpm lint` | ESLint over the whole repo |
 | `pnpm typecheck` | `vue-tsc` via `nuxt typecheck` |
+
+<!-- Test deployment 1 -->
