@@ -61,8 +61,7 @@ jobs:
               FAILED=1
             fi
           }
-          cf_check "Token valid"        "/user/tokens/verify"
-          cf_check "Account"            "/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          cf_check "Token + account"    "/accounts/${CLOUDFLARE_ACCOUNT_ID}"
           cf_check "KV namespace"       "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_KV_NAMESPACE_ID}"
           cf_check "Cache KV namespace" "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_CACHE_NAMESPACE_ID}"
           cf_check "R2 bucket"          "/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${CLOUDFLARE_R2_BUCKET}"
