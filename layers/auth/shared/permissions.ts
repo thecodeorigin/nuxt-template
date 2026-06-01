@@ -1,6 +1,6 @@
 import { parseAbility, satisfiesAbility } from '#layers/auth/shared/ability'
 
-export const TENANT_SUBJECTS: readonly string[] = ['user', 'project', 'billing']
+export const TENANT_SUBJECTS: readonly string[] = ['user', 'project', 'billing', 'selfhost']
 export const TENANT_ACTIONS = ['read', 'write', 'delete', 'manage'] as const
 
 // Platform powers — grantable ONLY in the system org.
@@ -24,7 +24,7 @@ export const SELF_ABILITY_KEYS = new Set<string>([])
 
 // --- defaults ----------------------------------------------------------
 // Owner of a personal org (admin of their own workspace).
-export const DEFAULT_PERSONAL_ORG_ABILITIES: readonly string[] = ['user:manage', 'project:manage', 'billing:manage', 'billing:read']
+export const DEFAULT_PERSONAL_ORG_ABILITIES: readonly string[] = ['user:manage', 'project:manage', 'billing:manage', 'billing:read', 'selfhost:manage', 'selfhost:read']
 
 // Granted to a user joining an org as a plain member (direct add or accepted invitation).
 export const DEFAULT_MEMBER_ABILITIES: readonly string[] = ['project:read', 'project:write', 'billing:read']

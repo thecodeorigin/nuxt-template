@@ -73,6 +73,7 @@
     "@layers/auth": "workspace:*",
     "@layers/product": "workspace:*",
     "@layers/project": "workspace:*",
+    "@layers/selfhost": "workspace:*",
     "@layers/system": "workspace:*",
     "@nuxt/a11y": "catalog:",
     "@nuxt/eslint": "catalog:",
