@@ -4,7 +4,7 @@ import { readValidatedBody } from 'h3'
 import { decryptSecret, encryptSecret } from '~~/server/utils/crypto'
 import { organizationTable } from '#layers/auth/server/db/schema'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { selfhostDeploymentSecretTable, selfhostDeploymentTable } from '#layers/selfhost/server/db/schema'
+import { selfhostAuditTable, selfhostDeploymentSecretTable, selfhostDeploymentTable } from '#layers/selfhost/server/db/schema'
 import { setWorkerSecret } from '#layers/selfhost/server/services/cloudflare'
 import { findSecretDef, isKnownSecretKey } from '#layers/selfhost/server/services/secrets'
 import { PatchSecretsBodySchema } from '#layers/selfhost/shared/schemas/secret'
@@ -49,6 +49,17 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (event, { sess
       pushedToCf++
     }
   }
+
+  const keyList = body.updates.map(u => u.key).join(',')
+  await db.insert(selfhostAuditTable).values({
+    organization_id: orgId,
+    actor_user_id: session.id,
+    action: 'secret_update',
+    success: true,
+    cf_account_id: deployment?.cf_account_id ?? null,
+    error_message: keyList.length > 500 ? `${keyList.slice(0, 497)}...` : keyList,
+    finished_at: new Date(),
+  })
 
   return { updated: body.updates.length, pushedToCloudflare: pushedToCf }
 })

@@ -23,7 +23,7 @@ export const selfhostAuditTable = sqliteTable('selfhost_audit', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
   organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
   actor_user_id: text('actor_user_id').references(() => userTable.id, { onDelete: 'set null' }),
-  action: text('action', { enum: ['deploy', 'redeploy', 'disconnect'] }).notNull(),
+  action: text('action', { enum: ['deploy', 'redeploy', 'disconnect', 'secret_reveal', 'secret_update'] }).notNull(),
   success: integer('success', { mode: 'boolean' }).notNull(),
   cf_account_id: text('cf_account_id'),
   error_message: text('error_message'),

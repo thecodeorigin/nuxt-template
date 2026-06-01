@@ -50,6 +50,12 @@ export function useSelfhostApi() {
     })
   }
 
+  function revealSelfhostSecret(key: string) {
+    return $http<{ key: string, value: string, updatedAt: string | null }>(
+      `/api/selfhost/secrets/${encodeURIComponent(key)}/reveal`,
+    )
+  }
+
   function testSelfhostEmail(to: string) {
     return $http<{ reachable: boolean, status: number, workerUrl: string, note: string }>('/api/selfhost/test-email', {
       method: 'POST',
@@ -57,7 +63,7 @@ export function useSelfhostApi() {
     })
   }
 
-  return { fetchSelfhostStatus, listCloudflareAccounts, deploySelfhost, disconnectSelfhost, fetchSelfhostAudit, fetchSelfhostSecrets, patchSelfhostSecrets, testSelfhostEmail }
+  return { fetchSelfhostStatus, listCloudflareAccounts, deploySelfhost, disconnectSelfhost, fetchSelfhostAudit, fetchSelfhostSecrets, patchSelfhostSecrets, revealSelfhostSecret, testSelfhostEmail }
 }
 
 export interface SelfhostSecretItem {

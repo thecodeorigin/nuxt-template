@@ -14,15 +14,6 @@ export interface SecretDef {
 // Catalog of every env var the deployed worker understands. Editing this list is the way to add support
 // for new self-host config. `auto` entries are derived/generated at deploy time without user input.
 export const SELFHOST_SECRET_CATALOG: SecretDef[] = [
-  // System (auto-generated, stable across redeploys)
-  { key: 'NUXT_AUTH_SECRET', label: 'Auth signing secret', description: 'Used to encrypt session tokens. Stable across redeploys — rotating logs all users out.', category: 'system', type: 'secret_text', auto: 'random-hex-32' },
-  { key: 'NUXT_WEBHOOK_SIGNING_SECRET', label: 'Webhook signing secret', description: 'HMAC key for outbound webhook signatures.', category: 'system', type: 'secret_text', auto: 'random-hex-32' },
-  { key: 'NUXT_TASK_SECRET', label: 'Task bearer secret', description: 'Bearer guard for internal /api/tasks/** routes.', category: 'system', type: 'secret_text', auto: 'random-hex-32' },
-  { key: 'NUXT_CRON_SECRET', label: 'Cron bearer secret', description: 'Bearer guard for /api/cron/** routes.', category: 'system', type: 'secret_text', auto: 'random-hex-32' },
-  { key: 'NUXT_PUBLIC_BASE_DOMAIN', label: 'Public base domain', description: 'Derived from your workers.dev URL. Server-side reads only; client-side bundles use the build-time value.', category: 'system', type: 'secret_text', auto: 'derive-base-domain' },
-  { key: 'NUXT_PUBLIC_SSL_ENABLED', label: 'SSL enabled flag', description: 'Always "true" for workers.dev deployments.', category: 'system', type: 'secret_text', auto: 'derive-ssl-enabled' },
-  { key: 'NUXT_GITHUB_RELEASE_REPO', label: 'Release repo', description: 'OWNER/REPO that the deployed worker checks for self-updates.', category: 'system', type: 'secret_text', auto: 'derive-release-repo' },
-
   // OAuth (user-provided)
   { key: 'NUXT_GOOGLE_CLIENT_ID', label: 'Google OAuth client ID', description: 'From Google Cloud Console → Credentials. Whitelist your worker URL + /api/auth/google/callback.', category: 'oauth', type: 'secret_text', auto: null },
   { key: 'NUXT_GOOGLE_CLIENT_SECRET', label: 'Google OAuth client secret', description: 'Pairs with the client ID above.', category: 'oauth', type: 'secret_text', auto: null },
