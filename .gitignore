@@ -47,3 +47,5 @@ test-results/
 ux/
 
 .wrangler
+
+.tmp/*

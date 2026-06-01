@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build self-host bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (Cloudflare Workers preset)
+        run: pnpm build
+        env:
+          NITRO_PRESET: cloudflare-module
+
+      - name: Pack self-host bundle
+        run: node scripts/make-deploy-bundle.mjs
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+
+      - name: Pack tarball (manual deploy convenience)
+        run: tar -czf nuxt-template-${{ github.ref_name }}-cloudflare.tar.gz -C .output .
+
+      - name: Read SHA-256
+        id: hash
+        run: echo "sha256=$(cat bundle.sha256)" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            bundle.json
+            nuxt-template-*-cloudflare.tar.gz
+          body: |
+            Self-host deployable bundle for `${{ github.ref_name }}`.
+
+            sha256:${{ steps.hash.outputs.sha256 }}
+
+            **For users self-hosting:** the application running on the upstream
+            instance will fetch `bundle.json` from this release automatically
+            when you click Deploy on the Self-hosting settings page. The SHA-256
+            above is verified before the worker is uploaded to your account.
+
+            **For manual deploy:** download `nuxt-template-${{ github.ref_name }}-cloudflare.tar.gz`,
+            extract, and run `wrangler deploy` against your account.

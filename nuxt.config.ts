@@ -222,6 +222,9 @@ export default defineNuxtConfig({
     cronSecret: process.env.CRON_SECRET || '',
 
     customerSupportEmail: '',
+
+    githubReleaseRepo: '',
+    githubToken: '',
   },
 
   // Production-grade security applied uniformly across development,
