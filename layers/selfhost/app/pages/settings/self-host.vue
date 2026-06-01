@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CloudflareAccount, SelfhostStatus } from '#layers/selfhost/app/api/useSelfhostApi'
 import { useSelfhostApi } from '#layers/selfhost/app/api/useSelfhostApi'
-import SelfhostSecretsCard from '#layers/selfhost/app/components/Selfhost/SelfhostSecretsCard.vue'
+import SelfhostSecretsTable from '#layers/selfhost/app/components/Selfhost/SelfhostSecretsTable.vue'
 
 definePageMeta({ can: ['selfhost:read', 'selfhost:manage'] })
 useHead({ title: 'Self-hosting' })
@@ -133,6 +133,13 @@ async function disconnect() {
 const accountItems = computed(() =>
   accounts.value.map(a => ({ label: `${a.name} — ${a.id.slice(0, 8)}…`, value: a.id })),
 )
+
+const tabs = computed(() => [
+  { label: 'Deployment', slot: 'deployment' as const, icon: 'i-lucide-cloud' },
+  { label: 'Configuration', slot: 'configuration' as const, icon: 'i-lucide-key' },
+])
+
+const activeTab = ref('0')
 </script>
 
 <template>
@@ -149,13 +156,14 @@ const accountItems = computed(() =>
     </template>
 
     <template #body>
-      <div class="max-w-2xl mx-auto p-6 space-y-6">
+      <div class="max-w-5xl">
         <UAlert
           v-if="status?.update_available"
           color="warning"
           icon="i-lucide-refresh-cw"
           title="Update available"
           :description="`New version ${status.latest_version} is available (deployed: ${status.deployed_version})`"
+          class="mb-4"
         >
           <template #actions>
             <UButton :loading="deploying" color="warning" size="sm" @click="deploy">
@@ -170,115 +178,145 @@ const accountItems = computed(() =>
           icon="i-lucide-clock"
           title="Cloudflare token expiring soon"
           :description="`Your stored token expires in ${tokenExpiresInDays} day(s). Paste a new token and redeploy to refresh it.`"
+          class="mb-4"
         />
 
-        <UCard v-if="status?.status && status.status !== 'idle'">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <p class="font-semibold">
-                Deployment
-              </p>
-              <UBadge :color="statusColor" variant="subtle">
-                {{ status.status }}
-              </UBadge>
+        <UTabs
+          v-model="activeTab"
+          :items="tabs"
+          class="w-full min-w-0"
+          :ui="{ list: 'mx-auto w-fit', content: 'min-w-0' }"
+        >
+          <template #deployment>
+            <div class="mt-6 space-y-6 max-w-2xl min-w-0">
+              <UCard v-if="status?.status && status.status !== 'idle'">
+                <template #header>
+                  <div class="flex items-center justify-between">
+                    <p class="font-semibold">
+                      Deployment
+                    </p>
+                    <UBadge :color="statusColor" variant="subtle">
+                      {{ status.status }}
+                    </UBadge>
+                  </div>
+                </template>
+
+                <div class="space-y-2 text-sm">
+                  <p v-if="status.workers_dev_url">
+                    <span class="text-muted">URL:</span>
+                    <a :href="status.workers_dev_url" target="_blank" rel="noopener" class="text-primary hover:underline ml-1">
+                      {{ status.workers_dev_url }}
+                    </a>
+                  </p>
+                  <p v-if="status.deployed_version">
+                    <span class="text-muted">Version:</span> {{ status.deployed_version }}
+                  </p>
+                  <p v-if="status.cf_account_id">
+                    <span class="text-muted">Cloudflare account:</span> <code class="text-xs">{{ status.cf_account_id }}</code>
+                  </p>
+                  <p v-if="status.last_error" class="text-error">
+                    {{ status.last_error }}
+                  </p>
+                </div>
+
+                <template #footer>
+                  <UButton :loading="disconnecting" color="error" variant="soft" size="sm" @click="disconnect">
+                    Disconnect
+                  </UButton>
+                </template>
+              </UCard>
+
+              <UCard>
+                <template #header>
+                  <p class="font-semibold">
+                    {{ status?.status === 'deployed' ? 'Redeploy' : 'Deploy to your Cloudflare account' }}
+                  </p>
+                </template>
+
+                <div class="space-y-4">
+                  <details class="text-sm">
+                    <summary class="cursor-pointer text-primary hover:underline">
+                      How do I get a Cloudflare API token?
+                    </summary>
+                    <ol class="mt-2 list-decimal pl-6 space-y-1 text-muted">
+                      <li>
+                        Go to
+                        <a :href="TOKEN_CREATE_URL" target="_blank" rel="noopener" class="text-primary hover:underline">
+                          Cloudflare → My Profile → API Tokens → Create Token
+                        </a>
+                      </li>
+                      <li>Choose <strong>Create Custom Token</strong></li>
+                      <li>
+                        Add these permissions (all <strong>Edit</strong> unless noted):
+                        Workers Scripts, Workers KV Storage, Workers R2 Storage, D1,
+                        Account Settings (Read), User Details (Read)
+                      </li>
+                      <li>Account Resources: include all accounts (or pick one)</li>
+                      <li>Continue → Create Token → copy the token (shown once)</li>
+                    </ol>
+                  </details>
+
+                  <UFormField label="Cloudflare API Token" help="Leave blank to redeploy using the stored token.">
+                    <UInput
+                      v-model="tokenInput"
+                      type="password"
+                      placeholder="•••••••••••••••••••••••••••••••"
+                      class="w-full font-mono"
+                      autocomplete="off"
+                      @blur="loadAccountsForToken"
+                    />
+                  </UFormField>
+
+                  <UFormField
+                    v-if="accounts.length > 0"
+                    label="Cloudflare account"
+                    :help="accounts.length === 1 ? 'Auto-selected (this token has access to one account).' : 'Pick which account to deploy into.'"
+                  >
+                    <USelect
+                      v-model="selectedAccountId"
+                      :items="accountItems"
+                      :loading="fetchingAccounts"
+                      :disabled="accounts.length === 1"
+                      placeholder="Select an account"
+                      class="w-full"
+                    />
+                  </UFormField>
+
+                  <UButton
+                    :loading="deploying"
+                    :disabled="status?.status === 'deploying'"
+                    @click="deploy"
+                  >
+                    {{ status?.status === 'deployed' ? 'Redeploy' : 'Deploy' }}
+                  </UButton>
+                </div>
+              </UCard>
             </div>
           </template>
 
-          <div class="space-y-2 text-sm">
-            <p v-if="status.workers_dev_url">
-              <span class="text-muted">URL:</span>
-              <a :href="status.workers_dev_url" target="_blank" rel="noopener" class="text-primary hover:underline ml-1">
-                {{ status.workers_dev_url }}
-              </a>
-            </p>
-            <p v-if="status.deployed_version">
-              <span class="text-muted">Version:</span> {{ status.deployed_version }}
-            </p>
-            <p v-if="status.cf_account_id">
-              <span class="text-muted">Cloudflare account:</span> <code class="text-xs">{{ status.cf_account_id }}</code>
-            </p>
-            <p v-if="status.last_error" class="text-error">
-              {{ status.last_error }}
-            </p>
-          </div>
-
-          <template #footer>
-            <UButton :loading="disconnecting" color="error" variant="soft" size="sm" @click="disconnect">
-              Disconnect
-            </UButton>
-          </template>
-        </UCard>
-
-        <SelfhostSecretsCard
-          v-if="status?.status === 'deployed'"
-          :workers-dev-url="status.workers_dev_url"
-        />
-
-        <UCard>
-          <template #header>
-            <p class="font-semibold">
-              {{ status?.status === 'deployed' ? 'Redeploy' : 'Deploy to your Cloudflare account' }}
-            </p>
-          </template>
-
-          <div class="space-y-4">
-            <details class="text-sm">
-              <summary class="cursor-pointer text-primary hover:underline">
-                How do I get a Cloudflare API token?
-              </summary>
-              <ol class="mt-2 list-decimal pl-6 space-y-1 text-muted">
-                <li>
-                  Go to
-                  <a :href="TOKEN_CREATE_URL" target="_blank" rel="noopener" class="text-primary hover:underline">
-                    Cloudflare → My Profile → API Tokens → Create Token
-                  </a>
-                </li>
-                <li>Choose <strong>Create Custom Token</strong></li>
-                <li>
-                  Add these permissions (all <strong>Edit</strong> unless noted):
-                  Workers Scripts, Workers KV Storage, Workers R2 Storage, D1,
-                  Account Settings (Read), User Details (Read)
-                </li>
-                <li>Account Resources: include all accounts (or pick one)</li>
-                <li>Continue → Create Token → copy the token (shown once)</li>
-              </ol>
-            </details>
-
-            <UFormField label="Cloudflare API Token" help="Leave blank to redeploy using the stored token.">
-              <UInput
-                v-model="tokenInput"
-                type="password"
-                placeholder="•••••••••••••••••••••••••••••••"
-                class="w-full font-mono"
-                autocomplete="off"
-                @blur="loadAccountsForToken"
+          <template #configuration>
+            <div class="mt-6 min-w-0">
+              <SelfhostSecretsTable
+                v-if="status?.status === 'deployed'"
+                :workers-dev-url="status.workers_dev_url"
               />
-            </UFormField>
-
-            <UFormField
-              v-if="accounts.length > 0"
-              label="Cloudflare account"
-              :help="accounts.length === 1 ? 'Auto-selected (this token has access to one account).' : 'Pick which account to deploy into.'"
-            >
-              <USelect
-                v-model="selectedAccountId"
-                :items="accountItems"
-                :loading="fetchingAccounts"
-                :disabled="accounts.length === 1"
-                placeholder="Select an account"
-                class="w-full"
-              />
-            </UFormField>
-
-            <UButton
-              :loading="deploying"
-              :disabled="status?.status === 'deploying'"
-              @click="deploy"
-            >
-              {{ status?.status === 'deployed' ? 'Redeploy' : 'Deploy' }}
-            </UButton>
-          </div>
-        </UCard>
+              <UAlert
+                v-else
+                color="neutral"
+                variant="subtle"
+                icon="i-lucide-info"
+                title="No deployment yet"
+                description="Deploy this app to a Cloudflare account first, then come back here to configure environment variables."
+              >
+                <template #actions>
+                  <UButton size="sm" variant="soft" @click="activeTab = '0'">
+                    Go to Deployment
+                  </UButton>
+                </template>
+              </UAlert>
+            </div>
+          </template>
+        </UTabs>
       </div>
     </template>
   </UDashboardPanel>
