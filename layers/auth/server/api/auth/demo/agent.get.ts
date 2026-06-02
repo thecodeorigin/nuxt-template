@@ -4,7 +4,6 @@ import { createPersonalOrganization } from '#layers/auth/server/services/organiz
 import { persistSession } from '#layers/auth/server/services/session'
 
 export default defineEventHandler(async (event) => {
-  // Block in production
   if (!import.meta.dev) {
     throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
@@ -13,7 +12,6 @@ export default defineEventHandler(async (event) => {
 
   const email = 'agent@localhost'
 
-  // Upsert fake user
   const existing = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, email) })
 
   let user = existing

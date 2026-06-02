@@ -49,10 +49,10 @@ Local development bootstrap and agent backdoor helpers.
 ```bash
 pnpm cli dev up                                     # run nuxt dev + maildev together (see below)
 pnpm cli dev setup                                  # create .env + generate auth secrets (idempotent)
-pnpm cli dev seed                                   # POST /api/auth/dev-seed
-pnpm cli dev provision --email you@example.com      # POST /api/auth/dev-provision
-pnpm cli dev login    --email you@example.com       # POST /api/auth/dev-login
-pnpm cli dev cleanup  --emails you@example.com      # POST /api/auth/dev-cleanup
+pnpm cli dev seed                                   # POST /api/auth/demo/dev-seed
+pnpm cli dev provision --email you@example.com      # POST /api/auth/demo/dev-provision
+pnpm cli dev login    --email you@example.com       # POST /api/auth/demo/dev-login
+pnpm cli dev cleanup  --emails you@example.com      # POST /api/auth/demo/cleanup
 ```
 
 `up` runs `nuxt dev` and `maildev` as one foreground process. Both streams are

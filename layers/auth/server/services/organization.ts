@@ -4,7 +4,7 @@ import { organizationInvitationTable, organizationMemberRoleTable, organizationM
 import { and, asc, eq, ne, or, sql } from 'drizzle-orm'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import { escapeLike } from '~~/shared/utils/string'
-import { DEFAULT_MEMBER_ABILITIES, DEFAULT_PERSONAL_ORG_ABILITIES, mergeOrgAbilities } from '#layers/auth/shared/permissions'
+import { DEFAULT_PERSONAL_ORG_ABILITIES, DEFAULT_ROLE_ABILITIES, DEFAULT_ROLE_NAME, DefaultRole, mergeOrgAbilities } from '#layers/auth/shared/permissions'
 
 type UserRow = typeof userTable.$inferSelect
 
@@ -122,8 +122,8 @@ export async function countOrgManagers(orgId: string): Promise<number> {
 
 export async function ensureSystemRoles(orgId: string) {
   await db.insert(roleTable).values([
-    { organization_id: orgId, name: 'Admin', description: 'Full workspace control', permissions: [...DEFAULT_PERSONAL_ORG_ABILITIES], is_system: true },
-    { organization_id: orgId, name: 'Member', description: 'Standard member', permissions: [...DEFAULT_MEMBER_ABILITIES], is_system: true },
+    { organization_id: orgId, name: DEFAULT_ROLE_NAME[DefaultRole.ADMIN], description: 'Full workspace control', permissions: [...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]], is_system: true },
+    { organization_id: orgId, name: DEFAULT_ROLE_NAME[DefaultRole.MEMBER], description: 'Standard member', permissions: [...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]], is_system: true },
   ]).onConflictDoNothing()
   return db.query.roleTable.findMany({ where: eq(roleTable.organization_id, orgId) })
 }
@@ -168,7 +168,7 @@ export async function createPersonalOrganization(user: UserRow) {
     .values({ user_id: user.id, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
     .onConflictDoNothing()
   const roles = await ensureSystemRoles(org!.id)
-  const adminRole = roles.find(r => r.name === 'Admin')
+  const adminRole = roles.find(r => r.name === DEFAULT_ROLE_NAME[DefaultRole.ADMIN])
   if (adminRole) {
     const member = await db.query.organizationMemberTable.findFirst({
       where: and(eq(organizationMemberTable.user_id, user.id), eq(organizationMemberTable.organization_id, org!.id)),
@@ -192,7 +192,7 @@ export async function createTenantOrganization(userId: string, name: string) {
     .values({ user_id: userId, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
     .onConflictDoNothing()
   const roles = await ensureSystemRoles(org!.id)
-  const adminRole = roles.find(r => r.name === 'Admin')
+  const adminRole = roles.find(r => r.name === DEFAULT_ROLE_NAME[DefaultRole.ADMIN])
   if (adminRole) {
     const member = await db.query.organizationMemberTable.findFirst({
       where: and(eq(organizationMemberTable.user_id, userId), eq(organizationMemberTable.organization_id, org!.id)),

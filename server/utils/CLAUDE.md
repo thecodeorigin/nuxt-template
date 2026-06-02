@@ -21,7 +21,7 @@
 | Auth (`AuthUser`, `defineAuthenticatedHandler`) | `layers/auth/server/services/auth.ts` |
 | Authz (`defineAuthorizedHandler`, `parseAbility`, `defineSubject`) | `layers/auth/server/services/casl.ts` |
 | Impersonation feature | `layers/auth/server/services/impersonate.ts` |
-| Seed user definitions + runner functions | `layers/auth/server/services/seed.ts` |
+| Seed fixtures + task runners | `layers/auth/server/tasks/seed/{permissions,users,organizations,all}.ts` |
 | Database client (`db`) + schema, KV (`kv`), blob (`blob`) | NuxtHub virtual packages — `@nuxthub/db`, `@nuxthub/db/schema`, `@nuxthub/kv`, `@nuxthub/blob` (auto-imported server-side). The Drizzle schema lives in `server/db/schema.ts`. |
 
 ## Scheduled tasks (cron)

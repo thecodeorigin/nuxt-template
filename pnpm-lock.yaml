@@ -411,6 +411,9 @@ importers:
       '@layers/project':
         specifier: workspace:*
         version: link:layers/project
+      '@layers/selfhost':
+        specifier: workspace:*
+        version: link:layers/selfhost
       '@layers/system':
         specifier: workspace:*
         version: link:layers/system
@@ -561,6 +564,8 @@ importers:
   layers/project: {}
 
   layers/referral: {}
+
+  layers/selfhost: {}
 
   layers/support: {}
 

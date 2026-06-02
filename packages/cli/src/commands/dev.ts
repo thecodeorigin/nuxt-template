@@ -92,38 +92,38 @@ const setup = defineCommand({
 })
 
 const seed = defineCommand({
-  meta: { name: 'seed', description: 'Seed local DB via /api/auth/dev-seed' },
+  meta: { name: 'seed', description: 'Seed local DB via /api/auth/demo/dev-seed' },
   args: { url: urlArg },
   async run({ args }) {
-    const res = await callDevRoute<{ users: Array<{ id: string, primary_email: string }> }>('/api/auth/dev-seed', undefined, args.url)
+    const res = await callDevRoute<{ users: Array<{ id: string, primary_email: string }> }>('/api/auth/demo/dev-seed', undefined, args.url)
     printJson(res)
   },
 })
 
 const provision = defineCommand({
-  meta: { name: 'provision', description: 'Provision a personal user + session via /api/auth/dev-provision' },
+  meta: { name: 'provision', description: 'Provision a personal user + session via /api/auth/demo/dev-provision' },
   args: {
     url: urlArg,
     email: { type: 'string', required: true, description: 'User email' },
     name: { type: 'string', description: 'Display name' },
   },
   async run({ args }) {
-    const res = await callDevRoute('/api/auth/dev-provision', { email: args.email, name: args.name }, args.url)
+    const res = await callDevRoute('/api/auth/demo/dev-provision', { email: args.email, name: args.name }, args.url)
     printJson(res)
   },
 })
 
 const login = defineCommand({
-  meta: { name: 'login', description: 'Issue a session for an existing user via /api/auth/dev-login' },
+  meta: { name: 'login', description: 'Issue a session for an existing user via /api/auth/demo/dev-login' },
   args: { url: urlArg, email: { type: 'string', required: true, description: 'User email' } },
   async run({ args }) {
-    const res = await callDevRoute('/api/auth/dev-login', { email: args.email }, args.url)
+    const res = await callDevRoute('/api/auth/demo/dev-login', { email: args.email }, args.url)
     printJson(res)
   },
 })
 
 const cleanup = defineCommand({
-  meta: { name: 'cleanup', description: 'Delete users + sessions via /api/auth/dev-cleanup' },
+  meta: { name: 'cleanup', description: 'Delete users + sessions via /api/auth/demo/cleanup' },
   args: {
     url: urlArg,
     emails: { type: 'string', description: 'Comma-separated emails' },
@@ -131,7 +131,7 @@ const cleanup = defineCommand({
   },
   async run({ args }) {
     const split = (s?: string) => (s ? s.split(',').map(x => x.trim()).filter(Boolean) : [])
-    const res = await callDevRoute('/api/auth/dev-cleanup', {
+    const res = await callDevRoute('/api/auth/demo/cleanup', {
       emails: split(args.emails),
       session_ids: split(args.sessions),
     }, args.url)

@@ -22,12 +22,35 @@ export const TENANT_ABILITY_KEYS = new Set<string>(
 // not toggled in the editor.
 export const SELF_ABILITY_KEYS = new Set<string>([])
 
-// --- defaults ----------------------------------------------------------
-// Owner of a personal org (admin of their own workspace).
-export const DEFAULT_PERSONAL_ORG_ABILITIES: readonly string[] = ['user:manage', 'project:manage', 'billing:manage', 'billing:read', 'selfhost:manage', 'selfhost:read']
+// --- default role model (source of truth) ------------------------------
+// Edit DEFAULT_ROLE_ABILITIES when a feature rolls out, then run `roles:sync`
+// (see server/tasks/roles/sync.ts) to replace every org's system-role
+// permissions. `manage` supersets read/write/delete at the same scope
+// (ability.ts:satisfiesAbility), so a `*:manage` key already implies its reads.
+export enum DefaultRole {
+  ADMIN = 'admin',
+  MEMBER = 'member',
+  GUEST = 'guest',
+}
 
-// Granted to a user joining an org as a plain member (direct add or accepted invitation).
-export const DEFAULT_MEMBER_ABILITIES: readonly string[] = ['project:read', 'project:write', 'billing:read']
+export const DEFAULT_ROLE_ABILITIES = {
+  [DefaultRole.ADMIN]: ['user:manage', 'project:manage', 'selfhost:manage', 'billing:manage'],
+  [DefaultRole.MEMBER]: ['user:read', 'project:read', 'project:write', 'selfhost:read', 'selfhost:write', 'billing:read'],
+  [DefaultRole.GUEST]: ['project:read'],
+} as const satisfies Record<DefaultRole, readonly string[]>
+
+// Display name of each materialized system role. Guest has no row today (preset
+// only) but stays here for invitation/demo presets + future materialization.
+export const DEFAULT_ROLE_NAME: Record<DefaultRole, string> = {
+  [DefaultRole.ADMIN]: 'Admin',
+  [DefaultRole.MEMBER]: 'Member',
+  [DefaultRole.GUEST]: 'Guest',
+}
+
+// Owner of a personal org (admin of their own workspace).
+export const DEFAULT_PERSONAL_ORG_ABILITIES: readonly string[] = DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]
+// Granted to a user joining an org as a plain member (direct add / accepted invite).
+export const DEFAULT_MEMBER_ABILITIES: readonly string[] = DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]
 
 export interface PermissionDef {
   key: string

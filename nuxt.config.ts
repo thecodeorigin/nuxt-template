@@ -44,6 +44,16 @@ export default defineNuxtConfig({
     nitro: {
       // Cloudflare Workers (modules syntax). CI deploys with `wrangler deploy`.
       preset: process.env.NITRO_PRESET || 'cloudflare_module',
+      // Dev-only auth backdoors never ship. Runtime import.meta.dev guards remain
+      // the source of truth; this strips the handlers from the bundle entirely.
+      // demo/login is deliberately NOT listed — it serves the NUXT_DEMO_MODE demo.
+      ignore: [
+        '**/api/auth/demo/dev-login*',
+        '**/api/auth/demo/dev-provision*',
+        '**/api/auth/demo/dev-seed*',
+        '**/api/auth/demo/cleanup*',
+        '**/api/auth/demo/agent*',
+      ],
     },
     image: {
       provider: 'cloudflare',
@@ -223,7 +233,7 @@ export default defineNuxtConfig({
 
     customerSupportEmail: '',
 
-    githubReleaseRepo: '',
+    githubRepository: '',
     githubToken: '',
   },
 

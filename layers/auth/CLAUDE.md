@@ -13,9 +13,9 @@
 | Authenticated handler wrapper | `server/services/auth.ts` (`defineAuthenticatedHandler`) |
 | Authorization (`defineAuthorizedHandler`, `defineSubject`, ability parsing) | `server/services/casl.ts` |
 | Impersonation (start/stop/list, session swap utilities) | `server/services/impersonate.ts`, `server/api/auth/impersonate/*` |
-| Ability presets + seed fixtures (used by demo-login + e2e tests) | `server/services/seed.ts` |
+| Seed fixtures + task runners | `server/tasks/seed/{permissions,users,organizations,all}.ts` |
 | OAuth (Google, GitHub) | `server/api/auth/{google,github}{,/callback}.get.ts` |
-| Demo/dev login backdoors | `server/api/auth/{demo-login,dev-login,dev-cleanup,dev-seed,agent}.*.ts` |
+| Demo/dev login backdoors | `server/api/auth/demo/{login,dev-login,dev-provision,dev-seed,cleanup,agent}.*` |
 | Frontend session store + ability rules sync | `app/stores/auth.ts`, `app/plugins/casl.ts` |
 | Route guards | `app/middleware/{auth,casl}.global.ts` |
 | Login + 403 + impersonation UI | `app/pages/{auth/login,forbidden,sandbox/impersonate}.vue` |
@@ -24,7 +24,8 @@
 | Invitations (token links, create/list/revoke, public join + accept) | `server/api/organization/invitations/*`, `server/api/invitations/[token]/*`, `app/pages/join/[token].vue`, `shared/schemas/invitation.ts` |
 | `PageMeta` extensions (`public`, `unauthenticatedOnly`, `can`) | `app/types/router.d.ts` |
 | Schemas (auth, member, organization, user, invitation) | `shared/schemas/*` |
-| Ability catalog + default grants (`DEFAULT_*_ABILITIES`) | `shared/permissions.ts` |
+| Ability catalog + role→permission source of truth (`DEFAULT_ROLE_ABILITIES`) | `shared/permissions.ts` — edit here, then run `roles:sync` |
+| Role permission reconcile command + prod trigger | `server/tasks/roles/sync.ts` (logic + task), `server/api/auth/roles/sync.post.ts` (bearer route) |
 
 ## Conventions
 
@@ -158,7 +159,9 @@ layers/auth/
     types/router.d.ts   PageMeta + RouteMeta augmentations
   server/
     api/
-      auth/             OAuth, me, logout, phone, impersonate/*, demo/dev backdoors
+      auth/             OAuth, me, logout, phone, impersonate/*
+        demo/           Backdoor routes: login, dev-login, dev-provision, dev-seed, cleanup, agent
+        roles/sync.post.ts  Bearer-guarded prod trigger for roles:sync
       organization/     Active-org: members/*, invitations/*, index.{get,patch}
       organizations/    Multi-org: list, switch
       invitations/[token]/  Public index.get + authenticated accept.post
@@ -170,7 +173,9 @@ layers/auth/
       impersonate.ts    Session swap helpers + IMPERSONATE_ABILITY constant
       organization.ts   Org/membership/invitation queries + helpers
       session.ts        buildSession + refreshUserSessions (live KV rewrite)
-      seed.ts           ABILITY_PRESETS + SEED_USERS fixtures (e2e/dev only)
+    tasks/
+      seed/             permissions.ts, users.ts, organizations.ts, all.ts
+      roles/sync.ts     planRolePermissionSync (pure) + syncDefaultRolePermissions + task
   shared/
     permissions.ts      Ability catalog + DEFAULT_{PERSONAL_ORG,MEMBER}_ABILITIES
     schemas/            impersonate, member, organization, user, invitation

@@ -45,6 +45,7 @@ export default defineConfig({
             'packages/*/test/unit/**/*.{test,spec}.ts',
           ],
           environment: 'node',
+          setupFiles: ['./test/setup/nitro-task-globals.ts'],
         },
       },
       await defineVitestProject({
