@@ -476,7 +476,7 @@ isolate). Don't add a `$development.security` or `$test.security` block —
 the goal is for dev/preview to behave just like production.
 
 `NUXT_DEMO_MODE=true` on the Cloudflare preview/production env ungates
-`/api/auth/demo-login` so the deployed app accepts the
+`/api/auth/demo/login` so the deployed app accepts the
 "Sign in as Admin/User Agent" buttons. **Don't set it on a non-demo
 deployment** — it's a deliberate backdoor for the demo project.
 

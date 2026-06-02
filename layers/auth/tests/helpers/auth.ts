@@ -24,14 +24,14 @@ export function uniqueEmail(prefix = 'e2e'): string {
 const issuedSessionIds = new Set<string>()
 
 export async function devSeed(request: APIRequestContext) {
-  const res = await request.post('/api/auth/dev-seed')
+  const res = await request.post('/api/auth/demo/dev-seed')
   expect(res.ok()).toBeTruthy()
   return res.json() as Promise<{ users: Array<{ id: string, primary_email: string }> }>
 }
 
 export async function devLogin(baseURL: string, email: string) {
   const ctx = await apiRequest.newContext({ baseURL })
-  const res = await ctx.post('/api/auth/dev-login', { data: { email } })
+  const res = await ctx.post('/api/auth/demo/dev-login', { data: { email } })
   expect(res.ok()).toBeTruthy()
   const body = (await res.json()) as { session_id: string, user_id: string }
   issuedSessionIds.add(body.session_id)
@@ -41,7 +41,7 @@ export async function devLogin(baseURL: string, email: string) {
 
 export async function devProvision(baseURL: string, email: string, name?: string) {
   const ctx = await apiRequest.newContext({ baseURL })
-  const res = await ctx.post('/api/auth/dev-provision', { data: { email, name } })
+  const res = await ctx.post('/api/auth/demo/dev-provision', { data: { email, name } })
   expect(res.ok()).toBeTruthy()
   const body = (await res.json()) as { session_id: string, user_id: string, personal_org_id: string }
   issuedSessionIds.add(body.session_id)
@@ -50,7 +50,7 @@ export async function devProvision(baseURL: string, email: string, name?: string
 }
 
 export async function devCleanup(request: APIRequestContext, emails: string[] = []) {
-  await request.post('/api/auth/dev-cleanup', {
+  await request.post('/api/auth/demo/cleanup', {
     data: { emails, session_ids: Array.from(issuedSessionIds) },
   })
   issuedSessionIds.clear()
@@ -73,7 +73,7 @@ export async function demoLogin(
   baseURL: string,
   agent: 'admin' | 'user',
 ) {
-  const res = await request.post('/api/auth/demo-login', { data: { agent } })
+  const res = await request.post('/api/auth/demo/login', { data: { agent } })
   expect(res.ok()).toBeTruthy()
   const body = (await res.json()) as { session_id: string, user_id: string }
   await context.addCookies([{ name: 'sessionid', value: body.session_id, url: baseURL, httpOnly: true, sameSite: 'Lax' }])
@@ -83,7 +83,7 @@ export async function demoLogin(
 /** Login via demo-login using a throwaway context and return the session_id (no cookie set). */
 export async function demoLoginSessionId(baseURL: string, agent: 'admin' | 'user') {
   const ctx = await apiRequest.newContext({ baseURL })
-  const res = await ctx.post('/api/auth/demo-login', { data: { agent } })
+  const res = await ctx.post('/api/auth/demo/login', { data: { agent } })
   expect(res.ok()).toBeTruthy()
   const body = (await res.json()) as { session_id: string, user_id: string, primary_email: string }
   await ctx.dispose()

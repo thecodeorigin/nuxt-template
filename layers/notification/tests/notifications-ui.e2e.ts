@@ -3,7 +3,7 @@ import { expect, test } from '@nuxt/test-utils/playwright'
 const COOKIE_SPLIT = /,\s*(?=\w+=)/
 
 test.beforeEach(async ({ context, request, baseURL }) => {
-  const res = await request.post('/api/auth/demo-login', { data: { agent: 'admin' } })
+  const res = await request.post('/api/auth/demo/login', { data: { agent: 'admin' } })
   expect(res.ok()).toBeTruthy()
   const cookies = res.headers()['set-cookie']?.split(COOKIE_SPLIT) ?? []
   const sessionid = cookies.find(c => c.startsWith('sessionid='))?.split(';')[0]?.split('=')[1]

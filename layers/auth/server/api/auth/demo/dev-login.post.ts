@@ -8,7 +8,7 @@ const DevLoginSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  if (!import.meta.dev && process.env.NUXT_DEMO_MODE !== 'true') {
+  if (!import.meta.dev) {
     throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
 

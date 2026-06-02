@@ -13,7 +13,7 @@ export default defineAuthorizedHandler(['selfhost:read', 'selfhost:manage'], asy
     where: eq(selfhostDeploymentTable.organization_id, orgId),
   })
 
-  const repo = useRuntimeConfig().githubReleaseRepo
+  const repo = useRuntimeConfig().githubRepository
   const latest_version = repo
     ? await getCachedOrFetch(`selfhost:latest-version`, () => getLatestVersion(repo), LATEST_VERSION_CACHE_TTL_SECONDS)
     : null

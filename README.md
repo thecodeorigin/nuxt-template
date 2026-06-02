@@ -31,7 +31,7 @@ pnpm cli dev up          # nuxt :3002 + maildev (smtp :1025, web :1080)
 ```
 
 Open <http://localhost:3002/auth/login> and click **Sign in as Admin Agent**
-or **Sign in as User Agent** — the demo-login route auto-creates the user
+or **Sign in as User Agent** — the `/api/auth/demo/login` route auto-creates the user
 with the right ability preset. No seeding step required for the demo flow.
 
 `pnpm cli dev setup` is **idempotent**: rerun it any time; it updates the
@@ -79,7 +79,7 @@ pnpm cli doctor --json   # machine-readable; exit 1 if any check fails
 pnpm cli dev up                                # nuxt + maildev together (Ctrl-C kills both)
 pnpm cli dev up --port 3000 --smtp 2025 --web 8080   # override ports
 
-pnpm cli dev seed                              # POST /api/auth/dev-seed (creates demo users)
+pnpm cli dev seed                              # POST /api/auth/demo/dev-seed (creates demo users)
 pnpm cli dev provision --email you@example.com # create a user + session
 pnpm cli dev login --email you@example.com     # issue a session for an existing user
 pnpm cli dev cleanup --emails you@example.com  # delete users + sessions
@@ -203,7 +203,7 @@ ability model, the deploy-pipeline tradeoffs — are in
 | `pnpm cli doctor` | Diagnose tools / Cloudflare / GitHub / OAuth / auth secrets |
 | `pnpm cli dev setup` | Create `.env` + generate three auth secrets (idempotent) |
 | `pnpm cli dev up` | Run `nuxt dev` + `maildev` together (Ctrl-C kills both) |
-| `pnpm cli dev seed` | Seed local DB via `/api/auth/dev-seed` |
+| `pnpm cli dev seed` | Seed local DB via `/api/auth/demo/dev-seed` |
 | `pnpm cli dev provision --email …` | Create a user + session |
 | `pnpm cli dev login --email …` | Issue a session for an existing user |
 | `pnpm cli dev cleanup --emails …` | Delete users + sessions |

@@ -96,9 +96,9 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (event, { sess
     const resources = await provisionResources(cfToken, cfAccountId)
 
     // 5. Fetch bundle from GitHub release
-    const repo = useRuntimeConfig().githubReleaseRepo
+    const repo = useRuntimeConfig().githubRepository
     if (!repo)
-      throw createError({ statusCode: 500, statusMessage: 'githubReleaseRepo runtime config not set' })
+      throw createError({ statusCode: 500, statusMessage: 'githubRepository runtime config not set' })
     const { version, bundle } = await getLatestBundle(repo)
 
     // 6. Apply migrations

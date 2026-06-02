@@ -6,7 +6,7 @@ import { selfhostDeploymentTable } from '#layers/selfhost/server/db/schema'
 import { TestEmailBodySchema } from '#layers/selfhost/shared/schemas/secret'
 
 // Smoke-test SMTP by asking the deployed Worker to send an email to itself.
-// We assume the deployed worker exposes /api/auth/dev-cleanup or a similar endpoint that triggers
+// We assume the deployed worker exposes /api/auth/demo/cleanup or a similar endpoint that triggers
 // an email — for a generic implementation we just GET /api/health to verify reachability and
 // instruct the user to verify email by signing up on their deployed instance.
 //

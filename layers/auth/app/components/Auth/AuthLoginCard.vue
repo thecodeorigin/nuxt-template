@@ -8,7 +8,7 @@ const busy = ref<'admin' | 'user' | null>(null)
 async function signInAsDemoAgent(agent: 'admin' | 'user') {
   busy.value = agent
   try {
-    await $fetch('/api/auth/demo-login', {
+    await $fetch('/api/auth/demo/login', {
       method: 'POST',
       body: { agent },
       credentials: 'include',

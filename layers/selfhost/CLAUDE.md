@@ -85,7 +85,7 @@ that re-runs deploy with the stored token.
    ES modules, inlines migration SQL, stamps the tag as `version`.
 3. Uploads `bundle.json` (and optional `*-cloudflare.tar.gz`) as release assets.
 
-`runtimeConfig.githubReleaseRepo` (env: `NUXT_GITHUB_RELEASE_REPO`) must be set
+`runtimeConfig.githubRepository` (env: `NUXT_GITHUB_REPOSITORY`) must be set
 to `OWNER/REPO`. `runtimeConfig.githubToken` (env: `NUXT_GITHUB_TOKEN`) is
 optional — only required if the release repo is private.
 

@@ -41,3 +41,13 @@ describe('seed users', () => {
     expect(new Set(emails).size).toBe(emails.length)
   })
 })
+
+describe('seed tasks', () => {
+  it('expose the expected task names + run handlers', () => {
+    expect(seedUsersTask.meta?.name).toBe('seed:users')
+    expect(seedOrgsTask.meta?.name).toBe('seed:organizations')
+    expect(seedAllTask.meta?.name).toBe('seed:all')
+    for (const t of [seedUsersTask, seedOrgsTask, seedAllTask])
+      expect(typeof t.run).toBe('function')
+  })
+})
