@@ -1,4 +1,4 @@
-import type { NotificationRow } from '#layers/notification/server/db/schema'
+import type { NotificationRow } from '@nuxthub/db/schema'
 import { z } from 'zod'
 
 export const NotificationSchema = z.object({

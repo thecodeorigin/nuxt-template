@@ -1,9 +1,8 @@
 import { db } from '@nuxthub/db'
-import { userTable } from '@nuxthub/db/schema'
+import { projectMemberTable, projectProductTable, projectTable, userTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { projectMemberTable, projectProductTable, projectTable } from '#layers/project/server/db/schema'
 
 export default defineAuthorizedHandler(['project:read', 'project:write', 'project:manage'], async (event, { session }) => {
   const id = getRouterParam(event, 'id')!

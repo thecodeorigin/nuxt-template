@@ -1,6 +1,6 @@
 import type { InferSelect } from '~~/server/db/types'
+import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
-import { organizationTable, userTable } from '#layers/auth/server/db/schema'
 
 export const TICKET_KINDS = ['feedback', 'support'] as const
 export const TICKET_CATEGORIES = ['account', 'billing', 'technical', 'other'] as const

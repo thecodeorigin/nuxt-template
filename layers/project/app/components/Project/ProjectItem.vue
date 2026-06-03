@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Project } from '#layers/project/server/db/schema'
+import type { Project } from '@nuxthub/db/schema'
 
 const props = defineProps<{ project: Project }>()
 const emit = defineEmits<{ edit: [Project], delete: [Project] }>()

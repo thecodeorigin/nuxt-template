@@ -1,4 +1,4 @@
-import type { SelfhostAudit } from '#layers/selfhost/server/db/schema'
+import type { SelfhostAudit } from '@nuxthub/db/schema'
 
 export interface SelfhostStatus {
   status: 'idle' | 'deploying' | 'deployed' | 'failed'

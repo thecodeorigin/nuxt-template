@@ -1,10 +1,9 @@
 import { db } from '@nuxthub/db'
+import { organizationTable, selfhostAuditTable, selfhostDeploymentSecretTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { getValidatedRouterParams } from 'h3'
 import { decryptSecret } from '~~/server/utils/crypto'
-import { organizationTable } from '#layers/auth/server/db/schema'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { selfhostAuditTable, selfhostDeploymentSecretTable } from '#layers/selfhost/server/db/schema'
 import { isKnownSecretKey } from '#layers/selfhost/server/services/secrets'
 import { RevealSecretParamsSchema } from '#layers/selfhost/shared/schemas/secret'
 

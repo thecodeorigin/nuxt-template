@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Role } from '#layers/auth/server/db/schema'
+import type { Role } from '@nuxthub/db/schema'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import { buildPermissionCatalog } from '#layers/auth/shared/permissions'
 

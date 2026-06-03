@@ -1,6 +1,6 @@
 import type { InferSelect } from '~~/server/db/types'
+import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core'
-import { organizationTable, userTable } from '#layers/auth/server/db/schema'
 
 export const projectTable = sqliteTable('projects', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),

@@ -1,5 +1,5 @@
+import type { Role } from '@nuxthub/db/schema'
 import type { ListQuery, Page } from '~~/shared/schemas/pagination'
-import type { Role } from '#layers/auth/server/db/schema'
 import type { CreateInvitation } from '#layers/auth/shared/schemas/invitation'
 import type { AddMember, UpdateMemberAbilities } from '#layers/auth/shared/schemas/member'
 import type { CreateOrganization, SwitchOrganization, UpdateOrganization } from '#layers/auth/shared/schemas/organization'

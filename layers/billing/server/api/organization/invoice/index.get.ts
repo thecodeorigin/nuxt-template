@@ -1,8 +1,8 @@
 import { db } from '@nuxthub/db'
+import { invoiceTable } from '@nuxthub/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { createError } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { invoiceTable } from '#layers/billing/server/db/schema'
 
 export default defineAuthorizedHandler(['billing:read', 'billing:manage'], async (_event, { session }) => {
   const orgId = session.activeOrganizationId

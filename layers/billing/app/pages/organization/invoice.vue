@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { Invoice, OrganizationBillingSettings } from '#layers/billing/server/db/schema'
+import type { Invoice, OrganizationBillingSettings } from '@nuxthub/db/schema'
 import { useBillingApi } from '#layers/billing/app/api/useBillingApi'
 
 definePageMeta({ can: ['billing:read', 'billing:manage'] })

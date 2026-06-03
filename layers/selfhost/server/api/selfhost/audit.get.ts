@@ -1,7 +1,7 @@
 import { db } from '@nuxthub/db'
+import { selfhostAuditTable } from '@nuxthub/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { selfhostAuditTable } from '#layers/selfhost/server/db/schema'
 
 const DEFAULT_LIMIT = 50
 

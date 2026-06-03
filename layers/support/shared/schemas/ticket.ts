@@ -1,6 +1,6 @@
-import type { SupportTicketMessageRow, SupportTicketRow } from '#layers/support/server/db/schema'
+import type { SupportTicketMessageRow, SupportTicketRow } from '@nuxthub/db/schema'
+import { TICKET_CATEGORIES, TICKET_KINDS, TICKET_STATUSES } from '@nuxthub/db/schema'
 import { z } from 'zod'
-import { TICKET_CATEGORIES, TICKET_KINDS, TICKET_STATUSES } from '#layers/support/server/db/schema'
 
 export const TicketKindSchema = z.enum(TICKET_KINDS)
 export const TicketCategorySchema = z.enum(TICKET_CATEGORIES)
