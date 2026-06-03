@@ -21,7 +21,9 @@ const DemoLoginSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  if (!import.meta.dev && process.env.NUXT_DEMO_MODE !== 'true') {
+  const runtimeConfig = useRuntimeConfig()
+
+  if (!import.meta.dev && !runtimeConfig.public.demoMode) {
     throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
 

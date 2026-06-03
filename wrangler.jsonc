@@ -12,7 +12,7 @@
   //
   // The values declared in "vars" below are the **production** values. Preview
   // deploys (.github/workflows/preview.yml) inherit them and then override the
-  // per-branch ones (NUXT_PUBLIC_BASE_DOMAIN, NUXT_DEMO_MODE, etc.) via
+  // per-branch ones (NUXT_PUBLIC_BASE_DOMAIN, NUXT_PUBLIC_DEMO_MODE, etc.) via
   // `wrangler secret bulk` post-deploy — see that workflow for the preview
   // inventory.
   "$schema": "node_modules/wrangler/config-schema.json",

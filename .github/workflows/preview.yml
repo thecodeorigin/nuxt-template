@@ -144,7 +144,11 @@ jobs:
       # cron email links; OAuth redirects derive from the live request) and SSL=true.
       # This step sets only the genuinely secret / preview-specific values:
       # - NUXT_AUTH_SECRET       — shared preview secret (stable so sessions survive re-deploys)
-      # - NUXT_DEMO_MODE / NUXT_PUBLIC_DEMO_MODE — keep the demo login enabled on previews.
+      # - NUXT_PUBLIC_BASE_DOMAIN — per-branch workers.dev host, derived from the deploy URL
+      #                             (used by non-request contexts like cron email links; OAuth
+      #                             redirects auto-derive from the live request).
+      # - NUXT_PUBLIC_DEMO_MODE — keep the demo login enabled on previews.
+      # - NUXT_PUBLIC_SSL_ENABLED — workers.dev is always HTTPS.
       - name: Provision preview Worker secrets
         env:
           PREVIEW_NUXT_AUTH_SECRET: ${{ secrets.PREVIEW_NUXT_AUTH_SECRET }}
@@ -152,7 +156,8 @@ jobs:
           cat > "$RUNNER_TEMP/preview-secrets.json" <<EOF
           {
             "NUXT_AUTH_SECRET": "${PREVIEW_NUXT_AUTH_SECRET}",
-            "NUXT_DEMO_MODE": "true",
+            "NUXT_PUBLIC_BASE_DOMAIN": "${PREVIEW_HOST}",
+            "NUXT_PUBLIC_SSL_ENABLED": "true",
             "NUXT_PUBLIC_DEMO_MODE": "true"
           }
           EOF
