@@ -102,7 +102,7 @@ async function handleDelete(project: Project) {
       </DashboardNavbar>
     </template>
     <template #body>
-      <div class="max-w-3xl mx-auto p-4">
+      <div class="p-4">
         <ProjectList
           :projects="projects"
           :loading="loading"

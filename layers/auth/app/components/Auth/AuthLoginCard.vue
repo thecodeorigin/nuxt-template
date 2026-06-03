@@ -1,9 +1,65 @@
 <script setup lang="ts">
+import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
+
 const config = useRuntimeConfig()
 const isDemo = computed(() => Boolean(config.public.demoMode))
+const isDev = import.meta.dev
+
+const SEED_EMAILS = ['admin@seed.local', 'alice@seed.local', 'bob@seed.local'] as const
+
+const { devSeedUsers, devLogin } = useAuthApi()
 
 const toast = useToast()
 const busy = ref<'admin' | 'user' | null>(null)
+
+const devState = reactive({ email: 'admin@seed.local' })
+const devBusy = ref(false)
+
+function isNotFound(err: unknown): boolean {
+  return (err as { statusCode?: number, response?: { status?: number } })?.statusCode === 404
+    || (err as { response?: { status?: number } })?.response?.status === 404
+}
+
+async function signInDev(email: string) {
+  if (!email)
+    return
+  devBusy.value = true
+  try {
+    try {
+      await devLogin(email)
+    }
+    catch (err) {
+      // Seed users may not exist yet — provision the @seed.local trio and retry once.
+      if (isNotFound(err)) {
+        await devSeedUsers()
+        await devLogin(email)
+      }
+      else {
+        throw err
+      }
+    }
+    window.location.href = '/dashboard'
+  }
+  catch (err: unknown) {
+    const error = err as {
+      statusCode?: number
+      statusMessage?: string
+      message?: string
+      data?: { statusMessage?: string, message?: string }
+    }
+    toast.add({
+      title: 'Dev sign-in failed',
+      description:
+        error?.data?.statusMessage
+        ?? error?.data?.message
+        ?? error?.statusMessage
+        ?? error?.message
+        ?? `Status ${error?.statusCode ?? 'unknown'}`,
+      color: 'error',
+    })
+    devBusy.value = false
+  }
+}
 
 async function signInAsDemoAgent(agent: 'admin' | 'user') {
   busy.value = agent
@@ -116,6 +172,49 @@ async function signInAsDemoAgent(agent: 'admin' | 'user') {
       >
         Continue with GitHub
       </UButton>
+    </div>
+
+    <div v-if="isDev" class="space-y-3" data-testid="dev-login">
+      <USeparator label="dev" />
+
+      <UForm :state="devState" class="space-y-3" @submit="signInDev(devState.email)">
+        <UFormField label="Seed user email" name="email" help="Dev backdoor — no password. Logs in as the seeded user so you can test CASL.">
+          <UInput
+            v-model="devState.email"
+            type="email"
+            placeholder="admin@seed.local"
+            autocomplete="off"
+            class="w-full"
+            data-testid="dev-login-email"
+          />
+        </UFormField>
+
+        <UButton
+          type="submit"
+          block
+          size="lg"
+          color="primary"
+          icon="i-lucide-terminal"
+          :loading="devBusy"
+          data-testid="dev-login-submit"
+        >
+          Sign in (dev)
+        </UButton>
+      </UForm>
+
+      <div class="flex flex-wrap gap-2 justify-center">
+        <UButton
+          v-for="email in SEED_EMAILS"
+          :key="email"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          :disabled="devBusy"
+          @click="signInDev(email)"
+        >
+          {{ email }}
+        </UButton>
+      </div>
     </div>
   </UCard>
 </template>

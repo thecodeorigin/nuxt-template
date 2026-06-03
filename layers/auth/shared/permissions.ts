@@ -18,9 +18,15 @@ export const TENANT_ABILITY_KEYS = new Set<string>(
   TENANT_SUBJECTS.flatMap(s => TENANT_ACTIONS.map(a => `${s}:${a}`)),
 )
 
-// Self-scoped defaults (own resources within an org). Seeded for visibility,
-// not toggled in the editor.
-export const SELF_ABILITY_KEYS = new Set<string>([])
+// All possible :self keys (for the catalog and validation)
+export const CATALOG_SELF_KEYS = new Set<string>(
+  TENANT_SUBJECTS.flatMap(s => TENANT_ACTIONS.map(a => `${s}:${a}:self`)),
+)
+
+// Universal minimum :self keys auto-merged for every member
+export const SELF_ABILITY_KEYS = new Set<string>(
+  TENANT_ACTIONS.map(a => `user:${a}:self`),
+)
 
 // --- default role model (source of truth) ------------------------------
 // Edit DEFAULT_ROLE_ABILITIES when a feature rolls out, then run `roles:sync`
@@ -35,8 +41,28 @@ export enum DefaultRole {
 
 export const DEFAULT_ROLE_ABILITIES = {
   [DefaultRole.ADMIN]: ['user:manage', 'project:manage', 'selfhost:manage', 'billing:manage'],
-  [DefaultRole.MEMBER]: ['user:read', 'project:read', 'project:write', 'selfhost:read', 'selfhost:write', 'billing:read'],
-  [DefaultRole.GUEST]: ['project:read'],
+  [DefaultRole.MEMBER]: [
+    'user:read',
+    'user:read:self',
+    'user:write:self',
+    'user:delete:self',
+    'user:manage:self',
+    'project:read',
+    'project:write',
+    'project:read:self',
+    'project:write:self',
+    'project:delete:self',
+    'project:manage:self',
+    'selfhost:read',
+    'selfhost:write',
+    'billing:read',
+    'billing:read:self',
+  ],
+  [DefaultRole.GUEST]: [
+    'project:read',
+    'project:read:self',
+    'user:read:self',
+  ],
 } as const satisfies Record<DefaultRole, readonly string[]>
 
 // Display name of each materialized system role. Guest has no row today (preset
@@ -87,14 +113,14 @@ function def(key: string): PermissionDef {
 }
 
 export function buildPermissionCatalog(): PermissionDef[] {
-  return [...TENANT_ABILITY_KEYS, ...SYSTEM_ABILITY_KEYS, ...SELF_ABILITY_KEYS].map(def)
+  return [...TENANT_ABILITY_KEYS, ...SYSTEM_ABILITY_KEYS, ...CATALOG_SELF_KEYS].map(def)
 }
 
 export const ALL_ABILITY_KEYS: ReadonlySet<string> = new Set(buildPermissionCatalog().map(p => p.key))
 
 /** Which keys an org of a given kind may legally hold. */
 export function keysAllowedFor(isSystem: boolean): ReadonlySet<string> {
-  return isSystem ? SYSTEM_ABILITY_KEYS : new Set([...TENANT_ABILITY_KEYS, ...SELF_ABILITY_KEYS])
+  return isSystem ? SYSTEM_ABILITY_KEYS : new Set([...TENANT_ABILITY_KEYS, ...CATALOG_SELF_KEYS])
 }
 
 /** Pure union+filter used by loadEffectiveAbilities — testable. */

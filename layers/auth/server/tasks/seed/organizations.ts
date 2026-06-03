@@ -1,19 +1,7 @@
 import { db } from '@nuxthub/db'
 import { organizationMemberTable, organizationTable, userTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-
-export const SYSTEM_ORG = { slug: 'system', name: 'System' } as const
-export const DEMO_ORG = { slug: 'demo', name: 'Demo Organization' } as const
-
-export const SYSTEM_GRANTS = {
-  admin: ['user:impersonate', 'system:manage', 'support:manage', 'product:manage'],
-} as const
-
-export const DEMO_ORG_GRANTS = {
-  admin: ['user:manage', 'project:manage', 'billing:manage', 'billing:read'],
-  member: ['user:read', 'project:read', 'project:write', 'billing:read'],
-  guest: ['project:read'],
-} as const
+import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/constants/defaults'
 
 async function ensureOrg(slug: string, name: string, flags: { is_system?: boolean } = {}) {
   const [existing] = await db.select().from(organizationTable).where(eq(organizationTable.slug, slug)).limit(1)

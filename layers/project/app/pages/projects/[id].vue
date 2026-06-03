@@ -112,6 +112,7 @@ async function removeMember(userId: string) {
         <template #leading>
           <UButton icon="i-lucide-arrow-left" color="neutral" variant="ghost" to="/projects" />
         </template>
+
         <template #right>
           <UBadge
             v-if="project"
@@ -123,8 +124,9 @@ async function removeMember(userId: string) {
         </template>
       </DashboardNavbar>
     </template>
+
     <template #body>
-      <div v-if="project" class="max-w-3xl mx-auto p-4 space-y-6">
+      <div v-if="project" class="p-4 space-y-6">
         <p v-if="project.description" class="text-muted">
           {{ project.description }}
         </p>
@@ -133,9 +135,11 @@ async function removeMember(userId: string) {
           <h2 class="font-semibold mb-3">
             Products ({{ project.products.length }})
           </h2>
+
           <div v-if="project.products.length === 0" class="text-sm text-muted mb-3">
             No products linked.
           </div>
+
           <div v-else class="space-y-2 mb-3">
             <div
               v-for="pp in project.products"
@@ -145,12 +149,14 @@ async function removeMember(userId: string) {
               <span class="text-sm font-medium">
                 {{ allProducts?.find(p => p.id === pp.product_id)?.name ?? pp.product_id }}
               </span>
+
               <div class="flex items-center gap-2">
                 <span class="text-xs text-muted">qty: {{ pp.quantity }}</span>
                 <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeProduct(pp.product_id)" />
               </div>
             </div>
           </div>
+
           <Can I="write" a="project">
             <div v-if="availableProducts.length > 0" class="flex items-end gap-2">
               <UFormField label="Add product" class="flex-1">
@@ -161,9 +167,11 @@ async function removeMember(userId: string) {
                   class="w-full"
                 />
               </UFormField>
+
               <UFormField label="Qty" class="w-20">
                 <UInput v-model.number="addProductQty" type="number" min="1" />
               </UFormField>
+
               <UButton :loading="addingProduct" :disabled="!addProductId" icon="i-lucide-plus" @click="addProduct">
                 Add
               </UButton>
@@ -178,6 +186,7 @@ async function removeMember(userId: string) {
           <div v-if="project.members.length === 0" class="text-sm text-muted mb-3">
             No members.
           </div>
+
           <div v-else class="space-y-2 mb-3">
             <div
               v-for="m in project.members"
@@ -191,13 +200,22 @@ async function removeMember(userId: string) {
                   size="xs"
                 />
                 <span class="text-sm">{{ m.name ?? m.username ?? m.user_id }}</span>
+
                 <UBadge variant="subtle" size="xs">
                   {{ m.role }}
                 </UBadge>
               </div>
-              <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeMember(m.user_id)" />
+
+              <UButton
+                icon="i-lucide-x"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="removeMember(m.user_id)"
+              />
             </div>
           </div>
+
           <Can I="write" a="project">
             <div v-if="availableMembers.length > 0" class="flex items-end gap-2">
               <UFormField label="Add member" class="flex-1">
