@@ -1,33 +1,28 @@
 import { describe, expect, it } from 'vitest'
-import { DEMO_ORG_GRANTS, SEED_USERS, SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
+import { SEED_USERS, SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
 import seedAllTask from '#layers/auth/server/tasks/seed/all'
-import seedOrgsTask from '#layers/auth/server/tasks/seed/organizations'
 import seedUsersTask from '#layers/auth/server/tasks/seed/users'
+import { DEFAULT_ROLE_ABILITIES, DefaultRole } from '#layers/auth/shared/permissions'
 
 describe('org grant sets', () => {
   it('grants user:impersonate only via the system org (admin)', () => {
     expect(SYSTEM_GRANTS.admin).toContain('user:impersonate')
   })
 
-  it('demo-org admin gets full tenant control, others are scoped down', () => {
-    expect(DEMO_ORG_GRANTS.admin).toEqual(expect.arrayContaining(['user:manage', 'project:manage']))
-    expect(DEMO_ORG_GRANTS.member).not.toContain('user:manage')
-    expect(DEMO_ORG_GRANTS.guest).not.toContain('user:manage')
-  })
-
-  it('no tenant grant smuggles a system (impersonate) key', () => {
-    const tenant = [...DEMO_ORG_GRANTS.admin, ...DEMO_ORG_GRANTS.member, ...DEMO_ORG_GRANTS.guest]
-    expect(tenant).not.toContain('user:impersonate')
+  it('default admin role gets full tenant control, others are scoped down', () => {
+    expect(DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]).toEqual(expect.arrayContaining(['user:manage', 'project:manage']))
+    expect(DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]).not.toContain('user:manage')
+    expect(DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST]).not.toContain('user:manage')
   })
 
   it('drops the legacy blog subject everywhere', () => {
-    const all = [...SYSTEM_GRANTS.admin, ...DEMO_ORG_GRANTS.admin, ...DEMO_ORG_GRANTS.member, ...DEMO_ORG_GRANTS.guest]
+    const all = [...SYSTEM_GRANTS.admin, ...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN], ...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER], ...DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST]]
     for (const a of all)
       expect(a.startsWith('blog:')).toBe(false)
   })
 
   it('uses the canonical "subject:action" or "subject:action:scope" format', () => {
-    const all = [...SYSTEM_GRANTS.admin, ...DEMO_ORG_GRANTS.admin, ...DEMO_ORG_GRANTS.member, ...DEMO_ORG_GRANTS.guest]
+    const all = [...SYSTEM_GRANTS.admin, ...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN], ...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER], ...DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST]]
     for (const a of all)
       expect(a).toMatch(/^[a-z]+:[a-z]+(:self)?$/)
   })
@@ -48,9 +43,8 @@ describe('seed users', () => {
 describe('seed tasks', () => {
   it('expose the expected task names + run handlers', () => {
     expect(seedUsersTask.meta?.name).toBe('seed:users')
-    expect(seedOrgsTask.meta?.name).toBe('seed:organizations')
     expect(seedAllTask.meta?.name).toBe('seed:all')
-    for (const t of [seedUsersTask, seedOrgsTask, seedAllTask])
+    for (const t of [seedUsersTask, seedAllTask])
       expect(typeof t.run).toBe('function')
   })
 })

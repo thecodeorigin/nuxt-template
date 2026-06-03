@@ -6,9 +6,8 @@
  * (`layers/auth/server/tasks/seed/*.ts`) and the production-grade
  * `create:*` tasks consume these.
  *
- * When a new feature ships a new ability key, the relevant grant set in
- * this file is the **first** place it goes. See
- * `.agents/skills/data/references/permission-aware-data.md`.
+ * For role→ability grants, see `layers/auth/shared/permissions.ts`
+ * (`DEFAULT_ROLE_ABILITIES`) — that is the source of truth.
  */
 
 // --- Reserved orgs ------------------------------------------------------
@@ -24,31 +23,6 @@ export const DEMO_ORG = { slug: 'demo', name: 'Demo Organization' } as const
 /** System-org memberships. Grantable ONLY in the system org. */
 export const SYSTEM_GRANTS = {
   admin: ['user:impersonate', 'system:manage', 'support:manage', 'product:manage'],
-} as const
-
-/** Demo (tenant) org memberships — the three tiers seeded for the demo org. */
-export const DEMO_ORG_GRANTS = {
-  admin: ['user:manage', 'project:manage', 'billing:manage', 'billing:read'],
-  member: [
-    'user:read',
-    'user:read:self',
-    'user:write:self',
-    'user:delete:self',
-    'user:manage:self',
-    'project:read',
-    'project:write',
-    'project:read:self',
-    'project:write:self',
-    'project:delete:self',
-    'project:manage:self',
-    'billing:read',
-    'billing:read:self',
-  ],
-  guest: [
-    'project:read',
-    'project:read:self',
-    'user:read:self',
-  ],
 } as const
 
 // --- Dev/demo seed users ------------------------------------------------

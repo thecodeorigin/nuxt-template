@@ -153,9 +153,9 @@ suggest `/onboard` before any feature work.
     - `layers/auth/shared/permissions.ts` — catalog (`SYSTEM_ABILITY_KEYS`,
       `TENANT_ABILITY_KEYS`, `DEFAULT_PERSONAL_ORG_ABILITIES`,
       `DEFAULT_MEMBER_ABILITIES`)
-    - `layers/auth/server/services/seed.ts` — `SYSTEM_GRANTS`
-      (production system admin) and `DEMO_ORG_GRANTS` (demo tenant
-      tiers)
+    - `layers/auth/server/constants/defaults.ts` — `SYSTEM_GRANTS`
+      (production system admin); `layers/auth/shared/permissions.ts` —
+      `DEFAULT_ROLE_ABILITIES` (demo/new-tenant tiers, source of truth)
     - Live users in deployed envs — need a permission-lifecycle task
       to backfill the new ability so it reaches existing rows.
       Sessions auto-refresh; no re-login needed.

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { DEMO_ORG_GRANTS, SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
+import { SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
 import {
   ALL_ABILITY_KEYS,
   buildPermissionCatalog,
+  DEFAULT_ROLE_ABILITIES,
+  DefaultRole,
   keysAllowedFor,
   mergeOrgAbilities,
   SYSTEM_ABILITY_KEYS,
@@ -57,8 +59,13 @@ describe('seed grant sets', () => {
       expect(SYSTEM_ABILITY_KEYS.has(a)).toBe(true)
   })
 
-  it('every demo-org grant key is a catalogued, non-system key', () => {
-    for (const a of [...DEMO_ORG_GRANTS.admin, ...DEMO_ORG_GRANTS.member, ...DEMO_ORG_GRANTS.guest])
+  it('every DEFAULT_ROLE_ABILITIES key is a catalogued, non-system key', () => {
+    const allRoleKeys = [
+      ...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN],
+      ...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER],
+      ...DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST],
+    ]
+    for (const a of allRoleKeys)
       expect(ALL_ABILITY_KEYS.has(a) && !SYSTEM_ABILITY_KEYS.has(a)).toBe(true)
   })
 })
