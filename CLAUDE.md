@@ -34,7 +34,7 @@ suggest `/onboard` before any feature work.
 ## Stack
 
 - **Nuxt 4** with **layers** for feature isolation (`layers/auth/`,
-  `layers/todo/`). Each layer is auto-discovered and contributes its own
+  `layers/product/`, `layers/project/`, etc.). Each layer is auto-discovered and contributes its own
   `app/`, `server/`, `shared/`. Cross-cutting infrastructure stays in the
   project root.
 - Vue 3, TypeScript
@@ -296,8 +296,8 @@ ready. Full field reference and the current priority table are in
 ## API route conventions
 
 - File: `<layer>/server/api/<resource>/<action>.{method}.ts` (e.g.
-  `layers/todo/server/api/todos/index.get.ts`,
-  `layers/todo/server/api/todos/[id].patch.ts`).
+  `layers/product/server/api/products/index.get.ts`,
+  `layers/product/server/api/products/[id].patch.ts`).
 - Handler: use `defineEventHandler` (or `defineAuthenticatedHandler` for routes
   that require a session, or `defineAuthorizedHandler` for ability-gated routes).
 - Validate body with a Zod schema imported from `<layer>/shared/schemas/`.

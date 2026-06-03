@@ -13,26 +13,35 @@ A Nuxt 4 + NuxtHub starter on a **full Cloudflare stack** (D1 SQLite · KV · R2
 baked in. PR → Cloudflare Workers preview. Merge to `main` → production ships.
 D1 migrations apply during each build.
 
-Everything below is driven by the **`packages/cli` harness** — a non-interactive
-CLI exposed as `pnpm cli` that handles env, secrets, local dev, and one-shot
-Cloudflare/GitHub provisioning. No manual `wrangler` ceremony required.
-
 > Deep version (conventions, layer ownership, hard rules):
 > [`CLAUDE.md`](./CLAUDE.md). CLI reference: [`packages/cli/README.md`](./packages/cli/README.md).
 
 ---
 
-## Quickstart (local, ~2 minutes)
+## Get started with AI
+
+This is a **generic template**. Two slash commands adapt it to your actual product — no manual file editing required:
+
+```
+/onboard   # business interview → rewrites brand strings, colors, .env, user-facing labels
+/go-live   # walks you through Cloudflare + GitHub credentials → provisions all resources + wires CI
+```
+
+Run `/onboard` first if you're starting fresh (the brand still says "Nuxt Template"). Then `/go-live` once you're ready to ship. Both commands are re-runnable.
+
+---
+
+## Quick start (local, ~2 minutes)
 
 ```bash
 pnpm install
-pnpm cli dev setup       # creates .env from .env.example + generates auth secrets
-pnpm cli dev up          # nuxt :3002 + maildev (smtp :1025, web :1080)
+pnpm cli dev setup   # creates .env from .env.example + generates auth secrets
+pnpm cli dev up      # nuxt :3002 + maildev (smtp :1025, web :1080)
 ```
 
 Open <http://localhost:3002/auth/login> and click **Sign in as Admin Agent**
-or **Sign in as User Agent** — the `/api/auth/demo/login` route auto-creates the user
-with the right ability preset. No seeding step required for the demo flow.
+or **Sign in as User Agent** — the `/api/auth/demo/login` route auto-creates the
+user with the right ability preset. No seeding step required for the demo flow.
 
 `pnpm cli dev setup` is **idempotent**: rerun it any time; it updates the
 three auth secrets in place rather than appending duplicates.
@@ -43,50 +52,18 @@ D1 migrations on boot.
 
 ---
 
-## Environment variables
+## Dev workflow
 
-`pnpm cli dev setup` writes the three required auth secrets. The rest live in
-[`.env.example`](./.env.example) — copy what you need into `.env` and fill in
-the values.
+### Backdoor helpers
 
-| Var | Set by | Purpose |
-|---|---|---|
-| `NUXT_AUTH_SECRET` | `cli dev setup` | Session / CSRF encryption |
-| `NUXT_TASK_SECRET` | `cli dev setup` | Bearer token for Nitro tasks |
-| `NUXT_WEBHOOK_SIGNING_SECRET` | `cli dev setup` | HMAC for inbound webhooks |
-| `NUXT_PUBLIC_BASE_DOMAIN` | manual | Defaults to `localhost:3002` |
-| `NUXT_PUBLIC_DEMO_MODE` | manual | `true` exposes the demo block on the login page |
-| `NUXT_SMTP_*` | manual | Local dev defaults to MailDev (`localhost:1025`) |
-| `NUXT_GOOGLE_CLIENT_ID` / `NUXT_GOOGLE_CLIENT_SECRET` | manual | Google OAuth (optional) |
-| `NUXT_GITHUB_CLIENT_ID` / `NUXT_GITHUB_CLIENT_SECRET` | manual | GitHub OAuth (optional) |
-| `NUXT_SEPAY_*` | manual | SePay bank-transfer payments (optional) |
-| `CLOUDFLARE_API_TOKEN` | manual | Required for `cli deploy setup` |
-| `CLOUDFLARE_ACCOUNT_ID` | manual | Required for `cli deploy setup` |
-
-Check what you have at any time:
+These commands POST to dev-only routes (only mounted in development mode) and require the dev server to be running:
 
 ```bash
-pnpm cli doctor          # human-readable table of every env/tool check
-pnpm cli doctor --json   # machine-readable; exit 1 if any check fails
-```
-
----
-
-## Local dev workflow
-
-```bash
-pnpm cli dev up                                # nuxt + maildev together (Ctrl-C kills both)
-pnpm cli dev up --port 3000 --smtp 2025 --web 8080   # override ports
-
-pnpm cli dev seed                              # POST /api/auth/demo/dev-seed (creates demo users)
+pnpm cli dev seed                              # POST /api/auth/demo/dev-seed (creates seed users)
 pnpm cli dev provision --email you@example.com # create a user + session
 pnpm cli dev login --email you@example.com     # issue a session for an existing user
 pnpm cli dev cleanup --emails you@example.com  # delete users + sessions
 ```
-
-The `seed`/`provision`/`login`/`cleanup` commands require the dev server to
-be running — they POST to backdoor routes that are only mounted when
-`NUXT_PUBLIC_DEMO_MODE=true` (set automatically by `cli dev setup`).
 
 ### Database
 
@@ -103,6 +80,37 @@ pnpm cli db reset                                      # wipe .data, re-migrate
 ```bash
 pnpm cli verify          # lint → typecheck → test; mirrors CI exactly
 pnpm cli verify --json   # per-step pass/fail
+```
+
+---
+
+## Environment variables
+
+`pnpm cli dev setup` writes the three required auth secrets. The rest live in
+[`.env.example`](./.env.example) — copy what you need into `.env` and fill in
+the values.
+
+| Var | Set by | Purpose |
+|---|---|---|
+| `NUXT_AUTH_SECRET` | `cli dev setup` | Session / CSRF encryption |
+| `NUXT_TASK_SECRET` | `cli dev setup` | Bearer token for Nitro tasks (`POST /api/auth/roles/sync`) |
+| `NUXT_WEBHOOK_SIGNING_SECRET` | `cli dev setup` | HMAC for inbound webhooks |
+| `NUXT_PUBLIC_BASE_DOMAIN` | manual | Defaults to `localhost:3002` |
+| `NUXT_PUBLIC_DEMO_MODE` | manual | `true` ungates `/api/auth/demo/login` on deployed instances (demo backdoor) |
+| `NUXT_SMTP_*` | manual | Local dev defaults to MailDev (`localhost:1025`) |
+| `NUXT_GOOGLE_CLIENT_ID` / `NUXT_GOOGLE_CLIENT_SECRET` | manual | Google OAuth (optional) |
+| `NUXT_GITHUB_CLIENT_ID` / `NUXT_GITHUB_CLIENT_SECRET` | manual | GitHub OAuth (optional) |
+| `NUXT_GITHUB_REPOSITORY` | manual | `owner/repo` — used by the self-host layer to fetch release bundles |
+| `NUXT_GITHUB_TOKEN` | manual | PAT for private-repo release downloads (optional) |
+| `NUXT_SEPAY_*` | manual | SePay bank-transfer payments (optional) |
+| `CLOUDFLARE_API_TOKEN` | manual | Required for `cli deploy setup` |
+| `CLOUDFLARE_ACCOUNT_ID` | manual | Required for `cli deploy setup` |
+
+Check what you have at any time:
+
+```bash
+pnpm cli doctor          # human-readable table of every env/tool check
+pnpm cli doctor --json   # machine-readable; exit 1 if any check fails
 ```
 
 ---
@@ -170,6 +178,41 @@ Merging to `main` → the **Production** workflow builds (migrating D1) and runs
 pnpm cli deploy status   # latest CI runs + Worker deployments
 pnpm cli deploy logs     # tail the production Worker (streams until Ctrl-C)
 ```
+
+---
+
+## Self-hosting
+
+The **selfhost layer** (`layers/selfhost/`) lets your users deploy this app into
+their own Cloudflare account directly from the product's **Settings → Self-hosting**
+page — no CLI or DevOps knowledge required.
+
+**How it works:**
+
+1. The user pastes a Cloudflare API token with Workers + D1 + KV + R2 edit permissions.
+2. The app verifies the token, probes write capabilities, and idempotently creates the
+   required Cloudflare resources (D1, KV namespace, R2 bucket).
+3. It fetches the latest `bundle.json` from this repo's GitHub releases, verifies the
+   SHA-256 checksum, applies D1 migrations, and uploads the Worker.
+4. On subsequent deploys the stored token (AES-GCM encrypted at rest) is reused —
+   one click to update.
+
+**Publishing a release bundle:**
+
+```bash
+git tag v1.2.3 && git push --tags   # triggers .github/workflows/release.yml
+```
+
+The release workflow builds the Cloudflare Worker and runs
+`node scripts/make-deploy-bundle.mjs`, which packages the output into a
+`bundle.json` asset attached to the GitHub release.
+
+**Required env vars for self-hosting to work:**
+
+| Var | Purpose |
+|---|---|
+| `NUXT_GITHUB_REPOSITORY` | `owner/repo` pointing to the release source |
+| `NUXT_GITHUB_TOKEN` | PAT — only needed if the release repo is private |
 
 ---
 
