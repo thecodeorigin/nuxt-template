@@ -1,8 +1,8 @@
 import { db } from '@nuxthub/db'
+import { selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { selfhostDeploymentTable } from '#layers/selfhost/server/db/schema'
 import { TestEmailBodySchema } from '#layers/selfhost/shared/schemas/secret'
 
 // Smoke-test SMTP by asking the deployed Worker to send an email to itself.

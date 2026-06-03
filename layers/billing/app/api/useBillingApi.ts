@@ -1,4 +1,4 @@
-import type { Invoice, OrganizationBillingSettings } from '#layers/billing/server/db/schema'
+import type { Invoice, OrganizationBillingSettings } from '@nuxthub/db/schema'
 import type { CreateInvoice, UpdateBillingSettings } from '#layers/billing/shared/schemas/invoice'
 
 export function useBillingApi() {

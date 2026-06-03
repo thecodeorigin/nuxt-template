@@ -1,4 +1,4 @@
-import type { Project, ProjectMember, ProjectProduct } from '#layers/project/server/db/schema'
+import type { Project, ProjectMember, ProjectProduct } from '@nuxthub/db/schema'
 import type { AddProjectMember, AddProjectProduct, CreateProject, UpdateProject } from '#layers/project/shared/schemas/project'
 
 export interface ProjectMemberDetail {

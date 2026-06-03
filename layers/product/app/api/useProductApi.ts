@@ -1,4 +1,4 @@
-import type { Product } from '#layers/product/server/db/schema'
+import type { Product } from '@nuxthub/db/schema'
 import type { CreateProduct, UpdateProduct } from '#layers/product/shared/schemas/product'
 
 export function useProductApi() {

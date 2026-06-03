@@ -1,5 +1,5 @@
 import { db } from '@nuxthub/db'
-import { organizationMemberTable, roleTable } from '@nuxthub/db/schema'
+import { organizationMemberTable, projectMemberTable, roleTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
@@ -14,7 +14,6 @@ import {
 } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
 import { DEFAULT_MEMBER_ABILITIES } from '#layers/auth/shared/permissions'
-import { projectMemberTable } from '#layers/project/server/db/schema'
 
 async function insertProjectMembers(userId: string, projectIds: string[]): Promise<void> {
   await Promise.all(projectIds.map(projectId =>

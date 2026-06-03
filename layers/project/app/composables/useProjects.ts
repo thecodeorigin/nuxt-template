@@ -1,5 +1,5 @@
+import type { Project } from '@nuxthub/db/schema'
 import type { InjectionKey } from 'vue'
-import type { Project } from '#layers/project/server/db/schema'
 
 export interface ProjectsContext {
   projects: Ref<Project[]>

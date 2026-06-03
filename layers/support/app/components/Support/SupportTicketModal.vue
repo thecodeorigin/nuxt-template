@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { TicketCategory } from '#layers/support/server/db/schema'
+import type { TicketCategory } from '@nuxthub/db/schema'
+import { TICKET_CATEGORIES } from '@nuxthub/db/schema'
 import { useSupportApi } from '#layers/support/app/api/useSupportApi'
 import { useSupportTicketOpen } from '#layers/support/app/composables/useSupportModal'
-import { TICKET_CATEGORIES } from '#layers/support/server/db/schema'
 
 const props = withDefaults(defineProps<{ open?: boolean }>(), { open: false })
 const emit = defineEmits<{ 'update:open': [boolean] }>()

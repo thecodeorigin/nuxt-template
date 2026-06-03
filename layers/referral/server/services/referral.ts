@@ -1,10 +1,9 @@
 import { db } from '@nuxthub/db'
-import { organizationTable, userTable } from '@nuxthub/db/schema'
+import { organizationTable, referralTable, userReferralTable, userTable } from '@nuxthub/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
 import { sumBy } from 'es-toolkit'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import { REFERRAL_REWARD } from '#layers/referral/server/constants/defaults'
-import { referralTable, userReferralTable } from '#layers/referral/server/db/schema'
 
 export const REF_CODE_RE = /^[a-z0-9]{8}$/i
 

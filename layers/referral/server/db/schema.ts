@@ -1,6 +1,6 @@
 import type { InferSelect } from '~~/server/db/types'
+import { userTable } from '@nuxthub/db/schema'
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
-import { userTable } from '#layers/auth/server/db/schema'
 
 export const userReferralTable = sqliteTable('user_referrals', {
   user_id: text('user_id').primaryKey().references(() => userTable.id, { onDelete: 'cascade' }),

@@ -1,8 +1,8 @@
 import { db } from '@nuxthub/db'
+import { selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { getCachedOrFetch } from '~~/server/utils/cache'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { selfhostDeploymentTable } from '#layers/selfhost/server/db/schema'
 import { getLatestVersion } from '#layers/selfhost/server/services/github'
 
 const LATEST_VERSION_CACHE_TTL_SECONDS = 3600

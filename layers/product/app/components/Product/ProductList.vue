@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product } from '#layers/product/server/db/schema'
+import type { Product } from '@nuxthub/db/schema'
 import ProductItem from '#layers/product/app/components/Product/ProductItem.vue'
 
 defineProps<{

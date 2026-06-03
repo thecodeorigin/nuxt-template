@@ -1,5 +1,5 @@
+import type { Product } from '@nuxthub/db/schema'
 import type { InjectionKey } from 'vue'
-import type { Product } from '#layers/product/server/db/schema'
 
 export interface ProductsContext {
   products: Ref<Product[]>

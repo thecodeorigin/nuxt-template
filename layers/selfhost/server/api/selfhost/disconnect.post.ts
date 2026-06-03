@@ -1,7 +1,7 @@
 import { db } from '@nuxthub/db'
+import { selfhostAuditTable, selfhostDeploymentSecretTable, selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { selfhostAuditTable, selfhostDeploymentSecretTable, selfhostDeploymentTable } from '#layers/selfhost/server/db/schema'
 
 export default defineAuthorizedHandler(['selfhost:manage'], async (_event, { session }) => {
   const orgId = session.activeOrganizationId!

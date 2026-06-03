@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project } from '#layers/project/server/db/schema'
+import type { Project } from '@nuxthub/db/schema'
 import ProjectItem from '#layers/project/app/components/Project/ProjectItem.vue'
 
 defineProps<{

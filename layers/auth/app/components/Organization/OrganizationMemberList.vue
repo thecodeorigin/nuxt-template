@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
+import type { Project } from '@nuxthub/db/schema'
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
-import type { Project } from '#layers/project/server/db/schema'
 import { joinURL } from 'ufo'
 import { h, resolveComponent } from 'vue'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'

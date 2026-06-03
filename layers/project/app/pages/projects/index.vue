@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project } from '#layers/project/server/db/schema'
+import type { Project } from '@nuxthub/db/schema'
 import type { CreateProject, UpdateProject } from '#layers/project/shared/schemas/project'
 import { useProjectApi } from '#layers/project/app/api/useProjectApi'
 import ProjectForm from '#layers/project/app/components/Project/ProjectForm.vue'

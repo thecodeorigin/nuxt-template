@@ -1,8 +1,8 @@
 import { db } from '@nuxthub/db'
+import { projectProductTable, projectTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { projectProductTable, projectTable } from '#layers/project/server/db/schema'
 import { AddProjectProductSchema } from '#layers/project/shared/schemas/project'
 
 export default defineAuthorizedHandler(['project:write', 'project:manage'], async (event, { session }) => {
