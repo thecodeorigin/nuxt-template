@@ -55,7 +55,6 @@ the values.
 | `NUXT_TASK_SECRET` | `cli dev setup` | Bearer token for Nitro tasks |
 | `NUXT_WEBHOOK_SIGNING_SECRET` | `cli dev setup` | HMAC for inbound webhooks |
 | `NUXT_PUBLIC_BASE_DOMAIN` | manual | Defaults to `localhost:3002` |
-| `NUXT_DEMO_MODE` | manual | `true` enables the demo-login backdoor + relaxed CSP |
 | `NUXT_PUBLIC_DEMO_MODE` | manual | `true` exposes the demo block on the login page |
 | `NUXT_SMTP_*` | manual | Local dev defaults to MailDev (`localhost:1025`) |
 | `NUXT_GOOGLE_CLIENT_ID` / `NUXT_GOOGLE_CLIENT_SECRET` | manual | Google OAuth (optional) |
@@ -87,7 +86,7 @@ pnpm cli dev cleanup --emails you@example.com  # delete users + sessions
 
 The `seed`/`provision`/`login`/`cleanup` commands require the dev server to
 be running — they POST to backdoor routes that are only mounted when
-`NUXT_DEMO_MODE=true` (set automatically by `cli dev setup`).
+`NUXT_PUBLIC_DEMO_MODE=true` (set automatically by `cli dev setup`).
 
 ### Database
 
