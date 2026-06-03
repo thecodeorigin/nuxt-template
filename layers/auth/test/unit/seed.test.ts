@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { DEMO_ORG_GRANTS, SEED_USERS, SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
+import seedAllTask from '#layers/auth/server/tasks/seed/all'
+import seedOrgsTask from '#layers/auth/server/tasks/seed/organizations'
+import seedUsersTask from '#layers/auth/server/tasks/seed/users'
 
 describe('org grant sets', () => {
   it('grants user:impersonate only via the system org (admin)', () => {

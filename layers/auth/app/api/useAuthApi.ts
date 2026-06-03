@@ -72,6 +72,21 @@ export function useAuthApi() {
     return $http('/api/auth/logout')
   }
 
+  // Dev-only backdoors (routes 404 outside `import.meta.dev`). Used by the
+  // dev login block on the sign-in card to exercise CASL as a seeded user.
+  function devSeedUsers() {
+    return $http<{ users: Array<{ id: string, primary_email: string }> }>('/api/auth/demo/dev-seed', {
+      method: 'POST',
+    })
+  }
+
+  function devLogin(email: string) {
+    return $http<{ session_id: string, user_id: string }>('/api/auth/demo/dev-login', {
+      method: 'POST',
+      body: { email },
+    })
+  }
+
   return {
     fetchCurrentUser,
     updateCurrentUser,
@@ -83,5 +98,7 @@ export function useAuthApi() {
     startImpersonation,
     stopImpersonation,
     logout,
+    devSeedUsers,
+    devLogin,
   }
 }

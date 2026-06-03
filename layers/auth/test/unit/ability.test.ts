@@ -28,8 +28,18 @@ describe('satisfiesAbility (scope-precise, server gating)', () => {
     expect(satisfiesAbility(['todo:manage'], 'todo:delete')).toBe(true)
   })
 
-  it('unscoped manage does NOT cover a :self requirement', () => {
-    expect(satisfiesAbility(['todo:manage'], 'todo:delete:self')).toBe(false)
+  it('unscoped manage does NOT cover a :self requirement if subject differs', () => {
+    expect(satisfiesAbility(['todo:manage'], 'user:delete:self')).toBe(false)
+  })
+
+  it('unscoped manage implies :self for wildcardable actions', () => {
+    expect(satisfiesAbility(['user:manage'], 'user:read:self')).toBe(true)
+    expect(satisfiesAbility(['user:manage'], 'user:write:self')).toBe(true)
+    expect(satisfiesAbility(['user:manage'], 'user:delete:self')).toBe(true)
+  })
+
+  it('unscoped manage does NOT imply :self for non-wildcardable actions', () => {
+    expect(satisfiesAbility(['user:manage'], 'user:impersonate:self')).toBe(false)
   })
 
   it('manage never expands to impersonate (not a wildcardable action)', () => {

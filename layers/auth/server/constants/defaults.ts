@@ -29,8 +29,26 @@ export const SYSTEM_GRANTS = {
 /** Demo (tenant) org memberships — the three tiers seeded for the demo org. */
 export const DEMO_ORG_GRANTS = {
   admin: ['user:manage', 'project:manage', 'billing:manage', 'billing:read'],
-  member: ['user:read', 'project:read', 'project:write', 'billing:read'],
-  guest: ['project:read'],
+  member: [
+    'user:read',
+    'user:read:self',
+    'user:write:self',
+    'user:delete:self',
+    'user:manage:self',
+    'project:read',
+    'project:write',
+    'project:read:self',
+    'project:write:self',
+    'project:delete:self',
+    'project:manage:self',
+    'billing:read',
+    'billing:read:self',
+  ],
+  guest: [
+    'project:read',
+    'project:read:self',
+    'user:read:self',
+  ],
 } as const
 
 // --- Dev/demo seed users ------------------------------------------------

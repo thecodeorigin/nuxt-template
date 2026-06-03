@@ -59,6 +59,10 @@ export async function evaluateAbilityString(
     return { allowed: true }
   }
 
+  if (satisfiesAbility(session.abilities, `${subject}:manage`)) {
+    return { allowed: true }
+  }
+
   const reg = subjectRegistry.get(subject)
   if (!reg) {
     throw createError({

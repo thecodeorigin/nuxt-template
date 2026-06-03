@@ -65,13 +65,13 @@ describe('evaluateAbilityString', () => {
     }
   })
 
-  it('does not let "manage" satisfy a :self gate without ownership', async () => {
+  it('lets "manage" satisfy a :self gate without ownership (Option B)', async () => {
     const session = makeSession({ abilities: ['todo:manage'] })
     const result = await evaluateAbilityString('todo:delete:self', session, {
       event: makeEvent({ id: 't-1' }),
       getParam: () => 't-1',
     })
-    expect(result).toEqual({ allowed: false })
+    expect(result).toEqual({ allowed: true })
   })
 
   it('denies when the user lacks the ability', async () => {

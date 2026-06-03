@@ -18,6 +18,10 @@ export function satisfiesAbility(have: string[], required: string): boolean {
     const { subject, action, scope } = parseAbility(h)
     if (subject !== rs)
       return false
+    if (action === 'manage' && scope === undefined && rScope === 'self') {
+      if (WILDCARDABLE_ACTIONS.has(ra) || ra === 'manage')
+        return true
+    }
     if (action === 'manage' && scope === rScope && WILDCARDABLE_ACTIONS.has(ra))
       return true
     return action === ra && scope === rScope
