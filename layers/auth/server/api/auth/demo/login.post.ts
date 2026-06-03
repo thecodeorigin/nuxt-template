@@ -1,9 +1,10 @@
 import { ActivityAction, activityTable, organizationMemberTable, userTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { DEMO_ORG, DEMO_ORG_GRANTS, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/constants/defaults'
+import { DEMO_ORG, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/constants/defaults'
 import { ensureMembership, ensureOrganization } from '#layers/auth/server/services/organization'
 import { persistSession } from '#layers/auth/server/services/session'
+import { DEFAULT_ROLE_ABILITIES, DefaultRole } from '#layers/auth/shared/permissions'
 
 interface DemoAgent {
   email: string
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event) => {
   // Ensure org memberships exist; grants are preserved for returning users so
   // edits made through the UI survive a re-login (the demo backdoor is not a reset).
   const demoOrg = await ensureOrganization(DEMO_ORG.slug, DEMO_ORG.name)
-  await ensureMembership(user.id, demoOrg.id, agent === 'admin' ? DEMO_ORG_GRANTS.admin : DEMO_ORG_GRANTS.member)
+  await ensureMembership(user.id, demoOrg.id, agent === 'admin' ? DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN] : DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER])
   if (agent === 'admin') {
     const systemOrg = await ensureOrganization(SYSTEM_ORG.slug, SYSTEM_ORG.name, { is_system: true })
     await db.insert(organizationMemberTable)

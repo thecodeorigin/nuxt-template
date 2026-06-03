@@ -15,6 +15,9 @@ export const roleTable = {} as any
 export const organizationMemberRoleTable = {} as any
 export const supportTicketTable = {} as any
 export const supportTicketMessageTable = {} as any
+export const projectTable = {} as any
+export const projectMemberTable = {} as any
+export const projectProductTable = {} as any
 export enum ActivityAction {
   SIGN_IN = 'auth:sign_in',
   SIGN_UP = 'auth:sign_up',

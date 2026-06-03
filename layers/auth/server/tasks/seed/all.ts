@@ -7,7 +7,7 @@ export default defineTask({
     const permissions = await runTask('seed:permissions')
     const users = await runTask('seed:users')
     const systemOrganization = await runTask('seed:system-organization')
-    const demoOrganization = await runTask('seed:demo-organization')
+    const demoOrganization = await runTask('seed:organization')
     return { result: 'ok', permissions, users, systemOrganization, demoOrganization }
   },
 })
