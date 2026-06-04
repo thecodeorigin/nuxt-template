@@ -2,8 +2,9 @@ import { db } from '@nuxthub/db'
 import { projectTable } from '@nuxthub/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { PROJECT_READ_LIST_GATE } from '#layers/project/server/constants/gates'
 
-export default defineAuthorizedHandler(['project:read', 'project:write', 'project:manage'], async (_event, { session }) => {
+export default defineAuthorizedHandler(PROJECT_READ_LIST_GATE, async (_event, { session }) => {
   const orgId = session.activeOrganizationId
   if (!orgId)
     return []

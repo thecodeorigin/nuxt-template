@@ -3,8 +3,9 @@ import { projectMemberTable, projectProductTable, projectTable, userTable } from
 import { and, eq } from 'drizzle-orm'
 import { createError } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { PROJECT_READ_DETAIL_GATE } from '#layers/project/server/constants/gates'
 
-export default defineAuthorizedHandler(['project:read', 'project:write', 'project:manage'], async (event, { session }) => {
+export default defineAuthorizedHandler(PROJECT_READ_DETAIL_GATE, async (event, { session }) => {
   const id = getRouterParam(event, 'id')!
   const orgId = session.activeOrganizationId
 

@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { Project } from '@nuxthub/db/schema'
+import { useAbility } from '@casl/vue'
 
 const props = defineProps<{ project: Project }>()
 const emit = defineEmits<{ edit: [Project], delete: [Project] }>()
 
-const menuItems: DropdownMenuItem[][] = [
+const ability = useAbility()
+const { currentUser } = storeToRefs(useAuthStore())
+
+const canManage = computed(() =>
+  ability.can('manage', 'project') || props.project.created_by === currentUser.value?.id,
+)
+
+const menuItems = computed<DropdownMenuItem[][]>(() => [
   [
     { label: 'View', icon: 'i-lucide-eye', to: `/projects/${props.project.id}` },
-    { label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => emit('edit', props.project) },
-    { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => emit('delete', props.project) },
+    ...(canManage.value
+      ? [
+          { label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => emit('edit', props.project) },
+          { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => emit('delete', props.project) },
+        ]
+      : []),
   ],
-]
+])
 </script>
 
 <template>
