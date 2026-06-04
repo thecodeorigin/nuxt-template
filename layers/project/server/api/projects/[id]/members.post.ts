@@ -3,9 +3,10 @@ import { projectMemberTable, projectTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { PROJECT_WRITE_SELF_GATE } from '#layers/project/server/constants/gates'
 import { AddProjectMemberSchema } from '#layers/project/shared/schemas/project'
 
-export default defineAuthorizedHandler(['project:write', 'project:manage'], async (event, { session }) => {
+export default defineAuthorizedHandler(PROJECT_WRITE_SELF_GATE, async (event, { session }) => {
   const id = getRouterParam(event, 'id')!
   const orgId = session.activeOrganizationId
   const body = await readValidatedBody(event, AddProjectMemberSchema.parse)

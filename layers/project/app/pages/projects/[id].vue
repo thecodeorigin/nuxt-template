@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ProjectDetail } from '#layers/project/app/api/useProjectApi'
+import { useAbility } from '@casl/vue'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import { useProductApi } from '#layers/product/app/api/useProductApi'
 import { useProjectApi } from '#layers/project/app/api/useProjectApi'
@@ -18,6 +19,15 @@ const { data: project, error, refresh } = useAsyncData<ProjectDetail>(`project-$
 whenError(error)
 
 useHead(() => ({ title: project.value?.name ?? 'Project' }))
+
+const ability = useAbility()
+const { currentUser } = storeToRefs(useAuthStore())
+
+const canManageProject = computed(() =>
+  ability.can('manage', 'project')
+  || project.value?.members.some(m => m.user_id === currentUser.value?.id && m.role === 'owner')
+  || false,
+)
 
 const { data: orgMembers } = useAsyncData('org-members-for-project', () => orgApi.fetchMembers({ limit: 100 }), { default: () => ({ items: [], hasMore: false }) })
 const { data: allProducts } = useAsyncData('products-for-project', () => productApi.fetchProducts('active'), { default: () => [] })
@@ -152,31 +162,29 @@ async function removeMember(userId: string) {
 
               <div class="flex items-center gap-2">
                 <span class="text-xs text-muted">qty: {{ pp.quantity }}</span>
-                <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeProduct(pp.product_id)" />
+                <UButton v-if="canManageProject" icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeProduct(pp.product_id)" />
               </div>
             </div>
           </div>
 
-          <Can I="write" a="project">
-            <div v-if="availableProducts.length > 0" class="flex items-end gap-2">
-              <UFormField label="Add product" class="flex-1">
-                <USelect
-                  v-model="addProductId"
-                  :items="availableProducts.map(p => ({ label: p.name, value: p.id }))"
-                  placeholder="Select a product"
-                  class="w-full"
-                />
-              </UFormField>
+          <div v-if="canManageProject && availableProducts.length > 0" class="flex items-end gap-2">
+            <UFormField label="Add product" class="flex-1">
+              <USelect
+                v-model="addProductId"
+                :items="availableProducts.map(p => ({ label: p.name, value: p.id }))"
+                placeholder="Select a product"
+                class="w-full"
+              />
+            </UFormField>
 
-              <UFormField label="Qty" class="w-20">
-                <UInput v-model.number="addProductQty" type="number" min="1" />
-              </UFormField>
+            <UFormField label="Qty" class="w-20">
+              <UInput v-model.number="addProductQty" type="number" min="1" />
+            </UFormField>
 
-              <UButton :loading="addingProduct" :disabled="!addProductId" icon="i-lucide-plus" @click="addProduct">
-                Add
-              </UButton>
-            </div>
-          </Can>
+            <UButton :loading="addingProduct" :disabled="!addProductId" icon="i-lucide-plus" @click="addProduct">
+              Add
+            </UButton>
+          </div>
         </div>
 
         <div>
@@ -207,36 +215,36 @@ async function removeMember(userId: string) {
               </div>
 
               <UButton
+                v-if="canManageProject"
                 icon="i-lucide-x"
                 color="neutral"
                 variant="ghost"
                 size="xs"
+                class="hover:cursor-pointer hover:bg-secondary/10"
                 @click="removeMember(m.user_id)"
               />
             </div>
           </div>
 
-          <Can I="write" a="project">
-            <div v-if="availableMembers.length > 0" class="flex items-end gap-2">
-              <UFormField label="Add member" class="flex-1">
-                <USelect
-                  v-model="addMemberUserId"
-                  :items="availableMembers.map(m => ({ label: m.name ?? m.username ?? m.primary_email, value: m.id }))"
-                  placeholder="Select a member"
-                  class="w-full"
-                />
-              </UFormField>
-              <UFormField label="Role">
-                <USelect
-                  v-model="addMemberRole"
-                  :items="[{ label: 'Owner', value: 'owner' }, { label: 'Member', value: 'member' }, { label: 'Viewer', value: 'viewer' }]"
-                />
-              </UFormField>
-              <UButton :loading="addingMember" :disabled="!addMemberUserId" icon="i-lucide-plus" @click="addMember">
-                Add
-              </UButton>
-            </div>
-          </Can>
+          <div v-if="canManageProject && availableMembers.length > 0" class="flex items-end gap-2">
+            <UFormField label="Add member" class="flex-1">
+              <USelect
+                v-model="addMemberUserId"
+                :items="availableMembers.map(m => ({ label: m.name ?? m.username ?? m.primary_email, value: m.id }))"
+                placeholder="Select a member"
+                class="w-full"
+              />
+            </UFormField>
+            <UFormField label="Role">
+              <USelect
+                v-model="addMemberRole"
+                :items="[{ label: 'Owner', value: 'owner' }, { label: 'Member', value: 'member' }, { label: 'Viewer', value: 'viewer' }]"
+              />
+            </UFormField>
+            <UButton :loading="addingMember" :disabled="!addMemberUserId" icon="i-lucide-plus" @click="addMember">
+              Add
+            </UButton>
+          </div>
         </div>
       </div>
       <div v-else class="flex items-center justify-center h-48 text-muted">

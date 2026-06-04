@@ -40,15 +40,17 @@ const menuItems: DropdownMenuItem[][] = [
           {{ product.status }}
         </UBadge>
       </div>
+
       <p v-if="product.description" class="text-sm text-muted mt-0.5 truncate">
         {{ product.description }}
       </p>
+
       <p class="text-sm text-highlighted font-semibold mt-1">
         {{ formattedPrice }}
         <span class="text-muted font-normal">{{ intervalLabel }}</span>
       </p>
     </div>
-    <UDropdownMenu :items="menuItems">
+    <UDropdownMenu :items="menuItems" class="hover:cursor-pointer hover:bg-secondary/10">
       <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
     </UDropdownMenu>
   </div>
