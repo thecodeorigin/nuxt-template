@@ -21,4 +21,18 @@ describe('createInvitationSchema', () => {
   it('rejects an invalid email', () => {
     expect(() => CreateInvitationSchema.parse({ email: 'not-an-email' })).toThrow()
   })
+
+  it('accepts metadata as a record of unknown values', () => {
+    const parsed = CreateInvitationSchema.parse({ email: 'a@b.com', metadata: { project_ids: ['id-1', 'id-2'], foo: 42 } })
+    expect(parsed.metadata).toEqual({ project_ids: ['id-1', 'id-2'], foo: 42 })
+  })
+
+  it('allows metadata to be omitted', () => {
+    const parsed = CreateInvitationSchema.parse({ email: 'a@b.com' })
+    expect(parsed.metadata).toBeUndefined()
+  })
+
+  it('rejects metadata that is not a record', () => {
+    expect(() => CreateInvitationSchema.parse({ email: 'a@b.com', metadata: ['not-a-record'] })).toThrow()
+  })
 })

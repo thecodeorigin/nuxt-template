@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { assertGrantable } from '#layers/auth/server/services/permissions-registry'
 import { buildAbility } from '#layers/auth/shared/casl'
-import { assertGrantable } from '#layers/auth/shared/permissions'
+import { registerCoreDomainsForTest } from '#layers/auth/test/unit/_helpers/registry'
+
+beforeEach(() => registerCoreDomainsForTest())
 
 describe('assertGrantable', () => {
   it('allows tenant abilities the actor holds', () => {

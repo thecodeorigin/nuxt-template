@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { getDefaultRoleAbilities, keysAllowedFor } from '#layers/auth/server/services/permissions-registry'
 import { planRolePermissionSync } from '#layers/auth/server/tasks/roles/sync'
-import { DEFAULT_MEMBER_ABILITIES, DEFAULT_PERSONAL_ORG_ABILITIES, DEFAULT_ROLE_ABILITIES, DefaultRole, keysAllowedFor } from '#layers/auth/shared/permissions'
+import { DefaultRole } from '#layers/auth/shared/permissions'
+import { registerCoreDomainsForTest } from '#layers/auth/test/unit/_helpers/registry'
+
+beforeEach(() => registerCoreDomainsForTest())
 
 function row(over: Partial<{ id: string, name: string, permissions: string[], organization_id: string }>) {
   return {
@@ -13,33 +17,28 @@ function row(over: Partial<{ id: string, name: string, permissions: string[], or
 }
 
 describe('planRolePermissionSync', () => {
-  it('targets a drifted Member role with the canonical member abilities', () => {
-    const [change] = planRolePermissionSync([row({ name: 'Member', permissions: ['project:read'] })])
-    expect(change!.permissions).toEqual([...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]])
+  it('targets a drifted Member role with the registry member abilities', () => {
+    const [change] = planRolePermissionSync([row({ name: 'Member', permissions: ['project:read'] })], getDefaultRoleAbilities)
+    expect(new Set(change!.permissions)).toEqual(new Set(getDefaultRoleAbilities(DefaultRole.MEMBER)))
   })
 
   it('skips a role already in sync (order-insensitive)', () => {
-    const perms = [...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]].reverse()
-    expect(planRolePermissionSync([row({ name: 'Admin', permissions: perms })])).toEqual([])
+    const perms = [...getDefaultRoleAbilities(DefaultRole.ADMIN)].reverse()
+    expect(planRolePermissionSync([row({ name: 'Admin', permissions: perms })], getDefaultRoleAbilities)).toEqual([])
   })
 
   it('ignores custom (non-default) role names', () => {
-    expect(planRolePermissionSync([row({ name: 'Billing Viewer', permissions: [] })])).toEqual([])
+    expect(planRolePermissionSync([row({ name: 'Billing Viewer', permissions: [] })], getDefaultRoleAbilities)).toEqual([])
   })
 })
 
 describe('default role abilities source of truth', () => {
   it('only contains tenant-grantable keys', () => {
     const tenant = keysAllowedFor(false)
-    for (const keys of Object.values(DEFAULT_ROLE_ABILITIES)) {
-      for (const k of keys) {
+    for (const role of [DefaultRole.ADMIN, DefaultRole.MEMBER, DefaultRole.GUEST]) {
+      for (const k of getDefaultRoleAbilities(role)) {
         expect(tenant.has(k)).toBe(true)
       }
     }
-  })
-
-  it('derives the public defaults from the map', () => {
-    expect(DEFAULT_PERSONAL_ORG_ABILITIES).toBe(DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN])
-    expect(DEFAULT_MEMBER_ABILITIES).toBe(DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER])
   })
 })

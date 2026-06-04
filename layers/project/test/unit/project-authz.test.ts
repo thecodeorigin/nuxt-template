@@ -46,8 +46,7 @@ const GUEST = ['project:read', 'project:read:self']
 function registerOwner(ownerId: string) {
   defineSubject('project', {
     paramName: 'id',
-    ownerKey: 'owner_id',
-    fetch: async (id: string) => ({ id, owner_id: ownerId }),
+    fetch: async (id: string) => ({ id, user_id: ownerId }),
   })
 }
 

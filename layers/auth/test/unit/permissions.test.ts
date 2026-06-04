@@ -1,20 +1,22 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { SYSTEM_GRANTS } from '#layers/auth/server/constants/defaults'
 import {
-  ALL_ABILITY_KEYS,
-  buildPermissionCatalog,
-  DEFAULT_ROLE_ABILITIES,
-  DefaultRole,
+  getDefaultRoleAbilities,
+  getRegisteredCatalog,
+  getTenantAbilityKeys,
   keysAllowedFor,
   mergeOrgAbilities,
-  SYSTEM_ABILITY_KEYS,
-  TENANT_ABILITY_KEYS,
-} from '#layers/auth/shared/permissions'
+} from '#layers/auth/server/services/permissions-registry'
+import { DefaultRole, SYSTEM_ABILITY_KEYS } from '#layers/auth/shared/permissions'
+import { registerCoreDomainsForTest } from '#layers/auth/test/unit/_helpers/registry'
+
+beforeEach(() => registerCoreDomainsForTest())
 
 describe('ability key placement', () => {
   it('system and tenant keys are disjoint', () => {
+    const tenantKeys = getTenantAbilityKeys()
     for (const k of SYSTEM_ABILITY_KEYS)
-      expect(TENANT_ABILITY_KEYS.has(k)).toBe(false)
+      expect(tenantKeys.has(k)).toBe(false)
   })
 
   it('a tenant org cannot legally hold a system key', () => {
@@ -28,9 +30,7 @@ describe('ability key placement', () => {
   })
 
   it('mergeOrgAbilities drops misplaced keys (defense in depth)', () => {
-    // impersonate stuffed into a tenant grant is ignored
     expect(mergeOrgAbilities([], ['user:impersonate', 'user:manage'], false)).toEqual(['user:manage'])
-    // a tenant key in the system grant is ignored
     expect(mergeOrgAbilities(['user:manage', 'user:impersonate'], [], false)).toEqual(['user:impersonate'])
   })
 
@@ -45,7 +45,7 @@ describe('ability key placement', () => {
 
 describe('permission catalog', () => {
   it('classifies user:impersonate as system and tenant keys as tenant', () => {
-    const catalog = buildPermissionCatalog()
+    const catalog = getRegisteredCatalog()
     const byKey = Object.fromEntries(catalog.map(p => [p.key, p]))
     expect(byKey['user:impersonate']!.org_kind).toBe('system')
     expect(byKey['user:manage']!.org_kind).toBe('tenant')
@@ -59,13 +59,14 @@ describe('seed grant sets', () => {
       expect(SYSTEM_ABILITY_KEYS.has(a)).toBe(true)
   })
 
-  it('every DEFAULT_ROLE_ABILITIES key is a catalogued, non-system key', () => {
+  it('every default-role abilities key is a catalogued, non-system key', () => {
+    const allKeys = new Set(getRegisteredCatalog().map(p => p.key))
     const allRoleKeys = [
-      ...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN],
-      ...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER],
-      ...DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST],
+      ...getDefaultRoleAbilities(DefaultRole.ADMIN),
+      ...getDefaultRoleAbilities(DefaultRole.MEMBER),
+      ...getDefaultRoleAbilities(DefaultRole.GUEST),
     ]
     for (const a of allRoleKeys)
-      expect(ALL_ABILITY_KEYS.has(a) && !SYSTEM_ABILITY_KEYS.has(a)).toBe(true)
+      expect(allKeys.has(a) && !SYSTEM_ABILITY_KEYS.has(a)).toBe(true)
   })
 })

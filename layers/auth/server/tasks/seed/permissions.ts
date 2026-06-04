@@ -1,9 +1,9 @@
 import { db } from '@nuxthub/db'
 import { permissionTable } from '@nuxthub/db/schema'
-import { buildPermissionCatalog } from '#layers/auth/shared/permissions'
+import { getRegisteredCatalog } from '#layers/auth/server/services/permissions-registry'
 
 export async function seedPermissions(): Promise<number> {
-  const catalog = buildPermissionCatalog()
+  const catalog = getRegisteredCatalog()
   for (const p of catalog) {
     await db
       .insert(permissionTable)
