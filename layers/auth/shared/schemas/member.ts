@@ -1,15 +1,11 @@
 import { z } from 'zod'
-import { TENANT_ABILITY_KEYS } from '#layers/auth/shared/permissions'
 
 export const AddMemberSchema = z.object({
   email: z.string().email(),
 })
 
 export const UpdateMemberAbilitiesSchema = z.object({
-  abilities: z.array(z.string()).refine(
-    arr => arr.every(a => TENANT_ABILITY_KEYS.has(a)),
-    { message: 'Only tenant abilities (user:*, project:*, billing:*) can be granted here' },
-  ),
+  abilities: z.array(z.string()),
 })
 
 export type AddMember = z.infer<typeof AddMemberSchema>

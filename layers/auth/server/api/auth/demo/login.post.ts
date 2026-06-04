@@ -3,8 +3,9 @@ import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { DEMO_ORG, SYSTEM_GRANTS, SYSTEM_ORG } from '#layers/auth/server/constants/defaults'
 import { ensureMembership, ensureOrganization } from '#layers/auth/server/services/organization'
+import { getDefaultRoleAbilities } from '#layers/auth/server/services/permissions-registry'
 import { persistSession } from '#layers/auth/server/services/session'
-import { DEFAULT_ROLE_ABILITIES, DefaultRole } from '#layers/auth/shared/permissions'
+import { DefaultRole } from '#layers/auth/shared/permissions'
 
 interface DemoAgent {
   email: string
@@ -63,7 +64,7 @@ export default defineEventHandler(async (event) => {
   // Ensure org memberships exist; grants are preserved for returning users so
   // edits made through the UI survive a re-login (the demo backdoor is not a reset).
   const demoOrg = await ensureOrganization(DEMO_ORG.slug, DEMO_ORG.name)
-  await ensureMembership(user.id, demoOrg.id, agent === 'admin' ? DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN] : DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER])
+  await ensureMembership(user.id, demoOrg.id, agent === 'admin' ? getDefaultRoleAbilities(DefaultRole.ADMIN) : getDefaultRoleAbilities(DefaultRole.MEMBER))
   if (agent === 'admin') {
     const systemOrg = await ensureOrganization(SYSTEM_ORG.slug, SYSTEM_ORG.name, { is_system: true })
     await db.insert(organizationMemberTable)

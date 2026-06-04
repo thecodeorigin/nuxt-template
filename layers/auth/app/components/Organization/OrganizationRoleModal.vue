@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Role } from '@nuxthub/db/schema'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
-import { buildPermissionCatalog } from '#layers/auth/shared/permissions'
+import { whenError } from '~/utils/error'
 
 const props = defineProps<{
   open: boolean
@@ -12,7 +12,9 @@ const emit = defineEmits<{ 'update:open': [boolean], 'saved': [] }>()
 const orgApi = useOrganizationApi()
 const toast = useToast()
 
-const catalog = buildPermissionCatalog().filter(p => p.org_kind === 'tenant')
+const { data: catalogData, error: catalogError } = useAsyncData('role-modal-perms', () => orgApi.fetchPermissions(), { default: () => [] })
+whenError(catalogError)
+const catalog = computed(() => catalogData.value.filter((p: { org_kind: string }) => p.org_kind === 'tenant'))
 
 const name = ref('')
 const description = ref('')

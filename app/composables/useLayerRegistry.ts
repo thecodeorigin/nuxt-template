@@ -1,4 +1,4 @@
-import type { Component } from 'vue'
+import type { Component, InjectionKey } from 'vue'
 
 export interface RegistryNavItem {
   id: string
@@ -26,16 +26,29 @@ export interface RegistryNavbarItem {
   priority: number
 }
 
+export interface RegistryInvitationField {
+  id: string
+  component: Component
+}
+
+/**
+ * Provided by the invite form; injected by contributed fields to write their
+ *  slice of the invitation payload. Scoped per form instance.
+ */
+export const invitationMetadataKey: InjectionKey<Record<string, unknown>> = Symbol('invitation-metadata')
+
 export interface LayerContribution {
   navItems?: RegistryNavItem[]
   overlays?: RegistryOverlay[]
   navbarItems?: RegistryNavbarItem[]
+  invitationFields?: RegistryInvitationField[]
 }
 
 export function useLayerRegistry() {
   const navItems = useState<RegistryNavItem[]>('layerRegistry.nav', () => [])
   const overlays = useState<RegistryOverlay[]>('layerRegistry.overlays', () => [])
   const navbarItems = useState<RegistryNavbarItem[]>('layerRegistry.navbar', () => [])
+  const invitationFields = useState<RegistryInvitationField[]>('layerRegistry.invitationFields', () => [])
 
   function contribute(input: LayerContribution) {
     if (input.navItems?.length) {
@@ -63,7 +76,16 @@ export function useLayerRegistry() {
           .map(i => ({ ...i, component: markRaw(i.component) })),
       ]
     }
+    if (input.invitationFields?.length) {
+      const existing = new Set(invitationFields.value.map(i => i.id))
+      invitationFields.value = [
+        ...invitationFields.value,
+        ...input.invitationFields
+          .filter(i => !existing.has(i.id))
+          .map(i => ({ ...i, component: markRaw(i.component) })),
+      ]
+    }
   }
 
-  return { navItems, overlays, navbarItems, contribute }
+  return { navItems, overlays, navbarItems, invitationFields, contribute }
 }

@@ -2,12 +2,13 @@ import { organizationMemberTable, userTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { DEMO_ORG } from '#layers/auth/server/constants/defaults'
 import { ensureOrganization } from '#layers/auth/server/services/organization'
-import { DEFAULT_ROLE_ABILITIES, DefaultRole } from '#layers/auth/shared/permissions'
+import { getDefaultRoleAbilities } from '#layers/auth/server/services/permissions-registry'
+import { DefaultRole } from '#layers/auth/shared/permissions'
 
 async function upsertMember(
   userEmail: string,
   organization_id: string,
-  abilities: readonly string[],
+  abilities: string[],
 ): Promise<boolean> {
   const user = await db.query.userTable.findFirst({
     where: eq(userTable.primary_email, userEmail),
@@ -15,12 +16,11 @@ async function upsertMember(
   })
   if (!user)
     return false
-  const abilitiesArr = [...abilities]
   await db.insert(organizationMemberTable)
-    .values({ user_id: user.id, organization_id, abilities: abilitiesArr })
+    .values({ user_id: user.id, organization_id, abilities })
     .onConflictDoUpdate({
       target: [organizationMemberTable.user_id, organizationMemberTable.organization_id],
-      set: { abilities: abilitiesArr },
+      set: { abilities },
     })
   return true
 }
@@ -28,32 +28,35 @@ async function upsertMember(
 export default defineTask({
   meta: {
     name: 'seed:organization',
-    description: 'Create the shared "demo" tenant org and grant DEFAULT_ROLE_ABILITIES tiers to the dev/demo users. Idempotent.',
+    description: 'Create the shared "demo" tenant org and grant default-role abilities to the dev/demo users. Idempotent.',
   },
   run: async () => {
     const org = await ensureOrganization(DEMO_ORG.slug, DEMO_ORG.name)
-    const grants: Array<readonly [string, readonly string[]]> = [
-      ['admin@seed.local', DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]],
-      ['alice@seed.local', DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]],
-      ['bob@seed.local', DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST]],
-      ['admin@demo.local', DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]],
-      ['user@demo.local', DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]],
+    const adminAbilities = getDefaultRoleAbilities(DefaultRole.ADMIN)
+    const memberAbilities = getDefaultRoleAbilities(DefaultRole.MEMBER)
+    const guestAbilities = getDefaultRoleAbilities(DefaultRole.GUEST)
+    const grants: Array<readonly [string, string[]]> = [
+      ['admin@seed.local', adminAbilities],
+      ['alice@seed.local', memberAbilities],
+      ['bob@seed.local', guestAbilities],
+      ['admin@demo.local', adminAbilities],
+      ['user@demo.local', memberAbilities],
     ]
     const granted: Array<{ email: string, tier: string }> = []
     for (const [email, abilities] of grants) {
       if (await upsertMember(email, org.id, abilities))
-        granted.push({ email, tier: tierLabel(abilities) })
+        granted.push({ email, tier: tierLabel(abilities, adminAbilities, memberAbilities, guestAbilities) })
     }
     return { result: 'ok', organization_id: org.id, granted }
   },
 })
 
-function tierLabel(abilities: readonly string[]): string {
-  if (abilities === DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN])
+function tierLabel(abilities: string[], admin: string[], member: string[], guest: string[]): string {
+  if (abilities === admin)
     return 'admin'
-  if (abilities === DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER])
+  if (abilities === member)
     return 'member'
-  if (abilities === DEFAULT_ROLE_ABILITIES[DefaultRole.GUEST])
+  if (abilities === guest)
     return 'guest'
   return 'custom'
 }

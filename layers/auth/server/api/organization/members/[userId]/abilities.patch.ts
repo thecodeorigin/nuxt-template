@@ -4,9 +4,9 @@ import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { countOrgManagers } from '#layers/auth/server/services/organization'
+import { assertGrantable, getUserSelfAbilityKeys, keysAllowedFor } from '#layers/auth/server/services/permissions-registry'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
 import { buildAbility } from '#layers/auth/shared/casl'
-import { assertGrantable, keysAllowedFor, SELF_ABILITY_KEYS } from '#layers/auth/shared/permissions'
 import { UpdateMemberAbilitiesSchema } from '#layers/auth/shared/schemas/member'
 
 export default defineAuthorizedHandler(['user:manage'], async (event, { session }) => {
@@ -46,10 +46,8 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   if (targetM.abilities.includes('user:manage') && !abilities.includes('user:manage') && (await countOrgManagers(orgId)) <= 1)
     throw createError({ statusCode: 409, statusMessage: 'Cannot remove the last organization admin' })
 
-  // Always carry the full SELF_ABILITY_KEYS catalog — these are permanent defaults
-  // for members and are not surfaced in the abilities editor. Preserving only what
-  // the target currently holds would silently strip them after a demotion.
-  const next = [...new Set([...abilities, ...SELF_ABILITY_KEYS])]
+  // Always carry user self-ability keys — permanent member defaults not in the editor.
+  const next = [...new Set([...abilities, ...getUserSelfAbilityKeys()])]
 
   const [updated] = await db
     .update(organizationMemberTable)

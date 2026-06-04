@@ -1,5 +1,5 @@
 import { db } from '@nuxthub/db'
-import { organizationMemberTable, projectMemberTable, roleTable } from '@nuxthub/db/schema'
+import { organizationMemberTable, roleTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
@@ -12,14 +12,9 @@ import {
   getOrganizationById,
   isMember,
 } from '#layers/auth/server/services/organization'
+import { getDefaultRoleAbilities } from '#layers/auth/server/services/permissions-registry'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
-import { DEFAULT_MEMBER_ABILITIES } from '#layers/auth/shared/permissions'
-
-async function insertProjectMembers(userId: string, projectIds: string[]): Promise<void> {
-  await Promise.all(projectIds.map(projectId =>
-    db.insert(projectMemberTable).values({ project_id: projectId, user_id: userId, role: 'member' }).onConflictDoNothing(),
-  ))
-}
+import { DefaultRole } from '#layers/auth/shared/permissions'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const token = getRouterParam(event, 'token')
@@ -40,7 +35,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
   if (await isMember(session.id, inv.organization_id))
     throw createError({ statusCode: 409, statusMessage: 'You are already a member of this organization' })
 
-  await ensureMembership(session.id, inv.organization_id, DEFAULT_MEMBER_ABILITIES)
+  await ensureMembership(session.id, inv.organization_id, getDefaultRoleAbilities(DefaultRole.MEMBER))
 
   const member = await db.query.organizationMemberTable.findFirst({
     where: and(eq(organizationMemberTable.user_id, session.id), eq(organizationMemberTable.organization_id, inv.organization_id)),
@@ -61,9 +56,8 @@ export default defineAuthenticatedHandler(async (event, session) => {
     }
   }
 
-  if (inv.project_ids?.length) {
-    await insertProjectMembers(session.id, inv.project_ids)
-  }
+  await (useNitroApp().hooks as { callHook: (event: string, ...args: unknown[]) => Promise<void> })
+    .callHook('invitation:accepted', { userId: session.id, organizationId: inv.organization_id, invitation: inv })
 
   await deleteInvitation(inv.id)
   await refreshUserSessions(session.id)

@@ -4,8 +4,9 @@ import { eq } from 'drizzle-orm'
 import { createError, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { isMember } from '#layers/auth/server/services/organization'
+import { getDefaultRoleAbilities } from '#layers/auth/server/services/permissions-registry'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
-import { DEFAULT_MEMBER_ABILITIES } from '#layers/auth/shared/permissions'
+import { DefaultRole } from '#layers/auth/shared/permissions'
 import { AddMemberSchema } from '#layers/auth/shared/schemas/member'
 
 export default defineAuthorizedHandler(['user:manage'], async (event, { session }) => {
@@ -28,7 +29,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
 
   await db
     .insert(organizationMemberTable)
-    .values({ user_id: user.id, organization_id: orgId, abilities: [...DEFAULT_MEMBER_ABILITIES] })
+    .values({ user_id: user.id, organization_id: orgId, abilities: [...getDefaultRoleAbilities(DefaultRole.MEMBER)] })
 
   await refreshUserSessions(user.id)
 
@@ -38,7 +39,7 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
     username: user.username,
     primary_email: user.primary_email,
     avatar: user.avatar,
-    abilities: [...DEFAULT_MEMBER_ABILITIES],
+    abilities: [...getDefaultRoleAbilities(DefaultRole.MEMBER)],
     is_suspended: user.is_suspended,
   }
 })

@@ -3,8 +3,8 @@ import { roleTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { effectiveOrgGrants } from '#layers/auth/server/services/organization'
+import { assertGrantable } from '#layers/auth/server/services/permissions-registry'
 import { buildAbility } from '#layers/auth/shared/casl'
-import { assertGrantable } from '#layers/auth/shared/permissions'
 import { CreateRoleSchema } from '#layers/auth/shared/schemas/role'
 
 export default defineAuthorizedHandler(['user:manage'], async (event, { session }) => {

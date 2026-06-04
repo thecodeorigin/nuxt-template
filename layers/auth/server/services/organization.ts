@@ -4,7 +4,8 @@ import { organizationInvitationTable, organizationMemberRoleTable, organizationM
 import { and, asc, eq, ne, or, sql } from 'drizzle-orm'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import { escapeLike } from '~~/shared/utils/string'
-import { DEFAULT_PERSONAL_ORG_ABILITIES, DEFAULT_ROLE_ABILITIES, DEFAULT_ROLE_NAME, DefaultRole, mergeOrgAbilities } from '#layers/auth/shared/permissions'
+import { getDefaultRoleAbilities, mergeOrgAbilities } from '#layers/auth/server/services/permissions-registry'
+import { DEFAULT_ROLE_NAME, DefaultRole } from '#layers/auth/shared/permissions'
 
 type UserRow = typeof userTable.$inferSelect
 
@@ -122,8 +123,8 @@ export async function countOrgManagers(orgId: string): Promise<number> {
 
 export async function ensureSystemRoles(orgId: string) {
   await db.insert(roleTable).values([
-    { organization_id: orgId, name: DEFAULT_ROLE_NAME[DefaultRole.ADMIN], description: 'Full workspace control', permissions: [...DEFAULT_ROLE_ABILITIES[DefaultRole.ADMIN]], is_system: true },
-    { organization_id: orgId, name: DEFAULT_ROLE_NAME[DefaultRole.MEMBER], description: 'Standard member', permissions: [...DEFAULT_ROLE_ABILITIES[DefaultRole.MEMBER]], is_system: true },
+    { organization_id: orgId, name: DEFAULT_ROLE_NAME[DefaultRole.ADMIN], description: 'Full workspace control', permissions: getDefaultRoleAbilities(DefaultRole.ADMIN), is_system: true },
+    { organization_id: orgId, name: DEFAULT_ROLE_NAME[DefaultRole.MEMBER], description: 'Standard member', permissions: getDefaultRoleAbilities(DefaultRole.MEMBER), is_system: true },
   ]).onConflictDoNothing()
   return db.query.roleTable.findMany({ where: eq(roleTable.organization_id, orgId) })
 }
@@ -165,7 +166,7 @@ export async function createPersonalOrganization(user: UserRow) {
     is_personal: true,
   }).returning()
   await db.insert(organizationMemberTable)
-    .values({ user_id: user.id, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
+    .values({ user_id: user.id, organization_id: org!.id, abilities: getDefaultRoleAbilities(DefaultRole.ADMIN) })
     .onConflictDoNothing()
   const roles = await ensureSystemRoles(org!.id)
   const adminRole = roles.find(r => r.name === DEFAULT_ROLE_NAME[DefaultRole.ADMIN])
@@ -189,7 +190,7 @@ export async function createTenantOrganization(userId: string, name: string) {
     is_personal: false,
   }).returning()
   await db.insert(organizationMemberTable)
-    .values({ user_id: userId, organization_id: org!.id, abilities: [...DEFAULT_PERSONAL_ORG_ABILITIES] })
+    .values({ user_id: userId, organization_id: org!.id, abilities: getDefaultRoleAbilities(DefaultRole.ADMIN) })
     .onConflictDoNothing()
   const roles = await ensureSystemRoles(org!.id)
   const adminRole = roles.find(r => r.name === DEFAULT_ROLE_NAME[DefaultRole.ADMIN])
@@ -215,12 +216,12 @@ export async function getOrgInvitations(orgId: string) {
   return db.query.organizationInvitationTable.findMany({ where: eq(organizationInvitationTable.organization_id, orgId) })
 }
 
-export async function createInvitation(orgId: string, email: string, roleId: string | null, invitedBy: string, projectIds: string[] = []) {
+export async function createInvitation(orgId: string, email: string, roleId: string | null, invitedBy: string, metadata: Record<string, unknown> = {}) {
   const token = crypto.randomUUID()
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   const [inv] = await db
     .insert(organizationInvitationTable)
-    .values({ organization_id: orgId, email, role_id: roleId, token, invited_by: invitedBy, expires_at: expiresAt, project_ids: projectIds })
+    .values({ organization_id: orgId, email, role_id: roleId, token, invited_by: invitedBy, expires_at: expiresAt, metadata })
     .returning()
   return inv!
 }

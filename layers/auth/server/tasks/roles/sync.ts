@@ -4,8 +4,9 @@ import { db } from '@nuxthub/db'
 import { roleTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { membersWithRole } from '#layers/auth/server/services/organization'
+import { getDefaultRoleAbilities } from '#layers/auth/server/services/permissions-registry'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
-import { DEFAULT_ROLE_ABILITIES, DEFAULT_ROLE_NAME } from '#layers/auth/shared/permissions'
+import { DEFAULT_ROLE_NAME } from '#layers/auth/shared/permissions'
 
 const NAME_TO_DEFAULT_ROLE: Record<string, DefaultRole> = Object.fromEntries(
   (Object.entries(DEFAULT_ROLE_NAME) as [DefaultRole, string][]).map(([role, name]) => [name, role]),
@@ -29,13 +30,14 @@ export interface RolePermissionChange {
 /** Pure: which system roles drift from the source of truth + their target perms. */
 export function planRolePermissionSync(
   roles: Pick<Role, 'id' | 'name' | 'permissions' | 'organization_id'>[],
+  abilitiesFor: (r: DefaultRole) => string[] = getDefaultRoleAbilities,
 ): RolePermissionChange[] {
   const changes: RolePermissionChange[] = []
   for (const role of roles) {
     const defaultRole = NAME_TO_DEFAULT_ROLE[role.name]
     if (!defaultRole)
       continue
-    const desired = [...DEFAULT_ROLE_ABILITIES[defaultRole]]
+    const desired = abilitiesFor(defaultRole)
     if (!sameAbilities(role.permissions, desired))
       changes.push({ id: role.id, name: role.name, organization_id: role.organization_id, permissions: desired })
   }
@@ -43,11 +45,10 @@ export function planRolePermissionSync(
 }
 
 /**
- * Replace every org's system-role permissions with DEFAULT_ROLE_ABILITIES. Run
+ * Replace every org's system-role permissions with the registry union. Run
  * after editing the source-of-truth map (feature rollout). Custom (non-system)
  * roles and per-member direct abilities are never touched. Affected users'
- * sessions are rewritten in place so the change is live immediately (matches the
- * existing live-revocation pattern used by the roles/abilities routes).
+ * sessions are rewritten in place so the change is live immediately.
  */
 export async function syncDefaultRolePermissions(): Promise<{
   orgsScanned: number
@@ -55,7 +56,7 @@ export async function syncDefaultRolePermissions(): Promise<{
   sessionsRefreshed: number
 }> {
   const systemRoles = await db.query.roleTable.findMany({ where: eq(roleTable.is_system, true) })
-  const changes = planRolePermissionSync(systemRoles)
+  const changes = planRolePermissionSync(systemRoles, getDefaultRoleAbilities)
 
   const affected = new Set<string>()
   for (const change of changes) {
@@ -76,6 +77,6 @@ export async function syncDefaultRolePermissions(): Promise<{
 }
 
 export default defineTask({
-  meta: { name: 'roles:sync', description: 'Replace every org system role with DEFAULT_ROLE_ABILITIES (feature rollout).' },
+  meta: { name: 'roles:sync', description: 'Replace every org system role with the registry-derived default abilities (feature rollout).' },
   run: async () => ({ result: await syncDefaultRolePermissions() }),
 })
