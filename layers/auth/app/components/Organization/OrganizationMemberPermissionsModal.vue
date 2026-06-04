@@ -2,15 +2,14 @@
 import type { OrgMember } from '#layers/auth/app/api/useOrganizationApi'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import { useOrganizationMembers } from '#layers/auth/app/composables/useOrganizationMembers'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 import { whenError } from '~/utils/error'
 
 const props = defineProps<{ member: OrgMember | null }>()
 const open = defineModel<boolean>('open', { default: false })
 
-const authStore = useAuthStore()
 const toast = useToast()
 const orgApi = useOrganizationApi()
+const { $ability } = useNuxtApp()
 const { permissions, updateMemberAbilities } = useOrganizationMembers()
 
 const { data: orgRoles, error: rolesError } = useAsyncData('org-roles', () => orgApi.fetchRoles(), { default: () => [] })
@@ -38,7 +37,8 @@ const grouped = computed(() => {
 const roleOptions = computed(() => orgRoles.value.map(r => ({ label: r.name, value: r.id })))
 
 function canGrant(key: string) {
-  return satisfiesAbility(authStore.currentUser?.abilities ?? [], key)
+  const [s = '', a = ''] = key.split(':')
+  return $ability.can(a, s)
 }
 
 function toggle(key: string) {

@@ -5,8 +5,8 @@ import { createError, getRouterParam, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { countOrgManagers } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
-import { keysAllowedFor, SELF_ABILITY_KEYS } from '#layers/auth/shared/permissions'
+import { buildAbility } from '#layers/auth/shared/casl'
+import { assertGrantable, keysAllowedFor, SELF_ABILITY_KEYS } from '#layers/auth/shared/permissions'
 import { UpdateMemberAbilitiesSchema } from '#layers/auth/shared/schemas/member'
 
 export default defineAuthorizedHandler(['user:manage'], async (event, { session }) => {
@@ -28,7 +28,8 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
     .where(and(eq(organizationMemberTable.user_id, session.id), eq(organizationMemberTable.organization_id, orgId)))
     .limit(1)
   const actorAllowed = (actorM?.abilities ?? []).filter(a => keysAllowedFor(false).has(a))
-  const ungrantable = abilities.filter(a => !satisfiesAbility(actorAllowed, a))
+  const actorAbility = buildAbility(actorAllowed, session.id)
+  const ungrantable = assertGrantable(actorAbility, abilities)
   if (ungrantable.length > 0)
     throw createError({ statusCode: 403, statusMessage: `You cannot grant: ${ungrantable.join(', ')}` })
 

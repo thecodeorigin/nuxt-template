@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { effectiveOrgGrants, membersWithRole } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
+import { buildAbility } from '#layers/auth/shared/casl'
 import { assertGrantable } from '#layers/auth/shared/permissions'
 import { UpdateRoleSchema } from '#layers/auth/shared/schemas/role'
 
@@ -20,7 +21,8 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
   const body = await readValidatedBody(event, UpdateRoleSchema.parse)
   if (body.permissions) {
     const actorGrants = await effectiveOrgGrants(session.id, orgId)
-    const bad = assertGrantable(actorGrants, body.permissions)
+    const actorAbility = buildAbility(actorGrants, session.id)
+    const bad = assertGrantable(actorAbility, body.permissions)
     if (bad.length > 0)
       throw createError({ statusCode: 403, statusMessage: `Cannot grant: ${bad.join(', ')}` })
   }

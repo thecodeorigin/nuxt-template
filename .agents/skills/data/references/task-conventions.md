@@ -162,7 +162,7 @@ service file.
 
 ```
 layers/auth/server/constants/defaults.ts
-  SYSTEM_ORG, DEMO_ORG, SYSTEM_GRANTS, DEMO_ORG_GRANTS, SEED_USERS, SeedUserDef
+  SYSTEM_ORG, DEMO_ORG, SYSTEM_GRANTS, SEED_USERS, SeedUserDef
 
 layers/notification/server/constants/defaults.ts
   DEMO_NOTIFICATIONS, DemoNotificationDef

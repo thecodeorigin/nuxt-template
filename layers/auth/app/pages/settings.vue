@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 
 useHead({ title: 'Settings' })
 
-const authStore = useAuthStore()
-const abilities = computed(() => authStore.currentUser?.abilities ?? [])
+const { $ability } = useNuxtApp()
 
 const links = computed(() => {
   const main: NavigationMenuItem[] = [
     { label: 'General', icon: 'i-lucide-user', to: '/settings', exact: true },
   ]
   main.push({ label: 'Notifications', icon: 'i-lucide-bell', to: '/settings/notifications' })
-  if (satisfiesAbility(abilities.value, 'billing:read')) {
+  if ($ability.can('read', 'billing')) {
     main.push({ label: 'Billing', icon: 'i-lucide-credit-card', to: '/settings/billing' })
   }
   main.push({ label: 'Security', icon: 'i-lucide-shield', to: '/settings/security' })

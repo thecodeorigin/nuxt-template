@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 
 definePageMeta({ can: ['user:read'] })
 useHead({ title: 'Organization' })
 
-const authStore = useAuthStore()
-const abilities = computed(() => authStore.currentUser?.abilities ?? [])
+const { $ability } = useNuxtApp()
 
 const links = computed(() => {
   const items: NavigationMenuItem[] = [
@@ -15,7 +13,7 @@ const links = computed(() => {
     { label: 'Members', icon: 'i-lucide-users', to: '/organization/members' },
     { label: 'Roles', icon: 'i-lucide-shield', to: '/organization/roles' },
   ]
-  if (satisfiesAbility(abilities.value, 'billing:read'))
+  if ($ability.can('read', 'billing'))
     items.push({ label: 'Invoice', icon: 'i-lucide-file-text', to: '/organization/invoice' })
   return [items]
 })

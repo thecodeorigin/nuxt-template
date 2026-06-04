@@ -5,10 +5,9 @@ export default defineNuxtRouteMiddleware((to) => {
   if (required.length === 0)
     return
 
-  const authStore = useAuthStore()
-  const abilities = authStore.currentUser?.abilities ?? []
+  const { $ability } = useNuxtApp()
 
-  if (!pageMetaCanCheck(abilities, required)) {
+  if (!pageMetaCanCheck($ability, required)) {
     return navigateTo('/forbidden')
   }
 })

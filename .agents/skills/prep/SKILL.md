@@ -73,7 +73,7 @@ Pick an approach. Use `references/solution-design.md`.
   "INSERT ..."`. Load the `data` skill for the full convention.
 - **Permission impact**: list every ability key the plan touches.
   Identify catalog updates (`layers/auth/shared/permissions.ts`),
-  grant-set updates (`SYSTEM_GRANTS`, `DEMO_ORG_GRANTS`,
+  grant-set updates (`SYSTEM_GRANTS`, `DEFAULT_ROLE_ABILITIES`,
   `DEFAULT_*_ABILITIES`), and whether a live-env backfill (`update:`
   task) is needed. See `data` skill's
   `references/permission-aware-data.md`.
@@ -119,7 +119,7 @@ Before writing the plan file, verify:
   writes
 - Every permission-touching step names the catalog file
   (`layers/auth/shared/permissions.ts`) and the grant set
-  (`SYSTEM_GRANTS` / `DEMO_ORG_GRANTS` / `DEFAULT_*_ABILITIES`) it
+  (`SYSTEM_GRANTS` / `DEFAULT_ROLE_ABILITIES` / `DEFAULT_*_ABILITIES`) it
   updates
 
 Use `references/handoff-to-cook.md` for the full checklist.

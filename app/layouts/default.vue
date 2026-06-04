@@ -4,12 +4,11 @@ import type { RegistryNavItem } from '~/composables/useLayerRegistry'
 import ImpersonateMenu from '#layers/auth/app/components/Impersonate/ImpersonateMenu.vue'
 import OrganizationMenu from '#layers/auth/app/components/Organization/OrganizationMenu.vue'
 import UserMenu from '#layers/auth/app/components/User/UserMenu.vue'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 
 const open = ref(false)
 const colorMode = useColorMode()
-const authStore = useAuthStore()
 const registry = useLayerRegistry()
+const { $ability } = useNuxtApp()
 
 onMounted(() => {
   useCookieConsent().prompt()
@@ -22,13 +21,14 @@ function setTheme(pref: string) {
   colorMode.preference = pref
 }
 
-const abilities = computed(() => authStore.currentUser?.abilities ?? [])
-
 function canShow(item: RegistryNavItem): boolean {
   if (!item.ability)
     return true
   const abs = Array.isArray(item.ability) ? item.ability : [item.ability]
-  return abs.some(a => satisfiesAbility(abilities.value, a))
+  return abs.some((a) => {
+    const [s = '', ac = ''] = a.split(':')
+    return $ability.can(ac, s)
+  })
 }
 
 function toMenuItem(item: RegistryNavItem): NavigationMenuItem {

@@ -136,7 +136,7 @@ reward amounts — goes in `<layer>/server/constants/<category>.ts`,
 not mixed into a service file.
 
 ```
-layers/auth/server/constants/defaults.ts       SYSTEM_ORG, DEMO_ORG, SYSTEM_GRANTS, DEMO_ORG_GRANTS, SEED_USERS
+layers/auth/server/constants/defaults.ts       SYSTEM_ORG, DEMO_ORG, SYSTEM_GRANTS, SEED_USERS
 layers/notification/server/constants/defaults.ts  DEMO_NOTIFICATIONS
 layers/support/server/constants/defaults.ts    DEMO_TICKETS
 layers/referral/server/constants/defaults.ts   REFERRAL_REWARD
@@ -219,7 +219,7 @@ item, or a server endpoint **must** be paired with a permission review:
    `TENANT_ABILITY_KEYS`, or `SELF_ABILITY_KEYS`).
 2. Does any default grant set need updating?
    `DEFAULT_PERSONAL_ORG_ABILITIES`, `DEFAULT_MEMBER_ABILITIES`,
-   `SYSTEM_GRANTS`, `DEMO_ORG_GRANTS` — each may need the new key.
+   `DEFAULT_ROLE_ABILITIES`, `SYSTEM_GRANTS` — each may need the new key.
 3. Are existing live users in production missing the new ability?
    Write an `update:` task that backfills it (e.g.
    `update/user-abilities.ts`).

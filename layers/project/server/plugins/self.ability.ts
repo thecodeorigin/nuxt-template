@@ -6,7 +6,6 @@ import { defineSubject } from '#layers/auth/server/services/casl'
 export default defineNitroPlugin(() => {
   defineSubject('project', {
     paramName: 'id',
-    ownerKey: 'owner_id',
     fetch: async (id) => {
       const owner = await db.query.projectMemberTable.findFirst({
         where: and(eq(projectMemberTable.project_id, id), eq(projectMemberTable.role, 'owner')),
@@ -14,7 +13,7 @@ export default defineNitroPlugin(() => {
       })
       if (!owner)
         return null
-      return { id, owner_id: owner.user_id }
+      return { id, user_id: owner.user_id }
     },
   })
 })

@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { countOrgManagers, effectiveOrgGrants } from '#layers/auth/server/services/organization'
 import { refreshUserSessions } from '#layers/auth/server/services/session'
+import { buildAbility } from '#layers/auth/shared/casl'
 import { assertGrantable } from '#layers/auth/shared/permissions'
 import { AssignRolesSchema } from '#layers/auth/shared/schemas/role'
 
@@ -25,8 +26,9 @@ export default defineAuthorizedHandler(['user:manage'], async (event, { session 
     throw createError({ statusCode: 400, statusMessage: 'Invalid role IDs' })
 
   const actorGrants = await effectiveOrgGrants(session.id, orgId)
+  const actorAbility = buildAbility(actorGrants, session.id)
   for (const role of roles.filter(r => body.role_ids.includes(r.id))) {
-    const bad = assertGrantable(actorGrants, role.permissions)
+    const bad = assertGrantable(actorAbility, role.permissions)
     if (bad.length > 0)
       throw createError({ statusCode: 403, statusMessage: `Cannot grant role "${role.name}": ${bad.join(', ')}` })
   }
