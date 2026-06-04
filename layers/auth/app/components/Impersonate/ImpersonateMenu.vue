@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 
 defineProps<{
   collapsed?: boolean
@@ -10,15 +9,14 @@ defineProps<{
 const authApi = useAuthApi()
 const authStore = useAuthStore()
 const toast = useToast()
+const { $ability } = useNuxtApp()
 
 const canImpersonate = computed(
   () => (authStore.currentUser?.abilities ?? []).includes('user:impersonate')
     || authStore.isImpersonating,
 )
 
-const canManageUsers = computed(() =>
-  satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:read'),
-)
+const canManageUsers = computed(() => $ability.can('read', 'user'))
 
 const showMenu = computed(() => canImpersonate.value || canManageUsers.value)
 

@@ -6,13 +6,12 @@ import { defineSubject } from '#layers/auth/server/services/casl'
 export default defineNitroPlugin(() => {
   defineSubject('user', {
     paramName: 'userId',
-    ownerKey: 'id',
     fetch: async (id) => {
       const user = await db.query.userTable.findFirst({
         where: eq(userTable.id, id),
         columns: { id: true },
       })
-      return user ?? null
+      return user ? { user_id: user.id } : null
     },
   })
 })

@@ -23,7 +23,10 @@
     "test:unit": "vitest --project unit",
     "test:nuxt": "vitest --project nuxt",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@casl/ability": "catalog:",
@@ -117,6 +120,7 @@
     "tsx": "catalog:",
     "type-fest": "catalog:",
     "typescript": "catalog:",
+    "vitepress": "catalog:",
     "vitest": "catalog:",
     "vue-tsc": "catalog:",
     "yaml-eslint-parser": "catalog:"

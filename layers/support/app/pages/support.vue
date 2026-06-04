@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import type { TicketDetail, TicketSummary } from '#layers/support/shared/schemas/ticket'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 import { useSupportApi } from '#layers/support/app/api/useSupportApi'
 import SupportConversation from '#layers/support/app/components/Support/SupportConversation.vue'
 import { supportTicketsKey } from '#layers/support/app/composables/useSupportTickets'
 
 useHead({ title: 'My requests' })
 
-const authStore = useAuthStore()
-const abilities = authStore.currentUser?.abilities ?? []
-if (satisfiesAbility(abilities, 'support:manage') || satisfiesAbility(abilities, 'system:manage')) {
+const { $ability } = useNuxtApp()
+if ($ability.can('manage', 'support') || $ability.can('manage', 'system')) {
   await navigateTo('/system/tickets')
 }
 

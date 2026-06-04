@@ -1,4 +1,5 @@
-import { parseAbility, satisfiesAbility } from '#layers/auth/shared/ability'
+import type { MongoAbility } from '@casl/ability'
+import { parseAbility } from '#layers/auth/shared/ability'
 
 export const TENANT_SUBJECTS: readonly string[] = ['user', 'project', 'billing', 'selfhost']
 export const TENANT_ACTIONS = ['read', 'write', 'delete', 'manage'] as const
@@ -134,12 +135,21 @@ export function mergeOrgAbilities(systemGrants: string[], activeGrants: string[]
 export const EDITABLE_TENANT_KEYS = TENANT_ABILITY_KEYS
 
 /**
- * Returns the ability keys from `requested` that the actor cannot grant.
- * A key is un-grantable if it is not a tenant key or the actor does not hold it.
+ * Returns true if the actor can grant the given ability key to another user.
+ * For non-self keys: actor needs an unconditional (unscoped) matching rule.
+ * For :self keys: actor needs any matching rule (scoped or unscoped).
  */
-export function assertGrantable(actorEffective: string[], requested: string[]): string[] {
+export function canGrantAbility(actorAbility: MongoAbility, key: string): boolean {
+  const [s = '', a = '', scope] = key.split(':')
+  const rules = actorAbility.rulesFor(a, s)
+  return scope === 'self' ? rules.length > 0 : rules.some(r => !r.conditions)
+}
+
+/**
+ * Returns the subset of requested keys the actor cannot grant.
+ * Illegal-kind keys (not in the tenant catalog) are always returned.
+ */
+export function assertGrantable(actorAbility: MongoAbility, requested: string[]): string[] {
   const tenantKeys = keysAllowedFor(false)
-  const illegalKind = requested.filter(k => !tenantKeys.has(k))
-  const notHeld = requested.filter(k => tenantKeys.has(k) && !satisfiesAbility(actorEffective, k))
-  return [...new Set([...illegalKind, ...notHeld])]
+  return [...new Set(requested.filter(key => !tenantKeys.has(key) || !canGrantAbility(actorAbility, key)))]
 }

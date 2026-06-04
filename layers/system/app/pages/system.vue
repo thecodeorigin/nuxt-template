@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
 
 definePageMeta({ can: ['system:manage'] })
 useHead({ title: 'System Administration' })
 
-const authStore = useAuthStore()
-const abilities = computed(() => authStore.currentUser?.abilities ?? [])
+const { $ability } = useNuxtApp()
 
 const links = computed<NavigationMenuItem[][]>(() => {
   const items: NavigationMenuItem[] = []
-  if (satisfiesAbility(abilities.value, 'system:manage'))
+  if ($ability.can('manage', 'system'))
     items.push({ label: 'Notifications', icon: 'i-lucide-send', to: '/system/notifications' })
-  if (satisfiesAbility(abilities.value, 'support:manage'))
+  if ($ability.can('manage', 'support'))
     items.push({ label: 'Tickets', icon: 'i-lucide-ticket', to: '/system/tickets' })
   return [items]
 })

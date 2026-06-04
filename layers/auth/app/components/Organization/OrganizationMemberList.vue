@@ -8,7 +8,6 @@ import { h, resolveComponent } from 'vue'
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import OrganizationMemberPermissionsModal from '#layers/auth/app/components/Organization/OrganizationMemberPermissionsModal.vue'
 import { useOrganizationMembers } from '#layers/auth/app/composables/useOrganizationMembers'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 import { useProjectApi } from '#layers/project/app/api/useProjectApi'
 import { whenError } from '~/utils/error'
 
@@ -16,10 +15,9 @@ const authStore = useAuthStore()
 const toast = useToast()
 const orgApi = useOrganizationApi()
 const { invitations, removeMember, createInvitation, revokeInvitation } = useOrganizationMembers()
+const { $ability } = useNuxtApp()
 
-const canManageUsers = computed(() =>
-  satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:manage'),
-)
+const canManageUsers = computed(() => $ability.can('manage', 'user'))
 
 const scrollEl = ref<HTMLElement | null>(null)
 const { items: members, q, hasMore, loading, loadMore, reset } = useInfiniteList(

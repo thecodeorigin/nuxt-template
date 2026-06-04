@@ -89,6 +89,7 @@ catalog:
   typescript: 6.0.2
   ufo: ^1.6.3
   unstorage: ^1.17.5
+  vitepress: ^1.6.4
   vitest: ^4.1.2
   vue: ^3.5.31
   vue-router: ^5.0.4

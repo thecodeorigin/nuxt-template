@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { abilitiesToRules, pageMetaCanCheck } from '#layers/auth/app/composables/casl'
+import { pageMetaCanCheck } from '#layers/auth/app/composables/casl'
+import { abilitiesToRules, buildAbility } from '#layers/auth/shared/casl'
 
 describe('abilitiesToRules (consumed by @casl/ability)', () => {
   it('converts plain abilities to action+subject rules', () => {
@@ -24,30 +25,36 @@ describe('abilitiesToRules (consumed by @casl/ability)', () => {
 
 describe('pageMetaCanCheck — definePageMeta({ can: [...] })', () => {
   it('passes when no abilities are required', () => {
-    expect(pageMetaCanCheck([], [])).toBe(true)
+    expect(pageMetaCanCheck(buildAbility([], undefined), [])).toBe(true)
   })
 
   it('passes when the user has the exact ability', () => {
-    expect(pageMetaCanCheck(['blog:read'], ['blog:read'])).toBe(true)
+    expect(pageMetaCanCheck(buildAbility(['blog:read'], 'u1'), ['blog:read'])).toBe(true)
   })
 
   it('passes when the user has a scoped variant (scope-agnostic)', () => {
-    expect(pageMetaCanCheck(['blog:read:self'], ['blog:read'])).toBe(true)
+    expect(pageMetaCanCheck(buildAbility(['blog:read:self'], 'u1'), ['blog:read'])).toBe(true)
   })
 
   it('fails when the user lacks the ability entirely', () => {
-    expect(pageMetaCanCheck([], ['blog:read'])).toBe(false)
-    expect(pageMetaCanCheck(['user:read'], ['blog:read'])).toBe(false)
+    expect(pageMetaCanCheck(buildAbility([], undefined), ['blog:read'])).toBe(false)
+    expect(pageMetaCanCheck(buildAbility(['user:read'], 'u1'), ['blog:read'])).toBe(false)
   })
 
   it('passes when the user has ANY of the listed abilities (OR semantics)', () => {
-    expect(pageMetaCanCheck(['blog:read'], ['blog:read', 'user:read'])).toBe(true)
-    expect(pageMetaCanCheck(['user:read'], ['blog:read', 'user:read'])).toBe(true)
-    expect(pageMetaCanCheck(['other:read'], ['blog:read', 'user:read'])).toBe(false)
+    expect(pageMetaCanCheck(buildAbility(['blog:read'], 'u1'), ['blog:read', 'user:read'])).toBe(true)
+    expect(pageMetaCanCheck(buildAbility(['user:read'], 'u1'), ['blog:read', 'user:read'])).toBe(true)
+    expect(pageMetaCanCheck(buildAbility(['other:read'], 'u1'), ['blog:read', 'user:read'])).toBe(false)
   })
 
-  it('passes via the "manage" wildcard', () => {
-    expect(pageMetaCanCheck(['user:manage'], ['user:read'])).toBe(true)
-    expect(pageMetaCanCheck(['user:manage'], ['user:impersonate'])).toBe(false)
+  it('passes via the "manage" wildcard for wildcardable actions', () => {
+    expect(pageMetaCanCheck(buildAbility(['user:manage'], 'u1'), ['user:read'])).toBe(true)
+  })
+
+  it('cASL manage implies impersonate in page-meta (known behavior change from canSubjectAction)', () => {
+    // CASL's 'manage' = any action. On the frontend this is acceptable — page-meta is
+    // UI gating only. The server independently guards non-wildcardable system actions.
+    // Previously canSubjectAction returned false here; now CASL returns true.
+    expect(pageMetaCanCheck(buildAbility(['user:manage'], 'u1'), ['user:impersonate'])).toBe(true)
   })
 })

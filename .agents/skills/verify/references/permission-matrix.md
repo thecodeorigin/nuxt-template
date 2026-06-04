@@ -31,7 +31,7 @@ verifies everyone else.
 | anonymous | none | public routes only |
 
 The demo org seeds three membership tiers (`admin`, `member`, `guest`)
-— see `DEMO_ORG_GRANTS` in `seed.ts`. Use those tiers when the change
+— see `DEFAULT_ROLE_ABILITIES` in `shared/permissions.ts`. Use those tiers when the change
 adds tenant-scoped abilities.
 
 If a seed user is missing in the local DB:

@@ -1,7 +1,7 @@
 import type { MongoAbility, RawRuleOf } from '@casl/ability'
 import { createMongoAbility } from '@casl/ability'
 import { abilitiesPlugin } from '@casl/vue'
-import { abilitiesToRules } from '#layers/auth/app/composables/casl'
+import { abilitiesToRules } from '#layers/auth/shared/casl'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const ability = createMongoAbility([])

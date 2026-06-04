@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
-import { satisfiesAbility } from '#layers/auth/shared/ability'
 
-const authStore = useAuthStore()
 const orgApi = useOrganizationApi()
 const toast = useToast()
+const { $ability } = useNuxtApp()
 
 const { data: org, refresh, error: orgError } = useAsyncData('active-org', () => orgApi.fetchOrganization())
 whenError(orgError)
-const canManage = computed(() => satisfiesAbility(authStore.currentUser?.abilities ?? [], 'user:manage'))
+const canManage = computed(() => $ability.can('manage', 'user'))
 
 const name = ref(org.value?.name ?? '')
 syncRef(org, name, {

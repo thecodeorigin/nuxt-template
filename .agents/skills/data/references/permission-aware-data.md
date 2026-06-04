@@ -12,7 +12,8 @@ abilities live in three places that must stay synchronised:
 | File | Role |
 |---|---|
 | `layers/auth/shared/permissions.ts` | The **catalog** — which ability keys exist and which org kind (system vs tenant) may hold them |
-| `layers/auth/server/services/seed.ts` | The **default grants** — `SYSTEM_GRANTS`, `DEMO_ORG_GRANTS`, plus `DEFAULT_PERSONAL_ORG_ABILITIES` / `DEFAULT_MEMBER_ABILITIES` exported from `shared/permissions.ts` |
+| `layers/auth/server/constants/defaults.ts` | `SYSTEM_GRANTS` (system-org only grants) |
+| `layers/auth/shared/permissions.ts` | `DEFAULT_ROLE_ABILITIES` — demo/tenant tier grants (admin/member/guest); also `DEFAULT_PERSONAL_ORG_ABILITIES` / `DEFAULT_MEMBER_ABILITIES` |
 | `layers/auth/server/tasks/create/admin.ts` (via `createSystemAdmin`) | The **production admin's grant set** — derived from `SYSTEM_GRANTS.admin` |
 
 Drift between any of these three is a permission bug waiting to ship.
@@ -63,7 +64,7 @@ Walk the four grant sources:
 | Grant | Who gets it | When to add the new key |
 |---|---|---|
 | `SYSTEM_GRANTS.admin` (in `services/seed.ts`) | Production system admin (via `create:admin`) and dev/demo admins | If this is a system-level power (`*:manage`, `*:audit`) |
-| `DEMO_ORG_GRANTS.{admin, member, guest}` | Demo tenant org seed users | If the new key is a tenant ability — pick which tier needs it |
+| `DEFAULT_ROLE_ABILITIES[DefaultRole.{ADMIN,MEMBER,GUEST}]` (in `shared/permissions.ts`) | Demo tenant org seed users and `roles:sync` materialized grants | If the new key is a tenant ability — pick which tier needs it |
 | `DEFAULT_PERSONAL_ORG_ABILITIES` (in `shared/permissions.ts`) | Owner of a freshly-created personal org | If new tenants should have it by default |
 | `DEFAULT_MEMBER_ABILITIES` (in `shared/permissions.ts`) | A user joining an org as a plain member (direct add or invitation accept) | If members (not just admins) should have it |
 
@@ -139,7 +140,7 @@ When deprecating a feature:
 
 1. Remove all `<Can>` / `defineAuthorizedHandler` references to the
    key first (the UI and routes stop using it)
-2. Remove the key from `SYSTEM_GRANTS` / `DEMO_ORG_GRANTS` /
+2. Remove the key from `SYSTEM_GRANTS` / `DEFAULT_ROLE_ABILITIES` /
    `DEFAULT_*_ABILITIES` (the seed defaults stop granting it)
 3. Write a `refactor/` task that removes the key from existing
    memberships' `abilities` arrays (idempotent: read row, filter

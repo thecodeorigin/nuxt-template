@@ -1,36 +1,40 @@
 import { describe, expect, it } from 'vitest'
+import { buildAbility } from '#layers/auth/shared/casl'
 import { assertGrantable } from '#layers/auth/shared/permissions'
 
 describe('assertGrantable', () => {
   it('allows tenant abilities the actor holds', () => {
-    expect(assertGrantable(['project:read', 'project:write'], ['project:read'])).toEqual([])
+    expect(assertGrantable(buildAbility(['project:read', 'project:write'], undefined), ['project:read'])).toEqual([])
   })
 
   it('returns empty array when requested list is empty', () => {
-    expect(assertGrantable(['project:read'], [])).toEqual([])
+    expect(assertGrantable(buildAbility(['project:read'], undefined), [])).toEqual([])
   })
 
   it('rejects abilities the actor does not hold', () => {
-    const bad = assertGrantable(['project:read'], ['project:write'])
+    const bad = assertGrantable(buildAbility(['project:read'], undefined), ['project:write'])
     expect(bad).toContain('project:write')
   })
 
   it('rejects system-only abilities like user:impersonate even if actor holds them', () => {
-    const bad = assertGrantable(['user:impersonate'], ['user:impersonate'])
+    const bad = assertGrantable(buildAbility(['user:impersonate'], undefined), ['user:impersonate'])
     expect(bad).toContain('user:impersonate')
   })
 
   it('rejects completely unknown ability keys', () => {
-    const bad = assertGrantable(['project:read'], ['nonexistent:action'])
+    const bad = assertGrantable(buildAbility(['project:read'], undefined), ['nonexistent:action'])
     expect(bad).toContain('nonexistent:action')
   })
 
   it('allows multiple tenant abilities all held by actor', () => {
-    expect(assertGrantable(['project:read', 'project:write', 'project:delete'], ['project:read', 'project:write'])).toEqual([])
+    expect(assertGrantable(
+      buildAbility(['project:read', 'project:write', 'project:delete'], undefined),
+      ['project:read', 'project:write'],
+    )).toEqual([])
   })
 
   it('deduplicates returned bad keys', () => {
-    const bad = assertGrantable([], ['project:write', 'project:write'])
+    const bad = assertGrantable(buildAbility([], undefined), ['project:write', 'project:write'])
     expect(bad.filter(k => k === 'project:write').length).toBe(1)
   })
 })

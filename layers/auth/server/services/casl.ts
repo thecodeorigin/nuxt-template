@@ -1,18 +1,19 @@
+import type { MongoAbility } from '@casl/ability'
 import type { H3Event } from 'h3'
 import type { AuthUser } from '#layers/auth/server/services/auth'
+import { subject } from '@casl/ability'
 import { createError, getRouterParam } from 'h3'
 import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
-import { parseAbility, satisfiesAbility } from '#layers/auth/shared/ability'
+import { buildAbility, WILDCARDABLE_ACTIONS } from '#layers/auth/shared/casl'
 
-export interface SubjectRegistration<T extends Record<string, unknown> = Record<string, unknown>> {
+export interface SubjectRegistration<T extends { user_id: string } = { user_id: string }> {
   paramName?: string
-  ownerKey?: string
   fetch: (id: string, event: H3Event) => Promise<T | null> | T | null
 }
 
 const subjectRegistry = new Map<string, SubjectRegistration>()
 
-export function defineSubject<T extends Record<string, unknown>>(
+export function defineSubject<T extends { user_id: string }>(
   name: string,
   registration: SubjectRegistration<T>,
 ) {
@@ -25,10 +26,6 @@ export function getSubjectRegistration(name: string) {
 
 export function _resetSubjects() {
   subjectRegistry.clear()
-}
-
-export function hasExactAbility(abilities: string[], ability: string): boolean {
-  return abilities.includes(ability)
 }
 
 export interface EvaluationResult {
@@ -45,49 +42,54 @@ export type FunctionCheck = (
 
 export type Check = string | FunctionCheck
 
-export async function evaluateAbilityString(
-  ability: string,
+async function evaluateAbilityString(
+  abilityStr: string,
+  caslAbility: MongoAbility,
   session: AuthUser,
-  ctx: { getParam: (name: string) => string | undefined, event: H3Event },
+  getParam: (name: string) => string | undefined,
+  event: H3Event,
 ): Promise<EvaluationResult> {
-  if (!satisfiesAbility(session.abilities, ability)) {
+  const [subjectName = '', action = '', scope] = abilityStr.split(':')
+
+  // Guard: system-specific actions (e.g. 'impersonate') must not be implied
+  // by the 'manage' wildcard — require an exact ability string match instead.
+  if (!WILDCARDABLE_ACTIONS.has(action) && action !== 'manage') {
+    return { allowed: session.abilities.includes(abilityStr) }
+  }
+
+  if (!caslAbility.can(action, subjectName)) {
     return { allowed: false }
   }
 
-  const { subject, scope } = parseAbility(ability)
   if (scope !== 'self') {
     return { allowed: true }
   }
 
-  if (satisfiesAbility(session.abilities, `${subject}:manage`)) {
-    return { allowed: true }
-  }
-
-  const reg = subjectRegistry.get(subject)
+  // :self — fetch the resource and let CASL verify the user_id condition
+  const reg = subjectRegistry.get(subjectName)
   if (!reg) {
     throw createError({
       statusCode: 500,
-      statusMessage: `Subject "${subject}" not registered. Call defineSubject('${subject}', { fetch }) before using a ":self" ability.`,
+      statusMessage: `Subject "${subjectName}" not registered. Call defineSubject('${subjectName}', { fetch }) before using a ":self" ability.`,
     })
   }
 
   const paramName = reg.paramName ?? 'id'
-  const ownerKey = reg.ownerKey ?? 'user_id'
-  const id = ctx.getParam(paramName)
+  const id = getParam(paramName)
   if (!id) {
     return { allowed: false }
   }
 
-  const resource = await reg.fetch(id, ctx.event)
+  const resource = await reg.fetch(id, event)
   if (!resource) {
     return { allowed: false }
   }
 
-  if (resource[ownerKey] !== session.id) {
+  if (!caslAbility.can(action, subject(subjectName, resource as Record<string, unknown>))) {
     return { allowed: false }
   }
 
-  return { allowed: true, extras: { [subject]: resource } }
+  return { allowed: true, extras: { [subjectName]: resource } }
 }
 
 export async function evaluateChecks(
@@ -95,14 +97,12 @@ export async function evaluateChecks(
   session: AuthUser,
   event: H3Event,
 ): Promise<EvaluationResult> {
-  const ctx = {
-    event,
-    getParam: (name: string) => getRouterParam(event, name),
-  }
+  const caslAbility = buildAbility(session.abilities, session.id)
+  const getParam = (name: string) => getRouterParam(event, name)
 
   for (const check of checks) {
     if (typeof check === 'string') {
-      const r = await evaluateAbilityString(check, session, ctx)
+      const r = await evaluateAbilityString(check, caslAbility, session, getParam, event)
       if (r.allowed)
         return r
       continue
@@ -131,15 +131,6 @@ export async function runAuthorizedHandler<T>(
   return handler(event, { session, ...(result.extras ?? {}) })
 }
 
-/**
- * @example
- * ```ts
- * export default defineAuthorizedHandler(
- *   ['blog:read', 'blog:read:self', (event, session) => ({ allowed: true, blog })],
- *   (event, { session, blog }) => ({ ... }),
- * )
- * ```
- */
 export function defineAuthorizedHandler<T>(
   checks: Check[],
   handler: (event: H3Event, ctx: { session: AuthUser } & Record<string, unknown>) => Promise<T> | T,
