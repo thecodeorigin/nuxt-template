@@ -152,17 +152,18 @@ async function removeMember(userId: string) {
 
           <div v-else class="space-y-2 mb-3">
             <div
-              v-for="pp in project.products"
-              :key="pp.product_id"
-              class="flex items-center justify-between p-3 bg-elevated rounded-lg border border-default"
+              v-for="product in project.products"
+              :key="product.product_id"
+              class="flex items-center justify-between p-3 bg-elevated rounded-lg border border-default hover:cursor-pointer hover:bg-elevated/50"
+              @click="navigateTo(`/products`)"
             >
               <span class="text-sm font-medium">
-                {{ allProducts?.find(p => p.id === pp.product_id)?.name ?? pp.product_id }}
+                {{ allProducts?.find(p => p.id === product.product_id)?.name ?? product.product_id }}
               </span>
 
               <div class="flex items-center gap-2">
-                <span class="text-xs text-muted">qty: {{ pp.quantity }}</span>
-                <UButton v-if="canManageProject" icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeProduct(pp.product_id)" />
+                <span class="text-xs text-muted">qty: {{ product.quantity }}</span>
+                <UButton v-if="canManageProject" icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeProduct(product.product_id)" />
               </div>
             </div>
           </div>

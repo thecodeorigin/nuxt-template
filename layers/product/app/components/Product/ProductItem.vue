@@ -28,7 +28,10 @@ const menuItems: DropdownMenuItem[][] = [
 </script>
 
 <template>
-  <div class="flex items-center justify-between p-4 bg-elevated rounded-lg border border-default">
+  <div
+    class="flex items-center justify-between p-4 bg-elevated rounded-lg border border-default hover:cursor-pointer hover:bg-elevated/50"
+    @click.stop="emit('edit', product)"
+  >
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2">
         <span class="font-medium text-highlighted truncate">{{ product.name }}</span>

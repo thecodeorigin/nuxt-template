@@ -2,27 +2,29 @@ import { db } from '@nuxthub/db'
 import { projectMemberTable, projectTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { PROJECT_CREATE_GATE } from '#layers/project/server/constants/gates'
 import { CreateProjectSchema } from '#layers/project/shared/schemas/project'
 
-export default defineAuthorizedHandler(PROJECT_CREATE_GATE, async (event, { session }) => {
-  const orgId = session.activeOrganizationId
-  if (!orgId)
-    throw createError({ statusCode: 400, statusMessage: 'No active organization' })
+export default defineAuthorizedHandler(
+  ['project:write', 'project:manage'],
+  async (event, { session }) => {
+    const orgId = session.activeOrganizationId
+    if (!orgId)
+      throw createError({ statusCode: 400, statusMessage: 'No active organization' })
 
-  const body = await readValidatedBody(event, CreateProjectSchema.parse)
+    const body = await readValidatedBody(event, CreateProjectSchema.parse)
 
-  const [project] = await db.insert(projectTable).values({
-    ...body,
-    organization_id: orgId,
-    created_by: session.id,
-  }).returning()
+    const [project] = await db.insert(projectTable).values({
+      ...body,
+      organization_id: orgId,
+      created_by: session.id,
+    }).returning()
 
-  await db.insert(projectMemberTable).values({
-    project_id: project!.id,
-    user_id: session.id,
-    role: 'owner',
-  })
+    await db.insert(projectMemberTable).values({
+      project_id: project!.id,
+      user_id: session.id,
+      role: 'owner',
+    })
 
-  return project!
-})
+    return project!
+  },
+)
