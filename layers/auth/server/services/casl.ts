@@ -57,12 +57,15 @@ async function evaluateAbilityString(
     return { allowed: session.abilities.includes(abilityStr) }
   }
 
-  if (!caslAbility.can(action, subjectName)) {
-    return { allowed: false }
+  if (scope !== 'self') {
+    // Check with an empty instance so conditional (`:self`) rules don't accidentally
+    // satisfy an unscoped gate — conditions like { user_id } won't match {}.
+    return { allowed: caslAbility.can(action, subject(subjectName, {})) }
   }
 
-  if (scope !== 'self') {
-    return { allowed: true }
+  // :self — quick type-level bail before the DB fetch
+  if (!caslAbility.can(action, subjectName)) {
+    return { allowed: false }
   }
 
   // :self — fetch the resource and let CASL verify the user_id condition
@@ -85,7 +88,13 @@ async function evaluateAbilityString(
     return { allowed: false }
   }
 
-  if (!caslAbility.can(action, subject(subjectName, resource as Record<string, unknown>))) {
+  // Ownership check: user owns the resource OR has unconditional manage.
+  // We cannot rely on caslAbility.can(action, instance) here because an unscoped
+  // ability (e.g. `project:write` for CREATE) would satisfy the conditional check,
+  // letting any member bypass the ownership gate.
+  const owns = resource.user_id === session.id
+  const hasManage = caslAbility.can('manage', subject(subjectName, {}))
+  if (!owns && !hasManage) {
     return { allowed: false }
   }
 
