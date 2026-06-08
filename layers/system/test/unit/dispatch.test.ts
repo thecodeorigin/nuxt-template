@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { isEmailEnabled } from '#layers/auth/server/services/email'
-import { composeEmailHtml } from '#layers/system/server/services/dispatch'
+import { composeEmailHtml, dispatchJobKey, sendDispatchMessage, toDispatchPayloads } from '#layers/system/server/services/dispatch'
 import { DispatchFilterSchema, DispatchSendSchema, htmlHasText } from '#layers/system/shared/schemas/dispatch'
 
 describe('isEmailEnabled', () => {
@@ -37,6 +37,27 @@ describe('htmlHasText', () => {
   it('is true when there is text or an image', () => {
     expect(htmlHasText('<p>hi</p>')).toBe(true)
     expect(htmlHasText('<p><img src="x"></p>')).toBe(true)
+  })
+})
+
+describe('dispatch queue payloads', () => {
+  it('builds a stable, namespaced job key', () => {
+    expect(dispatchJobKey('abc')).toBe('dispatch:job:abc')
+  })
+  it('maps recipients to per-recipient payloads sharing one dispatch id', () => {
+    const users = [
+      { id: '1', primary_email: 'a@b.com', notification_prefs: null },
+      { id: '2', primary_email: 'c@d.com', notification_prefs: { email: true } },
+    ]
+    expect(toDispatchPayloads('d1', users)).toEqual([
+      { dispatchId: 'd1', user: users[0] },
+      { dispatchId: 'd1', user: users[1] },
+    ])
+  })
+  it('sendDispatchMessage no-ops when the job blob is gone (acks a poison message)', async () => {
+    await expect(
+      sendDispatchMessage({ dispatchId: 'missing', user: { id: '1', primary_email: 'a@b.com', notification_prefs: null } }),
+    ).resolves.toBeUndefined()
   })
 })
 

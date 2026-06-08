@@ -1,16 +1,26 @@
+import type { DispatchResult } from '#layers/system/shared/schemas/dispatch'
 import { kv } from '@nuxthub/kv'
 import { readValidatedBody } from 'h3'
-import { sendUserEmail } from '~~/layers/auth/server/services/email'
+import { enqueue, getQueueProducer, QUEUE_BATCH_LIMIT } from '~~/cloudflare/queue'
+import { simplifyNanoId } from '~~/shared/utils/id'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
-import { composeEmailHtml, resolveDispatchRecipients } from '#layers/system/server/services/dispatch'
+import {
+  composeEmailHtml,
+  DISPATCH_JOB_TTL,
+  DISPATCH_MESSAGE_TYPE,
+  DISPATCH_QUEUE_BINDING,
+  dispatchJobKey,
+  resolveDispatchRecipients,
+  sendDispatchInline,
+  toDispatchPayloads,
+} from '#layers/system/server/services/dispatch'
 import { DispatchSendSchema } from '#layers/system/shared/schemas/dispatch'
 
 const MAX_RECIPIENTS = 500
 const RATE_LIMIT = 10
 const RATE_WINDOW = 60 * 60 // seconds
-const BATCH = 20
 
-export default defineAuthorizedHandler(['system:manage'], async (event, { session }) => {
+export default defineAuthorizedHandler(['system:manage'], async (event, { session }): Promise<DispatchResult> => {
   const { filter, subject, body } = await readValidatedBody(event, DispatchSendSchema.parse)
 
   const rlKey = `ratelimit:dispatch-send:${session.id}`
@@ -27,18 +37,17 @@ export default defineAuthorizedHandler(['system:manage'], async (event, { sessio
   await kv.set(rlKey, attempts + 1, { ttl: RATE_WINDOW })
 
   const html = composeEmailHtml(subject, body)
-  let sent = 0
-  let failed = 0
-  for (let i = 0; i < enabled.length; i += BATCH) {
-    const chunk = enabled.slice(i, i + BATCH)
-    const results = await Promise.allSettled(chunk.map(u => sendUserEmail(u, { subject, html })))
-    for (const r of results) {
-      if (r.status === 'fulfilled' && r.value.sent)
-        sent++
-      else
-        failed++
-    }
+
+  // On Cloudflare with the queue bound, fan out for background delivery (fast
+  // ack, retries, DLQ). Otherwise (dev / tests / queue not configured) send inline.
+  const queue = getQueueProducer(event, DISPATCH_QUEUE_BINDING)
+  if (!queue) {
+    const { sent, failed } = await sendDispatchInline(enabled, subject, html)
+    return { mode: 'sent', sent, failed, skipped: skippedCount, total }
   }
 
-  return { sent, failed, skipped: skippedCount, total }
+  const dispatchId = simplifyNanoId()
+  await kv.set(dispatchJobKey(dispatchId), { subject, html }, { ttl: DISPATCH_JOB_TTL })
+  const queued = await enqueue(queue, DISPATCH_MESSAGE_TYPE, toDispatchPayloads(dispatchId, enabled), QUEUE_BATCH_LIMIT)
+  return { mode: 'queued', queued, skipped: skippedCount, total, dispatchId }
 })

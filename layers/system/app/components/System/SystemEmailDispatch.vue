@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DispatchFilter } from '#layers/system/shared/schemas/dispatch'
+import type { DispatchFilter, DispatchResult } from '#layers/system/shared/schemas/dispatch'
 import type { EditorToolbarItem } from '#ui/types'
 import { useSystemApi } from '#layers/system/app/api/useSystemApi'
 import { htmlHasText } from '#layers/system/shared/schemas/dispatch'
@@ -52,8 +52,22 @@ const toolbarItems: EditorToolbarItem[][] = [
 ]
 
 const preview = ref<{ total: number, enabled: number, skipped: number } | null>(null)
-const result = ref<{ sent: number, failed: number, skipped: number, total: number } | null>(null)
+const result = ref<DispatchResult | null>(null)
 const previewing = ref(false)
+
+const resultColor = computed(() => {
+  if (!result.value)
+    return 'success'
+  return result.value.mode === 'sent' && result.value.failed ? 'warning' : 'success'
+})
+const resultTitle = computed(() => {
+  const r = result.value
+  if (!r)
+    return ''
+  return r.mode === 'queued'
+    ? `Queued ${r.queued} for delivery · ${r.skipped} skipped (email off) · ${r.total} matched`
+    : `Sent ${r.sent}, failed ${r.failed}, skipped ${r.skipped} of ${r.total} matched`
+})
 const sending = ref(false)
 const confirmOpen = ref(false)
 
@@ -95,7 +109,12 @@ async function runSend() {
     result.value = await api.sendDispatch({ filter: { ...filter.value }, subject: subject.value.trim(), body: body.value })
     confirmOpen.value = false
     preview.value = null
-    toast.add({ title: `Sent ${result.value.sent} email(s)`, color: 'success' })
+    toast.add({
+      title: result.value.mode === 'queued'
+        ? `Queued ${result.value.queued} email(s) for delivery`
+        : `Sent ${result.value.sent} email(s)`,
+      color: resultColor.value,
+    })
   }
   catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
@@ -187,10 +206,10 @@ async function runSend() {
     />
     <UAlert
       v-if="result"
-      :color="result.failed ? 'warning' : 'success'"
+      :color="resultColor"
       variant="subtle"
       icon="i-lucide-mail-check"
-      :title="`Sent ${result.sent}, failed ${result.failed}, skipped ${result.skipped} of ${result.total} matched`"
+      :title="resultTitle"
     />
 
     <!-- Confirm -->

@@ -30,3 +30,11 @@ export const DispatchSendSchema = z.object({
 
 export type DispatchFilter = z.infer<typeof DispatchFilterSchema>
 export type DispatchSend = z.infer<typeof DispatchSendSchema>
+
+/**
+ * Send outcome. `sent` = delivered synchronously (dev / no queue binding);
+ * `queued` = handed to the Cloudflare Queue for background delivery.
+ */
+export type DispatchResult
+  = | { mode: 'sent', sent: number, failed: number, skipped: number, total: number }
+    | { mode: 'queued', queued: number, skipped: number, total: number, dispatchId: string }
