@@ -1,7 +1,8 @@
 import { db } from '@nuxthub/db'
-import { organizationCreditTable, transactionTable } from '@nuxthub/db/schema'
-import { and, eq, ne, sql } from 'drizzle-orm'
+import { transactionTable } from '@nuxthub/db/schema'
+import { and, eq, ne } from 'drizzle-orm'
 import { createError, getHeader, readValidatedBody } from 'h3'
+import { grantCredit } from '#layers/billing/server/services/credit'
 import { SepayWebhookSchema } from '#layers/billing/shared/schemas/billing'
 import { safeEqual } from '#layers/billing/shared/utils/crypto'
 
@@ -36,17 +37,19 @@ export default defineEventHandler(async (event) => {
   if (body.transferAmount < tx.amount)
     return { ok: true, skipped: 'amount-mismatch' }
 
-  await db.batch([
-    db.update(transactionTable)
-      .set({ status: 'success', sepay_event_id: body.id, metadata: { transferAmount: body.transferAmount } })
-      .where(and(eq(transactionTable.id, tx.id), ne(transactionTable.status, 'success'))),
-    db.insert(organizationCreditTable)
-      .values({ organization_id: tx.organization_id, balance: tx.amount })
-      .onConflictDoUpdate({
-        target: organizationCreditTable.organization_id,
-        set: { balance: sql`${organizationCreditTable.balance} + ${tx.amount}` },
-      }),
-  ])
+  // Claim the transaction first: the status CAS (status != 'success') lets exactly
+  // one delivery win, even under concurrent/duplicate SePay webhooks. Only the
+  // winner credits, so the balance can never be incremented twice for one top-up.
+  // (If crediting failed after the claim, status stays 'success' and SePay won't
+  // retry — a rare partial state to reconcile, far cheaper than double-crediting.)
+  const claimed = await db.update(transactionTable)
+    .set({ status: 'success', sepay_event_id: body.id, metadata: { transferAmount: body.transferAmount } })
+    .where(and(eq(transactionTable.id, tx.id), ne(transactionTable.status, 'success')))
+    .returning({ id: transactionTable.id })
+  if (claimed.length === 0)
+    return { ok: true, skipped: 'already-processed' }
+
+  await grantCredit(tx.organization_id, tx.amount)
 
   const priorSuccess = await db.query.transactionTable.findMany({
     where: and(
