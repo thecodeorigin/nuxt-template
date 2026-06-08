@@ -7,10 +7,47 @@ const isDev = import.meta.dev
 
 const SEED_EMAILS = ['admin@seed.local', 'alice@seed.local', 'bob@seed.local'] as const
 
-const { devSeedUsers, devLogin } = useAuthApi()
+const { devSeedUsers, devLogin, fetchAuthProviders, login } = useAuthApi()
 
 const toast = useToast()
 const busy = ref<'admin' | 'user' | null>(null)
+
+// Which sign-in methods the (possibly self-hosted) backend has enabled.
+const { data: providers } = useAsyncData('auth-providers', fetchAuthProviders, {
+  default: () => ({ credential: false, google: false, github: false }),
+})
+
+const credState = reactive({ email: '', password: '' })
+const credBusy = ref(false)
+
+async function signInCredential() {
+  if (!credState.email || !credState.password)
+    return
+  credBusy.value = true
+  try {
+    await login(credState.email, credState.password)
+    window.location.href = '/dashboard'
+  }
+  catch (err: unknown) {
+    const error = err as {
+      statusCode?: number
+      statusMessage?: string
+      message?: string
+      data?: { statusMessage?: string, message?: string }
+    }
+    toast.add({
+      title: 'Sign-in failed',
+      description:
+        error?.data?.statusMessage
+        ?? error?.data?.message
+        ?? error?.statusMessage
+        ?? error?.message
+        ?? 'Invalid credentials',
+      color: 'error',
+    })
+    credBusy.value = false
+  }
+}
 
 const devState = reactive({ email: 'admin@seed.local' })
 const devBusy = ref(false)
@@ -149,8 +186,50 @@ async function signInAsDemoAgent(agent: 'admin' | 'user') {
       </p>
     </div>
 
-    <div v-else class="space-y-3 text-center">
+    <div v-else class="space-y-3" data-testid="prod-block">
+      <UForm
+        v-if="providers.credential"
+        :state="credState"
+        class="space-y-3"
+        data-testid="credential-form"
+        @submit="signInCredential"
+      >
+        <UFormField label="Email" name="email">
+          <UInput
+            v-model="credState.email"
+            type="email"
+            placeholder="admin@yourdomain"
+            autocomplete="username"
+            class="w-full"
+            data-testid="credential-email"
+          />
+        </UFormField>
+        <UFormField label="Password" name="password">
+          <UInput
+            v-model="credState.password"
+            type="password"
+            autocomplete="current-password"
+            class="w-full"
+            data-testid="credential-password"
+          />
+        </UFormField>
+        <UButton
+          type="submit"
+          block
+          size="lg"
+          color="primary"
+          icon="i-lucide-log-in"
+          :loading="credBusy"
+          data-testid="credential-submit"
+        >
+          Sign in
+        </UButton>
+      </UForm>
+
+      <USeparator v-if="providers.credential && (providers.google || providers.github)" label="or" />
+
       <UButton
+        v-if="providers.google"
         to="/api/auth/google"
         external
         block
@@ -162,6 +241,7 @@ async function signInAsDemoAgent(agent: 'admin' | 'user') {
         Continue with Google
       </UButton>
       <UButton
+        v-if="providers.github"
         to="/api/auth/github"
         external
         block
@@ -172,6 +252,10 @@ async function signInAsDemoAgent(agent: 'admin' | 'user') {
       >
         Continue with GitHub
       </UButton>
+
+      <p v-if="!providers.credential && !providers.google && !providers.github" class="text-sm text-muted text-center">
+        No sign-in method is configured yet.
+      </p>
     </div>
 
     <div v-if="isDev" class="space-y-3" data-testid="dev-login">

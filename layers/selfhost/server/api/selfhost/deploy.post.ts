@@ -7,7 +7,7 @@ import { decryptSecret, encryptSecret } from '~~/server/utils/crypto'
 import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { applyMigrations, enableSubdomain, listAccounts, probeCapabilities, provisionResources, setWorkerSecret, uploadAssets, uploadWorker, verifyToken } from '#layers/selfhost/server/services/cloudflare'
 import { getLatestBundle } from '#layers/selfhost/server/services/github'
-import { generateAutoSecret, SELFHOST_SECRET_CATALOG } from '#layers/selfhost/server/services/secrets'
+import { bootstrapAdminCredential, generateAutoSecret, SELFHOST_SECRET_CATALOG } from '#layers/selfhost/server/services/secrets'
 import { DeployBodySchema } from '#layers/selfhost/shared/schemas/deploy'
 
 const RATE_LIMIT_SECONDS = 60
@@ -108,6 +108,16 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (event, { sess
     const assetsJwt = bundle.assets ? await uploadAssets(cfToken, cfAccountId, scriptName, bundle.assets) : null
     await uploadWorker(cfToken, cfAccountId, scriptName, bundle, resources, version, assetsJwt)
     const workerUrl = await enableSubdomain(cfToken, cfAccountId, scriptName)
+
+    // 7a. One-time admin-credential bootstrap. Generates NUXT_ADMIN_EMAIL +
+    //     NUXT_ADMIN_PASSWORD on first deploy so the operator can log in with
+    //     zero OAuth. onConflictDoNothing preserves edited/cleared values on redeploy.
+    for (const seed of bootstrapAdminCredential(workerUrl)) {
+      const encAdmin = await encryptSecret(seed.value)
+      await db.insert(selfhostDeploymentSecretTable)
+        .values({ organization_id: orgId, key: seed.key, ciphertext: encAdmin.ciphertext, iv: encAdmin.iv })
+        .onConflictDoNothing({ target: [selfhostDeploymentSecretTable.organization_id, selfhostDeploymentSecretTable.key] })
+    }
 
     // 7b. Push secrets to the new Worker. Auto-generated ones are created once and persisted so
     //     redeploys reuse the same value (rotating auth secrets would log every user out).

@@ -216,6 +216,11 @@ export default defineNuxtConfig({
 
     taskSecret: '',
 
+    // Built-in system-admin credential login (self-host bootstrap). Empty on
+    // the hub and on OAuth-only deployments → /api/auth/login 404s (disabled).
+    adminEmail: '',
+    adminPassword: '',
+
     public: {
       sslEnabled: false,
 

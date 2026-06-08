@@ -36,6 +36,7 @@ export enum AuthProvider {
 export enum ActivityAction {
   SIGN_IN = 'auth:sign_in',
   SIGN_UP = 'auth:sign_up',
+  SIGN_IN_FAILED = 'auth:sign_in_failed',
   IMPERSONATE_START = 'auth:impersonate_start',
   IMPERSONATE_STOP = 'auth:impersonate_stop',
 }

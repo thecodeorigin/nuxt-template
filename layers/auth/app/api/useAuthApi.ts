@@ -10,6 +10,12 @@ export interface ImpersonationCandidate {
   is_suspended: boolean | null
 }
 
+export interface AuthProviders {
+  credential: boolean
+  google: boolean
+  github: boolean
+}
+
 export function useAuthApi() {
   function fetchCurrentUser() {
     return $http<AuthUser>('/api/auth/me')
@@ -72,6 +78,17 @@ export function useAuthApi() {
     return $http('/api/auth/logout')
   }
 
+  function fetchAuthProviders() {
+    return $http<AuthProviders>('/api/auth/providers')
+  }
+
+  function login(email: string, password: string) {
+    return $http<{ session_id: string, user_id: string }>('/api/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    })
+  }
+
   // Dev-only backdoors (routes 404 outside `import.meta.dev`). Used by the
   // dev login block on the sign-in card to exercise CASL as a seeded user.
   function devSeedUsers() {
@@ -98,6 +115,8 @@ export function useAuthApi() {
     startImpersonation,
     stopImpersonation,
     logout,
+    fetchAuthProviders,
+    login,
     devSeedUsers,
     devLogin,
   }
