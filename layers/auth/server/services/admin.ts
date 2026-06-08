@@ -41,11 +41,19 @@ export async function createSystemAdmin(
       username,
       name,
       verified: true,
-    }).returning()
-    user = inserted!
-    userCreated = true
-    await createPersonalOrganization(user)
+    }).onConflictDoNothing({ target: userTable.primary_email }).returning()
+    if (inserted) {
+      user = inserted
+      userCreated = true
+      await createPersonalOrganization(user)
+    }
+    else {
+      // Lost the race — another concurrent call inserted first. Re-read.
+      user = await db.query.userTable.findFirst({ where: eq(userTable.primary_email, email) })
+    }
   }
+  if (!user)
+    throw createError({ statusCode: 500, statusMessage: 'Failed to provision admin user' })
 
   let systemOrg = await db.query.organizationTable.findFirst({
     where: eq(organizationTable.slug, SYSTEM_ORG.slug),

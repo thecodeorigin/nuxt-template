@@ -35,6 +35,10 @@ export const SELFHOST_SECRET_CATALOG: SecretDef[] = [
 
   // Support
   { key: 'NUXT_CUSTOMER_SUPPORT_EMAIL', label: 'Customer support email', description: 'Surfaces in support emails and the contact form.', category: 'support', type: 'secret_text', auto: null },
+
+  // Admin credential (generated once on first deploy; see bootstrapAdminCredential)
+  { key: 'NUXT_ADMIN_EMAIL', label: 'Admin email', description: 'Email for the built-in system-admin login. Generated on first deploy. Clear the password below to disable credential login once OAuth is set up.', category: 'auth', type: 'secret_text', auto: null },
+  { key: 'NUXT_ADMIN_PASSWORD', label: 'Admin password', description: 'Password for the built-in system-admin login. Generated on first deploy — reveal it to sign in. Editable; clear to disable credential login.', category: 'auth', type: 'secret_text', auto: null },
 ]
 
 const SECRET_KEYS = new Set(SELFHOST_SECRET_CATALOG.map(d => d.key))
@@ -68,4 +72,26 @@ export function generateAutoSecret(def: SecretDef, ctx: AutoGenContext): string 
     default:
       return null
   }
+}
+
+export interface AdminCredentialSeed {
+  key: 'NUXT_ADMIN_EMAIL' | 'NUXT_ADMIN_PASSWORD'
+  value: string
+}
+
+/**
+ * Initial values for the built-in admin login, generated at first deploy.
+ * Email derives from the worker host; password is 24 random bytes (hex).
+ * Caller inserts with onConflictDoNothing so an existing value is preserved
+ * (operator edits + redeploys must not regenerate).
+ */
+export function bootstrapAdminCredential(workersDevUrl: string): AdminCredentialSeed[] {
+  const host = new URL(workersDevUrl).host
+  const bytes = new Uint8Array(24)
+  crypto.getRandomValues(bytes)
+  const password = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+  return [
+    { key: 'NUXT_ADMIN_EMAIL', value: `admin@${host}` },
+    { key: 'NUXT_ADMIN_PASSWORD', value: password },
+  ]
 }
