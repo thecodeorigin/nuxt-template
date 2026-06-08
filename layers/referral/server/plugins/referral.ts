@@ -1,8 +1,7 @@
 import { db } from '@nuxthub/db'
-import { referralTable, transactionTable } from '@nuxthub/db/schema'
-import { and, eq } from 'drizzle-orm'
+import { organizationCreditTable, referralTable, transactionTable } from '@nuxthub/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
 import { deleteCookie, getCookie } from 'h3'
-import { grantCredit } from '#layers/billing/server/services/credit'
 import { REFERRAL_REWARD } from '#layers/referral/server/constants/defaults'
 import { attributeReferral, ensureReferralCode, personalOrgId } from '#layers/referral/server/services/referral'
 
@@ -31,6 +30,8 @@ export default defineNitroPlugin((nitro) => {
     const sink = await personalOrgId(ref.referrer_id)
     if (!sink)
       return
+    // Atomic: the reward transaction, the reward_paid flag, and the credit grant
+    // commit (or roll back) together. D1 batch() runs as one implicit transaction.
     await db.batch([
       db.insert(transactionTable).values({
         organization_id: sink,
@@ -41,7 +42,12 @@ export default defineNitroPlugin((nitro) => {
         metadata: { referee_id: userId },
       }),
       db.update(referralTable).set({ reward_paid: true }).where(eq(referralTable.id, ref.id)),
+      db.insert(organizationCreditTable)
+        .values({ organization_id: sink, balance: REFERRAL_REWARD })
+        .onConflictDoUpdate({
+          target: organizationCreditTable.organization_id,
+          set: { balance: sql`${organizationCreditTable.balance} + ${REFERRAL_REWARD}` },
+        }),
     ])
-    await grantCredit(sink, REFERRAL_REWARD)
   })
 })
