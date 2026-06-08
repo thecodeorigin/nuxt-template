@@ -1,3 +1,4 @@
+import type { EmailableUser } from '~~/layers/auth/server/services/email'
 import type { DispatchFilter } from '#layers/system/shared/schemas/dispatch'
 import { db } from '@nuxthub/db'
 import {
@@ -7,8 +8,9 @@ import {
   roleTable,
   userTable,
 } from '@nuxthub/db/schema'
+import { kv } from '@nuxthub/kv'
 import { asc, eq, inArray } from 'drizzle-orm'
-import { isEmailEnabled } from '~~/layers/auth/server/services/email'
+import { isEmailEnabled, sendUserEmail } from '~~/layers/auth/server/services/email'
 
 export interface DispatchOption { id: string, label: string }
 export interface DispatchOptions { organizations: DispatchOption[], roles: DispatchOption[] }
@@ -107,4 +109,64 @@ export function composeEmailHtml(subject: string, bodyHtml: string): string {
     + `<h1 style="font-size:18px;margin:0 0 12px">${safeSubject}</h1>`
     + `<div>${bodyHtml}</div>`
     + `</body></html>`
+}
+
+// --- Bulk delivery -----------------------------------------------------------
+// A large dispatch (up to MAX_RECIPIENTS) can exceed a Worker's wall-time/CPU
+// budget if sent inline. When the Cloudflare Queue binding is present the route
+// fans the recipients out as queue messages drained by the consumer plugin
+// (layers/system/server/plugins/dispatch-queue.consumer.ts) with retries + DLQ.
+// Off-Cloudflare (dev / tests / no binding) it falls back to sendDispatchInline.
+
+/** Producer binding name (env.<binding>) — see cloudflare/README.md + wrangler.jsonc. */
+export const DISPATCH_QUEUE_BINDING = 'DISPATCH_QUEUE'
+/** Queue name the consumer filters on (a batch can arrive from any bound queue). */
+export const DISPATCH_QUEUE_NAME = 'nuxt-template-dispatch'
+/** Envelope discriminator for dispatch messages on the queue. */
+export const DISPATCH_MESSAGE_TYPE = 'dispatch:email'
+/** How long the composed email blob lives in KV while the queue drains. */
+export const DISPATCH_JOB_TTL = 60 * 60 // 1 hour
+
+const INLINE_BATCH = 20
+
+/** The composed email, stored once per dispatch so queue messages stay small. */
+export interface DispatchJob { subject: string, html: string }
+/** One queued unit of work: send `job` to a single recipient. */
+export interface DispatchEmailPayload { dispatchId: string, user: EmailableUser }
+
+export function dispatchJobKey(dispatchId: string): string {
+  return `dispatch:job:${dispatchId}`
+}
+
+export function toDispatchPayloads(dispatchId: string, recipients: EmailableUser[]): DispatchEmailPayload[] {
+  return recipients.map(user => ({ dispatchId, user }))
+}
+
+/** Synchronous fan-out used off-Cloudflare; bounded by the route's MAX_RECIPIENTS. */
+export async function sendDispatchInline(
+  recipients: EmailableUser[],
+  subject: string,
+  html: string,
+): Promise<{ sent: number, failed: number }> {
+  let sent = 0
+  let failed = 0
+  for (let i = 0; i < recipients.length; i += INLINE_BATCH) {
+    const chunk = recipients.slice(i, i + INLINE_BATCH)
+    const results = await Promise.allSettled(chunk.map(u => sendUserEmail(u, { subject, html })))
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value.sent)
+        sent++
+      else
+        failed++
+    }
+  }
+  return { sent, failed }
+}
+
+/** Process one queued message: load the shared email blob and send to the recipient. */
+export async function sendDispatchMessage(payload: DispatchEmailPayload): Promise<void> {
+  const job = await kv.get<DispatchJob>(dispatchJobKey(payload.dispatchId))
+  if (!job)
+    return // blob expired / already cleaned up — ack without retrying a poison message
+  await sendUserEmail(payload.user, { subject: job.subject, html: job.html })
 }

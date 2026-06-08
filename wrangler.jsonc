@@ -29,6 +29,25 @@
       "persist": true
     }
   },
+  // --- Cloudflare Queues (bulk email dispatch) -------------------------------
+  // OPT-IN: requires a paid Workers plan + queues created up-front. LEAVE
+  // COMMENTED until you run the setup in cloudflare/README.md — an uncommented
+  // binding to a non-existent queue makes `wrangler deploy` fail. Once enabled,
+  // the DISPATCH_QUEUE binding activates the queue path in
+  // layers/system/server/api/system/dispatch/send.post.ts automatically (the
+  // route falls back to synchronous send whenever the binding is absent).
+  // NuxtHub merges this block into the generated .output/server/wrangler.json.
+  //
+  // "queues": {
+  //   "producers": [{ "binding": "DISPATCH_QUEUE", "queue": "nuxt-template-dispatch" }],
+  //   "consumers": [{
+  //     "queue": "nuxt-template-dispatch",
+  //     "max_batch_size": 100,
+  //     "max_batch_timeout": 5,
+  //     "max_retries": 3,
+  //     "dead_letter_queue": "nuxt-template-dispatch-dlq"
+  //   }]
+  // },
   // OAuth redirect URLs are derived from the live request
   // (server/utils/url.ts getBaseUrl(event)), so NUXT_PUBLIC_BASE_DOMAIN is
   // only used by non-request contexts (e.g. cron-generated email links).
