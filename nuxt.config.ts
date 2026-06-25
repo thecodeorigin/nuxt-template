@@ -171,8 +171,9 @@ export default defineNuxtConfig({
       '/api/support/tickets/**': { security: { xssValidator: false } },
       '/api/system/tickets': { security: { xssValidator: false } },
       '/api/system/tickets/**': { security: { xssValidator: false } },
-      // Auth + cron routes have no cross-origin surface.
-      '/api/auth/**': { cors: false },
+      // Auth routes: no cross-origin surface + exempt from the global rate limiter
+      // (credential login uses its own login-throttle; OIDC is stateless redirect).
+      '/api/auth/**': { cors: false, security: { rateLimiter: false } },
       '/api/cron/**': { cors: false },
       '/__nuxt_hints/**': { cors: false, csurf: false },
     },
@@ -267,11 +268,15 @@ export default defineNuxtConfig({
     // lru-cache is in-process — scoped to a single Worker isolate on
     // Cloudflare. Fine for a template / single-region; for cross-isolate
     // limiting back this with a KV- or Durable-Object-backed unstorage driver.
+    // ipHeader: CF Workers expose the real client IP in cf-connecting-ip, not
+    // x-forwarded-for; without this every request looks like the same empty IP
+    // and all users share one token bucket.
     rateLimiter: {
       tokensPerInterval: 150,
       interval: 5 * 60 * 1000, // 5 minutes
       headers: false,
       driver: { name: 'lru-cache' },
+      ipHeader: 'cf-connecting-ip',
       whiteList: ['127.0.0.1', '::1', 'localhost'],
       throwError: true,
     },
