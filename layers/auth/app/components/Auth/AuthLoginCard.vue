@@ -4,6 +4,7 @@ import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
 const config = useRuntimeConfig()
 const isDemo = computed(() => Boolean(config.public.demoMode))
 const isDev = import.meta.dev
+const route = useRoute()
 
 const SEED_EMAILS = ['admin@seed.local', 'alice@seed.local', 'bob@seed.local'] as const
 
@@ -15,6 +16,18 @@ const busy = ref<'admin' | 'user' | null>(null)
 // Which sign-in methods the (possibly self-hosted) backend has enabled.
 const { data: providers } = useAsyncData('auth-providers', fetchAuthProviders, {
   default: () => ({ credential: false, thecodeorigin: false }),
+})
+
+// When OIDC is the only sign-in method, skip the login card and go straight to
+// the IdP. Runs client-side so the SSR /auth/login renders as a public page
+// first, letting the client recheck auth (and SPA-navigate to /dashboard) if the
+// session was just created but hadn't propagated to KV when the SSR ran.
+onMounted(() => {
+  if (isDemo.value || isDev || route.query.error)
+    return
+  const p = providers.value
+  if (p?.thecodeorigin && !p.credential)
+    navigateTo('/api/auth/oidc', { external: true })
 })
 
 const credState = reactive({ email: '', password: '' })
