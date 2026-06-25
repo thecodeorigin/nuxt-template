@@ -18,6 +18,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!isAuthenticated && !isPublic) {
-    return navigateTo('/auth/login')
+    return navigateTo('/api/auth/oidc', { external: true })
   }
 })
