@@ -12,8 +12,7 @@ export interface ImpersonationCandidate {
 
 export interface AuthProviders {
   credential: boolean
-  google: boolean
-  github: boolean
+  thecodeorigin: boolean
 }
 
 export function useAuthApi() {

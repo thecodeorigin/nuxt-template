@@ -28,9 +28,22 @@ export interface GoogleUser {
 
 export type GitHubUser = Endpoints['GET /user']['response']['data']
 
+export interface OidcUser {
+  sub: string
+  email?: string
+  email_verified?: boolean | string
+  name?: string
+  picture?: string
+  org?: string | null
+  roles?: string | null
+  personal?: boolean
+  entitlement?: string | null
+}
+
 export enum AuthProvider {
   GOOGLE = 'google',
   GITHUB = 'github',
+  THECODEORIGIN = 'thecodeorigin',
 }
 
 export enum ActivityAction {
@@ -77,7 +90,7 @@ export const identityTable = sqliteTable('identities', {
   user_id: text('user_id').references(() => userTable.id, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
   provider: text('provider', { enum: enumValues(AuthProvider) }).notNull(),
   provider_user_id: text('provider_user_id').notNull(),
-  provider_data: text('provider_data', { mode: 'json' }).$type<GoogleUser | GitHubUser>(),
+  provider_data: text('provider_data', { mode: 'json' }).$type<GoogleUser | GitHubUser | OidcUser>(),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updated_at: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
 }, table => [

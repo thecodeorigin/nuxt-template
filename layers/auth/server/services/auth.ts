@@ -13,6 +13,14 @@ export interface ImpersonatorInfo {
   abilities: string[]
 }
 
+/** Claims sourced from the THECODEORIGIN IdP userinfo endpoint (session-only, no local org rows). */
+export interface IdpClaims {
+  org: string | null
+  roles: string | null
+  personal: boolean
+  entitlement: string | null
+}
+
 export interface AuthUser {
   id: string
   primary_email: string
@@ -28,6 +36,8 @@ export interface AuthUser {
   impersonator?: ImpersonatorInfo | null
   /** Incremented when ability defaults change; stale sessions are refreshed lazily. */
   generation?: number
+  /** Set for OIDC sessions — abilities are derived from IdP claims, not local DB rows. */
+  idpClaims?: IdpClaims | null
 }
 
 declare module 'h3' {

@@ -14,11 +14,10 @@ export interface SecretDef {
 // Catalog of every env var the deployed worker understands. Editing this list is the way to add support
 // for new self-host config. `auto` entries are derived/generated at deploy time without user input.
 export const SELFHOST_SECRET_CATALOG: SecretDef[] = [
-  // OAuth (user-provided)
-  { key: 'NUXT_GOOGLE_CLIENT_ID', label: 'Google OAuth client ID', description: 'From Google Cloud Console → Credentials. Whitelist your worker URL + /api/auth/google/callback.', category: 'oauth', type: 'secret_text', auto: null },
-  { key: 'NUXT_GOOGLE_CLIENT_SECRET', label: 'Google OAuth client secret', description: 'Pairs with the client ID above.', category: 'oauth', type: 'secret_text', auto: null },
-  { key: 'NUXT_GITHUB_CLIENT_ID', label: 'GitHub OAuth client ID', description: 'From GitHub Developer Settings → OAuth Apps. Whitelist your worker URL + /api/auth/github/callback.', category: 'oauth', type: 'secret_text', auto: null },
-  { key: 'NUXT_GITHUB_CLIENT_SECRET', label: 'GitHub OAuth client secret', description: 'Pairs with the client ID above.', category: 'oauth', type: 'secret_text', auto: null },
+  // THECODEORIGIN OIDC (user-provided)
+  { key: 'NUXT_THECODEORIGIN_ISSUER', label: 'THECODEORIGIN issuer URL', description: 'Base URL of the self-hosted better-auth IdP, e.g. https://auth.yourdomain.com/api/auth. Whitelist your worker URL + /api/auth/oidc/callback on the IdP.', category: 'oauth', type: 'secret_text', auto: null },
+  { key: 'NUXT_THECODEORIGIN_CLIENT_ID', label: 'THECODEORIGIN client ID', description: 'Issued when registering a confidential client on the IdP admin console.', category: 'oauth', type: 'secret_text', auto: null },
+  { key: 'NUXT_THECODEORIGIN_CLIENT_SECRET', label: 'THECODEORIGIN client secret', description: 'Shown once on IdP registration. Rotate via the IdP admin console if lost.', category: 'oauth', type: 'secret_text', auto: null },
   { key: 'NUXT_GITHUB_TOKEN', label: 'GitHub token (private repo updates)', description: 'PAT with contents:read. Only needed if your release repo is private.', category: 'oauth', type: 'secret_text', auto: null },
 
   // SMTP (user-provided)

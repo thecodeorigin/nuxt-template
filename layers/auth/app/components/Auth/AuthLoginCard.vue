@@ -14,7 +14,7 @@ const busy = ref<'admin' | 'user' | null>(null)
 
 // Which sign-in methods the (possibly self-hosted) backend has enabled.
 const { data: providers } = useAsyncData('auth-providers', fetchAuthProviders, {
-  default: () => ({ credential: false, google: false, github: false }),
+  default: () => ({ credential: false, thecodeorigin: false }),
 })
 
 const credState = reactive({ email: '', password: '' })
@@ -226,34 +226,22 @@ async function signInAsDemoAgent(agent: 'admin' | 'user') {
         </UButton>
       </UForm>
 
-      <USeparator v-if="providers.credential && (providers.google || providers.github)" label="or" />
+      <USeparator v-if="providers.credential && providers.thecodeorigin" label="or" />
 
       <UButton
-        v-if="providers.google"
-        to="/api/auth/google"
+        v-if="providers.thecodeorigin"
+        to="/api/auth/oidc"
         external
         block
         size="lg"
-        icon="i-logos-google-icon"
-        color="neutral"
-        variant="outline"
+        icon="i-lucide-shield-check"
+        color="primary"
+        data-testid="signin-thecodeorigin"
       >
-        Continue with Google
-      </UButton>
-      <UButton
-        v-if="providers.github"
-        to="/api/auth/github"
-        external
-        block
-        size="lg"
-        icon="i-logos-github-icon"
-        color="neutral"
-        variant="outline"
-      >
-        Continue with GitHub
+        Sign in with THECODEORIGIN
       </UButton>
 
-      <p v-if="!providers.credential && !providers.google && !providers.github" class="text-sm text-muted text-center">
+      <p v-if="!providers.credential && !providers.thecodeorigin" class="text-sm text-muted text-center">
         No sign-in method is configured yet.
       </p>
     </div>

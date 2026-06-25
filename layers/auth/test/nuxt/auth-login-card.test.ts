@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import AuthLoginCard from '#layers/auth/app/components/Auth/AuthLoginCard.vue'
 
 const login = vi.fn(async () => ({ session_id: 's1', user_id: 'u1' }))
-const providers = { credential: true, google: false, github: false }
+const providers = { credential: true, thecodeorigin: false }
 
 vi.mock('#layers/auth/app/api/useAuthApi', () => ({
   useAuthApi: () => ({

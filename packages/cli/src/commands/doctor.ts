@@ -7,9 +7,8 @@ import {
   effectiveEnv,
   GH_SECRETS,
   GH_VARIABLES,
-  GITHUB_OAUTH,
-  GOOGLE_OAUTH,
   resolveCfToken,
+  THECODEORIGIN_OIDC,
 } from '../lib/env'
 import { ghAuthStatus, ghRepo, listConfiguredNames, missingConfig } from '../lib/github'
 import { exitFromChecks, printChecks, printJson } from '../lib/output'
@@ -88,8 +87,7 @@ export const doctor = defineCommand({
     const gcloud = tools.find(t => t.name === 'gcloud')
     checks.push({ name: 'google:gcloud', status: gcloud?.present ? 'ok' : 'skip', detail: gcloud?.present ? (gcloud.version ?? 'present') : 'not installed (optional)' })
 
-    pushPresence(checks, env, 'oauth:github', GITHUB_OAUTH)
-    pushPresence(checks, env, 'oauth:google', GOOGLE_OAUTH)
+    pushPresence(checks, env, 'oauth:thecodeorigin', THECODEORIGIN_OIDC)
     pushPresence(checks, env, 'env:auth-secrets', AUTH_SECRETS, { fix: 'harness dev setup' })
 
     if (args.json)

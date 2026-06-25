@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { AuthUser, ImpersonatorInfo } from '#layers/auth/server/services/auth'
+import type { AuthUser, IdpClaims, ImpersonatorInfo } from '#layers/auth/server/services/auth'
 import { db } from '@nuxthub/db'
 import { userTable } from '@nuxthub/db/schema'
 import { kv } from '@nuxthub/kv'
@@ -7,6 +7,19 @@ import { eq } from 'drizzle-orm'
 import { setCookie } from 'h3'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import { defaultActiveOrganizationId, isMember, loadEffectiveAbilities } from '#layers/auth/server/services/organization'
+import { getDefaultRoleAbilities } from '#layers/auth/server/services/permissions-registry'
+import { DefaultRole, SYSTEM_ABILITY_KEYS } from '#layers/auth/shared/permissions'
+
+function mapIdpRoleToAbilities(role: string | null): string[] {
+  if (!role)
+    return []
+  const mappedRole = (role === 'owner' || role === 'admin')
+    ? DefaultRole.ADMIN
+    : role === 'guest'
+      ? DefaultRole.GUEST
+      : DefaultRole.MEMBER
+  return getDefaultRoleAbilities(mappedRole).filter(a => !SYSTEM_ABILITY_KEYS.has(a))
+}
 
 type UserRow = typeof userTable.$inferSelect
 
@@ -23,13 +36,26 @@ export interface BuildSessionOpts {
   provider: string
   activeOrganizationId?: string | null // undefined → resolve default
   impersonator?: ImpersonatorInfo | null
+  /** When set, abilities are derived from IdP claims rather than local DB rows. */
+  idpClaims?: IdpClaims | null
 }
 
 export async function buildSession(user: UserRow, opts: BuildSessionOpts): Promise<AuthUser> {
-  const activeOrganizationId = opts.activeOrganizationId !== undefined
-    ? opts.activeOrganizationId
-    : await defaultActiveOrganizationId(user.id)
-  const abilities = await loadEffectiveAbilities(user.id, activeOrganizationId)
+  let activeOrganizationId: string | null
+  let abilities: string[]
+
+  if (opts.idpClaims) {
+    // Session-only path: abilities come from IdP role string, no local org rows needed.
+    activeOrganizationId = null
+    abilities = mapIdpRoleToAbilities(opts.idpClaims.roles)
+  }
+  else {
+    activeOrganizationId = opts.activeOrganizationId !== undefined
+      ? opts.activeOrganizationId
+      : await defaultActiveOrganizationId(user.id)
+    abilities = await loadEffectiveAbilities(user.id, activeOrganizationId)
+  }
+
   return {
     id: user.id,
     primary_email: user.primary_email,
@@ -44,6 +70,7 @@ export async function buildSession(user: UserRow, opts: BuildSessionOpts): Promi
     activeOrganizationId,
     impersonator: opts.impersonator ?? null,
     generation: SESSION_GENERATION,
+    idpClaims: opts.idpClaims ?? null,
   }
 }
 
@@ -131,12 +158,13 @@ export async function refreshUserSessions(userId: string): Promise<number> {
   const { toRebuild, survivingIds } = planSessionRefresh(candidates, userId)
   for (const { sessionId, session } of toRebuild) {
     let activeOrganizationId = session.activeOrganizationId
-    if (activeOrganizationId && !(await isMember(userId, activeOrganizationId)))
+    if (!session.idpClaims && activeOrganizationId && !(await isMember(userId, activeOrganizationId)))
       activeOrganizationId = await defaultActiveOrganizationId(userId)
     const next = await buildSession(user, {
       provider: session.provider,
       activeOrganizationId,
       impersonator: session.impersonator,
+      idpClaims: session.idpClaims,
     })
     await writeSession(sessionId, next)
   }

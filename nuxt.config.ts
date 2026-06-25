@@ -198,11 +198,9 @@ export default defineNuxtConfig({
 
     webhookSigningSecret: '',
 
-    googleClientId: '',
-    googleClientSecret: '',
-
-    githubClientId: '',
-    githubClientSecret: '',
+    thecodeoriginIssuer: '',
+    thecodeoriginClientId: '',
+    thecodeoriginClientSecret: '',
 
     smtpHost: 'localhost',
     smtpPort: 1025,

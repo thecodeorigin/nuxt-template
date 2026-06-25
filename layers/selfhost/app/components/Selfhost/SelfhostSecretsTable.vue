@@ -63,8 +63,7 @@ const oauthCallbacks = computed(() => {
   if (!props.workersDevUrl)
     return null
   return {
-    google: `${props.workersDevUrl}/api/auth/google/callback`,
-    github: `${props.workersDevUrl}/api/auth/github/callback`,
+    thecodeorigin: `${props.workersDevUrl}/api/auth/oidc/callback`,
   }
 })
 
@@ -270,18 +269,13 @@ function formatUpdated(iso: string | null) {
           >
             <template #description>
               <p class="text-xs">
-                Whitelist these in your OAuth provider settings:
+                Register this redirect URI on the THECODEORIGIN IdP admin console:
               </p>
               <div class="mt-2 space-y-1 min-w-0">
                 <div class="flex items-center gap-2 text-xs font-mono min-w-0">
-                  <span class="text-muted shrink-0">Google:</span>
-                  <code class="flex-1 min-w-0 truncate">{{ oauthCallbacks.google }}</code>
-                  <UButton size="xs" variant="ghost" icon="i-lucide-copy" @click="copyCallback(oauthCallbacks.google)" />
-                </div>
-                <div class="flex items-center gap-2 text-xs font-mono min-w-0">
-                  <span class="text-muted shrink-0">GitHub:</span>
-                  <code class="flex-1 min-w-0 truncate">{{ oauthCallbacks.github }}</code>
-                  <UButton size="xs" variant="ghost" icon="i-lucide-copy" @click="copyCallback(oauthCallbacks.github)" />
+                  <span class="text-muted shrink-0">OIDC callback:</span>
+                  <code class="flex-1 min-w-0 truncate">{{ oauthCallbacks.thecodeorigin }}</code>
+                  <UButton size="xs" variant="ghost" icon="i-lucide-copy" @click="copyCallback(oauthCallbacks.thecodeorigin)" />
                 </div>
               </div>
             </template>
