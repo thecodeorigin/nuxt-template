@@ -31,6 +31,8 @@ jobs:
       pull-requests: write
     env:
       DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      DOPPLER_PROJECT: template
+      DOPPLER_CONFIG: prd
     steps:
       - uses: actions/checkout@v4
 
@@ -131,6 +133,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      DOPPLER_PROJECT: template
+      DOPPLER_CONFIG: prd
     steps:
       - name: Resolve resource names from branch
         env:
