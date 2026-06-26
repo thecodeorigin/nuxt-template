@@ -1,28 +1,15 @@
 name: Preview
 
-# Preview pipeline: per-branch ephemeral D1 on Cloudflare Workers (the D1
-# analogue of Neon branches — Cloudflare has no DB branching, so we create a
-# fresh D1 per feature branch). `main` uses the fixed production resources
-# (see production.yml); every other branch gets its own dynamic set here.
+# Preview pipeline: per-branch ephemeral D1 on Cloudflare Workers.
+# The ONLY GitHub secret used is DOPPLER_TOKEN. Cloudflare credentials and
+# resource IDs are pulled from Doppler at run time.
 #
 # On PR opened / reopened / synchronize:
-#   1. Derive a slug from the branch name and create (idempotent) a per-branch
-#      D1 database, capturing its id.
-#   2. Build with that D1 id + the shared preview KV/CACHE/R2 ids — read by
-#      nuxt.config.ts `$production.hub` via CLOUDFLARE_* env vars (Cloudflare has no
-#      resource auto-association, so ids are injected at build time).
+#   1. Derive a slug from the branch name and create (idempotent) a per-branch D1.
+#   2. Build with that D1 id + the shared preview KV/CACHE/R2 ids from Doppler.
 #   3. Apply D1 migrations to the fresh per-branch database.
 #   4. Deploy a per-branch Worker (nuxt-template-<slug>) + sticky PR comment.
 # On PR closed: delete the per-branch Worker and its D1 database.
-#
-# Required GitHub config:
-#   secret CLOUDFLARE_API_TOKEN   (Workers + D1 + KV + R2 edit)
-#   vars   CLOUDFLARE_ACCOUNT_ID,
-#          CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID, CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID,
-#          CLOUDFLARE_PREVIEW_R2_BUCKET
-#
-# NOTE: previews share one preview KV/CACHE/R2 set (only D1 is per-branch). For
-# full per-branch isolation, create those per branch here too and tear them down.
 
 on:
   pull_request:
@@ -32,57 +19,21 @@ concurrency:
   group: preview-${{ github.head_ref }}
   cancel-in-progress: true
 
-env:
-  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-  CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-
 jobs:
-  preflight:
-    name: Preflight · Cloudflare connectivity
-    if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify Cloudflare credentials and resources
-        env:
-          CLOUDFLARE_KV_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID }}
-          CLOUDFLARE_CACHE_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID }}
-          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_PREVIEW_R2_BUCKET }}
-        run: |
-          FAILED=0
-          cf_check() {
-            local label="$1" path="$2" http
-            http=$(curl -s -o /dev/null -w "%{http_code}" \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              "https://api.cloudflare.com/client/v4${path}")
-            if [ "$http" = "200" ]; then
-              echo "✅  $label"
-            else
-              echo "❌  $label (HTTP $http)"
-              FAILED=1
-            fi
-          }
-          cf_check "Token + account"    "/accounts/${CLOUDFLARE_ACCOUNT_ID}"
-          cf_check "KV namespace"       "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_KV_NAMESPACE_ID}"
-          cf_check "Cache KV namespace" "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_CACHE_NAMESPACE_ID}"
-          cf_check "R2 bucket"          "/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${CLOUDFLARE_R2_BUCKET}"
-          exit $FAILED
-
   deploy:
     name: Build · deploy (preview)
-    needs: preflight
-    environment:
-      name: Preview
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
+    environment:
+      name: Preview
     permissions:
       contents: read
       pull-requests: write
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
-      # Derive Cloudflare resource names from the branch (lowercased, non
-      # alphanumerics -> '-', capped at 40 chars). BRANCH is passed via env to
-      # avoid shell injection from the ref name.
       - name: Resolve resource names from branch
         env:
           BRANCH: ${{ github.head_ref }}
@@ -104,8 +55,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Create the per-branch D1 (idempotent: `create` fails if it already
-      # exists on a re-run, so we resolve the id from `d1 info` either way).
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      - name: Resolve Cloudflare credentials from Doppler
+        run: |
+          CF_TOKEN="$(doppler secrets get CLOUDFLARE_TOKEN --plain)"
+          CF_ACCOUNT="$(doppler secrets get CLOUDFLARE_ACCOUNT_ID --plain)"
+          echo "::add-mask::$CF_TOKEN"
+          echo "::add-mask::$CF_ACCOUNT"
+          echo "CLOUDFLARE_API_TOKEN=$CF_TOKEN" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CF_ACCOUNT" >> "$GITHUB_ENV"
+
       - name: Create / resolve per-branch D1 database
         id: d1
         run: |
@@ -114,54 +75,35 @@ jobs:
           test -n "$DB_ID" && echo "id=$DB_ID" >> "$GITHUB_OUTPUT"
 
       - name: Build (cloudflare_module, preview)
-        env:
-          NITRO_PRESET: cloudflare_module
-          CLOUDFLARE_D1_DATABASE_ID: ${{ steps.d1.outputs.id }}
-          CLOUDFLARE_KV_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID }}
-          CLOUDFLARE_CACHE_NAMESPACE_ID: ${{ vars.CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID }}
-          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_PREVIEW_R2_BUCKET }}
-        run: pnpm build
+        run: |
+          CLOUDFLARE_D1_DATABASE_ID="${{ steps.d1.outputs.id }}" \
+          CLOUDFLARE_KV_NAMESPACE_ID="$(doppler secrets get CLOUDFLARE_PREVIEW_KV_NAMESPACE_ID --plain)" \
+          CLOUDFLARE_CACHE_NAMESPACE_ID="$(doppler secrets get CLOUDFLARE_PREVIEW_CACHE_NAMESPACE_ID --plain)" \
+          CLOUDFLARE_R2_BUCKET="$(doppler secrets get CLOUDFLARE_PREVIEW_R2_BUCKET --plain)" \
+          pnpm build
 
-      # The generated .output/server/wrangler.json now points the DB binding at
-      # the per-branch database, so this migrates that fresh database.
       - name: Apply D1 migrations to the per-branch database
-        run: npx --yes wrangler --cwd .output/server d1 migrations apply DB --remote
+        run: npx --yes wrangler d1 migrations apply DB --remote --config .output/server/wrangler.json
 
       - name: Deploy per-branch Worker
         id: deploy
         run: |
-          out=$(npx --yes wrangler --cwd .output deploy --name "$WORKER_NAME" 2>&1)
+          out=$(npx --yes wrangler deploy --config .output/server/wrangler.json --name "$WORKER_NAME" 2>&1)
           echo "$out"
           url=$(echo "$out" | grep -oE 'https://[a-z0-9.-]+workers\.dev' | head -1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
-      # Each Worker has its own secrets, so the per-branch preview Worker needs
-      # its own runtime config. NUXT_PUBLIC_BASE_DOMAIN / NUXT_PUBLIC_SSL_ENABLED
-      # are already supplied as plaintext `vars` by wrangler.jsonc and baked into
-      # the deployed Worker — a binding name can't be both a var and a secret
-      # (Cloudflare API error 10053), so we must NOT re-set them here. Previews
-      # inherit the production base domain (only used by non-request contexts like
-      # cron email links; OAuth redirects derive from the live request) and SSL=true.
-      # This step sets only the genuinely secret / preview-specific values:
-      # - NUXT_AUTH_SECRET       — shared preview secret (stable so sessions survive re-deploys)
-      # - NUXT_PUBLIC_BASE_DOMAIN — per-branch workers.dev host, derived from the deploy URL
-      #                             (used by non-request contexts like cron email links; OAuth
-      #                             redirects auto-derive from the live request).
-      # - NUXT_PUBLIC_DEMO_MODE — keep the demo login enabled on previews.
-      # - NUXT_PUBLIC_SSL_ENABLED — workers.dev is always HTTPS.
       - name: Provision preview Worker secrets
-        env:
-          PREVIEW_NUXT_AUTH_SECRET: ${{ secrets.PREVIEW_NUXT_AUTH_SECRET }}
         run: |
+          NUXT_AUTH_SECRET="$(doppler secrets get NUXT_AUTH_SECRET --plain)"
           cat > "$RUNNER_TEMP/preview-secrets.json" <<EOF
           {
-            "NUXT_AUTH_SECRET": "${PREVIEW_NUXT_AUTH_SECRET}",
-            "NUXT_PUBLIC_BASE_DOMAIN": "${PREVIEW_HOST}",
-            "NUXT_PUBLIC_SSL_ENABLED": "true",
+            "NUXT_AUTH_SECRET": "${NUXT_AUTH_SECRET}",
             "NUXT_PUBLIC_DEMO_MODE": "true"
           }
           EOF
           npx --yes wrangler secret bulk "$RUNNER_TEMP/preview-secrets.json" --name "$WORKER_NAME"
+          rm -f "$RUNNER_TEMP/preview-secrets.json"
 
       - name: Sticky PR comment
         uses: actions/github-script@v7
@@ -187,6 +129,8 @@ jobs:
     name: Tear down preview
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
       - name: Resolve resource names from branch
         env:
@@ -195,6 +139,18 @@ jobs:
           SLUG=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')
           echo "DB_NAME=nuxt-template-preview-$SLUG" >> "$GITHUB_ENV"
           echo "WORKER_NAME=nuxt-template-$SLUG" >> "$GITHUB_ENV"
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      - name: Resolve Cloudflare credentials from Doppler
+        run: |
+          CF_TOKEN="$(doppler secrets get CLOUDFLARE_TOKEN --plain)"
+          CF_ACCOUNT="$(doppler secrets get CLOUDFLARE_ACCOUNT_ID --plain)"
+          echo "::add-mask::$CF_TOKEN"
+          echo "::add-mask::$CF_ACCOUNT"
+          echo "CLOUDFLARE_API_TOKEN=$CF_TOKEN" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CF_ACCOUNT" >> "$GITHUB_ENV"
 
       - name: Delete per-branch Worker
         run: npx --yes wrangler delete "$WORKER_NAME" --force || true

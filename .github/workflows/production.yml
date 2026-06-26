@@ -1,93 +1,31 @@
-name: Production
+name: Deploy (Cloudflare Workers)
 
-# Production deployment pipeline: Cloudflare Workers via wrangler.
-#
-# On push to main:
-#   1. Build the Nuxt app with NITRO_PRESET=cloudflare-module targeting the
-#      production Cloudflare bindings declared in nuxt.config.ts / wrangler.jsonc.
-#      NuxtHub applies D1 migrations automatically during build
-#      (applyMigrationsDuringBuild: true) — no separate migrate step needed.
-#   2. Deploy the prebuilt output to Cloudflare Workers with wrangler deploy.
-#
-# Migration ordering: NuxtHub migrates before the Worker is live, so the
-# deployed code always matches the current schema. The tradeoff (brief
-# window running old code against new schema) is eliminated compared to
-# the old Vercel/Neon post-deploy migration pattern.
-#
-# Required GitHub repository secrets:
-#   CLOUDFLARE_API_TOKEN  — Cloudflare API token with Workers + D1 + KV + R2
-#                           edit permissions (and workers_observability edit
-#                           if observability logging is enabled)
-#
-# Required GitHub repository variables:
-#   CLOUDFLARE_ACCOUNT_ID — Cloudflare account ID
-#
-# Removed (no longer needed after Vercel/Neon migration):
-#   NEON_API_KEY, VERCEL_TOKEN, PROD_POSTGRES_URL
-#   NEON_PROJECT_ID, VERCEL_PROJECT_ID, VERCEL_TEAM_ID
+# Deploys to https://template.thecodeorigin.com (Worker `nuxt-template`).
+# The ONLY GitHub secret used is DOPPLER_TOKEN (a read-only Doppler service token
+# scoped to project=template, config=prd). Everything else — including the Cloudflare
+# credentials and all NUXT_* runtime vars — is pulled from Doppler at run time.
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
-  group: production
+  group: deploy-production
   cancel-in-progress: false
 
 jobs:
-  preflight:
-    name: Preflight · Cloudflare connectivity
-    runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-    steps:
-      - name: Verify Cloudflare credentials and resources
-        env:
-          CLOUDFLARE_D1_DATABASE_ID: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
-          CLOUDFLARE_KV_NAMESPACE_ID: ${{ vars.CLOUDFLARE_KV_NAMESPACE_ID }}
-          CLOUDFLARE_CACHE_NAMESPACE_ID: ${{ vars.CLOUDFLARE_CACHE_NAMESPACE_ID }}
-          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_R2_BUCKET }}
-        run: |
-          FAILED=0
-          cf_check() {
-            local label="$1" path="$2" http
-            http=$(curl -s -o /dev/null -w "%{http_code}" \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              "https://api.cloudflare.com/client/v4${path}")
-            if [ "$http" = "200" ]; then
-              echo "✅  $label"
-            else
-              echo "❌  $label (HTTP $http)"
-              FAILED=1
-            fi
-          }
-          cf_check "Token + account"    "/accounts/${CLOUDFLARE_ACCOUNT_ID}"
-          cf_check "D1 database"        "/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${CLOUDFLARE_D1_DATABASE_ID}"
-          cf_check "KV namespace"       "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_KV_NAMESPACE_ID}"
-          cf_check "Cache KV namespace" "/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces/${CLOUDFLARE_CACHE_NAMESPACE_ID}"
-          cf_check "R2 bucket"          "/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${CLOUDFLARE_R2_BUCKET}"
-          exit $FAILED
-
   deploy:
-    name: Build · deploy (production)
-    needs: preflight
     runs-on: ubuntu-latest
-    # Referencing an environment makes GitHub record a Deployment (in_progress →
-    # success/failure) on every run, visible at the repo's /deployments tab and
-    # under the "production" environment. `url` links the record to the live site.
+    timeout-minutes: 25
     environment:
       name: Production
       url: https://template.thecodeorigin.com
-    # contents: write lets semantic-release create the git tag + GitHub Release.
     permissions:
       contents: write
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
-      # fetch-depth: 0 gives semantic-release the full history + tags it needs
-      # to compute the next version from conventional commits.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -101,32 +39,42 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      # NuxtHub generates .output/server/wrangler.json from the hub block in
-      # nuxt.config.ts. Migrations are NOT applied during the build (the D1
-      # binding isn't reachable from the build host), so we apply them
-      # explicitly against the remote database after building, before deploy.
-      - name: Build (cloudflare_module, production)
-        env:
-          NITRO_PRESET: cloudflare_module
-          CLOUDFLARE_D1_DATABASE_ID: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
-          CLOUDFLARE_KV_NAMESPACE_ID: ${{ vars.CLOUDFLARE_KV_NAMESPACE_ID }}
-          CLOUDFLARE_CACHE_NAMESPACE_ID: ${{ vars.CLOUDFLARE_CACHE_NAMESPACE_ID }}
-          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_R2_BUCKET }}
-        run: pnpm build
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      - name: Resolve Cloudflare credentials from Doppler
+        run: |
+          CF_TOKEN="$(doppler secrets get CLOUDFLARE_TOKEN --plain)"
+          CF_ACCOUNT="$(doppler secrets get CLOUDFLARE_ACCOUNT_ID --plain)"
+          echo "::add-mask::$CF_TOKEN"
+          echo "::add-mask::$CF_ACCOUNT"
+          # wrangler reads CLOUDFLARE_API_TOKEN, not CLOUDFLARE_TOKEN.
+          echo "CLOUDFLARE_API_TOKEN=$CF_TOKEN" >> "$GITHUB_ENV"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CF_ACCOUNT" >> "$GITHUB_ENV"
+
+      - name: Build (Nuxt → cloudflare-module)
+        # doppler run injects every prd var, so CLOUDFLARE_D1_DATABASE_ID,
+        # CLOUDFLARE_KV_NAMESPACE_ID, etc. are available for the NuxtHub hub block
+        # and NUXT_* vars bake with production values.
+        run: doppler run -- pnpm build
 
       - name: Apply D1 migrations (remote)
-        run: npx wrangler --cwd .output/server d1 migrations apply DB --remote
+        run: npx wrangler d1 migrations apply DB --remote --config .output/server/wrangler.json
 
-      - name: Deploy to Cloudflare Workers (production)
-        run: npx wrangler --cwd .output deploy
+      - name: Deploy Worker
+        run: npx wrangler deploy --config .output/server/wrangler.json
 
-      # Auto-version from conventional commits, cut a GitHub Release, and attach
-      # the just-deployed .output as a downloadable, wrangler-deployable tarball
-      # (see .releaserc.json). No release is created when there are no releasable
-      # commits (feat / fix / perf / BREAKING CHANGE) since the last tag.
+      - name: Upsert Worker secrets (all Doppler vars except CF infra + metadata + wrangler vars)
+        run: |
+          doppler secrets download --no-file --format json \
+            | jq 'with_entries(select(.key | test("^(CLOUDFLARE_|DOPPLER_)") | not))
+                  | del(.NUXT_PUBLIC_BASE_DOMAIN, .NUXT_PUBLIC_SSL_ENABLED)' \
+            > worker-secrets.json
+          npx wrangler secret bulk worker-secrets.json --config .output/server/wrangler.json
+          rm -f worker-secrets.json
+
       - name: Release (semantic-release)
         uses: cycjimmy/semantic-release-action@v4
         with:
