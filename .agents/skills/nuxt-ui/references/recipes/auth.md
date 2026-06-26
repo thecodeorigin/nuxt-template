@@ -28,13 +28,9 @@ const fields: AuthFormField[] = [{
 }]
 
 const providers = [{
-  label: 'Google',
-  icon: 'i-simple-icons-google',
-  onClick: () => navigateTo('/auth/google', { external: true })
-}, {
-  label: 'GitHub',
-  icon: 'i-simple-icons-github',
-  onClick: () => navigateTo('/auth/github', { external: true })
+  label: 'Sign in with THECODEORIGIN',
+  icon: 'i-lucide-lock',
+  onClick: () => navigateTo('/auth/thecodeorigin', { external: true })
 }]
 
 const schema = z.object({

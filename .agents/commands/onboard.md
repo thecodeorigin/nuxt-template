@@ -12,7 +12,8 @@ file changes silently.
 
 > **Tone**: friendly, plain English, zero acronyms unless you immediately
 > define them. Never say "OAuth"; say "letting users sign in with their
-> Google account." Never say "env var"; say "I'll save this for you."
+> THECODEORIGIN account." Never say "env var"; say "I'll save this for
+> you."
 
 ## Step 0 — Detect mode
 
@@ -143,75 +144,44 @@ money?" question afterwards.
    already implied (credits = top-up amounts, one-time = single
    charge, free = no billing).
 
-## Step 5 — Phase 3: Sign-in providers (Google / GitHub)
+## Step 5 — Phase 3: Sign-in provider (THECODEORIGIN)
 
-> **Hard rule**: at least one of Google or GitHub must be configured for
-> the production deploy. Both can be configured. Enforce this at the end
-> of this step.
+> **Hard rule**: the only external sign-in method is "Sign in with
+> THECODEORIGIN". There is no Google or GitHub option. Configure the
+> THECODEORIGIN credentials here; without them users can only sign in via
+> the credential form (email + password).
 
-For each provider, ask via `AskUserQuestion`:
+Ask via `AskUserQuestion`:
 
-**Do you want users to be able to sign in with their Google account?**
+**Do you want to set up "Sign in with THECODEORIGIN" now?**
 - **Yes, set it up now** — guide them through it
 - **Yes but set it up later** — leave placeholders; you'll come back
-- **No, skip Google sign-in entirely**
+- **No, skip for now** — credential sign-in will still work
 
-Same question for GitHub.
-
-If the user picks "set up now" for **Google**, walk them through this in
-two clearly-separated rounds — DEV first, then PROD — using plain
+If the user picks "set it up now", walk them through this in plain
 English:
 
-> **For local development (so it works when you click `pnpm dev`):**
-> 1. Open <https://console.cloud.google.com/apis/credentials>
-> 2. Click **+ Create credentials → OAuth client ID**. If it asks you to
->    "configure consent screen" first, click that link, pick **External**,
->    fill in your product name and your email, save, then come back.
-> 3. Pick **Web application**.
-> 4. Under **Authorized redirect URIs** add exactly:
->    `http://localhost:3002/api/auth/google/callback`
-> 5. Click **Create**. Copy the **Client ID** and **Client secret** and
->    paste them here when ready.
+> To connect "Sign in with THECODEORIGIN" you need three values from the
+> THECODEORIGIN identity platform. Ask your system admin (or log in to
+> <https://auth.thecodeorigin.com>) to create an OAuth client for this
+> app and give you:
+>
+> 1. **Issuer URL** — usually `https://auth.thecodeorigin.com/api/auth`
+>    (confirm with your admin)
+> 2. **Client ID** — a string like `app_abc123…`
+> 3. **Client secret** — keep this private; paste it here once
+>
+> The redirect URI to register on the IdP is:
+> - **Dev**: `http://localhost:3002/api/auth/thecodeorigin/callback`
+> - **Prod**: `https://<your-domain>/api/auth/thecodeorigin/callback`
 
-Wait for them to paste the two values. Save them as
-`NUXT_GOOGLE_CLIENT_ID` and `NUXT_GOOGLE_CLIENT_SECRET` (you'll write
-these to `.env` in Step 8).
+Wait for them to paste the three values. Save as
+`NUXT_THECODEORIGIN_ISSUER`, `NUXT_THECODEORIGIN_CLIENT_ID`, and
+`NUXT_THECODEORIGIN_CLIENT_SECRET` (written to `.env` in Step 9c).
 
-> **For your live site (do this once you have a domain — skip if not
-> ready):**
-> 1. Same page in Google Cloud, edit the OAuth client.
-> 2. Add another redirect URI: `https://<your-domain>/api/auth/google/callback`
-> 3. Click save. No new keys needed — the same Client ID / Secret will work.
-
-For **GitHub**, the equivalent dev walkthrough:
-
-> **For local development:**
-> 1. Open <https://github.com/settings/applications/new>
-> 2. **Application name**: anything (e.g. your product name)
-> 3. **Homepage URL**: `http://localhost:3002`
-> 4. **Authorization callback URL**: `http://localhost:3002/api/auth/github/callback`
-> 5. Click **Register application**, then click **Generate a new client
->    secret**. Copy the **Client ID** and the **Client secret** and paste
->    them here.
-
-> **For your live site (do this once you have a domain — skip if not
-> ready):**
-> 1. Go to <https://github.com/settings/developers>, open the same app.
-> 2. Add a second OAuth app (GitHub doesn't support multiple callbacks on
->    one app) with the prod URLs, OR change the callback to your prod
->    domain when you're ready to launch.
-
-Save as `NUXT_GITHUB_CLIENT_ID` and `NUXT_GITHUB_CLIENT_SECRET`.
-
-**After both questions**: if the user picked "No" for both Google and
-GitHub, gently push back:
-
-> Heads up — when you publish your site, you'll need at least one way for
-> people to sign in. You can keep both off for now, but I'll mark this as
-> something you have to come back to before going live.
-
-Set an internal `pendingSigninProvider = true` flag so `/go-live` can
-remind them.
+If the user picks "set it up later", leave the three keys empty and set
+an internal `pendingSigninProvider = true` flag so `/go-live` can remind
+them.
 
 ## Step 6 — Phase 4: Email provider (Resend)
 
@@ -371,10 +341,9 @@ generated must survive). Set:
 - `NUXT_PUBLIC_DEMO_MODE=false`
 - `NUXT_DEMO_MODE=false`
 - `NUXT_SMTP_FROM=<smtpFromDisplay>`
-- `NUXT_GOOGLE_CLIENT_ID=<…or empty>`
-- `NUXT_GOOGLE_CLIENT_SECRET=<…or empty>`
-- `NUXT_GITHUB_CLIENT_ID=<…or empty>`
-- `NUXT_GITHUB_CLIENT_SECRET=<…or empty>`
+- `NUXT_THECODEORIGIN_ISSUER=<…or empty>`
+- `NUXT_THECODEORIGIN_CLIENT_ID=<…or empty>`
+- `NUXT_THECODEORIGIN_CLIENT_SECRET=<…or empty>`
 - `NUXT_SMTP_PASS=<resend api key or empty>`
 - `NUXT_SEPAY_BANK_NUMBER=<…or empty>`
 - `NUXT_SEPAY_BANK_NAME=<…or empty>`
@@ -409,7 +378,7 @@ should see edits like:
 When the user picks "set up later" for a provider, the corresponding
 `.env` line is left empty (see 9c). That **is** the deferral record —
 `/go-live` reads `.env` directly and flags any still-empty
-production-required value (Google/GitHub client id+secret, Resend
+production-required value (THECODEORIGIN client id+secret+issuer, Resend
 key, SePay fields if charging). Don't write a sidecar todo file;
 the env is the source of truth.
 

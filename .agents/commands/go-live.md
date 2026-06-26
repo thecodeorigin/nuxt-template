@@ -22,17 +22,17 @@ Step 1 before continuing.
 1. **Onboarding done?** Grep for `Nuxt Template` in tracked files. If
    there are still many matches, the user hasn't run `/onboard` yet.
    Block: tell them to run `/onboard` first.
-2. **Sign-in providers configured?** Read `.env` and check
-   `NUXT_GOOGLE_CLIENT_ID` and `NUXT_GITHUB_CLIENT_ID`. At least one
-   must be non-empty (production hard rule). If both empty: block, tell
-   the user to run `/onboard` again and set up at least one sign-in
-   provider.
+2. **Sign-in provider configured?** Read `.env` and check
+   `NUXT_THECODEORIGIN_CLIENT_ID`. If it is empty: warn the user that
+   "Sign in with THECODEORIGIN" won't work on the live site and suggest
+   running `/onboard` again to add the credentials. Don't block — the
+   credential form still works without it.
 3. **Deferred provider setup?** Scan `.env` for empty values among the
-   production-required keys (`NUXT_GOOGLE_CLIENT_ID`/`_SECRET`,
-   `NUXT_GITHUB_CLIENT_ID`/`_SECRET`, `NUXT_SMTP_PASS`, and
-   `NUXT_SEPAY_*` if the user charges money). Each empty key is a
-   deferral from `/onboard` — note them so you can remind the user
-   mid-flow.
+   production-required keys (`NUXT_THECODEORIGIN_ISSUER`,
+   `NUXT_THECODEORIGIN_CLIENT_ID`, `NUXT_THECODEORIGIN_CLIENT_SECRET`,
+   `NUXT_SMTP_PASS`, and `NUXT_SEPAY_*` if the user charges money). Each
+   empty key is a deferral from `/onboard` — note them so you can remind
+   the user mid-flow.
 4. **GitHub remote?** Run `git remote -v` to see if there's an `origin`
    pointing at GitHub. Note the result; you'll fix in Step 3 if missing.
 
@@ -181,7 +181,7 @@ Show a recap, plain English:
 >    (one set for your live site, one set for previews of pull requests).
 > 2. Save the Cloudflare key on GitHub so the deploy workflow can use
 >    it.
-> 3. Copy your local product settings (Google/GitHub/Resend/SePay keys)
+> 3. Copy your local product settings (THECODEORIGIN/Resend/SePay keys)
 >    to the live site.
 >
 > No costs — everything fits on Cloudflare's free tier for small
@@ -313,8 +313,8 @@ If the preflight (Step 0, item 3) found any deferred `.env` keys still
 empty after this run, repeat them here:
 
 > Still pending from `/onboard`:
-> - [each still-empty .env key, in plain English: "Google sign-in
->   credentials", "Resend API key for outgoing email", etc.]
+> - [each still-empty .env key, in plain English: "'Sign in with
+>   THECODEORIGIN' credentials", "Resend API key for outgoing email", etc.]
 
 No sidecar file to delete — `.env` is the deferral state. The user
 fills the keys themselves (or re-runs the relevant `/onboard` step)
@@ -334,5 +334,6 @@ Mark your task complete. Do not commit on the user's behalf.
 - **Don't push to `main` without explicit user consent.**
 - **Don't skip the GitHub remote check** — the harness will fail
   silently if there's no GitHub repo.
-- **Don't proceed past Step 0** if both sign-in providers are empty —
-  the user will be unable to log in to their own deployed site.
+- **Don't silently skip the THECODEORIGIN credential warning** if
+  `NUXT_THECODEORIGIN_CLIENT_ID` is empty — the user needs to know
+  "Sign in with THECODEORIGIN" won't work until it's configured.
