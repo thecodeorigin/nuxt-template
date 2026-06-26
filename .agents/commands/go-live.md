@@ -29,10 +29,9 @@ Step 1 before continuing.
    credential form still works without it.
 3. **Deferred provider setup?** Scan `.env` for empty values among the
    production-required keys (`NUXT_THECODEORIGIN_CLIENT_ID`,
-   `NUXT_THECODEORIGIN_CLIENT_SECRET`, `NUXT_SMTP_PASS`, and
-   `NUXT_SEPAY_*` if the user charges money). Each empty key is a
-   deferral from `/onboard` — note them so you can remind the user
-   mid-flow.
+   `NUXT_THECODEORIGIN_CLIENT_SECRET`, `NUXT_SMTP_PASS`). Each empty
+   key is a deferral from `/onboard` — note them so you can remind the
+   user mid-flow.
 4. **GitHub remote?** Run `git remote -v` to see if there's an `origin`
    pointing at GitHub. Note the result; you'll fix in Step 3 if missing.
 
@@ -181,7 +180,7 @@ Show a recap, plain English:
 >    (one set for your live site, one set for previews of pull requests).
 > 2. Save the Cloudflare key on GitHub so the deploy workflow can use
 >    it.
-> 3. Copy your local product settings (THECODEORIGIN/Resend/SePay keys)
+> 3. Copy your local product settings (THECODEORIGIN/Resend keys)
 >    to the live site.
 >
 > No costs — everything fits on Cloudflare's free tier for small
@@ -314,7 +313,8 @@ empty after this run, repeat them here:
 
 > Still pending from `/onboard`:
 > - [each still-empty .env key, in plain English: "'Sign in with
->   THECODEORIGIN' credentials", "Resend API key for outgoing email", etc.]
+>   THECODEORIGIN' credentials (THECODEORIGIN_CLIENT_ID / _SECRET)",
+>   "Resend API key for outgoing email (SMTP_PASS)", etc.]
 
 No sidecar file to delete — `.env` is the deferral state. The user
 fills the keys themselves (or re-runs the relevant `/onboard` step)

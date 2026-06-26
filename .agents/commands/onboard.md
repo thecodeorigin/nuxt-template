@@ -88,40 +88,23 @@ Ask via `AskUserQuestion`:
    "Other". Default option: "Use `support@<domain>`" (auto-derived if a
    domain was given earlier).
 
-## Step 4 — Phase 2: Product interview (2–3 questions)
+## Step 4 — Phase 2: Product interview (2 questions)
 
-Ask via `AskUserQuestion`, batched. **Frame question 1 as the pricing
-model** — that single answer covers both the user-facing "what is the
-thing" and the billing intent, so don't ask a separate "do you charge
-money?" question afterwards.
+Ask via `AskUserQuestion`, batched.
 
-1. **What's the pricing model of your product?** Free text via "Other"
-   for anything that doesn't fit.
-   - **Free forever** — no payment, ever (hobby, community, open
-     source, marketing site)
-   - **Freemium / free trial** — free tier today, paid plans or credit
-     top-ups later (most SaaS starts here)
-   - **Subscriptions** — users pay monthly or yearly for recurring
-     access
-   - **Pay-as-you-go credits** — users top up a balance and spend it
-     on usage (per API call, per generation, per export, etc.)
-   - **One-time catalog purchases** — users buy individual items
-     outright (no recurring billing)
+1. **What kind of thing does your product sell or offer?** Free text via
+   "Other" for anything that doesn't fit. This determines only the
+   user-facing label for the product catalog — file names stay as-is.
+   - **Plans** — tiers of access (most SaaS)
+   - **Credit Packs** — users top up a balance and spend it on usage
+   - **Items** — one-time purchases from a catalog
+   - "Other" → use your judgment, fall back to **Plans**
 
-   This single answer determines two things:
+   This determines the **adapted name for "product"** (the layer stays
+   named `product`; only user-facing labels change).
 
-   **(a) The adapted name for "product"** (the layer stays named
-   `product`; only user-facing labels change):
-   - Free forever / Freemium / Subscriptions → **Plans**
-   - Pay-as-you-go credits → **Credit Packs**
-   - One-time catalog purchases → **Items**
-   - "Other" → use your judgment from the free-text answer, fall back
-     to **Plans**
-
-   **(b) The billing intent** stored for later (used by `/go-live`
-   reminders and by the product seed data):
-   - Free forever → `charges = false`
-   - Freemium / Subscriptions / Credits / One-time → `charges = true`
+   > Billing and subscriptions are managed by Polar via
+   > `id.thecodeorigin.com` — there is nothing to configure here.
 
 2. **Do users have personal accounts, or do they create workspaces /
    teams that hold their stuff?**
@@ -129,20 +112,10 @@ money?" question afterwards.
    - **Workspaces / teams** — users create a shared container others
      can join
 
-   This answer determines the **adapted name for "project"**:
+   This determines the **adapted name for "project"**:
    - personal → **Account**
    - workspaces → **Workspaces** (or **Teams**, **Organizations** —
      pick whichever fits the language used in question 1)
-
-3. Only if Q1 was **Subscriptions** or **Freemium**, ask
-   **What billing intervals do you want to offer?** (multiSelect):
-   - **Monthly**
-   - **Annual**
-   - **Add-ons on top of a base plan**
-
-   Skip this question entirely for the other pricing models — it's
-   already implied (credits = top-up amounts, one-time = single
-   charge, free = no billing).
 
 ## Step 5 — Phase 3: Sign-in provider (THECODEORIGIN)
 
@@ -178,70 +151,13 @@ English:
 
 Wait for them to paste the two values. Save as
 `NUXT_THECODEORIGIN_CLIENT_ID` and `NUXT_THECODEORIGIN_CLIENT_SECRET`
-(written to `.env` in Step 9c).
+(written to `.env` in Step 7c).
 
-If the user picks "set it up later", leave the three keys empty and set
+If the user picks "set it up later", leave the two keys empty and set
 an internal `pendingSigninProvider = true` flag so `/go-live` can remind
 them.
 
-## Step 6 — Phase 4: Email provider (Resend)
-
-Ask via `AskUserQuestion`:
-
-**Should your product send emails to users? (welcome, password reset,
-notifications, etc.)**
-- **Yes, set it up now**
-- **Yes but set it up later**
-- **No** — they're shown locally during dev, but won't go anywhere in
-  production
-
-If "set it up now":
-
-> Resend handles your product's outgoing email.
-> 1. Open <https://resend.com/signup> and create an account (free tier
->    is fine to start).
-> 2. Once signed in, go to <https://resend.com/api-keys> → **Create API
->    Key** → name it "Production" → copy it and paste it here.
-> 3. **(Important for live email)**: Go to **Domains** in Resend, add
->    your domain, and follow their DNS instructions. Until you do this,
->    your live emails won't actually send — they only work in dev.
-
-Save as `NUXT_SMTP_PASS` (Resend uses the SMTP password slot for the API
-key — it's a quirk of the nuxt-resend integration).
-
-If the user has no domain yet, tell them: "I'll save your key. Add a
-domain in Resend before you go live or your emails won't send."
-
-## Step 7 — Phase 5: Bank transfer payments (SePay)
-
-Only ask this if the Step 4 pricing model implied `charges = true`
-(Freemium, Subscriptions, Credits, or One-time). Skip entirely for
-**Free forever**.
-
-> SePay lets Vietnamese customers pay you by bank transfer. If your
-> customers are outside Vietnam, you can skip this — we'll wire up a
-> different payment method later.
-
-Ask via `AskUserQuestion`:
-
-**Do you want to accept Vietnamese bank transfers?**
-- **Yes, set it up now**
-- **Yes but set it up later**
-- **No — my customers don't use Vietnamese banks**
-
-If "set it up now":
-
-> 1. Open <https://my.sepay.vn/> and sign up for a SePay account.
-> 2. Link your bank account (they'll guide you).
-> 3. In the SePay dashboard, find your **bank account number**, **bank
->    short code** (e.g. `VCB`, `TCB`, `MB`), and pick a short prefix to
->    identify payments to your product (3-6 letters, e.g. `ACME`).
-> 4. Paste those three values here.
-
-Save as `NUXT_SEPAY_BANK_NUMBER`, `NUXT_SEPAY_BANK_NAME`,
-`NUXT_SEPAY_TRANSACTION_PREFIX`.
-
-## Step 8 — Confirmation gate
+## Step 6 — Confirmation gate
 
 Show the user a clean recap **with no technical jargon** — just what
 they answered, formatted as a table. Then ask one yes/no question:
@@ -252,13 +168,13 @@ colors, labels, and save your credentials. Takes about 10 seconds.**
 If "no", let them tell you what to change, loop back to the relevant
 question, then re-show the recap.
 
-## Step 9 — Apply changes
+## Step 7 — Apply changes
 
 Do all file changes silently, in this order, using `Edit` (preferred) or
 `Write` only when creating new files. Update an internal `applied[]`
 list as you go.
 
-### 9a. Identity rewrites
+### 7a. Identity rewrites
 
 Compute these derived values once:
 
@@ -305,7 +221,7 @@ Apply:
 9. **`.all-contributorsrc`**: leave as-is (project metadata) unless the
    user specifically asked to update it.
 
-### 9b. Branding
+### 7b. Branding
 
 10. **`app/app.config.ts`**: set `colors.primary` and `colors.neutral`
     to the picks from Phase 1b. Example:
@@ -321,7 +237,7 @@ Apply:
     })
     ```
 
-### 9c. `.env` for local dev
+### 7c. `.env` for local dev
 
 **First, bootstrap `.env` via the CLI** — this copies `.env.example` →
 `.env` (if missing) and generates the three auth secrets
@@ -344,15 +260,16 @@ generated must survive). Set:
 - `NUXT_SMTP_FROM=<smtpFromDisplay>`
 - `NUXT_THECODEORIGIN_CLIENT_ID=<…or empty>`
 - `NUXT_THECODEORIGIN_CLIENT_SECRET=<…or empty>`
-- `NUXT_SMTP_PASS=<resend api key or empty>`
-- `NUXT_SEPAY_BANK_NUMBER=<…or empty>`
-- `NUXT_SEPAY_BANK_NAME=<…or empty>`
-- `NUXT_SEPAY_TRANSACTION_PREFIX=<…or empty>`
 
 If a value is empty (user skipped), still write the empty line so they
 can see what's pending.
 
-### 9d. Product / Project user-facing labels
+> **Email in dev**: emails are printed to the terminal — no API key
+> needed locally. The Resend key (`NUXT_SMTP_PASS`) and billing are
+> production-only concerns handled by `/go-live` and Polar
+> (`id.thecodeorigin.com`).
+
+### 7d. Product / Project user-facing labels
 
 The layer file paths, function names, and DB tables stay as
 `product` / `project` (per the layer ownership invariant — see
@@ -373,16 +290,15 @@ should see edits like:
 - Page title `'Projects'` → `'Workspaces'`
 - Form label `'Project name'` → `'Workspace name'`
 
-### 9e. Deferrals — no separate state file
+### 7e. Deferrals — no separate state file
 
-When the user picks "set up later" for a provider, the corresponding
-`.env` line is left empty (see 9c). That **is** the deferral record —
-`/go-live` reads `.env` directly and flags any still-empty
-production-required value (THECODEORIGIN client id+secret, Resend
-key, SePay fields if charging). Don't write a sidecar todo file;
-the env is the source of truth.
+When the user picks "set up later" for the sign-in provider, the
+corresponding `.env` lines are left empty (see 7c). That **is** the
+deferral record — `/go-live` reads `.env` directly and flags any
+still-empty production-required value (THECODEORIGIN client id+secret).
+Don't write a sidecar todo file; the env is the source of truth.
 
-### 9f. Install dependencies + offer to start the dev server
+### 7f. Install dependencies + offer to start the dev server
 
 Run `pnpm install` to make sure the lockfile is honoured (cheap if
 everything is already installed):
@@ -414,7 +330,7 @@ If **Not yet**, just print:
 
 > When you're ready, run `pnpm dev` and open <http://localhost:3002>.
 
-## Step 10 — Wrap-up
+## Step 8 — Wrap-up
 
 Print a short, friendly summary:
 
