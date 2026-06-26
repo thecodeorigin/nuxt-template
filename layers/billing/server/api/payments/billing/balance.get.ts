@@ -1,5 +1,4 @@
 import { createError } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { getBalance } from '#layers/billing/server/services/credit'
 
 export default defineAuthorizedHandler(['billing:read'], async (_event, { session }) => {

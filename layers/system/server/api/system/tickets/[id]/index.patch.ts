@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
 import { getRouterParam, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { updateTicket } from '#layers/support/server/services/ticket'
 import { UpdateTicketSchema } from '#layers/support/shared/schemas/ticket'
 

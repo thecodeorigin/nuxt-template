@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { selfhostAuditTable, selfhostDeploymentSecretTable, selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-import { defineAdminHandler } from '~~/server/utils/auth'
 
 export default defineAdminHandler(['selfhost:manage'], async (_event, { session }) => {
   const orgId = session.activeOrg!

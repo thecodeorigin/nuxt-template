@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { organizationBillingSettingsTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { UpdateBillingSettingsSchema } from '#layers/billing/shared/schemas/invoice'
 
 export default defineAuthorizedHandler(['billing:manage'], async (event, { session }) => {

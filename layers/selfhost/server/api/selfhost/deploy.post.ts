@@ -3,7 +3,6 @@ import { organizationTable, selfhostAuditTable, selfhostDeploymentSecretTable, s
 import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import { readValidatedBody } from 'h3'
-import { defineAdminHandler } from '~~/server/utils/auth'
 import { decryptSecret, encryptSecret } from '~~/server/utils/crypto'
 import { applyMigrations, enableSubdomain, listAccounts, probeCapabilities, provisionResources, setWorkerSecret, uploadAssets, uploadWorker, verifyToken } from '#layers/selfhost/server/services/cloudflare'
 import { getLatestBundle } from '#layers/selfhost/server/services/github'

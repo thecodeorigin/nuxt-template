@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { transactionTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import { bankInfo, buildSepayQrUrl } from '#layers/billing/server/services/sepay'
 import { CheckoutSchema } from '#layers/billing/shared/schemas/billing'

@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { productTable } from '@nuxthub/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(['product:write', 'product:manage'], async (event) => {
   const { status } = getQuery(event)

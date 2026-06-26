@@ -2,7 +2,6 @@ import type { DispatchResult } from '#layers/system/shared/schemas/dispatch'
 import { kv } from '@nuxthub/kv'
 import { readValidatedBody } from 'h3'
 import { enqueue, getQueueProducer, QUEUE_BATCH_LIMIT } from '~~/cloudflare/queue'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { simplifyNanoId } from '~~/shared/utils/id'
 import {
   composeEmailHtml,

@@ -2,7 +2,6 @@ import { db } from '@nuxthub/db'
 import { notificationTable } from '@nuxthub/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
 import { getValidatedQuery } from 'h3'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { NotificationQuerySchema, toNotification } from '#layers/notification/shared/schemas/notification'
 
 export default defineAuthenticatedHandler(async (event, session) => {

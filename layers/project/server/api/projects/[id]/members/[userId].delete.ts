@@ -2,7 +2,6 @@ import { db } from '@nuxthub/db'
 import { organizationTable, projectMemberTable, projectTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(
   ['project:write:self', 'project:manage'],

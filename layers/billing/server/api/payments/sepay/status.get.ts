@@ -3,7 +3,6 @@ import { transactionTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getValidatedQuery } from 'h3'
 import { z } from 'zod'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const { id } = await getValidatedQuery(event, z.object({ id: z.string() }).parse)

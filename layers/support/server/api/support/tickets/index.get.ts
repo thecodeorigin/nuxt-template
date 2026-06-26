@@ -1,5 +1,4 @@
 import { getValidatedQuery } from 'h3'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { listUserTickets } from '#layers/support/server/services/ticket'
 import { TicketListQuerySchema } from '#layers/support/shared/schemas/ticket'
 

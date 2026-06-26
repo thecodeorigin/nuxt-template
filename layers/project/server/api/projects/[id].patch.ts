@@ -2,7 +2,6 @@ import { db } from '@nuxthub/db'
 import { projectTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { UpdateProjectSchema } from '#layers/project/shared/schemas/project'
 
 export default defineAuthorizedHandler(

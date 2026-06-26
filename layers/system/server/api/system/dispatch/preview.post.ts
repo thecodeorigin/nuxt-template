@@ -1,5 +1,4 @@
 import { readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { resolveDispatchRecipients } from '#layers/system/server/services/dispatch'
 import { DispatchFilterSchema } from '#layers/system/shared/schemas/dispatch'
 

@@ -1,5 +1,4 @@
 import { readValidatedBody } from 'h3'
-import { defineAdminHandler } from '~~/server/utils/auth'
 import { listAccounts, verifyToken } from '#layers/selfhost/server/services/cloudflare'
 import { CfAccountsBodySchema } from '#layers/selfhost/shared/schemas/deploy'
 

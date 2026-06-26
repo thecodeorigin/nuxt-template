@@ -1,5 +1,4 @@
 import { getRouterParam } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { getAgentTicket } from '#layers/support/server/services/ticket'
 
 export default defineAuthorizedHandler(['support:manage'], async (event) => {

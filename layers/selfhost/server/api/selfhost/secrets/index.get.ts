@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { selfhostDeploymentSecretTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-import { defineAdminHandler } from '~~/server/utils/auth'
 import { SELFHOST_SECRET_CATALOG } from '#layers/selfhost/server/services/secrets'
 
 // Never returns the actual secret values. Just the catalog + isSet flags.

@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { selfhostAuditTable } from '@nuxthub/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { defineAdminHandler } from '~~/server/utils/auth'
 
 const DEFAULT_LIMIT = 50
 

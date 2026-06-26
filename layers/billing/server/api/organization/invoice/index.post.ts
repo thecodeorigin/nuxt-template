@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { invoiceItemTable, invoiceTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { CreateInvoiceSchema } from '#layers/billing/shared/schemas/invoice'
 
 function generateInvoiceNumber(): string {

@@ -143,9 +143,7 @@ export default defineNuxtConfig({
   ],
 
   auth: {
-    issuer: process.env.NUXT_THECODEORIGIN_ISSUER || '',
-    clientId: process.env.NUXT_THECODEORIGIN_CLIENT_ID || '',
-    clientSecret: process.env.NUXT_THECODEORIGIN_CLIENT_SECRET || '',
+    domain: 'auth.thecodeorigin.com',
     sessionStorageBase: 'hub:kv',
     routes: {
       signIn: '/auth/login',

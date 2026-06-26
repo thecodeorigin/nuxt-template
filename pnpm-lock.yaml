@@ -79,8 +79,8 @@ catalogs:
       specifier: ^8.21.3
       version: 8.21.3
     '@thecodeorigin/auth':
-      specifier: 0.0.1
-      version: 0.0.1
+      specifier: 0.0.2
+      version: 0.0.2
     '@tiptap/core':
       specifier: ^3.22.4
       version: 3.22.4
@@ -307,7 +307,7 @@ importers:
         version: 8.21.3(vue@3.5.32(typescript@6.0.2))
       '@thecodeorigin/auth':
         specifier: 'catalog:'
-        version: 0.0.1(magicast@0.5.2)(vue@3.5.32(typescript@6.0.2))
+        version: 0.0.2(magicast@0.5.2)(vue@3.5.32(typescript@6.0.2))
       '@tiptap/core':
         specifier: 'catalog:'
         version: 3.22.4(@tiptap/pm@3.22.4)
@@ -3425,8 +3425,8 @@ packages:
     peerDependencies:
       vue: ^2.7.0 || ^3.0.0
 
-  '@thecodeorigin/auth@0.0.1':
-    resolution: {integrity: sha512-17XtlNKrfJ7wBHyKp63CbSFW5Zk2WPcLoPD1CX2tNwfc/7JqkclBtJBFlDAaJjOEiI/Wc/S+PSiKdAg17stULg==}
+  '@thecodeorigin/auth@0.0.2':
+    resolution: {integrity: sha512-tLknJWSfraW9eQpPt6UyrzEcHK2bUWyspUwr7IJI0Apali4ojl+IVwy/nIlfswedfAI97ZRkz6SPL3hiYpUx3w==}
 
   '@tiptap/core@3.22.4':
     resolution: {integrity: sha512-vGIGm/HpqLg8EAAQXQ+koV+/S828OEpzocfWcPOwo1u2QUVf9dQG47Yy6JJ8zFFaJwfv4dBcOXli+7BrJwsxDQ==}
@@ -11922,7 +11922,7 @@ snapshots:
       '@tanstack/virtual-core': 3.14.0
       vue: 3.5.32(typescript@6.0.2)
 
-  '@thecodeorigin/auth@0.0.1(magicast@0.5.2)(vue@3.5.32(typescript@6.0.2))':
+  '@thecodeorigin/auth@0.0.2(magicast@0.5.2)(vue@3.5.32(typescript@6.0.2))':
     dependencies:
       '@casl/ability': 6.8.1
       '@casl/vue': 2.2.6(@casl/ability@6.8.1)(vue@3.5.32(typescript@6.0.2))
@@ -11930,7 +11930,7 @@ snapshots:
       defu: 6.1.7
       h3: 1.15.11
       ofetch: 1.5.1
-      ufo: 1.6.3
+      ufo: 1.6.4
       zod: 4.3.6
     transitivePeerDependencies:
       - magicast
@@ -12299,7 +12299,7 @@ snapshots:
       eslint: 10.2.0(jiti@2.6.1)
       json-stable-stringify-without-jsonify: 1.0.1
       lodash.merge: 4.6.2
-      semver: 7.7.4
+      semver: 7.8.5
     transitivePeerDependencies:
       - supports-color
       - typescript

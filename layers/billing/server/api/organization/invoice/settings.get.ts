@@ -2,7 +2,6 @@ import { db } from '@nuxthub/db'
 import { organizationBillingSettingsTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { createError } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(['billing:read', 'billing:manage'], async (_event, { session }) => {
   const orgId = session.activeOrg

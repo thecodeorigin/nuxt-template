@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
 import { getValidatedQuery } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { listAgentTickets } from '#layers/support/server/services/ticket'
 import { AgentTicketListQuerySchema } from '#layers/support/shared/schemas/ticket'
 

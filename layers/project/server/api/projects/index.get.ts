@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { projectTable } from '@nuxthub/db/schema'
 import { and, desc, eq } from 'drizzle-orm'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(
   ['project:read', 'project:manage'],

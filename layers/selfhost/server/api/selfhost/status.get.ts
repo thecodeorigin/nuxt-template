@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-import { defineAdminHandler } from '~~/server/utils/auth'
 import { getCachedOrFetch } from '~~/server/utils/cache'
 import { getLatestVersion } from '#layers/selfhost/server/services/github'
 

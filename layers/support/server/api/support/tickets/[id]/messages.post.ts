@@ -1,5 +1,4 @@
 import { getRouterParam, readValidatedBody } from 'h3'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { addUserMessage } from '#layers/support/server/services/ticket'
 import { PostMessageSchema } from '#layers/support/shared/schemas/ticket'
 

@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { notificationTable } from '@nuxthub/db/schema'
 import { and, count, eq } from 'drizzle-orm'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const orgId = event.context.activeOrganizationId

@@ -1,5 +1,4 @@
 import { readValidatedBody } from 'h3'
-import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { createTicket } from '#layers/support/server/services/ticket'
 import { CreateTicketSchema } from '#layers/support/shared/schemas/ticket'
 

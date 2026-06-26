@@ -1,7 +1,6 @@
 import { db } from '@nuxthub/db'
 import { projectMemberTable, projectTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { CreateProjectSchema } from '#layers/project/shared/schemas/project'
 
 export default defineAuthorizedHandler(
