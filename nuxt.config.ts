@@ -143,7 +143,7 @@ export default defineNuxtConfig({
   ],
 
   auth: {
-    domain: 'auth.thecodeorigin.com',
+    domain: 'id.thecodeorigin.com',
     sessionStorageBase: 'hub:kv',
     routes: {
       signIn: '/auth/login',

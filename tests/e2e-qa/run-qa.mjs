@@ -5,7 +5,7 @@ const SS_DIR = 'D:/projects/nuxt-template/tests/e2e-qa/screenshots'
 mkdirSync(SS_DIR, { recursive: true })
 
 const BASE = 'http://localhost:3002'
-const IDP = 'https://auth.thecodeorigin.com'
+const IDP = 'https://id.thecodeorigin.com'
 const EMAIL = 'nguyenhuunguyeny.ny@gmail.com'
 const PASSWORDS = ['password123', 'Password123!', '123456', 'password', 'Nguyeny@123', 'admin123', 'Test@1234']
 
