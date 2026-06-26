@@ -28,11 +28,11 @@ Step 1 before continuing.
    running `/onboard` again to add the credentials. Don't block — the
    credential form still works without it.
 3. **Deferred provider setup?** Scan `.env` for empty values among the
-   production-required keys (`NUXT_THECODEORIGIN_ISSUER`,
-   `NUXT_THECODEORIGIN_CLIENT_ID`, `NUXT_THECODEORIGIN_CLIENT_SECRET`,
-   `NUXT_SMTP_PASS`, and `NUXT_SEPAY_*` if the user charges money). Each
-   empty key is a deferral from `/onboard` — note them so you can remind
-   the user mid-flow.
+   production-required keys (`NUXT_THECODEORIGIN_CLIENT_ID`,
+   `NUXT_THECODEORIGIN_CLIENT_SECRET`, `NUXT_SMTP_PASS`, and
+   `NUXT_SEPAY_*` if the user charges money). Each empty key is a
+   deferral from `/onboard` — note them so you can remind the user
+   mid-flow.
 4. **GitHub remote?** Run `git remote -v` to see if there's an `origin`
    pointing at GitHub. Note the result; you'll fix in Step 3 if missing.
 

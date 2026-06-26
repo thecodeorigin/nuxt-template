@@ -9,6 +9,8 @@
 import * as z from 'zod'
 import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
 
+const { signIn } = useAuth()
+
 const fields: AuthFormField[] = [{
   name: 'email',
   type: 'email',
@@ -27,10 +29,12 @@ const fields: AuthFormField[] = [{
   type: 'checkbox'
 }]
 
+// useAuth() is auto-imported by @thecodeorigin/auth — no explicit import needed.
+// signIn(redirect?) navigates to /auth/login which the module handles end-to-end.
 const providers = [{
   label: 'Sign in with THECODEORIGIN',
   icon: 'i-lucide-lock',
-  onClick: () => navigateTo('/auth/thecodeorigin', { external: true })
+  onClick: () => signIn('/')
 }]
 
 const schema = z.object({

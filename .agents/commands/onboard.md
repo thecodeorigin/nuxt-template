@@ -161,23 +161,24 @@ Ask via `AskUserQuestion`:
 If the user picks "set it up now", walk them through this in plain
 English:
 
-> To connect "Sign in with THECODEORIGIN" you need three values from the
+> To connect "Sign in with THECODEORIGIN" you need two values from the
 > THECODEORIGIN identity platform. Ask your system admin (or log in to
-> <https://auth.thecodeorigin.com>) to create an OAuth client for this
+> <https://id.thecodeorigin.com>) to create an OAuth client for this
 > app and give you:
 >
-> 1. **Issuer URL** — usually `https://auth.thecodeorigin.com/api/auth`
->    (confirm with your admin)
-> 2. **Client ID** — a string like `app_abc123…`
-> 3. **Client secret** — keep this private; paste it here once
+> 1. **Client ID** — a string that identifies your app
+> 2. **Client secret** — keep this private; paste it here once
+>
+> The auth domain is fixed at `id.thecodeorigin.com` — you don't need to
+> enter it.
 >
 > The redirect URI to register on the IdP is:
-> - **Dev**: `http://localhost:3002/api/auth/thecodeorigin/callback`
-> - **Prod**: `https://<your-domain>/api/auth/thecodeorigin/callback`
+> - **Dev**: `http://localhost:3002/auth/callback`
+> - **Prod**: `https://<your-domain>/auth/callback`
 
-Wait for them to paste the three values. Save as
-`NUXT_THECODEORIGIN_ISSUER`, `NUXT_THECODEORIGIN_CLIENT_ID`, and
-`NUXT_THECODEORIGIN_CLIENT_SECRET` (written to `.env` in Step 9c).
+Wait for them to paste the two values. Save as
+`NUXT_THECODEORIGIN_CLIENT_ID` and `NUXT_THECODEORIGIN_CLIENT_SECRET`
+(written to `.env` in Step 9c).
 
 If the user picks "set it up later", leave the three keys empty and set
 an internal `pendingSigninProvider = true` flag so `/go-live` can remind
@@ -341,7 +342,6 @@ generated must survive). Set:
 - `NUXT_PUBLIC_DEMO_MODE=false`
 - `NUXT_DEMO_MODE=false`
 - `NUXT_SMTP_FROM=<smtpFromDisplay>`
-- `NUXT_THECODEORIGIN_ISSUER=<…or empty>`
 - `NUXT_THECODEORIGIN_CLIENT_ID=<…or empty>`
 - `NUXT_THECODEORIGIN_CLIENT_SECRET=<…or empty>`
 - `NUXT_SMTP_PASS=<resend api key or empty>`
@@ -378,7 +378,7 @@ should see edits like:
 When the user picks "set up later" for a provider, the corresponding
 `.env` line is left empty (see 9c). That **is** the deferral record —
 `/go-live` reads `.env` directly and flags any still-empty
-production-required value (THECODEORIGIN client id+secret+issuer, Resend
+production-required value (THECODEORIGIN client id+secret, Resend
 key, SePay fields if charging). Don't write a sidecar todo file;
 the env is the source of truth.
 
