@@ -37,6 +37,7 @@
     "@nuxthub/core": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/vue-table": "catalog:",
+    "@thecodeorigin/auth": "file:../better-auth/packages/auth",
     "@tiptap/core": "catalog:",
     "@tiptap/extension-bubble-menu": "catalog:",
     "@tiptap/extension-code": "catalog:",

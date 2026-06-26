@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
+const { user, isImpersonating, impersonator, abilities } = useAuth()
 </script>
 
 <template>
@@ -11,14 +11,14 @@ const authStore = useAuthStore()
             Signed in as
           </p>
           <p class="text-xl font-semibold text-highlighted" data-testid="current-user-name">
-            {{ authStore.currentUser?.name ?? authStore.currentUser?.primary_email }}
+            {{ user?.name ?? user?.email }}
           </p>
           <p class="text-xs text-muted" data-testid="current-user-email">
-            {{ authStore.currentUser?.primary_email }}
+            {{ user?.email }}
           </p>
         </div>
         <UBadge
-          v-if="authStore.isImpersonating"
+          v-if="isImpersonating"
           color="warning"
           variant="soft"
           icon="i-lucide-user-cog"
@@ -36,27 +36,27 @@ const authStore = useAuthStore()
         </p>
         <div class="flex flex-wrap gap-1">
           <UBadge
-            v-for="ability in authStore.currentUser?.abilities ?? []"
-            :key="ability"
+            v-for="ability in abilities"
+            :key="`${ability.action}:${ability.subject}`"
             color="neutral"
             variant="subtle"
             size="sm"
           >
-            {{ ability }}
+            {{ ability.action }}:{{ ability.subject }}
           </UBadge>
-          <span v-if="!authStore.currentUser?.abilities?.length" class="text-xs text-muted">
+          <span v-if="!abilities.length" class="text-xs text-muted">
             (none)
           </span>
         </div>
       </div>
 
-      <div v-if="authStore.isImpersonating && authStore.impersonator">
+      <div v-if="isImpersonating && impersonator">
         <p class="text-xs text-muted mb-1">
           Real user
         </p>
         <p class="text-sm">
-          {{ authStore.impersonator.name }}
-          <span class="text-muted">· {{ authStore.impersonator.primary_email }}</span>
+          {{ impersonator.name }}
+          <span class="text-muted">· {{ impersonator.email }}</span>
         </p>
       </div>
     </div>

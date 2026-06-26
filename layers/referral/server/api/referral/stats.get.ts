@@ -1,4 +1,4 @@
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { getReferralStats } from '#layers/referral/server/services/referral'
 
-export default defineAuthenticatedHandler((_event, session) => getReferralStats(session.id))
+export default defineAuthenticatedHandler((_event, session) => getReferralStats(session.sub))

@@ -1,12 +1,12 @@
 import { db } from '@nuxthub/db'
 import { selfhostDeploymentSecretTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAdminHandler } from '~~/server/utils/auth'
 import { SELFHOST_SECRET_CATALOG } from '#layers/selfhost/server/services/secrets'
 
 // Never returns the actual secret values. Just the catalog + isSet flags.
-export default defineAuthorizedHandler(['selfhost:read', 'selfhost:manage'], async (_event, { session }) => {
-  const orgId = session.activeOrganizationId!
+export default defineAdminHandler(['selfhost:read', 'selfhost:manage'], async (_event, { session }) => {
+  const orgId = session.activeOrg!
   const stored = await db.query.selfhostDeploymentSecretTable.findMany({
     where: eq(selfhostDeploymentSecretTable.organization_id, orgId),
     columns: { key: true, updated_at: true },

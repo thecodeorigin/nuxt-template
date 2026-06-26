@@ -1,5 +1,4 @@
 import type { InferSelect } from '~~/server/db/types'
-import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const TICKET_KINDS = ['feedback', 'support'] as const
@@ -14,13 +13,13 @@ export type MessageRole = typeof MESSAGE_ROLES[number]
 
 export const supportTicketTable = sqliteTable('support_tickets', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
-  user_id: text('user_id').references(() => userTable.id, { onDelete: 'cascade' }).notNull(),
-  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  user_id: text('user_id').notNull(),
+  organization_id: text('organization_id').notNull(),
   kind: text('kind', { enum: TICKET_KINDS }).notNull(),
   category: text('category', { enum: TICKET_CATEGORIES }),
   subject: text('subject').notNull(),
   status: text('status', { enum: TICKET_STATUSES }).notNull().default('open'),
-  assigned_to: text('assigned_to').references(() => userTable.id, { onDelete: 'set null' }),
+  assigned_to: text('assigned_to'),
   last_message_at: integer('last_message_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   last_message_role: text('last_message_role', { enum: MESSAGE_ROLES }).notNull().default('user'),
   reminder_sent_at: integer('reminder_sent_at', { mode: 'timestamp' }),
@@ -37,7 +36,7 @@ export type SupportTicketRow = InferSelect<typeof supportTicketTable>
 export const supportTicketMessageTable = sqliteTable('support_ticket_messages', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
   ticket_id: text('ticket_id').references(() => supportTicketTable.id, { onDelete: 'cascade' }).notNull(),
-  author_id: text('author_id').references(() => userTable.id, { onDelete: 'set null' }),
+  author_id: text('author_id'),
   author_role: text('author_role', { enum: MESSAGE_ROLES }).notNull(),
   body: text('body').notNull(),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),

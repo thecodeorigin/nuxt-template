@@ -1,5 +1,4 @@
 import type { $Fetch } from 'nitropack'
-import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
 
 declare module 'ofetch' {
   interface FetchOptions {
@@ -67,8 +66,6 @@ export const $http = $fetch.create({
       useLoadingIndicator().finish({ error: true })
     }
 
-    const authApi = useAuthApi()
-
     const statusCode = error?.response?.status
 
     let isRequestFromExternalUrl = false
@@ -84,7 +81,8 @@ export const $http = $fetch.create({
         if (error.request.toString().includes('auth') || isRequestFromExternalUrl)
           return
         try {
-          await authApi.logout()
+          const { signOut } = useAuth()
+          await signOut()
         }
         catch {
           //

@@ -2,7 +2,7 @@ import { db } from '@nuxthub/db'
 import { selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAdminHandler } from '~~/server/utils/auth'
 import { TestEmailBodySchema } from '#layers/selfhost/shared/schemas/secret'
 
 // Smoke-test SMTP by asking the deployed Worker to send an email to itself.
@@ -13,9 +13,9 @@ import { TestEmailBodySchema } from '#layers/selfhost/shared/schemas/secret'
 // True SMTP-from-here would require the deployed Worker to expose a dedicated test endpoint, which
 // isn't part of the current upstream app. For now this endpoint validates that the Worker is alive
 // and the workers.dev URL responds.
-export default defineAuthorizedHandler(['selfhost:manage'], async (event, { session }) => {
+export default defineAdminHandler(['selfhost:manage'], async (event, { session }) => {
   await readValidatedBody(event, TestEmailBodySchema.parse)
-  const orgId = session.activeOrganizationId!
+  const orgId = session.activeOrg!
 
   const deployment = await db.query.selfhostDeploymentTable.findFirst({
     where: eq(selfhostDeploymentTable.organization_id, orgId),

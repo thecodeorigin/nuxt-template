@@ -1,14 +1,14 @@
 import { db } from '@nuxthub/db'
 import { selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
+import { defineAdminHandler } from '~~/server/utils/auth'
 import { getCachedOrFetch } from '~~/server/utils/cache'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { getLatestVersion } from '#layers/selfhost/server/services/github'
 
 const LATEST_VERSION_CACHE_TTL_SECONDS = 3600
 
-export default defineAuthorizedHandler(['selfhost:read', 'selfhost:manage'], async (_event, { session }) => {
-  const orgId = session.activeOrganizationId!
+export default defineAdminHandler(['selfhost:read', 'selfhost:manage'], async (_event, { session }) => {
+  const orgId = session.activeOrg!
   const deployment = await db.query.selfhostDeploymentTable.findFirst({
     where: eq(selfhostDeploymentTable.organization_id, orgId),
   })

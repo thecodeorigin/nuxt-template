@@ -6,29 +6,29 @@ defineProps<{
 }>()
 
 const colorMode = useColorMode()
-const authStore = useAuthStore()
+const { user, isImpersonating, impersonator, signOut, stopImpersonating } = useAuth()
 const toast = useToast()
 
-const user = computed(() => ({
-  name: authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'Guest',
-  email: authStore.currentUser?.primary_email ?? '',
-  avatar: authStore.currentUser?.avatar
-    ? { src: authStore.currentUser.avatar, alt: authStore.currentUser.name ?? '' }
+const displayUser = computed(() => ({
+  name: user.value?.name ?? user.value?.email ?? 'Guest',
+  email: user.value?.email ?? '',
+  avatar: user.value?.picture
+    ? { src: user.value.picture, alt: user.value.name ?? '' }
     : undefined,
 }))
 
 async function logout() {
   try {
-    await authStore.logout()
+    await signOut()
   }
   finally {
     await navigateTo('/auth/login')
   }
 }
 
-async function stopImpersonation() {
+async function handleStopImpersonation() {
   try {
-    await authStore.stopImpersonation()
+    await stopImpersonating()
     toast.add({ title: 'Stopped impersonation', color: 'success' })
     if (import.meta.client)
       window.location.reload()
@@ -48,16 +48,16 @@ const items = computed<DropdownMenuItem[][]>(() => {
 
   groups.push([{
     type: 'label',
-    label: user.value.name,
-    avatar: user.value.avatar,
+    label: displayUser.value.name,
+    avatar: displayUser.value.avatar,
   }])
 
-  if (authStore.isImpersonating) {
+  if (isImpersonating.value) {
     groups.push([{
-      label: `Back to ${authStore.impersonator?.name ?? authStore.impersonator?.primary_email ?? 'admin'}`,
+      label: `Back to ${impersonator.value?.name ?? impersonator.value?.email ?? 'admin'}`,
       icon: 'i-lucide-shield',
       color: 'warning' as const,
-      onSelect: () => { void stopImpersonation() },
+      onSelect: () => { void handleStopImpersonation() },
     }])
   }
 
@@ -139,8 +139,8 @@ const items = computed<DropdownMenuItem[][]>(() => {
     :ui="{ content: collapsed ? 'w-56' : 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <UButton
-      v-bind="user.avatar ? { avatar: user.avatar } : { icon: 'i-lucide-user' }"
-      :label="collapsed ? undefined : user.name"
+      v-bind="displayUser.avatar ? { avatar: displayUser.avatar } : { icon: 'i-lucide-user' }"
+      :label="collapsed ? undefined : displayUser.name"
       :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
       color="neutral"
       variant="ghost"

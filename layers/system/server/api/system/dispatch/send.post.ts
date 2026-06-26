@@ -2,8 +2,8 @@ import type { DispatchResult } from '#layers/system/shared/schemas/dispatch'
 import { kv } from '@nuxthub/kv'
 import { readValidatedBody } from 'h3'
 import { enqueue, getQueueProducer, QUEUE_BATCH_LIMIT } from '~~/cloudflare/queue'
+import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { simplifyNanoId } from '~~/shared/utils/id'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import {
   composeEmailHtml,
   DISPATCH_JOB_TTL,
@@ -23,7 +23,7 @@ const RATE_WINDOW = 60 * 60 // seconds
 export default defineAuthorizedHandler(['system:manage'], async (event, { session }): Promise<DispatchResult> => {
   const { filter, subject, body } = await readValidatedBody(event, DispatchSendSchema.parse)
 
-  const rlKey = `ratelimit:dispatch-send:${session.id}`
+  const rlKey = `ratelimit:dispatch-send:${session.sub}`
   const attempts = (await kv.get<number>(rlKey)) || 0
   if (attempts >= RATE_LIMIT)
     throw createError({ statusCode: 429, statusMessage: 'Dispatch limit reached. Try again later.' })

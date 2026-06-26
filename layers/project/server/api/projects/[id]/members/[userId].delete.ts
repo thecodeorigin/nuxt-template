@@ -2,14 +2,14 @@ import { db } from '@nuxthub/db'
 import { organizationTable, projectMemberTable, projectTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError } from 'h3'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(
   ['project:write:self', 'project:manage'],
   async (event, { session }) => {
     const id = getRouterParam(event, 'id')!
     const userId = getRouterParam(event, 'userId')!
-    const orgId = session.activeOrganizationId
+    const orgId = session.activeOrg
 
     console.log(id, userId, orgId)
     const project = await db.query.projectTable.findFirst({
@@ -27,7 +27,7 @@ export default defineAuthorizedHandler(
     if (org.owner_id === userId || project.created_by === userId)
       throw createError({ statusCode: 403, statusMessage: 'Cannot remove organization or project owner' })
 
-    if (project.created_by === session.id)
+    if (project.created_by === session.sub)
       throw createError({ statusCode: 403, statusMessage: 'Cannot remove yourself from this project' })
 
     const [deleted] = await db

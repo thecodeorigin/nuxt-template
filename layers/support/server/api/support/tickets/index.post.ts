@@ -1,5 +1,5 @@
 import { readValidatedBody } from 'h3'
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { createTicket } from '#layers/support/server/services/ticket'
 import { CreateTicketSchema } from '#layers/support/shared/schemas/ticket'
 
@@ -9,7 +9,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
   const input = await readValidatedBody(event, CreateTicketSchema.parse)
   return createTicket({
-    userId: session.id,
+    userId: session.sub,
     organizationId: orgId,
     kind: input.kind,
     category: input.category,

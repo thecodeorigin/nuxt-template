@@ -1,11 +1,11 @@
 import { db } from '@nuxthub/db'
 import { organizationBillingSettingsTable } from '@nuxthub/db/schema'
 import { createError, readValidatedBody } from 'h3'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { UpdateBillingSettingsSchema } from '#layers/billing/shared/schemas/invoice'
 
 export default defineAuthorizedHandler(['billing:manage'], async (event, { session }) => {
-  const orgId = session.activeOrganizationId
+  const orgId = session.activeOrg
   if (!orgId)
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
 

@@ -2,19 +2,19 @@ import { db } from '@nuxthub/db'
 import { organizationTable, selfhostAuditTable, selfhostDeploymentSecretTable, selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { readValidatedBody } from 'h3'
+import { defineAdminHandler } from '~~/server/utils/auth'
 import { decryptSecret, encryptSecret } from '~~/server/utils/crypto'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { setWorkerSecret } from '#layers/selfhost/server/services/cloudflare'
 import { findSecretDef, isKnownSecretKey } from '#layers/selfhost/server/services/secrets'
 import { PatchSecretsBodySchema } from '#layers/selfhost/shared/schemas/secret'
 
-export default defineAuthorizedHandler(['selfhost:manage'], async (event, { session }) => {
-  const orgId = session.activeOrganizationId!
+export default defineAdminHandler(['selfhost:manage'], async (event, { session }) => {
+  const orgId = session.activeOrg!
   const body = await readValidatedBody(event, PatchSecretsBodySchema.parse)
 
   // Owner-only — secrets include payment + auth credentials.
   const org = await db.query.organizationTable.findFirst({ where: eq(organizationTable.id, orgId) })
-  if (!org || org.owner_id !== session.id)
+  if (!org || org.owner_id !== session.sub)
     throw createError({ statusCode: 403, statusMessage: 'Only the organization owner can modify deployment secrets' })
 
   // Reject unknown keys early so a typo can't poison the catalog.
@@ -52,7 +52,7 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (event, { sess
   const keyList = body.updates.map(u => u.key).join(',')
   await db.insert(selfhostAuditTable).values({
     organization_id: orgId,
-    actor_user_id: session.id,
+    actor_user_id: session.sub,
     action: 'secret_update',
     success: true,
     cf_account_id: deployment?.cf_account_id ?? null,

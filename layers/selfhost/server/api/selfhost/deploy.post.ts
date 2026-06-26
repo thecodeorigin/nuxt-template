@@ -3,8 +3,8 @@ import { organizationTable, selfhostAuditTable, selfhostDeploymentSecretTable, s
 import { kv } from '@nuxthub/kv'
 import { eq } from 'drizzle-orm'
 import { readValidatedBody } from 'h3'
+import { defineAdminHandler } from '~~/server/utils/auth'
 import { decryptSecret, encryptSecret } from '~~/server/utils/crypto'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
 import { applyMigrations, enableSubdomain, listAccounts, probeCapabilities, provisionResources, setWorkerSecret, uploadAssets, uploadWorker, verifyToken } from '#layers/selfhost/server/services/cloudflare'
 import { getLatestBundle } from '#layers/selfhost/server/services/github'
 import { bootstrapAdminCredential, generateAutoSecret, SELFHOST_SECRET_CATALOG } from '#layers/selfhost/server/services/secrets'
@@ -13,14 +13,14 @@ import { DeployBodySchema } from '#layers/selfhost/shared/schemas/deploy'
 const RATE_LIMIT_SECONDS = 60
 const CONCURRENT_DEPLOY_WINDOW_MS = 5 * 60_000
 
-export default defineAuthorizedHandler(['selfhost:manage'], async (event, { session }) => {
-  const orgId = session.activeOrganizationId!
+export default defineAdminHandler(['selfhost:manage'], async (event, { session }) => {
+  const orgId = session.activeOrg!
   const body = await readValidatedBody(event, DeployBodySchema.parse)
   const startedAt = new Date()
 
   // Owner-only gate: a CF API token is account-takeover-grade, so only the org owner may bind one.
   const org = await db.query.organizationTable.findFirst({ where: eq(organizationTable.id, orgId) })
-  if (!org || org.owner_id !== session.id)
+  if (!org || org.owner_id !== session.sub)
     throw createError({ statusCode: 403, statusMessage: 'Only the organization owner can deploy a self-hosted instance' })
 
   // Rate limit (one deploy attempt per minute per org)
@@ -165,7 +165,7 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (event, { sess
 
     await db.insert(selfhostAuditTable).values({
       organization_id: orgId,
-      actor_user_id: session.id,
+      actor_user_id: session.sub,
       action,
       success: true,
       cf_account_id: cfAccountId,
@@ -186,7 +186,7 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (event, { sess
 
     await db.insert(selfhostAuditTable).values({
       organization_id: orgId,
-      actor_user_id: session.id,
+      actor_user_id: session.sub,
       action,
       success: false,
       cf_account_id: cfAccountId,

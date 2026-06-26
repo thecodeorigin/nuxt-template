@@ -2,7 +2,7 @@ import { db } from '@nuxthub/db'
 import { projectTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError } from 'h3'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(
   [
@@ -12,7 +12,7 @@ export default defineAuthorizedHandler(
   ],
   async (event, { session }) => {
     const id = getRouterParam(event, 'id')!
-    const orgId = session.activeOrganizationId
+    const orgId = session.activeOrg
 
     const [deleted] = await db
       .delete(projectTable)

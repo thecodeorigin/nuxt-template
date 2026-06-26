@@ -3,11 +3,11 @@ import { transactionTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getValidatedQuery } from 'h3'
 import { z } from 'zod'
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const { id } = await getValidatedQuery(event, z.object({ id: z.string() }).parse)
-  const orgId = session.activeOrganizationId
+  const orgId = session.activeOrg
   if (!orgId)
     throw createError({ statusCode: 400, statusMessage: 'No active organization' })
   const tx = await db.query.transactionTable.findFirst({

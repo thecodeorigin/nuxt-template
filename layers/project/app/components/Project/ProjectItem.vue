@@ -7,10 +7,10 @@ const props = defineProps<{ project: Project }>()
 const emit = defineEmits<{ edit: [Project], delete: [Project] }>()
 
 const ability = useAbility()
-const { currentUser } = storeToRefs(useAuthStore())
+const { session } = useAuth()
 
 const canManage = computed(() =>
-  ability.can('manage', 'project') || props.project.created_by === currentUser.value?.id,
+  ability.can('manage', 'project') || props.project.created_by === session.value?.user.sub,
 )
 
 const menuItems = computed<DropdownMenuItem[][]>(() => [

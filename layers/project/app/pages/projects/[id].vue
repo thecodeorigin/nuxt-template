@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ProjectDetail } from '#layers/project/app/api/useProjectApi'
 import { useAbility } from '@casl/vue'
-import { useOrganizationApi } from '#layers/auth/app/api/useOrganizationApi'
 import { useProductApi } from '#layers/product/app/api/useProductApi'
 import { useProjectApi } from '#layers/project/app/api/useProjectApi'
 import DashboardNavbar from '~/components/Dashboard/DashboardNavbar.vue'
@@ -10,7 +9,6 @@ definePageMeta({ can: ['project:read', 'project:write', 'project:manage'] })
 
 const route = useRoute()
 const api = useProjectApi()
-const orgApi = useOrganizationApi()
 const productApi = useProductApi()
 const toast = useToast()
 const id = route.params.id as string
@@ -21,16 +19,17 @@ whenError(error)
 useHead(() => ({ title: project.value?.name ?? 'Project' }))
 
 const ability = useAbility()
-const { currentUser } = storeToRefs(useAuthStore())
+const { session } = useAuth()
 
 const canManageProject = computed(() =>
   ability.can('manage', 'project')
-  || project.value?.members.some(m => m.user_id === currentUser.value?.id && m.role === 'owner')
+  || project.value?.members.some(m => m.user_id === session.value?.user.sub && m.role === 'owner')
   || false,
 )
 
-const { data: orgMembers } = useAsyncData('org-members-for-project', () => orgApi.fetchMembers({ limit: 100 }), { default: () => ({ items: [], hasMore: false }) })
 const { data: allProducts } = useAsyncData('products-for-project', () => productApi.fetchProducts('active'), { default: () => [] })
+// Org member list is managed through the IdP — not available in this view until an org-members proxy API is added.
+const orgMembers = ref<{ items: { id: string, name?: string | null, username?: string | null, primary_email?: string | null }[], hasMore: boolean }>({ items: [], hasMore: false })
 
 const addProductId = ref('')
 const addProductQty = ref(1)
@@ -231,7 +230,7 @@ async function removeMember(userId: string) {
             <UFormField label="Add member" class="flex-1">
               <USelect
                 v-model="addMemberUserId"
-                :items="availableMembers.map(m => ({ label: m.name ?? m.username ?? m.primary_email, value: m.id }))"
+                :items="availableMembers.map(m => ({ label: m.name ?? m.username ?? m.primary_email ?? undefined, value: m.id }))"
                 placeholder="Select a member"
                 class="w-full"
               />

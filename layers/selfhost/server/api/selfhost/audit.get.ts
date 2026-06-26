@@ -1,12 +1,12 @@
 import { db } from '@nuxthub/db'
 import { selfhostAuditTable } from '@nuxthub/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAdminHandler } from '~~/server/utils/auth'
 
 const DEFAULT_LIMIT = 50
 
-export default defineAuthorizedHandler(['selfhost:read', 'selfhost:manage'], async (_event, { session }) => {
-  const orgId = session.activeOrganizationId!
+export default defineAdminHandler(['selfhost:read', 'selfhost:manage'], async (_event, { session }) => {
+  const orgId = session.activeOrg!
   const rows = await db.query.selfhostAuditTable.findMany({
     where: eq(selfhostAuditTable.organization_id, orgId),
     orderBy: [desc(selfhostAuditTable.started_at)],

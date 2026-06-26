@@ -1,9 +1,8 @@
 import type { InferSelect } from '~~/server/db/types'
-import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const organizationBillingSettingsTable = sqliteTable('organization_billing_settings', {
-  organization_id: text('organization_id').primaryKey().references(() => organizationTable.id, { onDelete: 'cascade' }),
+  organization_id: text('organization_id').primaryKey(),
   company_name: text('company_name'),
   tax_id: text('tax_id'),
   address: text('address'),
@@ -16,7 +15,7 @@ export type OrganizationBillingSettings = InferSelect<typeof organizationBilling
 
 export const invoiceTable = sqliteTable('invoices', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
-  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  organization_id: text('organization_id').notNull(),
   number: text('number').notNull().unique(),
   status: text('status', { enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled'] }).notNull().default('draft'),
   currency: text('currency').notNull().default('USD'),
@@ -49,7 +48,7 @@ export const invoiceItemTable = sqliteTable('invoice_items', {
 export type InvoiceItem = InferSelect<typeof invoiceItemTable>
 
 export const organizationCreditTable = sqliteTable('organization_credits', {
-  organization_id: text('organization_id').primaryKey().references(() => organizationTable.id, { onDelete: 'cascade' }),
+  organization_id: text('organization_id').primaryKey(),
   balance: integer('balance').notNull().default(0),
   updated_at: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()).$onUpdate(() => new Date()),
 })
@@ -57,8 +56,8 @@ export type OrganizationCredit = InferSelect<typeof organizationCreditTable>
 
 export const transactionTable = sqliteTable('transactions', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
-  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
-  user_id: text('user_id').references(() => userTable.id, { onDelete: 'set null' }),
+  organization_id: text('organization_id').notNull(),
+  user_id: text('user_id'),
   type: text('type', { enum: ['top_up', 'referral_reward'] }).notNull(),
   status: text('status', { enum: ['pending', 'success', 'failed', 'expired'] }).notNull().default('pending'),
   amount: integer('amount').notNull(),

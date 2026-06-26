@@ -1,10 +1,10 @@
 import { db } from '@nuxthub/db'
 import { selfhostAuditTable, selfhostDeploymentSecretTable, selfhostDeploymentTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAdminHandler } from '~~/server/utils/auth'
 
-export default defineAuthorizedHandler(['selfhost:manage'], async (_event, { session }) => {
-  const orgId = session.activeOrganizationId!
+export default defineAdminHandler(['selfhost:manage'], async (_event, { session }) => {
+  const orgId = session.activeOrg!
   const startedAt = new Date()
 
   await db.update(selfhostDeploymentTable)
@@ -16,7 +16,7 @@ export default defineAuthorizedHandler(['selfhost:manage'], async (_event, { ses
 
   await db.insert(selfhostAuditTable).values({
     organization_id: orgId,
-    actor_user_id: session.id,
+    actor_user_id: session.sub,
     action: 'disconnect',
     success: true,
     started_at: startedAt,

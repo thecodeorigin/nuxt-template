@@ -1,40 +1,53 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useAuthApi } from '#layers/auth/app/api/useAuthApi'
 
 defineProps<{
   collapsed?: boolean
 }>()
 
-const authApi = useAuthApi()
-const authStore = useAuthStore()
-const toast = useToast()
+const { user, isImpersonating, impersonator, impersonate, stopImpersonating, getImpersonatableUsers } = useAuth()
 const { $ability } = useNuxtApp()
+const toast = useToast()
 
 const canImpersonate = computed(
-  () => (authStore.currentUser?.abilities ?? []).includes('user:impersonate')
-    || authStore.isImpersonating,
+  () => isImpersonating.value || $ability.can('manage', 'all'),
 )
 
-const canManageUsers = computed(() => $ability.can('read', 'user'))
-
-const showMenu = computed(() => canImpersonate.value || canManageUsers.value)
+const showMenu = computed(() => canImpersonate.value)
 
 const candidatesOpen = ref(false)
-const scrollEl = ref<HTMLElement | null>(null)
 const busy = ref(false)
+const searchQ = ref('')
+const candidates = ref<{ id: string, email: string, name: string | null }[]>([])
+const loadingCandidates = ref(false)
 
-const { items: candidates, q, hasMore, loading, loadMore, reset } = useInfiniteList(
-  opts => authApi.fetchImpersonationCandidates(opts).then(p => p),
-  { immediate: false },
+async function loadCandidates() {
+  loadingCandidates.value = true
+  try {
+    const result = await getImpersonatableUsers()
+    candidates.value = result.items
+  }
+  catch {
+    candidates.value = []
+  }
+  finally {
+    loadingCandidates.value = false
+  }
+}
+
+const filteredCandidates = computed(() =>
+  searchQ.value
+    ? candidates.value.filter(c =>
+        (c.name ?? '').toLowerCase().includes(searchQ.value.toLowerCase())
+        || c.email.toLowerCase().includes(searchQ.value.toLowerCase()),
+      )
+    : candidates.value,
 )
-
-useInfiniteScroll(scrollEl, loadMore, { distance: 80, canLoadMore: () => hasMore.value })
 
 watch(candidatesOpen, (val) => {
   if (val) {
-    reset()
-    loadMore()
+    searchQ.value = ''
+    void loadCandidates()
   }
 })
 
@@ -42,7 +55,7 @@ async function startImpersonation(userId: string, label: string) {
   busy.value = true
   candidatesOpen.value = false
   try {
-    await authStore.startImpersonation(userId)
+    await impersonate(userId)
     toast.add({ title: `Now impersonating ${label}`, color: 'success' })
     if (import.meta.client)
       window.location.reload()
@@ -60,10 +73,10 @@ async function startImpersonation(userId: string, label: string) {
   }
 }
 
-async function stopImpersonation() {
+async function handleStop() {
   busy.value = true
   try {
-    await authStore.stopImpersonation()
+    await stopImpersonating()
     toast.add({ title: 'Stopped impersonation', color: 'success' })
     if (import.meta.client)
       window.location.reload()
@@ -81,17 +94,14 @@ async function stopImpersonation() {
   }
 }
 
-const triggerLabel = computed(() => authStore.isImpersonating
-  ? (authStore.currentUser?.name ?? authStore.currentUser?.primary_email)
-  : (authStore.currentUser?.name ?? authStore.currentUser?.primary_email ?? 'guest'))
-
+const triggerLabel = computed(() => user.value?.name ?? user.value?.email ?? 'guest')
 const triggerIcon = computed(() =>
-  authStore.isImpersonating ? 'i-lucide-user-cog' : 'i-lucide-cuboid',
+  isImpersonating.value ? 'i-lucide-user-cog' : 'i-lucide-cuboid',
 )
 
 const stopItems = computed<DropdownMenuItem[][]>(() => [[
   {
-    label: `Real user: ${authStore.impersonator?.name ?? authStore.impersonator?.primary_email}`,
+    label: `Real user: ${impersonator.value?.name ?? impersonator.value?.email}`,
     icon: 'i-lucide-shield',
     disabled: true,
   },
@@ -99,7 +109,7 @@ const stopItems = computed<DropdownMenuItem[][]>(() => [[
     label: 'Stop impersonating',
     icon: 'i-lucide-log-out',
     color: 'warning' as const,
-    onSelect: () => { void stopImpersonation() },
+    onSelect: () => { void handleStop() },
   },
 ]])
 </script>
@@ -107,7 +117,7 @@ const stopItems = computed<DropdownMenuItem[][]>(() => [[
 <template>
   <div v-if="showMenu">
     <UDropdownMenu
-      v-if="authStore.isImpersonating"
+      v-if="isImpersonating"
       :items="stopItems"
       :content="{ align: 'center', collisionPadding: 12 }"
       :ui="{ content: collapsed ? 'w-56' : 'w-(--reka-dropdown-menu-trigger-width)' }"
@@ -145,32 +155,32 @@ const stopItems = computed<DropdownMenuItem[][]>(() => [[
       />
 
       <template #content>
-        <div :class="collapsed ? 'w-56' : 'w-56'">
+        <div class="w-56">
           <div class="p-2 border-b border-default">
             <UInput
-              v-model="q"
+              v-model="searchQ"
               icon="i-lucide-search"
               placeholder="Search users…"
               size="sm"
               autofocus
             />
           </div>
-          <div ref="scrollEl" class="max-h-60 overflow-y-auto py-1">
+          <div class="max-h-60 overflow-y-auto py-1">
             <button
-              v-for="c in candidates"
+              v-for="c in filteredCandidates"
               :key="c.id"
               type="button"
-              :disabled="!!c.is_suspended || busy"
+              :disabled="busy"
               class="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-elevated cursor-pointer text-left disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="startImpersonation(c.id, c.name ?? c.primary_email)"
+              @click="startImpersonation(c.id, c.name ?? c.email)"
             >
               <UIcon name="i-lucide-user" class="size-4 shrink-0" />
-              <span class="truncate">{{ c.name ?? c.username ?? c.primary_email }}</span>
+              <span class="truncate">{{ c.name ?? c.email }}</span>
             </button>
-            <div v-if="loading" class="px-3 py-1.5 text-sm text-muted">
+            <div v-if="loadingCandidates" class="px-3 py-1.5 text-sm text-muted">
               Loading…
             </div>
-            <div v-else-if="candidates.length === 0" class="px-3 py-1.5 text-sm text-muted">
+            <div v-else-if="filteredCandidates.length === 0 && !loadingCandidates" class="px-3 py-1.5 text-sm text-muted">
               No users available.
             </div>
           </div>

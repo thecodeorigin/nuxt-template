@@ -123,6 +123,7 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    '@thecodeorigin/auth',
     '@nuxt/a11y',
     '@nuxt/eslint',
     '@nuxt/fonts',
@@ -140,6 +141,19 @@ export default defineNuxtConfig({
     'nuxt-security',
     'nuxt-resend',
   ],
+
+  auth: {
+    issuer: process.env.NUXT_THECODEORIGIN_ISSUER || '',
+    clientId: process.env.NUXT_THECODEORIGIN_CLIENT_ID || '',
+    clientSecret: process.env.NUXT_THECODEORIGIN_CLIENT_SECRET || '',
+    routes: {
+      signIn: '/auth/login',
+      callback: '/auth/callback',
+      signOut: '/auth/logout',
+      home: '/dashboard',
+      error: '/auth/login',
+    },
+  },
 
   nitro: {
     experimental: {
@@ -171,9 +185,10 @@ export default defineNuxtConfig({
       '/api/support/tickets/**': { security: { xssValidator: false } },
       '/api/system/tickets': { security: { xssValidator: false } },
       '/api/system/tickets/**': { security: { xssValidator: false } },
-      // Auth routes: no cross-origin surface + exempt from the global rate limiter
-      // (credential login uses its own login-throttle; OIDC is stateless redirect).
+      // Auth routes: no cross-origin surface + exempt from the global rate limiter.
       '/api/auth/**': { cors: false, security: { rateLimiter: false } },
+      // Module proxy routes: same exemptions.
+      '/api/_auth/**': { cors: false, security: { rateLimiter: false } },
       '/api/cron/**': { cors: false },
       '/__nuxt_hints/**': { cors: false, csurf: false },
     },
@@ -198,10 +213,6 @@ export default defineNuxtConfig({
     authSecret: '',
 
     webhookSigningSecret: '',
-
-    thecodeoriginIssuer: '',
-    thecodeoriginClientId: '',
-    thecodeoriginClientSecret: '',
 
     smtpHost: 'localhost',
     smtpPort: 1025,

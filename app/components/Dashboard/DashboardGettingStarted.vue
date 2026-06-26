@@ -1,9 +1,6 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
-
-const canImpersonate = computed(
-  () => (authStore.currentUser?.abilities ?? []).includes('user:impersonate'),
-)
+const { $ability } = useNuxtApp()
+const canImpersonate = computed(() => $ability.can('manage', 'all'))
 </script>
 
 <template>

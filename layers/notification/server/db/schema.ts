@@ -1,11 +1,10 @@
 import type { InferSelect } from '~~/server/db/types'
-import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 export const notificationTable = sqliteTable('notifications', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
-  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
-  user_id: text('user_id').references(() => userTable.id, { onDelete: 'cascade' }).notNull(),
+  organization_id: text('organization_id').notNull(),
+  user_id: text('user_id').notNull(),
   sender_name: text('sender_name').notNull(),
   body: text('body').notNull(),
   is_read: integer('is_read', { mode: 'boolean' }).notNull().default(false),

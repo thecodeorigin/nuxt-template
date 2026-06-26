@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { getValidatedQuery } from 'h3'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAuthorizedHandler } from '~~/server/utils/auth'
 import { listAgentTickets } from '#layers/support/server/services/ticket'
 import { AgentTicketListQuerySchema } from '#layers/support/shared/schemas/ticket'
 
@@ -18,5 +18,5 @@ async function listTickets(event: H3Event, agentId: string): Promise<unknown> {
 }
 
 export default defineAuthorizedHandler(['support:manage'], async (event, { session }) => {
-  return listTickets(event, session.id)
+  return listTickets(event, session.sub)
 })

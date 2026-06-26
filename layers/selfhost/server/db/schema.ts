@@ -1,9 +1,8 @@
 import type { InferSelect } from '~~/server/db/types'
-import { organizationTable, userTable } from '@nuxthub/db/schema'
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 export const selfhostDeploymentTable = sqliteTable('selfhost_deployments', {
-  organization_id: text('organization_id').primaryKey().references(() => organizationTable.id, { onDelete: 'cascade' }),
+  organization_id: text('organization_id').primaryKey(),
   cf_account_id: text('cf_account_id'),
   cf_script_name: text('cf_script_name'),
   workers_dev_url: text('workers_dev_url'),
@@ -21,8 +20,8 @@ export type SelfhostDeployment = InferSelect<typeof selfhostDeploymentTable>
 
 export const selfhostAuditTable = sqliteTable('selfhost_audit', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
-  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
-  actor_user_id: text('actor_user_id').references(() => userTable.id, { onDelete: 'set null' }),
+  organization_id: text('organization_id').notNull(),
+  actor_user_id: text('actor_user_id'),
   action: text('action', { enum: ['deploy', 'redeploy', 'disconnect', 'secret_reveal', 'secret_update'] }).notNull(),
   success: integer('success', { mode: 'boolean' }).notNull(),
   cf_account_id: text('cf_account_id'),
@@ -37,7 +36,7 @@ export type SelfhostAudit = InferSelect<typeof selfhostAuditTable>
 
 export const selfhostDeploymentSecretTable = sqliteTable('selfhost_deployment_secrets', {
   id: text('id').primaryKey().notNull().$defaultFn(() => crypto.randomUUID()),
-  organization_id: text('organization_id').references(() => organizationTable.id, { onDelete: 'cascade' }).notNull(),
+  organization_id: text('organization_id').notNull(),
   key: text('key').notNull(),
   ciphertext: text('ciphertext').notNull(),
   iv: text('iv').notNull(),

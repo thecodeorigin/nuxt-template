@@ -1,7 +1,7 @@
 import { db } from '@nuxthub/db'
 import { notificationTable } from '@nuxthub/db/schema'
 import { and, count, eq } from 'drizzle-orm'
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 
 export default defineAuthenticatedHandler(async (event, session) => {
   const orgId = event.context.activeOrganizationId
@@ -11,7 +11,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
     .select({ count: count() })
     .from(notificationTable)
     .where(and(
-      eq(notificationTable.user_id, session.id),
+      eq(notificationTable.user_id, session.sub),
       eq(notificationTable.organization_id, orgId),
       eq(notificationTable.is_read, false),
     ))

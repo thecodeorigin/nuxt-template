@@ -2,7 +2,7 @@ import { db } from '@nuxthub/db'
 import { notificationTable } from '@nuxthub/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { createError, getRouterParam } from 'h3'
-import { defineAuthenticatedHandler } from '#layers/auth/server/services/auth'
+import { defineAuthenticatedHandler } from '~~/server/utils/auth'
 import { toNotification } from '#layers/notification/shared/schemas/notification'
 
 export default defineAuthenticatedHandler(async (event, session) => {
@@ -14,7 +14,7 @@ export default defineAuthenticatedHandler(async (event, session) => {
     .set({ is_read: true })
     .where(and(
       eq(notificationTable.id, id),
-      eq(notificationTable.user_id, session.id),
+      eq(notificationTable.user_id, session.sub),
       eq(notificationTable.organization_id, orgId),
     ))
     .returning()

@@ -2,7 +2,7 @@ import { db } from '@nuxthub/db'
 import { productTable } from '@nuxthub/db/schema'
 import { eq } from 'drizzle-orm'
 import { createError } from 'h3'
-import { defineAuthorizedHandler } from '#layers/auth/server/services/casl'
+import { defineAuthorizedHandler } from '~~/server/utils/auth'
 
 export default defineAuthorizedHandler(['product:delete', 'product:manage'], async (event) => {
   const id = getRouterParam(event, 'id')!

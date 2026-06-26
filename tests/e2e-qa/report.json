@@ -1,0 +1,101 @@
+{
+  "results": [
+    {
+      "step": "Step 1: Navigate /dashboard",
+      "status": "PASS",
+      "detail": "HTTP 200 → final URL: https://auth.thecodeorigin.com/api/auth/error?error=invalid_client&error_description=client_id+is+required"
+    },
+    {
+      "step": "Step 2: Redirect to /auth/login",
+      "status": "PASS",
+      "detail": "URL: https://auth.thecodeorigin.com/api/auth/error?error=invalid_client&error_description=client_id+is+required"
+    },
+    {
+      "step": "Step 3: IdP sign-in page",
+      "status": "PASS",
+      "detail": "URL: https://auth.thecodeorigin.com/api/auth/error?error=invalid_client&error_description=client_id+is+required"
+    },
+    {
+      "step": "Step 3b: Navigate directly to IdP /sign-in",
+      "status": "INFO",
+      "detail": "https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Fill email",
+      "status": "PASS",
+      "detail": "nguyenhuunguyeny.ny@gmail.com"
+    },
+    {
+      "step": "Step 4: Password attempt \"password123\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Password attempt \"Password123!\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Password attempt \"123456\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Password attempt \"password\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Password attempt \"Nguyeny@123\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Password attempt \"admin123\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 4: Password attempt \"Test@1234\"",
+      "status": "FAIL",
+      "detail": "Still on: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Step 5: PKCE callback",
+      "status": "SKIP",
+      "detail": "Login did not succeed"
+    },
+    {
+      "step": "Step 6: Dashboard",
+      "status": "SKIP",
+      "detail": "Not on localhost:3002"
+    },
+    {
+      "step": "Step 7: Session API",
+      "status": "FAIL",
+      "detail": "Error: page.goto: net::ERR_ABORTED at http://localhost:3002/api/_auth/session\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3002/api/_auth/session\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "step": "Step 8: Sign-out",
+      "status": "SKIP",
+      "detail": "Not logged in or not on app"
+    },
+    {
+      "step": "Step 9: Post-logout redirect",
+      "status": "PASS",
+      "detail": "URL: https://auth.thecodeorigin.com/sign-in"
+    },
+    {
+      "step": "Console errors",
+      "status": "PASS",
+      "detail": "No JS errors"
+    },
+    {
+      "step": "Network errors (4xx/5xx)",
+      "status": "PASS",
+      "detail": "No HTTP errors"
+    }
+  ],
+  "consoleErrors": [],
+  "networkErrors": []
+}
