@@ -15,7 +15,7 @@ export interface SecretDef {
 // for new self-host config. `auto` entries are derived/generated at deploy time without user input.
 export const SELFHOST_SECRET_CATALOG: SecretDef[] = [
   // THECODEORIGIN OIDC (user-provided)
-  { key: 'NUXT_THECODEORIGIN_ISSUER', label: 'THECODEORIGIN issuer URL', description: 'Base URL of the self-hosted better-auth IdP, e.g. https://auth.yourdomain.com/api/auth. Whitelist your worker URL + /api/auth/oidc/callback on the IdP.', category: 'oauth', type: 'secret_text', auto: null },
+  { key: 'NUXT_THECODEORIGIN_DOMAIN', label: 'THECODEORIGIN issuer URL', description: 'Base URL of the self-hosted better-auth IdP, e.g. https://auth.yourdomain.com/api/auth. Whitelist your worker URL + /api/auth/oidc/callback on the IdP.', category: 'oauth', type: 'secret_text', auto: null },
   { key: 'NUXT_THECODEORIGIN_CLIENT_ID', label: 'THECODEORIGIN client ID', description: 'Issued when registering a confidential client on the IdP admin console.', category: 'oauth', type: 'secret_text', auto: null },
   { key: 'NUXT_THECODEORIGIN_CLIENT_SECRET', label: 'THECODEORIGIN client secret', description: 'Shown once on IdP registration. Rotate via the IdP admin console if lost.', category: 'oauth', type: 'secret_text', auto: null },
   { key: 'NUXT_GITHUB_TOKEN', label: 'GitHub token (private repo updates)', description: 'PAT with contents:read. Only needed if your release repo is private.', category: 'oauth', type: 'secret_text', auto: null },

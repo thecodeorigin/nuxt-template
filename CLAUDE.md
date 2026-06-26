@@ -21,9 +21,9 @@ designed for non-technical users ("vibe coders") who treat the codebase
 as a black box:
 
 - **`/onboard`** — pure business interview (name, tagline, brand color,
-  product/billing model, sign-in providers) that rewrites brand strings,
-  `app.config.ts` colors, `.env`, and user-facing labels. Re-runnable
-  for rebrands.
+  product/billing model, THECODEORIGIN credentials) that rewrites brand
+  strings, `app.config.ts` colors, `.env`, and user-facing labels.
+  Re-runnable for rebrands.
 - **`/go-live`** — walks the user through Cloudflare + GitHub
   credentials in plain English, then runs the existing `pnpm cli deploy
   setup` to provision D1/KV/R2/cache and wire up GitHub Actions deploys.
@@ -204,7 +204,8 @@ server/               Cross-cutting Nitro backend (project)
                       business logic. (db/kv/blob come from @nuxthub/*.)
 shared/utils/         Cross-cutting pure utils (id, number, string, uuid)
 layers/
-  auth/               Sessions, OAuth, CASL, impersonation, seed users.
+  auth/               Sessions, OIDC sign-in via @thecodeorigin/auth,
+                      CASL, impersonation, seed users.
                       Self-contained app/ + server/ + shared/ + tests.
                       See layers/auth/CLAUDE.md.
   product/            Staff-managed product catalog (system abilities).
@@ -233,7 +234,7 @@ import. Explicit cross-layer imports use `#layers/<name>/...`.
 
 | Layer | Owns | Top-level guide |
 |-------|------|-----------------|
-| `auth` | Sessions, OAuth, CASL authorization, impersonation, seed users | `layers/auth/CLAUDE.md` |
+| `auth` | Sessions, OIDC sign-in (`@thecodeorigin/auth`), CASL authorization, impersonation, seed users | `layers/auth/CLAUDE.md` |
 | `product` | **Abstract**: the smallest indivisible billable unit (plan, addon, credit pack, item — whatever the adapted business calls it). System-managed catalog; staff abilities (`product:*`) | `layers/product/CLAUDE.md` |
 | `project` | **Abstract**: a user's container that bundles one or more products together with members + roles (workspace, subscription, account, tenant). Tenant abilities (`project:*`) | `layers/project/CLAUDE.md` |
 
@@ -310,9 +311,20 @@ ready. Full field reference and the current priority table are in
 
 All auth/authz code lives in `layers/auth/`. The high-level shape:
 
-- **Sessions** live in Cloudflare KV (`kv` from `@nuxthub/kv`) keyed by
-  `session:{sessionId}`, where `sessionId` is the `sessionid` cookie (or
-  `x-session-id` header).
+- **Sign-in** is handled end-to-end by the **`@thecodeorigin/auth`** Nuxt
+  module (OIDC, PKCE). The module auto-imports a `useAuth()` composable
+  everywhere:
+  - `signIn(redirect?)` — navigates to `/auth/login`, which kicks off the
+    OIDC flow against `id.thecodeorigin.com` and returns to `/auth/callback`.
+  - `signOut()` — navigates to `/auth/logout`.
+  - `session`, `user`, `loggedIn`, `abilities`, `impersonator` — reactive
+    refs populated from `/api/_auth/session`.
+  - There is **no Google or GitHub sign-in**; THECODEORIGIN is the sole
+    external provider. Credentials: `NUXT_THECODEORIGIN_CLIENT_ID` and
+    `NUXT_THECODEORIGIN_CLIENT_SECRET` in `.env`.
+- **Sessions** are stored in Cloudflare KV via the module
+  (`sessionStorageBase: 'hub:kv'`). The `sessionid` cookie (or
+  `x-session-id` header) is the key.
 - **`AuthUser`** (`layers/auth/server/services/auth.ts`) carries
   `abilities: string[]` and an optional
   `impersonator: ImpersonatorInfo | null` for the impersonation flow.
@@ -333,11 +345,11 @@ All auth/authz code lives in `layers/auth/`. The high-level shape:
   `useAbility()`. See `layers/auth/test/unit/casl-frontend.test.ts`.
 - **Page meta** flags (`public`, `unauthenticatedOnly`, `can`) are typed in
   `layers/auth/app/types/router.d.ts`. Default = requires auth.
-- **Impersonation**: `POST /api/auth/impersonate/{start,stop}` swap the KV
-  session in-place (admin's session is backed up at
-  `impersonator:session:<sid>`, the live session becomes the target user).
-  The admin's identity rides along on `session.impersonator` so the UI knows
-  who's actually piloting.
+- **Impersonation**: `POST /api/_auth/impersonate` / `POST /api/_auth/stop-impersonating`
+  (provided by `@thecodeorigin/auth`) swap the KV session in-place. The
+  admin's identity rides along on `session.impersonator` so the UI knows
+  who's actually piloting. Use `useAuth().impersonate(userId)` /
+  `useAuth().stopImpersonating()` on the client.
 
 For the full ownership map, conventions for adding new auth routes, and the
 impersonation invariant, read `layers/auth/CLAUDE.md`.

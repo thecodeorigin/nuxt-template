@@ -116,7 +116,7 @@ function maskValue(v: string) {
             v-model="raw"
             :rows="10"
             class="w-full font-mono"
-            placeholder="# Paste .env content here&#10;NUXT_SMTP_HOST=smtp.example.com&#10;NUXT_SMTP_PORT=587&#10;NUXT_THECODEORIGIN_ISSUER=&quot;https://auth.yourdomain.com/api/auth&quot;"
+            placeholder="# Paste .env content here&#10;NUXT_SMTP_HOST=smtp.example.com&#10;NUXT_SMTP_PORT=587&#10;NUXT_THECODEORIGIN_DOMAIN=&quot;https://auth.yourdomain.com/api/auth&quot;"
           />
         </UFormField>
 
