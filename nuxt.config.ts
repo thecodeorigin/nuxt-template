@@ -152,7 +152,7 @@ export default defineNuxtConfig({
       callback: '/auth/callback',
       signOut: '/auth/logout',
       home: '/dashboard',
-      error: '/auth/login',
+      error: '/auth/error',
     },
   },
 
