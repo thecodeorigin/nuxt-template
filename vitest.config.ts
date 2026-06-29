@@ -63,6 +63,7 @@ export default defineConfig({
             },
           },
           hookTimeout: 120000,
+          setupFiles: ['./test/setup/nuxt-auth-session.ts'],
         },
       }),
     ],
