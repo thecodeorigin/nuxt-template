@@ -63,10 +63,10 @@ export default defineConfig({
             },
           },
           hookTimeout: 120000,
-          teardownTimeout: 30000,
         },
       }),
     ],
+    teardownTimeout: 30000,
     coverage: {
       enabled: true,
       provider: 'v8',
